@@ -52,6 +52,10 @@
 	insertPayoutHelperButtonForCash();
 	insertPayoutHelperButtonForDrugs();
 
+	waitForElm('div.armoury-msg > div > div> div > div.msg.right-round').then((elm) => {
+		window.location.reload();
+	});
+
 	// if (anchor.includes('option=give-to-user')) {
 	// 	insertPayoutHelperButtonForCash();
 	// } else if (anchor.includes('tab=controls')) {
