@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      0.1
+// @version      0.1.1
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -46,15 +46,17 @@
 	// Retrieve the anchor from the URL (stuff after the #)
 	const anchor = getAnchor();
 
-	if (anchor.includes('option=give-to-user')) {
-		insertPayoutHelperButton();
-	} else if (anchor.includes('tab=controls')) {
-		// Check if "Give to User" tab has ui-tabs-active class
-		const giveToUserTab = document.querySelector('#faction-controls > div.faction-controls-wrap.border-round.ui-tabs.ui-widget.ui-widget-content.ui-corner-all > ul > li.ui-state-default.ui-corner-top.ui-tabs-active.ui-state-active');
-		if (giveToUserTab.classList.contains('ui-tabs-active')) {
-			insertPayoutHelperButton();
-		}
-	}
+	insertPayoutHelperButton();
+
+	// if (anchor.includes('option=give-to-user')) {
+	// 	insertPayoutHelperButton();
+	// } else if (anchor.includes('tab=controls')) {
+	// 	// Check if "Give to User" tab has ui-tabs-active class
+	// 	const giveToUserTab = document.querySelector('#faction-controls > div.faction-controls-wrap.border-round.ui-tabs.ui-widget.ui-widget-content.ui-corner-all > ul > li.ui-state-default.ui-corner-top.ui-tabs-active.ui-state-active');
+	// 	if (giveToUserTab.classList.contains('ui-tabs-active')) {
+	// 		insertPayoutHelperButton();
+	// 	}
+	// }
 
 	// Fetch from the nuke.family API the combined payout sheet for all players and store it by player id
 	function getPlayerPayoutList() {
