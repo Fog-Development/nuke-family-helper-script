@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      0.2.1
+// @version      0.2.2
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -134,7 +134,7 @@
 						playerXanaxPayoutAmounts[payoutList[i]['reviver_id']] = xanax;
 					}
 				}
-				alert('Ready to start paying out xanax! Once you begin giving xanax know that there is no resuming later. You must give the xanax out till there are no more xanax payout suggestions, otherwise if you refresh you will be starting back at the beginning of the list with people who already got their xanax!');
+				alert('Ready to start paying out xanax! If you refresh and come back to this page it will remember where you left off in your xanax payout. If you need to reset hit the reset button, but remember this will show people again who you may have already paid out xanax to. Also if you hit "cancel" instead of "give" this still counts as the user being paid and they won\'t be in the pay window again.');
 				addXanaxToStoredVariable(playerXanaxPayoutAmounts);
 				insertPayoutXanaxSuggestions(playerXanaxPayoutAmounts);
 			}
