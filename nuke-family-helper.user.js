@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      0.1.1
+// @version      0.2.0
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -19,7 +19,7 @@
 	console.log('Nuke Family Helper Script Loaded');
 
 	// DEV VALUES
-	// GM_setValue("apiToken", "9|usfb7Sz5fvpTjq2iiW5dxX2veT1a1tIDCWh8HQEf");
+	// GM_setValue("apiToken", "");
 	// let apiUrl = "http://torn-faction-companies/api";
 
 
@@ -43,18 +43,22 @@
 
 	let apiUrl = 'https://nuke.family/api';
 
+	let xanaxPlayerList = GM_getValue('xanaxPlayerList', []);
+	xanaxPlayerList = JSON.parse(xanaxPlayerList);
+
 	// Retrieve the anchor from the URL (stuff after the #)
 	const anchor = getAnchor();
 
-	insertPayoutHelperButton();
+	insertPayoutHelperButtonForCash();
+	insertPayoutHelperButtonForDrugs();
 
 	// if (anchor.includes('option=give-to-user')) {
-	// 	insertPayoutHelperButton();
+	// 	insertPayoutHelperButtonForCash();
 	// } else if (anchor.includes('tab=controls')) {
 	// 	// Check if "Give to User" tab has ui-tabs-active class
 	// 	const giveToUserTab = document.querySelector('#faction-controls > div.faction-controls-wrap.border-round.ui-tabs.ui-widget.ui-widget-content.ui-corner-all > ul > li.ui-state-default.ui-corner-top.ui-tabs-active.ui-state-active');
 	// 	if (giveToUserTab.classList.contains('ui-tabs-active')) {
-	// 		insertPayoutHelperButton();
+	// 		insertPayoutHelperButtonForCash();
 	// 	}
 	// }
 
@@ -110,7 +114,95 @@
 		alert('Payout balances updated. If a users balance is in red, this means they earned money. All you need to do is hit the "edit" pencil and then save it. The red amount and amount in the box is their NEW balance with the payout amount already added for you. You just need to save this.');
 	}
 
-	function insertPayoutHelperButton() {
+	function getPlayerXanaxPayoutList() {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: apiUrl + '/payout/get-payout-table?is_api=1',
+			headers: { "Content-Type": "application/x-www-form-urlencoded", "Authorization": "Bearer " + apiToken },
+			onload: function (response) {
+				const payoutList = JSON.parse(response.responseText)['data'];
+				console.log(payoutList);
+				let playerXanaxPayoutAmounts = {};
+				for (let i = 0; i < payoutList.length; i++) {
+					let xanax = payoutList[i]['revive_xanax_payout'];
+					if (xanax > 0) {
+						console.log(payoutList[i]['reviver_id'] + ' - ' + payoutList[i]['revive_xanax_payout'] + ' xanax');
+						playerXanaxPayoutAmounts[payoutList[i]['reviver_id']] = xanax;
+					}
+				}
+				alert('Ready to start paying out xanax! Once you begin giving xanax know that there is no resuming later. You must give the xanax out till there are no more xanax payout suggestions, otherwise if you refresh you will be starting back at the beginning of the list with people who already got their xanax!');
+				addXanaxToStoredVariable(playerXanaxPayoutAmounts);
+				insertPayoutXanaxSuggestions(playerXanaxPayoutAmounts);
+			}
+		});
+	}
+
+	function addXanaxToStoredVariable(xanaxList) {
+		GM_setValue('xanaxPlayerList', JSON.stringify(xanaxList));
+		xanaxPlayerList = xanaxList;
+		updateXanaxPayoutsLeftMessage();
+	}
+
+	function resetXanaxPayout() {
+		GM_setValue('xanaxPlayerList', null);
+		xanaxPlayerList = {};
+		window.location.reload();
+	}
+
+	function updateXanaxPayoutsLeftMessage() {
+		let count = countProperties(xanaxPlayerList);
+
+		const insertLocation = document.querySelector('#faction-armoury-tabs');
+
+		if (count > 0) {
+			let existingCheck = insertLocation.querySelector('.xanax-reset-button');
+			if (!existingCheck) {
+				const xanaxResetButton = document.createElement('button');
+				xanaxResetButton.classList.add('xanax-reset-button');
+				xanaxResetButton.classList.add('torn-btn');
+				xanaxResetButton.innerText = 'Clear xanax payout data from memory';
+
+				xanaxResetButton.addEventListener('click', function () {
+					resetXanaxPayout();
+				});
+				insertLocation.appendChild(xanaxResetButton);
+			}
+		}
+
+		let existingMessage = insertLocation.querySelector('.xanax-payouts-left-message');
+		if (existingMessage) {
+			existingMessage.innerText = 'There are ' + count + ' players left to give xanax.';
+		} else {
+			const xanaxPayoutsLeftMessage = document.createElement('div');
+			xanaxPayoutsLeftMessage.classList.add('xanax-payouts-left-message');
+			xanaxPayoutsLeftMessage.innerText = 'There are ' + count + ' players left to give xanax to. You can start giving xanax by clicking the "Give Xanax" button below.';
+
+			insertLocation.prepend(xanaxPayoutsLeftMessage);
+		}
+	}
+
+	function insertPayoutXanaxSuggestions(playerXanaxPayoutAmounts) {
+		let monitorElm = document.querySelector("div.img-wrap[data-itemid='206']").parentElement;
+		watchForClassChanges(monitorElm, playerXanaxPayoutAmounts); // Start watching for changes to the class of the element
+	}
+
+	function suggestNextPlayerXanax(elm, reviver) {
+		let playerId = reviver.key;
+		let quantity = reviver.value;
+
+
+		const quantityBox = elm.querySelector('div.quantity-wrap > input');
+		quantityBox.value = quantity;
+
+		const searchBox = elm.querySelector('.ac-search');
+		searchBox.value = playerId;
+		searchBox.dispatchEvent(new Event('focus'));
+		searchBox.dispatchEvent(new Event('keydown'));
+		searchBox.dispatchEvent(new Event('input'));
+		console.log('Suggesting ' + quantity + ' xanax to ' + playerId);
+	}
+
+	function insertPayoutHelperButtonForCash() {
 		const insertLocation = '#money > div.give-block';
 		waitForElm(insertLocation).then((elm) => {
 			const buttonInsertLocation = elm;
@@ -123,7 +215,32 @@
 			});
 
 			buttonInsertLocation.appendChild(btn);
-			console.log('nfh' + ' button inserted');
+			console.log('nfh' + ' button inserted on cash page');
+		});
+	}
+
+	function insertPayoutHelperButtonForDrugs() {
+		const insertLocation = "#faction-armoury-tabs";
+		waitForElm(insertLocation).then((elm) => {
+			const buttonInsertLocation = elm;
+			let btn = document.createElement('button');
+
+			btn.innerHTML = 'Payout Helper';
+			btn.classList.add('torn-btn');
+			btn.addEventListener('click', function () {
+				getPlayerXanaxPayoutList();
+			});
+
+			buttonInsertLocation.prepend(btn);
+
+			if (countProperties(xanaxPlayerList) > 0) {
+				updateXanaxPayoutsLeftMessage();
+				waitForElm("div.img-wrap[data-itemid='206']").then((elm) => {
+					insertPayoutXanaxSuggestions(xanaxPlayerList);
+				});
+				console.log('nfh' + ' message inserted on drugs page');
+			}
+			console.log('nfh' + ' button inserted on drug page');
 		});
 	}
 
@@ -152,5 +269,38 @@
 				subtree: true
 			});
 		});
+	}
+
+	function watchForClassChanges(elm, playerList) {
+		let observer = new MutationObserver(function (event) {
+			// Pops off the next item from bottom of array
+			if (elm.classList.contains('item-give-act')) {
+				suggestNextPlayerXanax(elm, randomProperty(playerList));
+				addXanaxToStoredVariable(playerList);
+			}
+		})
+
+		observer.observe(elm, {
+			attributes: true,
+			attributeFilter: ['class'],
+			childList: false,
+			characterData: false
+		})
+	}
+
+	function randomProperty(obj) {
+		let keys = Object.keys(obj);
+		let randomKey = keys[keys.length * Math.random() << 0];
+		let item = obj[randomKey];
+		obj[randomKey] = 0;
+		delete obj[randomKey];
+		return {
+			key: randomKey,
+			value: item
+		}
+	}
+
+	function countProperties(obj) {
+		return Object.keys(obj).length;
 	}
 })();
