@@ -43,8 +43,12 @@
 
 	let apiUrl = 'https://nuke.family/api';
 
-	let xanaxPlayerList = GM_getValue('xanaxPlayerList', []);
-	xanaxPlayerList = JSON.parse(xanaxPlayerList);
+	let xanaxPlayerList = GM_getValue('xanaxPlayerList', {});
+	try {
+		xanaxPlayerList = JSON.parse(xanaxPlayerList);
+	} catch (e) {
+		xanaxPlayerList = {};
+	}
 
 	// Retrieve the anchor from the URL (stuff after the #)
 	const anchor = getAnchor();
