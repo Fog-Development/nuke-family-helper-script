@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      0.2.4
+// @version      0.2.5
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -209,8 +209,35 @@
 		console.log('Suggesting ' + quantity + ' xanax to ' + playerId);
 	}
 
+	function changePayoutNukeFamilyKey() {
+		// Prompt and save changes to the apiToken in GM storage
+		let newKey = prompt('Enter the new nuke family key to use for payout retrieval:');
+		if (newKey) {
+			GM_setValue('apiToken', newKey);
+			apiToken = newKey;
+		}
+		alert('Nuke family key changed to: ' + newKey + '. This key will be used next time you click the payout helper button.');
+	}
+
+	function insertChangePayoutNukeFamilyKeyButton(insertLocation = '#faction-armoury-tabs') {
+		waitForElm(insertLocation).then((elm) => {
+			const buttonInsertLocation = elm;
+			let btn = document.createElement('button');
+
+			btn.innerHTML = 'Change Payout Nuke Family Key';
+			btn.classList.add('torn-btn');
+			btn.addEventListener('click', function () {
+				changePayoutNukeFamilyKey();
+			});
+
+			buttonInsertLocation.appendChild(btn);
+			console.log('nfh' + ' button inserted on cash page');
+		});
+	}
+
 	function insertPayoutHelperButtonForCash() {
-		const insertLocation = '#money > div.give-block';
+		const insertLocation = '#faction-controls > hr';
+
 		waitForElm(insertLocation).then((elm) => {
 			const buttonInsertLocation = elm;
 			let btn = document.createElement('button');
@@ -224,10 +251,12 @@
 			buttonInsertLocation.appendChild(btn);
 			console.log('nfh' + ' button inserted on cash page');
 		});
+		insertChangePayoutNukeFamilyKeyButton(insertLocation);
 	}
 
 	function insertPayoutHelperButtonForDrugs() {
 		const insertLocation = "#faction-armoury-tabs";
+
 		waitForElm(insertLocation).then((elm) => {
 			const buttonInsertLocation = elm;
 			let btn = document.createElement('button');
@@ -249,6 +278,7 @@
 			}
 			console.log('nfh' + ' button inserted on drug page');
 		});
+		insertChangePayoutNukeFamilyKeyButton(insertLocation);
 	}
 
 	function getAnchor() {
