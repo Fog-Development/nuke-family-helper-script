@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      0.2.5
+// @version      0.3.0
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -55,9 +55,9 @@
 	insertPayoutHelperButtonForCash();
 	insertPayoutHelperButtonForDrugs();
 
-	waitForElm('div.armoury-msg > div > div> div > div.msg.right-round').then((elm) => {
-		window.location.reload();
-	});
+	// waitForElm('div.armoury-msg > div > div> div > div.msg.right-round').then((elm) => {
+	// 	window.location.reload();
+	// });
 
 	// if (anchor.includes('option=give-to-user')) {
 	// 	insertPayoutHelperButtonForCash();
@@ -121,6 +121,15 @@
 		alert('Payout balances updated. If a users balance is in red, this means they earned money. All you need to do is hit the "edit" pencil and then save it. The red amount and amount in the box is their NEW balance with the payout amount already added for you. You just need to save this.');
 	}
 
+	// Add event to the xanax "give" button to then trigger watching for the resulting panel to appear
+	waitForElm('div.img-wrap[data-itemid="206"]').then((elm) => {
+		$("div.img-wrap[data-itemid='206']").parent().find('a.give.active').on('click', function () {
+			console.log('nfh', 'Xanax give button clicked');
+			// Wait for the panel to appear
+			insertPayoutXanaxSuggestions(xanaxPlayerList);
+		});
+	});
+
 	function getPlayerXanaxPayoutList() {
 		GM_xmlhttpRequest({
 			method: 'GET',
@@ -139,7 +148,6 @@
 				}
 				alert('Ready to start paying out xanax! If you refresh and come back to this page it will remember where you left off in your xanax payout. If you need to reset hit the reset button, but remember this will show people again who you may have already paid out xanax to. Also if you hit "cancel" instead of "give" this still counts as the user being paid and they won\'t be in the pay window again.');
 				addXanaxToStoredVariable(playerXanaxPayoutAmounts);
-				insertPayoutXanaxSuggestions(playerXanaxPayoutAmounts);
 			}
 		});
 	}
@@ -271,14 +279,28 @@
 
 			if (countProperties(xanaxPlayerList) > 0) {
 				updateXanaxPayoutsLeftMessage();
-				waitForElm("div.img-wrap[data-itemid='206']").then((elm) => {
-					insertPayoutXanaxSuggestions(xanaxPlayerList);
-				});
 				console.log('nfh' + ' message inserted on drugs page');
 			}
 			console.log('nfh' + ' button inserted on drug page');
 		});
 		insertChangePayoutNukeFamilyKeyButton(insertLocation);
+	}
+
+	function insertGiveButtonTracking(btnToTrackElm) {
+		btnToTrackElm.on('click', function () {
+			console.log('nfh', 'Xanax has been sent to somebody :O');
+			// Add event to the xanax "give" button to then trigger watching for the resulting panel to appear
+			setTimeout(function () {
+				waitForElm('div.img-wrap[data-itemid="206"]').then((elm) => {
+					console.log('nfh', 'Found element again');
+					$("div.img-wrap[data-itemid='206']").parent().find('a.give.active').on('click', function () {
+						console.log('nfh', 'Xanax give button clicked');
+						// Wait for the panel to appear
+						insertPayoutXanaxSuggestions(xanaxPlayerList);
+					});
+				});
+			}, 500);
+		});
 	}
 
 	function getAnchor() {
@@ -312,6 +334,7 @@
 		let observer = new MutationObserver(function (event) {
 			// Pops off the next item from bottom of array
 			if (elm.classList.contains('item-give-act')) {
+				insertGiveButtonTracking($(elm).find('.torn-btn'));
 				suggestNextPlayerXanax(elm, randomProperty(playerList));
 				addXanaxToStoredVariable(playerList);
 			}
