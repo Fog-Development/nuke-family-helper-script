@@ -1,22 +1,107 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      0.3.0
+// @version      2.0
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
+// @match        https://www.torn.com/profiles.php*
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAsVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAADAgEIBwIJCAILCQMODAQUEQUYFQcaFgcfGgggGwklIAotJgwyKg46MhA8MxBKPxRQRBZgUhthUhthUxt1ZCB9aiOEcCSIdCaQeyihiSyiiS21mjLBpDXFpzbGqDfHqTfIqjjTszrXtzzZuTzlw0DmxEDnxEDpxkHuy0LxzUNZTIHlAAAAD3RSTlMAAh4tMVtig4WRlqvq8v4ZRfBIAAABcElEQVQ4y4VT2ZKCMBBEReTSVhEX8T5BFMVb8/8ftokhJB5b2w9U9VFkMpnRNImSbpiWZRp6SfuGiu0ih2tXPuyy04CChlN+9at1vKFeVf0aVX5Um5Hai+8np470O6fEVxJVIDgQspKBFSGHAMhPKdfhU5/ce8Lv3Sk9+KjzSh0gIQwbEdg8aQI4z/s3MCEcY+6PczpBg/XDRjPLlV2L+a1dTrMmbNpfFyMisGCBRUFHcEuaDsSFsmeBfUFjQNcMIBXCOehHUT84C54ChmYCNyHM+xdCLv254DfA1Cx4xS/DiH2jsBA8WDSggAdUxWJHSPAjVMVkRaoJWuSLYLBrSnRnYTjrqorOGiWxZjWsFYE2ira6wODBAo+BVGz+WAJbfrmtHM1K/twcU3H9qVAcMTBPtI8icGzng1suRo5hWTSQLLlSVYcawVUGrgE+xhrDTAay4avPF6c5ilP6sLc0HjXfF0eunud9X73/l/fP9f8FWPxZz4MGj9YAAAAASUVORK5CYII=
 // @downloadURL  https://github.com/Fog-Development/nuke-family-helper-script/raw/master/nuke-family-helper.user.js
 // @updateURL    https://github.com/Fog-Development/nuke-family-helper-script/raw/master/nuke-family-helper.user.js
+// @run-at       document-end
 // @grant        GM_xmlhttpRequest
-// @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_info
+// @connect      nuke.family
 // ==/UserScript==
+
+const PageType = {
+	Profile: 'Profile',
+	RecruitCitizens: 'Recruit Citizens',
+	HallOfFame: 'Hall Of Fame',
+	Faction: 'Faction',
+	Company: 'Company',
+	Competition: 'Competition',
+	Bounty: 'Bounty',
+	Search: 'Search',
+	Hospital: 'Hospital',
+	Chain: 'Chain',
+	FactionControl: 'Faction Control',
+	FactionControlPayday: 'Faction Control Per Day',
+	FactionControlApplications: 'Faction Control Applications',
+	Market: 'Market',
+	Forum: 'Forum',
+	ForumThread: 'ForumThread',
+	ForumSearch: 'ForumSearch',
+	Abroad: 'Abroad',
+	Enemies: 'Enemies',
+	Friends: 'Friends',
+	PointMarket: 'Point Market',
+	Properties: 'Properties',
+	War: 'War',
+	ChainReport: 'ChainReport',
+	RWReport: 'RWReport',
+};
+
+var mapPageTypeAddress = {
+	[PageType.Profile]: 'https://www.torn.com/profiles.php',
+	[PageType.RecruitCitizens]: 'https://www.torn.com/bringafriend.php',
+	[PageType.HallOfFame]: 'https://www.torn.com/halloffame.php',
+	[PageType.Faction]: 'https://www.torn.com/factions.php',
+	[PageType.Company]: 'https://www.torn.com/joblist.php',
+	[PageType.Competition]: 'https://www.torn.com/competition.php',
+	[PageType.Bounty]: 'https://www.torn.com/bounties.php',
+	[PageType.Search]: 'https://www.torn.com/page.php',
+	[PageType.Hospital]: 'https://www.torn.com/hospitalview.php',
+	[PageType.Chain]: 'https://www.torn.com/factions.php?step=your#/war/chain',
+	[PageType.FactionControl]: 'https://www.torn.com/factions.php?step=your#/tab=controls',
+	[PageType.FactionControlPayday]: 'https://www.torn.com/factions.php?step=your#/tab=controls',
+	[PageType.FactionControlApplications]: 'https://www.torn.com/factions.php?step=your#/tab=controls',
+	[PageType.Market]: 'https://www.torn.com/imarket.php',
+	[PageType.Forum]: 'https://www.torn.com/forums.php',
+	[PageType.ForumThread]: 'https://www.torn.com/forums.php#/p=threads',
+	[PageType.ForumSearch]: 'https://www.torn.com/forums.php#/p=search',
+	[PageType.Abroad]: 'https://www.torn.com/index.php?page=people',
+	[PageType.Enemies]: 'https://www.torn.com/blacklist.php',
+	[PageType.Friends]: 'https://www.torn.com/friendlist.php',
+	[PageType.PointMarket]: 'https://www.torn.com/pmarket.php',
+	[PageType.Properties]: 'https://www.torn.com/properties.php',
+	[PageType.War]: 'https://www.torn.com/war.php',
+	[PageType.ChainReport]: 'https://www.torn.com/war.php?step=chainreport',
+	[PageType.RWReport]: 'https://www.torn.com/war.php?step=rankreport',
+};
+
+var mapPageAddressEndWith = {
+	[PageType.FactionControl]: '/tab=controls',
+	[PageType.FactionArmouryDrug]: 'tab=armoury&start=0&sub=drugs',
+	[PageType.FactionControlPayday] : 'tab=controls&option=pay-day',
+	[PageType.FactionControlApplications] : 'tab=controls&option=application'
+};
+
+const cacheLength = 60; //minutes
+
+let savedData = null;
+
+
+let shitListEntries = null;
+
 
 (function () {
 	'use strict';
 
-	console.log('Nuke Family Helper Script Loaded');
+	LogInfo('Nuke Family Helper Script Loaded');
+
+	try{
+		savedData = JSON.parse(localStorage.shitListEntriesList || '{"shitListEntries" : {}, "timestamp" : 0}');
+		shitListEntries = savedData.shitListEntries;
+		LogInfo(shitListEntries);
+	}
+	catch(error){
+		console.error(error);
+		alert('error loading saved data, please reload page!');
+	}
 
 	// DEV VALUES
 	// GM_setValue("apiToken", "");
@@ -32,15 +117,23 @@
 		}
 	);
 
+	let apiUrl = 'https://nuke.family/api';
 
 	let apiToken = GM_getValue('apiToken', '');
+
+	// ONLY LEAVE ACTIVE FOR DEV
+	const debug = true;
+	if (debug) {
+		apiToken = '94|ia46tZQ0a75k89yveTX2fQfCVqytkghHYNH2KRwq31e85451';
+		apiUrl = 'http://nuke.test/api';
+		GM_setValue("apiToken", apiToken);
+	}
 
 	if (!apiToken) {
 		apiToken = prompt('Please enter your Nuke API key from Fogest\'s site (https://nuke.family/user)');
 		GM_setValue("apiToken", apiToken);
 	}
 
-	let apiUrl = 'https://nuke.family/api';
 
 	let xanaxPlayerList = GM_getValue('xanaxPlayerList', {});
 	try {
@@ -49,11 +142,52 @@
 		xanaxPlayerList = {};
 	}
 
+
+	// Update any data that has expired caches...
+
+	if(savedData.timestamp == undefined || Date.now() - savedData.timestamp > cacheLength * 60 * 1000){ //minutes * seconds * miliseconds
+		LogInfo('shitlist data is older than ' + cacheLength + ' minutes, updating now');
+		getShitList();
+	}
+
+
+
 	// Retrieve the anchor from the URL (stuff after the #)
 	const anchor = getAnchor();
 
-	insertPayoutHelperButtonForCash();
-	insertPayoutHelperButtonForDrugs();
+
+    // Start observer, to inject within dynamically loaded content
+    var observer = new MutationObserver(function (mutations, observer) {
+			mutations.forEach(function (mutation) {
+					for (const node of mutation.addedNodes) {
+							if (node.querySelector) {
+									if (IsPage(PageType.Profile)) {
+										injectProfilePage(node);
+									}
+
+									if (IsPage(PageType.FactionArmouryDrug)) {
+										insertPayoutHelperButtonForDrugs();
+									}
+									else if (IsPage(PageType.FactionControl)) {
+										insertPayoutHelperButtonForCash();
+									}
+							}
+					}
+			});
+	});
+
+	observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
+
+	// // Only inject if on URL: https://www.torn.com/factions.php
+	// if (window.location.href.includes('factions.php')) {
+	// 	insertPayoutHelperButtonForCash();
+	// 	insertPayoutHelperButtonForDrugs();
+	// }
+
+	// // Only inject if on URL: https://www.torn.com/profiles.php
+	// if (window.location.href.includes('profiles.php')) {
+	// 	injectProfilePage();
+	// }
 
 	// waitForElm('div.armoury-msg > div > div> div > div.msg.right-round').then((elm) => {
 	// 	window.location.reload();
@@ -69,6 +203,45 @@
 	// 	}
 	// }
 
+	// Fetch from the nuke.family API the shitlist entries for everyone and cache it in GM storage
+	function getShitList() {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: apiUrl + '/shit-lists',
+			headers: { "Accept": "application/json", "Authorization": "Bearer " + apiToken },
+			onload: function (response) {
+				const responseEntries = JSON.parse(response.responseText)['data'];
+
+				let toSave = {};
+
+			  // Save data to cached storage
+				responseEntries.forEach(function (entry, index) {
+					let obj = {};
+					obj.entryId = entry.id;
+					obj.playerName = entry.playerName;
+					obj.playerId = entry.playerId;
+					obj.factionId = entry.factionId;
+					obj.factionName = entry.factionName;
+					obj.isFactionBan = entry.isFactionBan;
+					obj.shitListCategoryId = entry.shitListCategoryId;
+					obj.reason = entry.reason;
+					obj.updatedAt = entry.updated_at;
+					obj.shitListCategory = entry.shitListCategory;
+
+				  // Finish making this object
+					if (entry.isFactionBan)
+						toSave['f' + entry.factionId + '#' + entry.id] = obj;
+					else
+						toSave['p' + entry.playerId + '#' + entry.id] = obj;
+				});
+
+				localStorage.shitListEntriesList =  JSON.stringify({shitListEntries : toSave, timestamp : Date.now()});
+				LogInfo('Updated shitlist entries local storage');
+				shitListEntries = toSave;
+			}
+		});
+	}
+
 	// Fetch from the nuke.family API the combined payout sheet for all players and store it by player id
 	function getPlayerPayoutList() {
 		GM_xmlhttpRequest({
@@ -79,7 +252,7 @@
 				const payoutList = JSON.parse(response.responseText)['data'];
 				let playerPayoutAmounts = {};
 				for (let i = 0; i < payoutList.length; i++) {
-					console.log(payoutList[i]['reviver_id'] + ' - ' + payoutList[i]['revive_payout_raw']);
+					LogInfo(payoutList[i]['reviver_id'] + ' - ' + payoutList[i]['revive_payout_raw']);
 					playerPayoutAmounts[payoutList[i]['reviver_id']] = payoutList[i]['revive_payout_raw'];
 				}
 				insertPayoutBalanceSuggestions(playerPayoutAmounts);
@@ -124,7 +297,7 @@
 	// Add event to the xanax "give" button to then trigger watching for the resulting panel to appear
 	waitForElm('div.img-wrap[data-itemid="206"]').then((elm) => {
 		$("div.img-wrap[data-itemid='206']").parent().find('a.give.active').on('click', function () {
-			console.log('nfh', 'Xanax give button clicked');
+			LogInfo('Xanax give button clicked');
 			// Wait for the panel to appear
 			insertPayoutXanaxSuggestions(xanaxPlayerList);
 		});
@@ -137,12 +310,12 @@
 			headers: { "Content-Type": "application/x-www-form-urlencoded", "Authorization": "Bearer " + apiToken },
 			onload: function (response) {
 				const payoutList = JSON.parse(response.responseText)['data'];
-				console.log(payoutList);
+				LogInfo(payoutList);
 				let playerXanaxPayoutAmounts = {};
 				for (let i = 0; i < payoutList.length; i++) {
 					let xanax = payoutList[i]['revive_xanax_payout'];
 					if (xanax > 0) {
-						console.log(payoutList[i]['reviver_id'] + ' - ' + payoutList[i]['revive_xanax_payout'] + ' xanax');
+						LogInfo(payoutList[i]['reviver_id'] + ' - ' + payoutList[i]['revive_xanax_payout'] + ' xanax');
 						playerXanaxPayoutAmounts[payoutList[i]['reviver_id']] = xanax;
 					}
 				}
@@ -214,7 +387,7 @@
 		searchBox.dispatchEvent(new Event('focus'));
 		searchBox.dispatchEvent(new Event('keydown'));
 		searchBox.dispatchEvent(new Event('input'));
-		console.log('Suggesting ' + quantity + ' xanax to ' + playerId);
+		LogInfo('Suggesting ' + quantity + ' xanax to ' + playerId);
 	}
 
 	function changePayoutNukeFamilyKey() {
@@ -239,11 +412,14 @@
 			});
 
 			buttonInsertLocation.appendChild(btn);
-			console.log('nfh' + ' button inserted on cash page');
+			LogInfo('Change Payout Nuke Family Key button inserted')
 		});
 	}
 
+	let isPayoutCashButtonInserted = false;
 	function insertPayoutHelperButtonForCash() {
+		if (isPayoutCashButtonInserted)
+			return;
 		const insertLocation = '#faction-controls > hr';
 
 		waitForElm(insertLocation).then((elm) => {
@@ -257,12 +433,16 @@
 			});
 
 			buttonInsertLocation.appendChild(btn);
-			console.log('nfh' + ' button inserted on cash page');
+			LogInfo('Payout Helper button inserted')
 		});
+		isPayoutCashButtonInserted = true;
 		insertChangePayoutNukeFamilyKeyButton(insertLocation);
 	}
 
+	let isPayoutDrugsButtonInserted = false;
 	function insertPayoutHelperButtonForDrugs() {
+		if (isPayoutDrugsButtonInserted)
+			return;
 		const insertLocation = "#faction-armoury-tabs";
 
 		waitForElm(insertLocation).then((elm) => {
@@ -279,22 +459,23 @@
 
 			if (countProperties(xanaxPlayerList) > 0) {
 				updateXanaxPayoutsLeftMessage();
-				console.log('nfh' + ' message inserted on drugs page');
+				LogInfo('xanax payouts left message updated');
 			}
-			console.log('nfh' + ' button inserted on drug page');
+			LogInfo('Payout Helper button inserted');
 		});
+		isPayoutDrugsButtonInserted = true;
 		insertChangePayoutNukeFamilyKeyButton(insertLocation);
 	}
 
 	function insertGiveButtonTracking(btnToTrackElm) {
 		btnToTrackElm.on('click', function () {
-			console.log('nfh', 'Xanax has been sent to somebody :O');
+			LogInfo('Xanax has been sent to somebody :O');
 			// Add event to the xanax "give" button to then trigger watching for the resulting panel to appear
 			setTimeout(function () {
 				waitForElm('div.img-wrap[data-itemid="206"]').then((elm) => {
-					console.log('nfh', 'Found element again');
+					LogInfo('Found element again');
 					$("div.img-wrap[data-itemid='206']").parent().find('a.give.active').on('click', function () {
-						console.log('nfh', 'Xanax give button clicked');
+						LogInfo('Xanax give button clicked');
 						// Wait for the panel to appear
 						insertPayoutXanaxSuggestions(xanaxPlayerList);
 					});
@@ -302,6 +483,180 @@
 			}, 500);
 		});
 	}
+
+ let isProfilePageInjected = false;
+ function injectProfilePage(node = undefined) {
+	if (isProfilePageInjected)
+		return;
+	LogInfo('Profile page detected');
+  let el;
+
+	isProfilePageInjected = true;
+	waitForElm('.profile-status.m-top10').then((elm) => {
+		// waitForElm('.basic-information.profile-left-wrapper.left').then((elm) => {
+			LogInfo(elm);
+			el = document.querySelectorAll('.profile-status.m-top10');
+
+			let injectPoint = el[0];
+			LogInfo(injectPoint);
+
+			// Build the main wrapper div
+			let shitListProfileDiv = buildShitListProfileDiv();
+
+			let shitListProfileTitle = document.createElement('p');
+			shitListProfileTitle.innerText = 'Nuke Family Shitlist';
+			shitListProfileTitle.classList.add('nfh-shitlist-profile-title', 'title-black', 'top-round');
+
+			// Create the unordered list for the shitlist entries and make the shitlist-entry-container div
+			let shitListEntryContainer = buildShitListEntryContainer()
+
+			shitListProfileDiv.appendChild(shitListProfileTitle);
+			shitListProfileDiv.appendChild(shitListEntryContainer);
+			
+			injectPoint.parentNode.append(shitListProfileDiv);
+		// });
+	});
+ }
+
+
+ // HTML BUILDER FUNCTIONS
+ function buildShitListEntry(entry) {
+	 let li = document.createElement('li');
+	 if (entry.isFactionBan) {
+		li.innerHTML = entry.reason + ' (' + entry.shitListCategory.name + ')' + ' <span style="color:indianred">[Faction Ban]</span>';
+		li.classList.add('nfh-shitlist-faction-ban');
+	 } else {
+	 	li.textContent = entry.reason + ' (' + entry.shitListCategory.name + ')';
+		li.classList.add('nfh-shitlist-player');
+	 }
+	 return li;
+ }
+
+ function buildShitListProfileDiv() {
+	 let outerDiv = document.createElement('div');
+	 let innerDiv = document.createElement('div');
+	 outerDiv.classList.add('nfh-shitlist-profile', 'm-top10');
+	 outerDiv.appendChild(innerDiv);
+	 return outerDiv;
+ }
+
+ function buildShitListEntryContainer() {
+	let shitListEntryContainer = document.createElement('div');
+	shitListEntryContainer.classList.add('nfh-shitlist-entry-container', 'cont', 'bottom-round');
+
+	let shitListEntryProfileContainer = document.createElement('div');
+	shitListEntryProfileContainer.classList.add('nfh-shitlist-entry-profile-container', 'profile-container');
+
+	// add padding 10px 10px 0
+	shitListEntryProfileContainer.style.padding = '10px';
+
+	let shitListProfileList = document.createElement('ul');
+	shitListProfileList.classList.add('nfh-shitlist-profile-list', 'cont', 'bottom-round');
+	shitListProfileList.style.listStyleType = 'disclosure-closed'; // Right pointing arrow
+	shitListProfileList.style.listStylePosition = 'inside';
+
+	
+
+	// add li for each shitlist entry that matches the profile ID.
+	let playerId = getPlayerId();
+
+	let btnAddToShitList = document.createElement('button');
+		btnAddToShitList.setAttribute("type", "submit");
+		btnAddToShitList.classList.add('torn-btn', 'nfh-add-to-shitlist');
+		
+	
+
+	waitForElm("a[href^='/factions.php?step=profile&ID=']").then((elm) => {
+		let factionId = getFactionId();
+		LogInfo('Faction ID: ' + factionId);
+
+		for (let key in shitListEntries) {
+			if (key.startsWith('f' + factionId + '#')) {
+				let entry = shitListEntries[key];
+				shitListProfileList.appendChild(buildShitListEntry(entry));
+				shitListEntryProfileContainer.style.backgroundColor = '#5b3e3e'; // dim red
+				btnAddToShitList.style.marginTop = '7px';
+			}
+		}
+	});
+	
+	LogInfo('Player ID: ' + playerId);
+	
+	for (let key in shitListEntries) {
+		if (key.startsWith('p' + playerId + '#')) {
+			let entry = shitListEntries[key];
+			shitListProfileList.appendChild(buildShitListEntry(entry));
+			shitListEntryProfileContainer.style.backgroundColor = '#5b3e3e'; // dim red
+			btnAddToShitList.style.marginTop = '7px';
+		}
+	}
+
+		
+
+		// TODO - If there is already a shitlist entry for this user, change the button to "Add another shitlist reason"
+		btnAddToShitList.innerText = 'Add to Shitlist';
+		btnAddToShitList.addEventListener('click', function () {
+			let profileId = window.location.href.split('=')[1];
+		});
+
+	shitListEntryProfileContainer.appendChild(shitListProfileList);
+	shitListEntryProfileContainer.appendChild(btnAddToShitList);
+	shitListEntryContainer.appendChild(shitListEntryProfileContainer);
+	return shitListEntryContainer;
+ }
+
+
+ // Webpage specific functions
+ function getPlayerId() {
+	const canonical = document.querySelector("link[rel='canonical']");
+	if (canonical != undefined) {
+			let hrefCanon = canonical.href;
+			const urlParams = new URLSearchParams(hrefCanon);
+			return urlParams.get('https://www.torn.com/profiles.php?XID');
+	}
+	else {
+			const urlParams = new URL(window.location).searchParams;
+			return urlParams.get('XID');
+	}
+ }
+
+ function getFactionId() {
+	const factionUrl = document.querySelector("a[href^='/factions.php?step=profile&ID=']");
+	LogInfo("Faction URL: " + factionUrl);
+	if (factionUrl != undefined) {
+		let hrefFaction = factionUrl.href;
+		const urlParams = new URLSearchParams(hrefFaction);
+		LogInfo(urlParams.get('ID'));
+		return urlParams.get('ID');
+	}
+	else {
+		return null;
+	}
+}
+	////// HELPER FUNCTIONS //////
+
+function LogInfo(value) {
+	var now = new Date();
+	console.log(": [//* NFH *\\\\] " + now.toISOString(), value);
+}
+
+function IsPage(pageType) {
+	let endWith = mapPageAddressEndWith[pageType];
+	if (endWith != undefined) {
+
+			return window.location.href.includes(endWith);
+	}
+
+	let startWith = mapPageTypeAddress[pageType];
+	if (startWith != undefined) {
+			return window.location.href.startsWith(startWith);
+	}
+	return false;   
+}
+
+function IsUrlEndsWith(value) {
+	return window.location.href.endsWith(value);
+}
 
 	function getAnchor() {
 		var currentUrl = document.URL,
