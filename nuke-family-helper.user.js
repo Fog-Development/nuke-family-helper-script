@@ -82,10 +82,12 @@ var mapPageAddressEndWith = {
 
 const cacheLength = 60; //minutes
 
-let savedData = null;
+let savedDataShitEntries = null;
+let savedDataShitCategories = null;
 
 
 let shitListEntries = null;
+let shitListCategories = null;
 
 
 (function () {
@@ -94,9 +96,13 @@ let shitListEntries = null;
 	LogInfo('Nuke Family Helper Script Loaded');
 
 	try{
-		savedData = JSON.parse(localStorage.shitListEntriesList || '{"shitListEntries" : {}, "timestamp" : 0}');
-		shitListEntries = savedData.shitListEntries;
+		savedDataShitEntries = JSON.parse(localStorage.shitListEntriesList || '{"shitListEntries" : {}, "timestamp" : 0}');
+		savedDataShitCategories = JSON.parse(localStorage.shitListCategoriesList || '{"shitListCategories" : {}, "timestamp" : 0}');
+
+		shitListEntries = savedDataShitEntries.shitListEntries;
+		shitListCategories = savedDataShitCategories.shitListCategories;
 		LogInfo(shitListEntries);
+		LogInfo(shitListCategories);
 	}
 	catch(error){
 		console.error(error);
@@ -122,7 +128,7 @@ let shitListEntries = null;
 	let apiToken = GM_getValue('apiToken', '');
 
 	// ONLY LEAVE ACTIVE FOR DEV
-	const debug = true;
+	const debug = false;
 	if (debug) {
 		apiToken = '94|ia46tZQ0a75k89yveTX2fQfCVqytkghHYNH2KRwq31e85451';
 		apiUrl = 'http://nuke.test/api';
@@ -145,12 +151,15 @@ let shitListEntries = null;
 
 	// Update any data that has expired caches...
 
-	if(savedData.timestamp == undefined || Date.now() - savedData.timestamp > cacheLength * 60 * 1000){ //minutes * seconds * miliseconds
+	if(savedDataShitEntries.timestamp == undefined || Date.now() - savedDataShitEntries.timestamp > cacheLength * 60 * 1000){ //minutes * seconds * miliseconds
 		LogInfo('shitlist data is older than ' + cacheLength + ' minutes, updating now');
 		getShitList();
 	}
 
-
+	if(savedDataShitCategories.timestamp == undefined || Date.now() - savedDataShitCategories.timestamp > cacheLength * 60 * 1000){ //minutes * seconds * miliseconds
+		LogInfo('shitlist categories data is older than ' + cacheLength + ' minutes, updating now');
+		getShitListCategories();
+	}
 
 	// Retrieve the anchor from the URL (stuff after the #)
 	const anchor = getAnchor();
@@ -241,6 +250,36 @@ let shitListEntries = null;
 			}
 		});
 	}
+
+	// Fetch from the nuke.family API the shitlist categories and cache it in GM storage
+	function getShitListCategories() {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: apiUrl + '/shit-list-categories',
+			headers: { "Accept": "application/json", "Authorization": "Bearer " + apiToken },
+			onload: function (response) {
+				const responseEntries = JSON.parse(response.responseText)['data'];
+
+				let toSave = {};
+
+			  // Save data to cached storage
+				responseEntries.forEach(function (entry, index) {
+					let obj = {};
+					obj.entryId = entry.id;
+					obj.name = entry.name;
+					obj.description = entry.description;
+					obj.isFactionBan = entry.is_faction;
+
+					toSave[entry.id] = obj;
+				});
+
+				localStorage.shitListCategoriesList =  JSON.stringify({shitListCategories : toSave, timestamp : Date.now()});
+				LogInfo('Updated shitlist categories local storage');
+				shitListCategories = toSave;
+			}
+		});
+	}
+
 
 	// Fetch from the nuke.family API the combined payout sheet for all players and store it by player id
 	function getPlayerPayoutList() {
@@ -540,6 +579,186 @@ let shitListEntries = null;
 	 return outerDiv;
  }
 
+ function setShitListCategoryDescription(categoryId) {// Set the description of the category based on the category ID
+	 // Lookup the category in the shitListCategories object
+	 let category = shitListCategories[categoryId];
+	 LogInfo(category);
+
+	 // Update the description textarea with the description of the category
+	 let description = document.getElementById('shitlist-category-description');
+	 description.innerText = category.description;
+ }
+
+ function buildShitListAddContainer(firstLoad = false) {
+	// This will contain a mini form to add a new shitlist entry
+	// The form will have a dropdown for the category, a text input for the reason, and a submit button
+	// When the category is changed it should update a read-only text area with the description of the category
+	// On the firstLoad the category dropdown should not be populated/loaded and the container should be hidden
+	// When firstLoad is false, the container should be shown and the category dropdown should be populated. The description should be updated based on the selected category
+	// When the submit button is clicked, the form should be hidden and the new entry should be added to the shitlist entries list
+
+	if (firstLoad) {
+		let shitListAddContainer = document.createElement('div');
+		shitListAddContainer.id = 'shitlist-add-container';
+		shitListAddContainer.classList.add('nfh-shitlist-add-container', 'cont', 'bottom-round');
+
+		let shitListAddForm = document.createElement('form');
+		shitListAddForm.classList.add('nfh-shitlist-add-form');
+
+		let reason = document.createElement('input');
+		reason.id = 'shitlist-category-reason';
+		reason.setAttribute('type', 'text');
+		reason.setAttribute('placeholder', 'Reason/Explanation');
+		reason.classList.add('nfh-shitlist-add-reason');
+		reason.style.marginBottom = '10px';
+
+		let select = document.createElement('select');
+		select.id = 'shitlist-category-select';
+		select.classList.add('nfh-shitlist-add-select');
+		select.style.marginBottom = '10px';
+
+		let option = document.createElement('option');
+		option.value = '';
+		option.text = 'Select a category';
+		select.appendChild(option);
+
+		let description = document.createElement('textarea');
+		description.setAttribute('readonly', true);
+		description.id = 'shitlist-category-description';
+		description.classList.add('nfh-shitlist-add-description');
+		description.style.marginBottom = '10px';
+		description.style.width = '100%';
+		description.style.height = '50px';
+
+		// Hidden error message spot
+		let error = document.createElement('p');
+		error.id = 'shitlist-add-error';
+		error.classList.add('nfh-shitlist-add-error');
+		error.style.color = 'red';
+
+		let submit = document.createElement('button');
+		submit.setAttribute('type', 'button');
+		submit.id = 'shitlist-add-submit';
+		submit.classList.add('torn-btn', 'nfh-shitlist-add-submit');
+		submit.innerText = 'Submit to Shitlist';
+
+		shitListAddForm.appendChild(reason);
+		shitListAddForm.appendChild(select);
+		shitListAddForm.appendChild(description);
+		shitListAddForm.appendChild(error);
+		shitListAddForm.appendChild(submit);
+		shitListAddContainer.appendChild(shitListAddForm);
+
+		// Do not display the div, it should be hidden
+		shitListAddContainer.style.display = 'none';
+		return shitListAddContainer;
+	} else {
+		// Populate the select element with options
+		let select = document.getElementById('shitlist-category-select');
+		select.innerHTML = '';
+
+		for (let key in shitListCategories) {
+			let category = shitListCategories[key];
+			let option = document.createElement('option');
+			option.value = category.entryId;
+			option.text = category.name;
+			select.appendChild(option);
+		}
+
+		setShitListCategoryDescription(select.value);
+
+		// Listen for changes to the select element
+		select.addEventListener('change', function() {
+			let selectedCategoryId = this.value;
+			
+			setShitListCategoryDescription(selectedCategoryId);
+		});
+
+		// Add event listener to the submit button
+		let submit = document.getElementById('shitlist-add-submit');
+		submit.addEventListener('click', function() {
+			// Get the selected category
+			let selectedCategoryId = document
+				.getElementById('shitlist-category-select')
+				.value;
+			LogInfo(selectedCategoryId);
+
+			// Get the reason
+			let reason = document
+				.getElementById('shitlist-category-reason')
+				.value;
+			LogInfo(reason);
+
+			// Get the player ID
+			let playerId = getPlayerId();
+			LogInfo(playerId);
+
+			// Get the player name
+			let playerName = getPlayerName();
+			LogInfo(playerName);
+
+			let userscriptPlayerId = getUserscriptUsersPlayerId();
+			LogInfo(userscriptPlayerId);
+
+			let userscriptPlayerName = getUserscriptUsersPlayerName();
+			LogInfo(userscriptPlayerName);
+
+      // If the category is not selected or there is no reason given (false/empty), show an error message
+			if (!selectedCategoryId || !reason || reason.trim() === ''){
+				document.getElementById('shitlist-add-error').innerText = 'Please ensure you select a category and provide a reason/explanation for the shitlisting';
+				return;
+			}
+
+			// Clear the error message
+			document.getElementById('shitlist-add-error').innerText = '';
+
+			// Submit the new shitlist entry to nuke.family via a POST request to /shit-lists
+			// It must submit the following fields: playerName, playerId, reporterPlayerName, reporterPlayerId, shitListCategoryId, reason
+			GM_xmlhttpRequest({
+				method: "POST",
+				url: apiUrl + '/shit-lists',
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json",
+					"Authorization": "Bearer " + apiToken
+				},
+				data: JSON.stringify({
+					playerName: playerName,
+					playerId: playerId,
+					reporterPlayerName: userscriptPlayerName,
+					reporterPlayerId: userscriptPlayerId,
+					shitListCategoryId: selectedCategoryId,
+					reason: reason
+				}),
+				onload: function(response) {
+					let errorData = JSON.parse(response.responseText);
+					if (response.status >= 200 && response.status < 300) {
+							LogInfo("Shitlist entry successfully submitted.");
+							// Hide the form
+							document.getElementById('shitlist-add-container').style.display = 'none';
+							document.getElementById('shitlist-add-success').style.display = 'block';
+
+							// Update the shitlist so that the user has the new addition
+							getShitList();
+					} else {
+							LogInfo("Failed to submit shitlist entry: " + errorData.message);
+							document.getElementById('shitlist-add-error').innerText = 'There was an error submitting your shitlisting. Please contact Fogest for help if this persists.' + errorData.message;
+					}
+				},
+				onerror: function(error) {
+					let errorData = JSON.parse(error.responseText);
+					LogInfo("Error occurred while submitting shitlist entry: " + errorData.message);
+					document.getElementById('shitlist-add-error').innerText = 'There was an error submitting your shitlisting. Please contact Fogest for help if this persists.' + errorData.message;
+				}
+			});
+		});
+
+		// Show the container
+    document.getElementById('shitlist-add-container').style.display = 'block';
+	}
+	return null;
+}
+
  function buildShitListEntryContainer() {
 	let shitListEntryContainer = document.createElement('div');
 	shitListEntryContainer.classList.add('nfh-shitlist-entry-container', 'cont', 'bottom-round');
@@ -582,8 +801,11 @@ let shitListEntries = null;
 	
 	LogInfo('Player ID: ' + playerId);
 	
+	let existingEntry = false;
+
 	for (let key in shitListEntries) {
 		if (key.startsWith('p' + playerId + '#')) {
+			existingEntry = true;
 			let entry = shitListEntries[key];
 			shitListProfileList.appendChild(buildShitListEntry(entry));
 			shitListEntryProfileContainer.style.backgroundColor = '#5b3e3e'; // dim red
@@ -591,23 +813,40 @@ let shitListEntries = null;
 		}
 	}
 
-		
 
-		// TODO - If there is already a shitlist entry for this user, change the button to "Add another shitlist reason"
+	if (existingEntry) {
+		btnAddToShitList.innerText = 'Add another Shitlist Reason';
+	} else {
 		btnAddToShitList.innerText = 'Add to Shitlist';
-		btnAddToShitList.addEventListener('click', function () {
-			let profileId = window.location.href.split('=')[1];
-		});
+	}
+
+	let shitListAddShitListContainer = buildShitListAddContainer(true);
+	
+	btnAddToShitList.addEventListener('click', function () {
+		buildShitListAddContainer(false);
+	});
+
+	// Add a success message that is outside of the container
+	// This message should be displayed when a new entry is successfully added to the shitlist
+	// It should be hidden by default
+	let successMessage = document.createElement('p');
+	successMessage.id = 'shitlist-add-success';
+	successMessage.classList.add('nfh-shitlist-add-success');
+	successMessage.style.color = 'green';
+	successMessage.style.display = 'none';
+	successMessage.innerText = 'Shitlist entry successfully added!';
 
 	shitListEntryProfileContainer.appendChild(shitListProfileList);
 	shitListEntryProfileContainer.appendChild(btnAddToShitList);
+	shitListEntryProfileContainer.appendChild(successMessage);
+	shitListEntryProfileContainer.appendChild(shitListAddShitListContainer);
 	shitListEntryContainer.appendChild(shitListEntryProfileContainer);
 	return shitListEntryContainer;
  }
 
 
  // Webpage specific functions
- function getPlayerId() {
+function getPlayerId() {
 	const canonical = document.querySelector("link[rel='canonical']");
 	if (canonical != undefined) {
 			let hrefCanon = canonical.href;
@@ -619,6 +858,36 @@ let shitListEntries = null;
 			return urlParams.get('XID');
 	}
  }
+
+function getUserscriptUsersPlayerId() {
+	try {
+		let uid = getCookie('uid');
+		return uid;
+	}
+	catch(error) {
+			console.error(error);
+			return false;
+	}
+}
+
+function getUserscriptUsersPlayerName() {
+	let id = getUserscriptUsersPlayerId();
+	let data = JSON.parse(sessionStorage.getItem('sidebarData' + id));
+	if(data && data.user) {
+		return data.user.name;
+	}
+}
+
+function getPlayerName() {
+  const nameElement = document.querySelector('.info-table > li:first-child > div.user-info-value > span');
+  if (nameElement != undefined) {
+    const nameMatch = nameElement.innerText.match(/^(.*?)\s*\[/);
+    if (nameMatch && nameMatch[1]) {
+      return nameMatch[1]; // Returns only the username
+    }
+  }
+  return null;
+}
 
  function getFactionId() {
 	const factionUrl = document.querySelector("a[href^='/factions.php?step=profile&ID=']");
@@ -633,7 +902,8 @@ let shitListEntries = null;
 		return null;
 	}
 }
-	////// HELPER FUNCTIONS //////
+
+////// HELPER FUNCTIONS //////
 
 function LogInfo(value) {
 	var now = new Date();
