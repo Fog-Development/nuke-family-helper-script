@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      2.4.2
+// @version      2.4.3
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -105,6 +105,36 @@ let nfhUserRole = null;
 
 (function () {
 	'use strict';
+
+	// Inject styles onto page
+	const styles = `
+		.nfh-shitlist-entry-profile-container {
+			padding: 10px;
+		}
+		.nfh-shitlist-entry-profile-container-profile-ban {
+			background-color: rgb(235 145 145) !important;
+		}
+		.nfh-shitlist-entry-profile-container-faction-ban {
+			background-color: rgb(235 145 145) !important;
+		}
+		.nfh-shitlist-player {
+			font-size: 12px;
+			color: black;
+		}
+		.nfh-shitlist-faction-ban {
+			font-size: 12px;
+			color: black;
+		}
+		.nfh-extra-shitlist-entry-condition {
+			font-size: 12px;
+			color: rgb(0 127 5);
+		}
+		.nfh-extra-condition-pending-approval {
+			font-weight: bold;
+			color: rgb(0 4 175);
+		}
+	`;
+	addStyle(styles);
 
 	LogInfo('Nuke Family Helper Script Loaded');
 
@@ -652,12 +682,12 @@ let nfhUserRole = null;
 	 let extraShitListAfterReason = '';
 
 	 if (entry.isFactionBan) {
-		 extraShitListConditions = ' <span style="color:indianred">[Faction Ban]</span>';
+		 extraShitListConditions = ' <span class="nfh-extra-shitlist-entry-condition">[Faction Ban]</span>';
 	 }
 
 	 if (!entry.isApproved && !entry.isFactionBan) {
 		 // Prepend text to extraShitListConditions and keep the rest of the text. Make it indianred and bold it
-		 extraShitListConditions = ' <span style="color:indianred; font-weight: bold">[Pending Approval]</span>' + extraShitListConditions;
+		 extraShitListConditions = ' <span class="nfh-extra-shitlist-entry-condition nfh-extra-condition-pending-approval">[Pending Approval]</span>' + extraShitListConditions;
 
 		 // Strike through the reason
 		 extraShitListBeforeReason = '<strike>';
@@ -873,8 +903,6 @@ let nfhUserRole = null;
 	shitListEntryProfileContainer.id = 'nfh-shitlist-entry-profile-container';
 	shitListEntryProfileContainer.classList.add('nfh-shitlist-entry-profile-container', 'profile-container');
 
-	// add padding 10px 10px 0
-	shitListEntryProfileContainer.style.padding = '10px';
 
 	let shitListProfileList = document.createElement('ul');
 	shitListProfileList.id = 'nfh-shitlist-profile-list';
@@ -903,7 +931,7 @@ let nfhUserRole = null;
 			if (key.startsWith('f' + factionId + '#')) {
 				let entry = shitListEntries[key];
 				shitListProfileList.appendChild(buildShitListEntry(entry));
-				shitListEntryProfileContainer.style.backgroundColor = '#5b3e3e'; // dim red
+				shitListEntryProfileContainer.classList.add('nfh-shitlist-entry-profile-container-faction-ban');
 				btnAddToShitList.style.marginTop = '7px';
 			}
 		}
@@ -916,7 +944,7 @@ let nfhUserRole = null;
 			existingEntry = true;
 			let entry = shitListEntries[key];
 			shitListProfileList.appendChild(buildShitListEntry(entry));
-			shitListEntryProfileContainer.style.backgroundColor = '#5b3e3e'; // dim red
+			shitListEntryProfileContainer.classList.add('nfh-shitlist-entry-profile-container-profile-ban');
 			btnAddToShitList.style.marginTop = '7px';
 		}
 	}	
@@ -1069,6 +1097,12 @@ function IsPage(pageType) {
 
 function IsUrlEndsWith(value) {
 	return window.location.href.endsWith(value);
+}
+
+function addStyle(styleString) {
+	const style = document.createElement('style');
+	style.textContent = styleString;
+	document.head.append(style);
 }
 
 	function getAnchor() {
