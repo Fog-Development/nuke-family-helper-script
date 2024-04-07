@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      2.0
+// @version      2.1
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -84,10 +84,11 @@ const cacheLength = 60; //minutes
 
 let savedDataShitEntries = null;
 let savedDataShitCategories = null;
-
+let savedDataNfhUserRole = null;
 
 let shitListEntries = null;
 let shitListCategories = null;
+let nfhUserRole = null;
 
 
 (function () {
@@ -98,11 +99,15 @@ let shitListCategories = null;
 	try{
 		savedDataShitEntries = JSON.parse(localStorage.shitListEntriesList || '{"shitListEntries" : {}, "timestamp" : 0}');
 		savedDataShitCategories = JSON.parse(localStorage.shitListCategoriesList || '{"shitListCategories" : {}, "timestamp" : 0}');
+		savedDataNfhUserRole = JSON.parse(localStorage.nfhUserRole || '{"role" : "", "timestamp" : 0}');
 
 		shitListEntries = savedDataShitEntries.shitListEntries;
 		shitListCategories = savedDataShitCategories.shitListCategories;
+		nfhUserRole = savedDataNfhUserRole.role;
+
 		LogInfo(shitListEntries);
 		LogInfo(shitListCategories);
+		LogInfo(nfhUserRole);
 	}
 	catch(error){
 		console.error(error);
@@ -128,7 +133,7 @@ let shitListCategories = null;
 	let apiToken = GM_getValue('apiToken', '');
 
 	// ONLY LEAVE ACTIVE FOR DEV
-	const debug = false;
+	const debug = true;
 	if (debug) {
 		apiToken = '94|ia46tZQ0a75k89yveTX2fQfCVqytkghHYNH2KRwq31e85451';
 		apiUrl = 'http://nuke.test/api';
@@ -159,6 +164,11 @@ let shitListCategories = null;
 	if(savedDataShitCategories.timestamp == undefined || Date.now() - savedDataShitCategories.timestamp > cacheLength * 60 * 1000){ //minutes * seconds * miliseconds
 		LogInfo('shitlist categories data is older than ' + cacheLength + ' minutes, updating now');
 		getShitListCategories();
+	}
+
+	if(savedDataNfhUserRole.timestamp == undefined || Date.now() - savedDataNfhUserRole.timestamp > (cacheLength + 2880) * 60 * 1000){ // every 2 days + cacheLength
+		LogInfo('user role data is older than ' + cacheLength + ' minutes, updating now');
+		getPlayersRoles();
 	}
 
 	// Retrieve the anchor from the URL (stuff after the #)
@@ -232,6 +242,7 @@ let shitListCategories = null;
 					obj.factionId = entry.factionId;
 					obj.factionName = entry.factionName;
 					obj.isFactionBan = entry.isFactionBan;
+					obj.isApproved = entry.isApproved;
 					obj.shitListCategoryId = entry.shitListCategoryId;
 					obj.reason = entry.reason;
 					obj.updatedAt = entry.updated_at;
@@ -247,6 +258,7 @@ let shitListCategories = null;
 				localStorage.shitListEntriesList =  JSON.stringify({shitListEntries : toSave, timestamp : Date.now()});
 				LogInfo('Updated shitlist entries local storage');
 				shitListEntries = toSave;
+				refreshShitList();
 			}
 		});
 	}
@@ -276,6 +288,22 @@ let shitListCategories = null;
 				localStorage.shitListCategoriesList =  JSON.stringify({shitListCategories : toSave, timestamp : Date.now()});
 				LogInfo('Updated shitlist categories local storage');
 				shitListCategories = toSave;
+			}
+		});
+	}
+
+	// Fetch the players own role that they have on nuke.family via the API
+	function getPlayersRoles() {
+		GM_xmlhttpRequest({
+			method: 'GET',
+			url: apiUrl + '/user/get-own-roles',
+			headers: { "Accept": "application/json", "Authorization": "Bearer " + apiToken },
+			onload: function (response) {
+				const role = JSON.parse(response.responseText)['role'];
+
+				localStorage.nfhUserRole =  JSON.stringify({role : role, timestamp : Date.now()});
+				LogInfo('Updated users role from nuke.family in local storage');
+				nfhUserRole = role;
 			}
 		});
 	}
@@ -436,6 +464,7 @@ let shitListCategories = null;
 			GM_setValue('apiToken', newKey);
 			apiToken = newKey;
 		}
+		getPlayersRoles();
 		alert('Nuke family key changed to: ' + newKey + '. This key will be used next time you click the payout helper button.');
 	}
 
@@ -457,6 +486,9 @@ let shitListCategories = null;
 
 	let isPayoutCashButtonInserted = false;
 	function insertPayoutHelperButtonForCash() {
+		// If user has no role, don't insert the button
+		const shouldInsertButton = nfhUserRole ? true : false;
+
 		if (isPayoutCashButtonInserted)
 			return;
 		const insertLocation = '#faction-controls > hr';
@@ -471,8 +503,10 @@ let shitListCategories = null;
 				getPlayerPayoutList();
 			});
 
-			buttonInsertLocation.appendChild(btn);
-			LogInfo('Payout Helper button inserted')
+			if (shouldInsertButton) {
+				buttonInsertLocation.appendChild(btn);
+				LogInfo('Payout Helper button inserted');
+			}
 		});
 		isPayoutCashButtonInserted = true;
 		insertChangePayoutNukeFamilyKeyButton(insertLocation);
@@ -561,11 +595,30 @@ let shitListCategories = null;
  // HTML BUILDER FUNCTIONS
  function buildShitListEntry(entry) {
 	 let li = document.createElement('li');
+
+	 let extraShitListConditions = '';
+
+	 let extraShitListBeforeReason = '';
+	 let extraShitListAfterReason = '';
+
 	 if (entry.isFactionBan) {
-		li.innerHTML = entry.reason + ' (' + entry.shitListCategory.name + ')' + ' <span style="color:indianred">[Faction Ban]</span>';
+		 extraShitListConditions = ' <span style="color:indianred">[Faction Ban]</span>';
+	 }
+
+	 if (!entry.isApproved && !entry.isFactionBan) {
+		 // Prepend text to extraShitListConditions and keep the rest of the text. Make it indianred and bold it
+		 extraShitListConditions = ' <span style="color:indianred; font-weight: bold">[Pending Approval]</span>' + extraShitListConditions;
+
+		 // Strike through the reason
+		 extraShitListBeforeReason = '<strike>';
+		 extraShitListAfterReason = '</strike>';
+	 }
+
+	 li.innerHTML = extraShitListBeforeReason + entry.reason + extraShitListAfterReason + ' (' + entry.shitListCategory.name + ')' + extraShitListConditions;
+
+	 if (entry.isFactionBan) {
 		li.classList.add('nfh-shitlist-faction-ban');
 	 } else {
-	 	li.textContent = entry.reason + ' (' + entry.shitListCategory.name + ')';
 		li.classList.add('nfh-shitlist-player');
 	 }
 	 return li;
@@ -733,16 +786,19 @@ let shitListCategories = null;
 				onload: function(response) {
 					let errorData = JSON.parse(response.responseText);
 					if (response.status >= 200 && response.status < 300) {
-							LogInfo("Shitlist entry successfully submitted.");
-							// Hide the form
-							document.getElementById('shitlist-add-container').style.display = 'none';
-							document.getElementById('shitlist-add-success').style.display = 'block';
+						LogInfo("Shitlist entry successfully submitted.");
+						// Hide the form
+						document.getElementById('shitlist-add-container').style.display = 'none';
+						document.getElementById('shitlist-add-success').style.display = 'block';
 
-							// Update the shitlist so that the user has the new addition
-							getShitList();
+						// Also hide the Add Another Shitlist Reason button with class "nfh-add-to-shitlist" to prevent another submission
+						document.getElementsByClassName('nfh-add-to-shitlist')[0].style.display = 'none';;
+
+						// Update the shitlist so that the user has the new addition
+						getShitList();
 					} else {
-							LogInfo("Failed to submit shitlist entry: " + errorData.message);
-							document.getElementById('shitlist-add-error').innerText = 'There was an error submitting your shitlisting. Please contact Fogest for help if this persists.' + errorData.message;
+						LogInfo("Failed to submit shitlist entry: " + errorData.message);
+						document.getElementById('shitlist-add-error').innerText = 'There was an error submitting your shitlisting. Please contact Fogest for help if this persists.' + errorData.message;
 					}
 				},
 				onerror: function(error) {
@@ -764,12 +820,14 @@ let shitListCategories = null;
 	shitListEntryContainer.classList.add('nfh-shitlist-entry-container', 'cont', 'bottom-round');
 
 	let shitListEntryProfileContainer = document.createElement('div');
+	shitListEntryProfileContainer.id = 'nfh-shitlist-entry-profile-container';
 	shitListEntryProfileContainer.classList.add('nfh-shitlist-entry-profile-container', 'profile-container');
 
 	// add padding 10px 10px 0
 	shitListEntryProfileContainer.style.padding = '10px';
 
 	let shitListProfileList = document.createElement('ul');
+	shitListProfileList.id = 'nfh-shitlist-profile-list';
 	shitListProfileList.classList.add('nfh-shitlist-profile-list', 'cont', 'bottom-round');
 	shitListProfileList.style.listStyleType = 'disclosure-closed'; // Right pointing arrow
 	shitListProfileList.style.listStylePosition = 'inside';
@@ -781,9 +839,11 @@ let shitListCategories = null;
 
 	let btnAddToShitList = document.createElement('button');
 		btnAddToShitList.setAttribute("type", "submit");
+		btnAddToShitList.id = 'nfh-add-to-shitlist';
 		btnAddToShitList.classList.add('torn-btn', 'nfh-add-to-shitlist');
 		
 	
+		let existingEntry = false;
 
 	waitForElm("a[href^='/factions.php?step=profile&ID=']").then((elm) => {
 		let factionId = getFactionId();
@@ -797,34 +857,35 @@ let shitListCategories = null;
 				btnAddToShitList.style.marginTop = '7px';
 			}
 		}
-	});
 	
-	LogInfo('Player ID: ' + playerId);
 	
-	let existingEntry = false;
+		LogInfo('Player ID: ' + playerId);
+		
+		
 
-	for (let key in shitListEntries) {
-		if (key.startsWith('p' + playerId + '#')) {
-			existingEntry = true;
-			let entry = shitListEntries[key];
-			shitListProfileList.appendChild(buildShitListEntry(entry));
-			shitListEntryProfileContainer.style.backgroundColor = '#5b3e3e'; // dim red
-			btnAddToShitList.style.marginTop = '7px';
+		for (let key in shitListEntries) {
+			if (key.startsWith('p' + playerId + '#')) {
+				existingEntry = true;
+				let entry = shitListEntries[key];
+				shitListProfileList.appendChild(buildShitListEntry(entry));
+				shitListEntryProfileContainer.style.backgroundColor = '#5b3e3e'; // dim red
+				btnAddToShitList.style.marginTop = '7px';
+			}
 		}
-	}
 
-
-	if (existingEntry) {
-		btnAddToShitList.innerText = 'Add another Shitlist Reason';
-	} else {
-		btnAddToShitList.innerText = 'Add to Shitlist';
-	}
-
-	let shitListAddShitListContainer = buildShitListAddContainer(true);
-	
-	btnAddToShitList.addEventListener('click', function () {
-		buildShitListAddContainer(false);
+		if (existingEntry) {
+			btnAddToShitList.innerText = 'Add another Shitlist Reason';
+		} else {
+			btnAddToShitList.innerText = 'Add to Shitlist';
+		}
 	});
+		
+		let shitListAddShitListContainer = buildShitListAddContainer(true);
+		
+		btnAddToShitList.addEventListener('click', function () {
+			buildShitListAddContainer(false);
+		});
+
 
 	// Add a success message that is outside of the container
 	// This message should be displayed when a new entry is successfully added to the shitlist
@@ -900,6 +961,36 @@ function getPlayerName() {
 	}
 	else {
 		return null;
+	}
+}
+
+function refreshShitList() {
+	let shitListProfileList = document.getElementById('nfh-shitlist-profile-list');
+	let shitListEntryProfileContainer = document.getElementById('nfh-shitlist-entry-profile-container');
+	let btnAddToShitList = document.getElementById('nfh-add-to-shitlist');
+
+	let playerId = getPlayerId();
+	let factionId = getFactionId();
+
+	shitListProfileList.innerHTML = '';
+
+	for (let key in shitListEntries) {
+		if (key.startsWith('f' + factionId + '#')) {
+			let entry = shitListEntries[key];
+			shitListProfileList.appendChild(buildShitListEntry(entry));
+			shitListEntryProfileContainer.style.backgroundColor = '#5b3e3e'; // dim red
+			btnAddToShitList.style.marginTop = '7px';
+		}
+	}
+
+	
+	for (let key in shitListEntries) {
+		if (key.startsWith('p' + playerId + '#')) {
+			let entry = shitListEntries[key];
+			shitListProfileList.appendChild(buildShitListEntry(entry));
+			shitListEntryProfileContainer.style.backgroundColor = '#5b3e3e'; // dim red
+			btnAddToShitList.style.marginTop = '7px';
+		}
 	}
 }
 
