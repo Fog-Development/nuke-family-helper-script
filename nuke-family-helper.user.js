@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      2.4.3
+// @version      2.4.4
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -956,15 +956,14 @@ let nfhUserRole = null;
 		btnAddToShitList.innerText = 'Add to Shitlist';
 	}
 		
-		let shitListAddShitListContainer = buildShitListAddContainer(true);
-		
-		btnAddToShitList.addEventListener('click', function () {
-			buildShitListAddContainer(false);
-		});
+	let shitListAddShitListContainer = buildShitListAddContainer(true);
+	
+	btnAddToShitList.addEventListener('click', function () {
+		buildShitListAddContainer(false);
 
-		btnAddToShitList.addEventListener('touchstart', function () {
-			buildShitListAddContainer(false);
-		});
+		// Hide the button
+		btnAddToShitList.style.display = 'none';
+	});
 
 
 	// Add a success message that is outside of the container
