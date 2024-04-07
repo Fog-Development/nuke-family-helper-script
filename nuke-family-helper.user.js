@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      2.1
+// @version      2.2
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
 // @match        https://www.torn.com/profiles.php*
+// @match				 http://nuke.family/auth/token-generation*
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAsVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAADAgEIBwIJCAILCQMODAQUEQUYFQcaFgcfGgggGwklIAotJgwyKg46MhA8MxBKPxRQRBZgUhthUhthUxt1ZCB9aiOEcCSIdCaQeyihiSyiiS21mjLBpDXFpzbGqDfHqTfIqjjTszrXtzzZuTzlw0DmxEDnxEDpxkHuy0LxzUNZTIHlAAAAD3RSTlMAAh4tMVtig4WRlqvq8v4ZRfBIAAABcElEQVQ4y4VT2ZKCMBBEReTSVhEX8T5BFMVb8/8ftokhJB5b2w9U9VFkMpnRNImSbpiWZRp6SfuGiu0ih2tXPuyy04CChlN+9at1vKFeVf0aVX5Um5Hai+8np470O6fEVxJVIDgQspKBFSGHAMhPKdfhU5/ce8Lv3Sk9+KjzSh0gIQwbEdg8aQI4z/s3MCEcY+6PczpBg/XDRjPLlV2L+a1dTrMmbNpfFyMisGCBRUFHcEuaDsSFsmeBfUFjQNcMIBXCOehHUT84C54ChmYCNyHM+xdCLv254DfA1Cx4xS/DiH2jsBA8WDSggAdUxWJHSPAjVMVkRaoJWuSLYLBrSnRnYTjrqorOGiWxZjWsFYE2ira6wODBAo+BVGz+WAJbfrmtHM1K/twcU3H9qVAcMTBPtI8icGzng1suRo5hWTSQLLlSVYcawVUGrgE+xhrDTAay4avPF6c5ilP6sLc0HjXfF0eunud9X73/l/fP9f8FWPxZz4MGj9YAAAAASUVORK5CYII=
 // @downloadURL  https://github.com/Fog-Development/nuke-family-helper-script/raw/master/nuke-family-helper.user.js
 // @updateURL    https://github.com/Fog-Development/nuke-family-helper-script/raw/master/nuke-family-helper.user.js
@@ -16,6 +17,9 @@
 // @grant        GM_info
 // @connect      nuke.family
 // ==/UserScript==
+
+// ONLY LEAVE ACTIVE FOR DEV
+const debug = false;
 
 const PageType = {
 	Profile: 'Profile',
@@ -43,6 +47,7 @@ const PageType = {
 	War: 'War',
 	ChainReport: 'ChainReport',
 	RWReport: 'RWReport',
+	NukeFamily3rdParty: 'NukeFamily3rdParty',
 };
 
 var mapPageTypeAddress = {
@@ -71,7 +76,14 @@ var mapPageTypeAddress = {
 	[PageType.War]: 'https://www.torn.com/war.php',
 	[PageType.ChainReport]: 'https://www.torn.com/war.php?step=chainreport',
 	[PageType.RWReport]: 'https://www.torn.com/war.php?step=rankreport',
+	[PageType.NukeFamily3rdParty]: 'https://nuke.family/auth/token-generation',
 };
+
+if (debug) {
+	// Make PageType.NukeFamily3rdParty point to dev site
+	mapPageTypeAddress[PageType.NukeFamily3rdParty] = 'http://nuke.test/auth/token-generation';
+}
+console.log(mapPageTypeAddress);
 
 var mapPageAddressEndWith = {
 	[PageType.FactionControl]: '/tab=controls',
@@ -132,17 +144,20 @@ let nfhUserRole = null;
 
 	let apiToken = GM_getValue('apiToken', '');
 
-	// ONLY LEAVE ACTIVE FOR DEV
-	const debug = true;
 	if (debug) {
 		apiToken = '94|ia46tZQ0a75k89yveTX2fQfCVqytkghHYNH2KRwq31e85451';
 		apiUrl = 'http://nuke.test/api';
 		GM_setValue("apiToken", apiToken);
 	}
 
-	if (!apiToken) {
+	if (!apiToken && !GM_getValue("apiTokenFirstTime", false)) {
+		alert('No Nuke.Family API key set yet. You require a https://nuke.family account and key, I\'ll open a new tab for you to generate the token and will automatically save it for you! Create an account if needed');
+		GM_setValue("apiTokenFirstTime", true);
+		window.open('https://nuke.family/auth/token-generation', '_blank');
+		alert('You will only be asked to enter this key once from the automatic page. If you need to change it later, you can do so by clicking the "Change Payout Nuke Family Key" button on the faction "controls" page.');
+	} else if (!apiToken && !IsPage(PageType.NukeFamily3rdParty)) {
 		apiToken = prompt('Please enter your Nuke API key from Fogest\'s site (https://nuke.family/user)');
-		GM_setValue("apiToken", apiToken);
+		GM_setValue('apiToken', apiToken);
 	}
 
 
@@ -174,6 +189,7 @@ let nfhUserRole = null;
 	// Retrieve the anchor from the URL (stuff after the #)
 	const anchor = getAnchor();
 
+	let isNukeFamilyInjected = false;
 
     // Start observer, to inject within dynamically loaded content
     var observer = new MutationObserver(function (mutations, observer) {
@@ -196,6 +212,40 @@ let nfhUserRole = null;
 	});
 
 	observer.observe(document, { attributes: false, childList: true, characterData: false, subtree: true });
+
+	if (IsPage(PageType.NukeFamily3rdParty)) {
+		if (!isNukeFamilyInjected) {
+			isNukeFamilyInjected = true;
+		
+			// Watch for existing #token element, and save value to GM storage if it exists and changes
+			// The change to #token would come from Javascript on the page, not a user input
+			// The #token element already exists on the page, so we just need to wait till the #token element innerText changes
+			// Then update GM storage when it changes to a token
+			waitForElm('#token').then((elm) => {
+				let token = elm.innerText;
+
+				// Create a new observer
+				let observer = new MutationObserver((mutations) => {
+						// For each mutation
+						for(let mutation of mutations) {
+								// If the mutation type is 'characterData' or the 'innerText' of the target has changed
+								if(mutation.type === 'characterData' || mutation.target.innerText !== token) {
+										// Update the token
+										token = mutation.target.innerText;
+										GM_setValue('apiToken', token);
+										apiToken = token;
+										alert('Nuke Family API token saved. You can now close this tab.');
+								}
+						}
+				});
+
+				// Start observing the target node for configured mutations
+				observer.observe(elm, { childList: true, subtree: true, characterData: true });
+		});
+
+
+		}
+	}
 
 	// // Only inject if on URL: https://www.torn.com/factions.php
 	// if (window.location.href.includes('factions.php')) {
