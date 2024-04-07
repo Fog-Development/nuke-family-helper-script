@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      2.3
+// @version      2.4
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -921,14 +921,14 @@ let nfhUserRole = null;
 				shitListEntryProfileContainer.style.backgroundColor = '#5b3e3e'; // dim red
 				btnAddToShitList.style.marginTop = '7px';
 			}
-		}
+		}	
+		});
 
-		if (existingEntry) {
-			btnAddToShitList.innerText = 'Add another Shitlist Reason';
-		} else {
-			btnAddToShitList.innerText = 'Add to Shitlist';
-		}
-	});
+	if (existingEntry) {
+		btnAddToShitList.innerText = 'Add another Shitlist Reason';
+	} else {
+		btnAddToShitList.innerText = 'Add to Shitlist';
+	}
 		
 		let shitListAddShitListContainer = buildShitListAddContainer(true);
 		
