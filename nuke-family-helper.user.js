@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      2.4.5
+// @version      2.4.6
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -106,25 +106,40 @@ let nfhUserRole = null;
 
 	// Inject styles onto page
 	const styles = `
+		.nfh-shitlist-entry-container {
+			border-width: 4px;
+			border-style: solid;
+		}
+
+		.nfh-shitlist-entry-container-entry-present {
+			border-color: #ff000073;
+		}
+
+		.nfh-shitlist-entry-container-friendly {
+			border-color: #00ff0073;
+		}
 		.nfh-shitlist-entry-profile-container {
-			padding: 10px;
+			padding: 10px !important;
 		}
 		.nfh-shitlist-entry-profile-container-profile-ban {
-			background-color: rgb(235 145 145) !important;
+			background-color: #b500001c !important;
 		}
 		.nfh-shitlist-entry-profile-container-faction-ban {
-			background-color: rgb(235 145 145) !important;
+			background-color: #b500001c !important;
+		}
+		.nfh-shitlist-entry-profile-container-friendly {
+			background-color: #00ff001c !important;
 		}
 		.nfh-shitlist-player {
-			font-size: 12px;
-			color: black;
+			font-size: 13px;
+			color: var(--default-color);
 		}
 		.nfh-shitlist-faction-ban {
-			font-size: 12px;
-			color: black;
+			font-size: 13px;
+			color: var(--default-color);
 		}
 		.nfh-extra-shitlist-entry-condition {
-			font-size: 12px;
+			font-size: 13px;
 			color: rgb(0 127 5);
 		}
 		.nfh-extra-condition-pending-approval {
@@ -352,13 +367,17 @@ let nfhUserRole = null;
 
 				let toSave = {};
 
+				LogInfo(response.responseText);
+
 			  // Save data to cached storage
 				responseEntries.forEach(function (entry, index) {
+					
 					let obj = {};
 					obj.entryId = entry.id;
 					obj.name = entry.name;
 					obj.description = entry.description;
 					obj.isFactionBan = entry.is_faction;
+					obj.isFriendly = entry.is_friendly;
 
 					toSave[entry.id] = obj;
 				});
@@ -930,6 +949,15 @@ let nfhUserRole = null;
 				let entry = shitListEntries[key];
 				shitListProfileList.appendChild(buildShitListEntry(entry));
 				shitListEntryProfileContainer.classList.add('nfh-shitlist-entry-profile-container-faction-ban');
+
+				LogInfo(entry.shitListCategory);
+				if(entry.shitListCategory.is_friendly) {
+					LogInfo("IS FRIENDLY");
+					shitListEntryProfileContainer.classList.add('nfh-shitlist-entry-profile-container-friendly');
+					shitListEntryContainer.classList.add('nfh-shitlist-entry-container-friendly');
+				} else {
+					shitListEntryContainer.classList.add('nfh-shitlist-entry-container-entry-present');
+				}
 				btnAddToShitList.style.marginTop = '7px';
 			}
 		}
@@ -943,6 +971,7 @@ let nfhUserRole = null;
 			let entry = shitListEntries[key];
 			shitListProfileList.appendChild(buildShitListEntry(entry));
 			shitListEntryProfileContainer.classList.add('nfh-shitlist-entry-profile-container-profile-ban');
+			shitListEntryContainer.classList.add('nfh-shitlist-entry-container-entry-present');
 			btnAddToShitList.style.marginTop = '7px';
 		}
 	}	
