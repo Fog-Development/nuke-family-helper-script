@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      2.4.6
+// @version      2.4.7
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -14,10 +14,18 @@
 // @grant        GM_getValue
 // @grant        GM_info
 // @connect      nuke.family
+// @connect      github.com
+// @connect 		 raw.githubusercontent.com
 // ==/UserScript==
 
 // ONLY LEAVE ACTIVE FOR DEV
 const debug = false;
+
+const DEFAULT_VERSION = '2.4.7';
+const CURRENT_VERSION = (typeof GM_info !== 'undefined' && GM_info.script && GM_info.script.version) ? GM_info.script.version : DEFAULT_VERSION;
+// const CURRENT_VERSION = DEFAULT_VERSION;
+const CHECK_INTERVAL = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+const GITHUB_URL = 'https://github.com/Fog-Development/nuke-family-helper-script/raw/master/nuke-family-helper.user.js';
 
 const PageType = {
 	Profile: 'Profile',
@@ -100,7 +108,6 @@ let shitListEntries = null;
 let shitListCategories = null;
 let nfhUserRole = null;
 
-
 (function () {
 	'use strict';
 
@@ -150,6 +157,8 @@ let nfhUserRole = null;
 	addStyle(styles);
 
 	LogInfo('Nuke Family Helper Script Loaded');
+
+	checkForUpdates();
 
 	try{
 		savedDataShitEntries = JSON.parse(localStorage.shitListEntriesList || '{"shitListEntries" : {}, "timestamp" : 0}');
@@ -578,6 +587,18 @@ let nfhUserRole = null;
 
 			buttonInsertLocation.appendChild(btn);
 			LogInfo('Change Payout Nuke Family Key button inserted')
+
+			// Also insert a "Check NFH Updates" button
+			let btn2 = document.createElement('button');
+
+			btn2.innerHTML = 'Check NFH Updates';
+			btn2.classList.add('torn-btn');
+			btn2.addEventListener('click', function () {
+				// Check for updates and force check
+				checkForUpdates(true);
+			});
+
+			buttonInsertLocation.appendChild(btn2);
 		});
 	}
 
@@ -1099,6 +1120,41 @@ function refreshShitList() {
 		}
 	}
 }
+
+function checkForUpdates(force = false) {
+	const lastCheckTime = localStorage.getItem('nfhLastUpdateCheckTime');
+	const currentTime = Date.now();
+
+	if (!force && lastCheckTime && currentTime - lastCheckTime < CHECK_INTERVAL) {
+		LogInfo('Skipping update check, not enough time has passed since the last check and force update button not pressed');
+		// Not enough time has passed since the last check and force is not true
+		return;
+	}
+ 
+	LogInfo('Checking for updates...' + lastCheckTime + ' ' + currentTime);
+
+	GM_xmlhttpRequest({
+			method: "GET",
+			url: GITHUB_URL,
+			onload: function(response) {
+					const match = response.responseText.match(/@version\s+([\d.]+)/);
+					if (match) {
+							const githubVersion = match[1];
+							if (githubVersion > CURRENT_VERSION) {
+									if (confirm('A new version of the Nuclear Family Helper script is available. Do you want to update now?')) {
+											window.location.href = GITHUB_URL;
+									}
+							} else if (force) {
+									alert('No updates available. You are running version ' + CURRENT_VERSION + '. And the latest published version is ' + githubVersion + '.');
+							}
+					}
+			}
+	});
+
+	// Update the last check time
+	localStorage.setItem('nfhLastUpdateCheckTime', currentTime);
+}
+
 
 ////// HELPER FUNCTIONS //////
 

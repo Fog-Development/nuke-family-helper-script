@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      2.4.6
+// @version      2.4.7
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/profiles.php*
@@ -17,4 +17,6 @@
 // @grant        GM_info
 // @connect      nuke.test
 // @connect      nuke.family
+// @connect      github.com
+// @connect      raw.githubusercontent.com
 // ==/UserScript==
