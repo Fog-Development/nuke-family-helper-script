@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Family Leader Helper
 // @namespace    https://nuke.family/
-// @version      2.5.0
+// @version      2.5.1
 // @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -21,7 +21,7 @@
 // ONLY LEAVE ACTIVE FOR DEV
 const debug = false;
 
-const DEFAULT_VERSION = "2.5.0";
+const DEFAULT_VERSION = "2.5.1";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -131,6 +131,7 @@ let nfhUserRole = null;
   --dark-bg: #2f3542;
   --dark-text: #f1f2f6;
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --friendly-color: #2ecc71;
 }
 
 .nfh-section {
@@ -153,6 +154,7 @@ let nfhUserRole = null;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  color: white;
 }
 
 .nfh-section-content {
@@ -161,11 +163,33 @@ let nfhUserRole = null;
 
 /* Shitlist specific styles */
 .nfh-shitlist-profile {
-  background: linear-gradient(135deg, var(--shitlist-color), #ff6b6b);
+  transition: background 0.3s ease;
+  background: linear-gradient(135deg, var(--shitlist-color), #ff6b6b); /* Default background */
 }
 
 .nfh-shitlist-profile .nfh-section-title {
   color: white;
+  background: inherit; /* Inherit the background from the parent */
+}
+
+.nfh-shitlist-profile.nfh-no-entries {
+  background: linear-gradient(135deg, var(--light-bg), #dfe4ea);
+}
+
+.nfh-shitlist-profile.nfh-no-entries .nfh-section-title {
+  color: var(--light-text);
+}
+
+.nfh-shitlist-profile.nfh-shitlist-entry-present {
+  background: linear-gradient(135deg, var(--shitlist-color), #ff6b6b);
+}
+
+.nfh-shitlist-profile.nfh-friendly-entry {
+  background: linear-gradient(135deg, var(--friendly-color), #27ae60);
+}
+
+.nfh-no-entries .nfh-section-title {
+  color: var(--light-text);
 }
 
 /* Active Contract specific styles */
@@ -196,18 +220,34 @@ body.dark-mode .nfh-section-content {
 
 /* Shitlist entry styles */
 .nfh-shitlist-entry {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #f8f9fa;
   border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.nfh-shitlist-entry:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 body.dark-mode .nfh-shitlist-entry {
   background-color: rgba(0, 0, 0, 0.2);
 }
 
+.nfh-friendly-entry .nfh-shitlist-entry {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.nfh-shitlist-entry p {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+}
+
 .nfh-add-to-shitlist {
-  background-color: var(--shitlist-color);
+  background-color: #2ecc71;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -217,11 +257,13 @@ body.dark-mode .nfh-shitlist-entry {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .nfh-add-to-shitlist:hover {
-  background-color: #ff6b6b;
-  transform: scale(1.05);
+  background-color: #27ae60;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Additional modern touches */
@@ -242,24 +284,15 @@ body.dark-mode .nfh-shitlist-entry {
 body.dark-mode .nfh-badge {
   background-color: rgba(0, 0, 0, 0.3);
 }
-	.nfh-add-to-shitlist {
-  background-color: #2ecc71;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
 
-.nfh-add-to-shitlist:hover {
-  background-color: #27ae60;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+.nfh-shitlist-entry .nfh-badge {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background-color: #3498db;
+  color: white;
 }
 
 .nfh-input, .nfh-select {
@@ -289,35 +322,17 @@ body.dark-mode .nfh-badge {
   min-height: 100px;
 }
 
-.nfh-shitlist-entry {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-}
-
-.nfh-shitlist-entry:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.nfh-shitlist-entry p {
-  margin: 0 0 5px 0;
-  font-size: 14px;
-}
-
-.nfh-shitlist-entry .nfh-badge {
-  display: inline-block;
-  margin-top: 5px;
-  font-size: 12px;
-  padding: 3px 8px;
-  border-radius: 12px;
-  background-color: #3498db;
+.nfh-faction-ban-badge {
+  background-color: #e74c3c;
   color: white;
 }
-	`;
+
+.nfh-pending-approval-badge {
+  background-color: #f39c12;
+  color: white;
+}
+`;
+
   addStyle(styles);
 
   LogInfo("Nuke Family Helper Script Loaded");
@@ -580,38 +595,63 @@ body.dark-mode .nfh-badge {
         Authorization: "Bearer " + apiToken,
       },
       onload: function (response) {
-        const responseEntries = JSON.parse(response.responseText)["data"];
+        try {
+          const responseData = JSON.parse(response.responseText);
+          LogInfo("Received shit-lists response:", responseData); // Log the entire response
 
-        let toSave = {};
+          let responseEntries = responseData;
+          if (responseData && responseData.data) {
+            responseEntries = responseData.data;
+          }
 
-        // Save data to cached storage
-        responseEntries.forEach(function (entry, index) {
-          let obj = {};
-          obj.entryId = entry.id;
-          obj.playerName = entry.playerName;
-          obj.playerId = entry.playerId;
-          obj.factionId = entry.factionId;
-          obj.factionName = entry.factionName;
-          obj.isFactionBan = entry.isFactionBan;
-          obj.isApproved = entry.isApproved;
-          obj.shitListCategoryId = entry.shitListCategoryId;
-          obj.reason = entry.reason;
-          obj.updatedAt = entry.updated_at;
-          obj.shitListCategory = entry.shitListCategory;
+          if (Array.isArray(responseEntries)) {
+            let toSave = {};
 
-          // Finish making this object
-          if (entry.isFactionBan)
-            toSave["f" + entry.factionId + "#" + entry.id] = obj;
-          else toSave["p" + entry.playerId + "#" + entry.id] = obj;
-        });
+            // Save data to cached storage
+            responseEntries.forEach(function (entry, index) {
+              if (entry && typeof entry === "object") {
+                let obj = {
+                  entryId: entry.id,
+                  playerName: entry.playerName,
+                  playerId: entry.playerId,
+                  factionId: entry.factionId,
+                  factionName: entry.factionName,
+                  isFactionBan: entry.isFactionBan,
+                  isApproved: entry.isApproved,
+                  shitListCategoryId: entry.shitListCategoryId,
+                  reason: entry.reason,
+                  updatedAt: entry.updated_at,
+                  shitListCategory: entry.shitListCategory,
+                };
 
-        localStorage.shitListEntriesList = JSON.stringify({
-          shitListEntries: toSave,
-          timestamp: Date.now(),
-        });
-        LogInfo("Updated shitlist entries local storage");
-        shitListEntries = toSave;
-        refreshShitList();
+                // Finish making this object
+                if (entry.isFactionBan && entry.factionId)
+                  toSave["f" + entry.factionId + "#" + entry.id] = obj;
+                else if (entry.playerId)
+                  toSave["p" + entry.playerId + "#" + entry.id] = obj;
+              }
+            });
+
+            localStorage.shitListEntriesList = JSON.stringify({
+              shitListEntries: toSave,
+              timestamp: Date.now(),
+            });
+            LogInfo("Updated shitlist entries local storage");
+            shitListEntries = toSave;
+            refreshShitList();
+          } else {
+            LogInfo(
+              "Unexpected response format from shit-lists API. Response entries:",
+              responseEntries
+            );
+          }
+        } catch (error) {
+          LogInfo("Error parsing shit-lists response: " + error);
+          LogInfo("Raw response:", response.responseText);
+        }
+      },
+      onerror: function (error) {
+        LogInfo("Error fetching shit-lists: " + error);
       },
     });
   }
@@ -989,20 +1029,20 @@ body.dark-mode .nfh-badge {
   }
 
   let isProfilePageInjected = false;
-  function injectProfilePage(node = undefined) {
+  async function injectProfilePage(node = undefined) {
     if (isProfilePageInjected) return;
     LogInfo("Profile page detected");
 
     isProfilePageInjected = true;
 
     // Wait for the shitlist injection point
-    waitForElm(".profile-status.m-top10").then((elm) => {
+    waitForElm(".profile-status.m-top10").then(async (elm) => {
       LogInfo(elm);
       let shitlistInjectPoint = elm;
       LogInfo(shitlistInjectPoint);
 
       let shitListProfileDiv = buildShitListProfileDiv();
-      let shitListEntryContainer = buildShitListEntryContainer();
+      let shitListEntryContainer = await buildShitListEntryContainer();
 
       shitListProfileDiv
         .querySelector(".nfh-section-content")
@@ -1013,21 +1053,23 @@ body.dark-mode .nfh-badge {
     // Wait for the User Information div to be available on the left side
     waitForElm(
       "#profileroot > div > div > div > div.profile-wrapper > div.profile-left-wrapper.left"
-    ).then((leftColumn) => {
+    ).then(async (leftColumn) => {
       // Check for active contract
-      getFactionId().then((factionId) => {
+      try {
+        const factionId = await getFactionId();
         if (factionId) {
-          getContracts(true).then((contracts) => {
-            const activeContract = contracts.find(
-              (c) => c.faction_id == factionId && isContractActive(c)
-            );
-            if (activeContract) {
-              let contractDiv = buildActiveContractDiv(activeContract);
-              leftColumn.appendChild(contractDiv);
-            }
-          });
+          const contracts = await getContracts(true);
+          const activeContract = contracts.find(
+            (c) => c.faction_id == factionId && isContractActive(c)
+          );
+          if (activeContract) {
+            let contractDiv = buildActiveContractDiv(activeContract);
+            leftColumn.appendChild(contractDiv);
+          }
         }
-      });
+      } catch (error) {
+        LogInfo("Error checking for active contract: " + error);
+      }
     });
   }
 
@@ -1039,11 +1081,13 @@ body.dark-mode .nfh-badge {
     let content = `
         <p>${entry.reason} (${entry.shitListCategory.name})</p>
         ${
-          entry.isFactionBan ? '<span class="nfh-badge">Faction Ban</span>' : ""
+          entry.isFactionBan
+            ? '<span class="nfh-badge nfh-faction-ban-badge">Faction Ban</span>'
+            : ""
         }
         ${
           !entry.isApproved
-            ? '<span class="nfh-badge">Pending Approval</span>'
+            ? '<span class="nfh-badge nfh-pending-approval-badge">Pending Approval</span>'
             : ""
         }
     `;
@@ -1106,15 +1150,16 @@ body.dark-mode .nfh-badge {
     outerDiv.classList.add("nfh-section", "nfh-shitlist-profile");
 
     let title = document.createElement("div");
-    title.innerHTML =
-      '<span><i class="nfh-icon">⚠️</i>Nuke Family Shitlist</span><span class="nfh-badge">New</span>';
     title.classList.add("nfh-section-title");
+    title.innerHTML =
+      '<span><i class="nfh-icon">📋</i>Nuke Family Shitlist</span>';
 
     let contentDiv = document.createElement("div");
     contentDiv.classList.add("nfh-section-content");
 
     outerDiv.appendChild(title);
     outerDiv.appendChild(contentDiv);
+
     return outerDiv;
   }
 
@@ -1211,7 +1256,7 @@ body.dark-mode .nfh-badge {
     return shitListAddContainer;
   }
 
-  function buildShitListEntryContainer() {
+  async function buildShitListEntryContainer() {
     let shitListEntryContainer = document.createElement("div");
     shitListEntryContainer.classList.add("nfh-shitlist-entry-container");
 
@@ -1227,52 +1272,47 @@ body.dark-mode .nfh-badge {
 
     let playerId = getPlayerId();
     let existingEntry = false;
+    let hasFriendlyEntry = false;
+    let hasFactionBan = false;
 
-    waitForElm("a[href^='/factions.php?step=profile&ID=']").then((elm) => {
-      let factionId = getFactionId();
+    try {
+      const factionId = await getFactionId();
       LogInfo("Faction ID: " + factionId);
 
       for (let key in shitListEntries) {
-        if (key.startsWith("f" + factionId + "#")) {
-          let entry = shitListEntries[key];
-          shitListProfileList.appendChild(buildShitListEntry(entry));
-          shitListEntryProfileContainer.classList.add(
-            "nfh-shitlist-entry-profile-container-faction-ban"
-          );
-
-          LogInfo(entry.shitListCategory);
-          if (entry.shitListCategory.is_friendly) {
-            LogInfo("IS FRIENDLY");
-            shitListEntryProfileContainer.classList.add(
-              "nfh-shitlist-entry-profile-container-friendly"
-            );
-            shitListEntryContainer.classList.add(
-              "nfh-shitlist-entry-container-friendly"
-            );
-          } else {
-            shitListEntryContainer.classList.add(
-              "nfh-shitlist-entry-container-entry-present"
-            );
+        let entry = shitListEntries[key];
+        if (
+          entry.isFactionBan &&
+          factionId &&
+          key.startsWith("f" + factionId + "#")
+        ) {
+          let entryElement = buildShitListEntry(entry);
+          if (entryElement instanceof Node) {
+            shitListProfileList.appendChild(entryElement);
+            existingEntry = true;
+            hasFactionBan = true;
+            if (entry.shitListCategory.isFriendly) {
+              hasFriendlyEntry = true;
+            }
           }
-          btnAddToShitList.style.marginTop = "7px";
+        } else if (
+          !entry.isFactionBan &&
+          key.startsWith("p" + playerId + "#")
+        ) {
+          let entryElement = buildShitListEntry(entry);
+          if (entryElement instanceof Node) {
+            shitListProfileList.appendChild(entryElement);
+            existingEntry = true;
+            if (entry.shitListCategory.isFriendly) {
+              hasFriendlyEntry = true;
+            }
+          }
         }
       }
-    });
 
-    LogInfo("Player ID: " + playerId);
-
-    for (let key in shitListEntries) {
-      if (key.startsWith("p" + playerId + "#")) {
-        existingEntry = true;
-        let entry = shitListEntries[key];
-        shitListProfileList.appendChild(buildShitListEntry(entry));
-        shitListEntryProfileContainer.classList.add(
-          "nfh-shitlist-entry-profile-container-profile-ban"
-        );
-        shitListEntryContainer.classList.add(
-          "nfh-shitlist-entry-container-entry-present"
-        );
-      }
+      updateShitListStyling(existingEntry, hasFriendlyEntry, hasFactionBan);
+    } catch (error) {
+      LogInfo("Error getting faction ID: " + error);
     }
 
     let btnAddToShitList = document.createElement("button");
@@ -1304,6 +1344,35 @@ body.dark-mode .nfh-badge {
     shitListEntryContainer.appendChild(shitListEntryProfileContainer);
 
     return shitListEntryContainer;
+  }
+
+  function updateShitListStyling(
+    existingEntry,
+    hasFriendlyEntry,
+    hasFactionBan
+  ) {
+    let shitListProfileDiv = document.querySelector(".nfh-shitlist-profile");
+    let title = shitListProfileDiv.querySelector(".nfh-section-title");
+
+    if (existingEntry) {
+      if (hasFriendlyEntry) {
+        shitListProfileDiv.classList.add("nfh-friendly-entry");
+        title.innerHTML =
+          '<span><i class="nfh-icon">👥</i>Nuke Family Friendly</span>';
+      } else {
+        shitListProfileDiv.classList.add("nfh-shitlist-entry-present");
+        title.innerHTML =
+          '<span><i class="nfh-icon">⚠️</i>Nuke Family Shitlist</span><span class="nfh-badge">New</span>';
+      }
+      if (hasFactionBan) {
+        title.innerHTML +=
+          '<span class="nfh-badge nfh-faction-ban-badge">Faction Ban</span>';
+      }
+    } else {
+      shitListProfileDiv.classList.add("nfh-no-entries");
+      title.innerHTML =
+        '<span><i class="nfh-icon">📋</i>Nuke Family Shitlist</span>';
+    }
   }
 
   function submitShitListEntry() {
@@ -1437,7 +1506,7 @@ body.dark-mode .nfh-badge {
     });
   }
 
-  function refreshShitList() {
+  async function refreshShitList() {
     let shitListProfileList = document.getElementById(
       "nfh-shitlist-profile-list"
     );
@@ -1447,26 +1516,50 @@ body.dark-mode .nfh-badge {
     let btnAddToShitList = document.getElementById("nfh-add-to-shitlist");
 
     let playerId = getPlayerId();
-    let factionId = getFactionId();
+    let existingEntry = false;
+    let hasFriendlyEntry = false;
+    let hasFactionBan = false;
 
     shitListProfileList.innerHTML = "";
 
-    for (let key in shitListEntries) {
-      if (key.startsWith("f" + factionId + "#")) {
-        let entry = shitListEntries[key];
-        shitListProfileList.appendChild(buildShitListEntry(entry));
-        shitListEntryProfileContainer.style.backgroundColor = "#5b3e3e"; // dim red
-        btnAddToShitList.style.marginTop = "7px";
-      }
-    }
+    try {
+      const factionId = await getFactionId();
+      LogInfo("Faction ID: " + factionId);
 
-    for (let key in shitListEntries) {
-      if (key.startsWith("p" + playerId + "#")) {
+      for (let key in shitListEntries) {
         let entry = shitListEntries[key];
-        shitListProfileList.appendChild(buildShitListEntry(entry));
-        shitListEntryProfileContainer.style.backgroundColor = "#5b3e3e"; // dim red
-        btnAddToShitList.style.marginTop = "7px";
+        if (
+          entry.isFactionBan &&
+          factionId &&
+          key.startsWith("f" + factionId + "#")
+        ) {
+          shitListProfileList.appendChild(buildShitListEntry(entry));
+          existingEntry = true;
+          hasFactionBan = true;
+          if (entry.shitListCategory.isFriendly) {
+            hasFriendlyEntry = true;
+          }
+        } else if (
+          !entry.isFactionBan &&
+          key.startsWith("p" + playerId + "#")
+        ) {
+          shitListProfileList.appendChild(buildShitListEntry(entry));
+          existingEntry = true;
+          if (entry.shitListCategory.isFriendly) {
+            hasFriendlyEntry = true;
+          }
+        }
       }
+
+      updateShitListStyling(existingEntry, hasFriendlyEntry, hasFactionBan);
+
+      if (existingEntry) {
+        btnAddToShitList.innerText = "Add another Shitlist Reason";
+      } else {
+        btnAddToShitList.innerText = "Add to Shitlist";
+      }
+    } catch (error) {
+      LogInfo("Error refreshing shitlist: " + error);
     }
   }
 
