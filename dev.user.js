@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Nuke Family Leader Helper
+// @name         Nuke Assistant
 // @namespace    https://nuke.family/
 // @version      2.5.1
-// @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
+// @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/profiles.php*
 // @match        https://www.torn.com/factions.php*
