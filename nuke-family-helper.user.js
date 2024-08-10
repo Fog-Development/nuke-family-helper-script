@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Nuke Family Leader Helper
+// @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.4.7
-// @description  Making things easier for Nuke Family leadership. Don't bother trying to use this application unless you have leader permissions, you are required to use special keys generated from the site.
+// @version      2.6.0
+// @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
 // @match        https://www.torn.com/profiles.php*
@@ -116,8 +116,11 @@ let shitListEntries = null;
 let shitListCategories = null;
 let nfhUserRole = null;
 
+let savedDataContracts = null;
+let contracts = null;
+
 (function () {
-	'use strict';
+  "use strict";
 
   // Inject styles onto page
   const styles = `
@@ -161,6 +164,22 @@ let nfhUserRole = null;
 			font-weight: bold;
 			color: rgb(0 4 175);
 		}
+          .nfh-active-contract {
+        margin-top: 10px;
+    }
+
+    .nfh-active-contract-container {
+        padding: 10px !important;
+    }
+
+    .nfh-active-contract-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .nfh-active-contract-list li {
+        margin-bottom: 5px;
+    }
 	`;
   addStyle(styles);
 
@@ -344,6 +363,155 @@ let nfhUserRole = null;
     }
   }
 
+  function getContracts(forceFetch = false) {
+    const now = Date.now();
+    const cacheAge = now - (savedDataContracts?.timestamp || 0);
+    const shouldFetch =
+      forceFetch || !savedDataContracts || cacheAge > 3 * 60 * 60 * 1000; // 3 hours
+
+    if (shouldFetch) {
+      GM_xmlhttpRequest({
+        method: "GET",
+        url: apiUrl + "/contracts/get_contracts",
+        headers: {
+          Accept: "application/json",
+          Authorization: "Bearer " + apiToken,
+        },
+        onload: function (response) {
+          const contractsData = JSON.parse(response.responseText);
+          savedDataContracts = {
+            contracts: contractsData,
+            timestamp: now,
+          };
+          localStorage.contractsList = JSON.stringify(savedDataContracts);
+          contracts = contractsData;
+          checkAndInsertActiveContract();
+        },
+      });
+    } else {
+      contracts = savedDataContracts.contracts;
+      checkAndInsertActiveContract();
+    }
+  }
+
+  function checkAndInsertActiveContract() {
+    const factionId = getFactionId();
+    if (!factionId) {
+      return; // No faction, no contract
+    }
+
+    const now = new Date();
+    const activeContract = contracts.find((contract) => {
+      return (
+        contract.faction_id == factionId &&
+        new Date(contract.contract_start_date) <= now &&
+        (!contract.contract_end_date ||
+          new Date(contract.contract_end_date) > now)
+      );
+    });
+
+    if (activeContract) {
+      insertActiveContractSection(activeContract);
+    }
+  }
+
+  function insertActiveContractSection(contract) {
+    waitForElm(".profile-status.m-top10").then((elm) => {
+      const injectPoint = elm;
+
+      // Build the main wrapper div
+      let activeContractDiv = buildActiveContractDiv();
+
+      let activeContractTitle = document.createElement("p");
+      activeContractTitle.innerText = "Active Contract";
+      activeContractTitle.classList.add(
+        "nfh-active-contract-title",
+        "title-black",
+        "top-round"
+      );
+
+      // Create the contract info container
+      let contractInfoContainer = buildContractInfoContainer(contract);
+
+      activeContractDiv.appendChild(activeContractTitle);
+      activeContractDiv.appendChild(contractInfoContainer);
+
+      injectPoint.parentNode.insertBefore(
+        activeContractDiv,
+        injectPoint.nextSibling
+      );
+    });
+  }
+
+  function buildActiveContractDiv() {
+    let outerDiv = document.createElement("div");
+    let innerDiv = document.createElement("div");
+    outerDiv.classList.add("nfh-active-contract", "m-top10");
+    outerDiv.appendChild(innerDiv);
+    return outerDiv;
+  }
+
+  function buildContractInfoContainer(contract) {
+    let contractInfoContainer = document.createElement("div");
+    contractInfoContainer.classList.add(
+      "nfh-active-contract-container",
+      "cont",
+      "bottom-round"
+    );
+
+    let contractInfoList = document.createElement("ul");
+    contractInfoList.classList.add("nfh-active-contract-list");
+
+    // Add contract details
+    contractInfoList.appendChild(
+      createListItem(
+        `Minimum Revive Chance: ${contract.rule_revive_chance_percentage}%`
+      )
+    );
+    contractInfoList.appendChild(
+      createListItem(
+        `Player Status: ${contract.rule_player_status
+          .replace(/_/g, " ")
+          .toLowerCase()
+          .replace(/\b\w/g, (l) => l.toUpperCase())}`
+      )
+    );
+    contractInfoList.appendChild(
+      createListItem(
+        `Online Required: ${contract.rule_is_online ? "Yes" : "No"}`
+      )
+    );
+    contractInfoList.appendChild(
+      createListItem(`Idle Allowed: ${contract.rule_is_away ? "Yes" : "No"}`)
+    );
+    contractInfoList.appendChild(
+      createListItem(
+        `Offline Allowed: ${contract.rule_is_offline ? "Yes" : "No"}`
+      )
+    );
+    contractInfoList.appendChild(
+      createListItem(`Premium Contract: ${contract.is_premium ? "Yes" : "No"}`)
+    );
+    contractInfoList.appendChild(
+      createListItem(
+        `Start Date: ${new Date(contract.contract_start_date).toLocaleString()}`
+      )
+    );
+
+    if (contract.note) {
+      contractInfoList.appendChild(createListItem(`Note: ${contract.note}`));
+    }
+
+    contractInfoContainer.appendChild(contractInfoList);
+    return contractInfoContainer;
+  }
+
+  function createListItem(text) {
+    let li = document.createElement("li");
+    li.innerText = text;
+    return li;
+  }
+
   // // Only inject if on URL: https://www.torn.com/factions.php
   // if (window.location.href.includes('factions.php')) {
   // 	insertPayoutHelperButtonForCash();
@@ -372,11 +540,14 @@ let nfhUserRole = null;
   // Fetch from the nuke.family API the shitlist entries for everyone and cache it in GM storage
   function getShitList() {
     GM_xmlhttpRequest({
-			method: 'GET',
-			url: apiUrl + '/shit-lists',
-			headers: { "Accept": "application/json", "Authorization": "Bearer " + apiToken },
+      method: "GET",
+      url: apiUrl + "/shit-lists",
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + apiToken,
+      },
       onload: function (response) {
-				const responseEntries = JSON.parse(response.responseText)['data'];
+        const responseEntries = JSON.parse(response.responseText)["data"];
 
         let toSave = {};
 
@@ -807,7 +978,9 @@ let nfhUserRole = null;
       shitListProfileDiv.appendChild(shitListEntryContainer);
 
       injectPoint.parentNode.append(shitListProfileDiv);
-      // });
+
+      // Check for active contract
+      getContracts();
     });
   }
 
