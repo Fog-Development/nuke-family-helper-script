@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.5.1
+// @version      2.6.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -21,7 +21,7 @@
 // ONLY LEAVE ACTIVE FOR DEV
 const debug = false;
 
-const DEFAULT_VERSION = "2.5.1";
+const DEFAULT_VERSION = "2.6.0";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -111,226 +111,143 @@ const cacheLength = 60; //minutes
 let savedDataShitEntries = null;
 let savedDataShitCategories = null;
 let savedDataNfhUserRole = null;
-let savedDataContracts = null;
-let contracts = null;
 
 let shitListEntries = null;
 let shitListCategories = null;
 let nfhUserRole = null;
+
+let savedDataContracts = null;
+let contracts = null;
 
 (function () {
   "use strict";
 
   // Inject styles onto page
   const styles = `
-:root {
-  --shitlist-color: #ff4757;
-  --contract-color: #ffa502;
-  --light-bg: #f1f2f6;
-  --light-text: #2f3542;
-  --dark-bg: #2f3542;
-  --dark-text: #f1f2f6;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --friendly-color: #2ecc71;
-}
+    .nfh-section {
+        margin-top: 10px;
+        background-color: #1a1a1a;
+        border-radius: 5px;
+        overflow: hidden;
+        font-family: 'Roboto', sans-serif;
+    }
 
-.nfh-section {
-  margin: 20px 0;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  transition: all 0.3s ease;
-}
+    .nfh-section-title {
+        padding: 8px 12px;
+        font-weight: 600;
+        font-size: 14px;
+        background-color: #2a2a2a;
+        color: #e0e0e0;
+    }
 
-.nfh-section:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
+    .nfh-section-container {
+        padding: 10px 12px !important;
+        background-color: #222;
+    }
 
-.nfh-section-title {
-  font-size: 16px;
-  font-weight: 600;
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: white;
-}
+    .nfh-section-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 0;
+    }
 
-.nfh-section-content {
-  padding: 15px 20px;
-}
+    .nfh-section-list li {
+        margin-bottom: 8px;
+        padding: 8px 10px 8px 20px;
+        background-color: #2a2a2a;
+        border-radius: 3px;
+        font-size: 13px;
+        line-height: 1.4;
+        color: #e0e0e0;
+        position: relative;
+    }
 
-/* Shitlist specific styles */
-.nfh-shitlist-profile {
-  transition: background 0.3s ease;
-  background: linear-gradient(135deg, var(--shitlist-color), #ff6b6b); /* Default background */
-}
+    .nfh-shitlist-entry-profile-container {
+      background-color: #222 !important;
+      border-bottom: 0px !important;
+    }
 
-.nfh-shitlist-profile .nfh-section-title {
-  color: white;
-  background: inherit; /* Inherit the background from the parent */
-}
+    .nfh-section-list li::before {
+        content: '▶';
+        position: absolute;
+        left: 8px;
+        top: 11px;
+        color: #4caf50;
+        font-size: 10px;
+    }
 
-.nfh-shitlist-profile.nfh-no-entries {
-  background: linear-gradient(135deg, var(--light-bg), #dfe4ea);
-}
+    .nfh-shitlist-profile-list li {
+      margin-bottom: 8px;
+        padding: 8px 10px 8px 20px;
+        background-color: #2a2a2a;
+        border-radius: 3px;
+        font-size: 13px;
+        line-height: 1.4;
+        color: #e0e0e0;
+        position: relative;
+    }
 
-.nfh-shitlist-profile.nfh-no-entries .nfh-section-title {
-  color: var(--light-text);
-}
+    .nfh-shitlist-profile-list li::before {
+        content: '▶';
+        position: absolute;
+        left: 8px;
+        top: 11px;
+        color: #4caf50;
+        font-size: 10px;
+  }
 
-.nfh-shitlist-profile.nfh-shitlist-entry-present {
-  background: linear-gradient(135deg, var(--shitlist-color), #ff6b6b);
-}
+    .nfh-list-key {
+        font-weight: 600;
+        color: #b0b0b0;
+        display: inline-block;
+        width: 100px;
+        vertical-align: top;
+    }
 
-.nfh-shitlist-profile.nfh-friendly-entry {
-  background: linear-gradient(135deg, var(--friendly-color), #27ae60);
-}
+    .nfh-list-value {
+        display: inline-block;
+        width: calc(100% - 105px);
+        vertical-align: top;
+    }
 
-.nfh-no-entries .nfh-section-title {
-  color: var(--light-text);
-}
+    .nfh-shitlist-entry-container {
+        border-left: 3px solid #4caf50;
+        background-color: #222
+    }
 
-/* Active Contract specific styles */
-.nfh-active-contract {
-  background: linear-gradient(135deg, var(--contract-color), #ffd700);
-}
+    .nfh-extra-shitlist-entry-condition {
+        font-size: 12px;
+        color: #4caf50;
+        margin-left: 5px;
+    }
 
-.nfh-active-contract .nfh-section-title {
-  color: var(--light-text);
-}
+    .nfh-btn {
+        background-color: #333;
+        color: #e0e0e0;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 13px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 8px;
+    }
 
-/* Light mode styles */
-body:not(.dark-mode) .nfh-section-content {
-  background-color: var(--light-bg);
-  color: var(--light-text);
-}
+    .nfh-btn:hover {
+        background-color: #444;
+    }
+    
+    .nfh-shitlist-entry-profile-container-friendly {
+      border-right: 3px solid #4caf50;
+    }
 
-/* Dark mode styles */
-body.dark-mode .nfh-section-content {
-  background-color: var(--dark-bg);
-  color: var(--dark-text);
-}
-
-.nfh-section-content p {
-  margin: 10px 0;
-  line-height: 1.5;
-}
-
-/* Shitlist entry styles */
-.nfh-shitlist-entry {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-}
-
-.nfh-shitlist-entry:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-body.dark-mode .nfh-shitlist-entry {
-  background-color: rgba(0, 0, 0, 0.2);
-}
-
-.nfh-friendly-entry .nfh-shitlist-entry {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.nfh-shitlist-entry p {
-  margin: 0 0 5px 0;
-  font-size: 14px;
-}
-
-.nfh-add-to-shitlist {
-  background-color: #2ecc71;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.nfh-add-to-shitlist:hover {
-  background-color: #27ae60;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-/* Additional modern touches */
-.nfh-icon {
-  margin-right: 10px;
-  font-size: 18px;
-}
-
-.nfh-badge {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-body.dark-mode .nfh-badge {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-.nfh-shitlist-entry .nfh-badge {
-  display: inline-block;
-  margin-top: 5px;
-  font-size: 12px;
-  padding: 3px 8px;
-  border-radius: 12px;
-  background-color: #3498db;
-  color: white;
-}
-
-.nfh-input, .nfh-select {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f8f9fa;
-  transition: all 0.3s ease;
-}
-
-.nfh-input:focus, .nfh-select:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
-.nfh-textarea {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f8f9fa;
-  resize: vertical;
-  min-height: 100px;
-}
-
-.nfh-faction-ban-badge {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.nfh-pending-approval-badge {
-  background-color: #f39c12;
-  color: white;
-}
+    .nfh-shitlist-entry-container-friendly {
+      background-color: #00ff1466 !important;
+      border-left: 0px !important;
+    }
 `;
 
   addStyle(styles);
@@ -379,7 +296,7 @@ body.dark-mode .nfh-badge {
   let apiToken = GM_getValue("apiToken", "");
 
   if (debug) {
-    apiToken = "120|bEGgcntvN4R8S33PlwEJ0u92M0D5O0YyZ1jETNgt3e5d69a4";
+    apiToken = "94|ia46tZQ0a75k89yveTX2fQfCVqytkghHYNH2KRwq31e85451";
     apiUrl = "http://nuke.test/api";
     GM_setValue("apiToken", apiToken);
   }
@@ -515,6 +432,173 @@ body.dark-mode .nfh-badge {
     }
   }
 
+  function getContracts(forceFetch = false) {
+    const now = Date.now();
+    const cacheAge = now - (savedDataContracts?.timestamp || 0);
+    const shouldFetch =
+      forceFetch || !savedDataContracts || cacheAge > 3 * 60 * 60 * 1000; // 3 hours
+
+    if (shouldFetch) {
+      GM_xmlhttpRequest({
+        method: "GET",
+        url: apiUrl + "/contracts/get_contracts",
+        headers: {
+          Accept: "application/json",
+          Authorization: "Bearer " + apiToken,
+        },
+        onload: function (response) {
+          const contractsData = JSON.parse(response.responseText);
+          savedDataContracts = {
+            contracts: contractsData,
+            timestamp: now,
+          };
+          localStorage.contractsList = JSON.stringify(savedDataContracts);
+          contracts = contractsData;
+          checkAndInsertActiveContract();
+        },
+      });
+    } else {
+      contracts = savedDataContracts.contracts;
+      checkAndInsertActiveContract();
+    }
+  }
+
+  function checkAndInsertActiveContract() {
+    const factionId = getFactionId();
+    if (!factionId) {
+      return; // No faction, no contract
+    }
+
+    const now = new Date();
+    const activeContract = contracts.find((contract) => {
+      return (
+        contract.faction_id == factionId &&
+        new Date(contract.contract_start_date) <= now &&
+        (!contract.contract_end_date ||
+          new Date(contract.contract_end_date) > now)
+      );
+    });
+
+    if (activeContract) {
+      insertActiveContractSection(activeContract);
+    }
+  }
+
+  function insertActiveContractSection(contract) {
+    waitForElm(
+      "#profileroot > div > div > div > div:nth-child(1) > div.profile-left-wrapper.left > div"
+    ).then((elm) => {
+      const injectPoint = elm;
+
+      // Build the main wrapper div
+      let activeContractDiv = buildActiveContractDiv();
+
+      let activeContractTitle = document.createElement("p");
+      activeContractTitle.innerText = "Active Contract";
+      activeContractTitle.classList.add(
+        "nfh-active-contract-title",
+        "nfh-section-title",
+        "title-black",
+        "top-round"
+      );
+
+      // Create the contract info container
+      let contractInfoContainer = buildContractInfoContainer(contract);
+
+      activeContractDiv.appendChild(activeContractTitle);
+      activeContractDiv.appendChild(contractInfoContainer);
+
+      injectPoint.parentNode.insertBefore(
+        activeContractDiv,
+        injectPoint.nextSibling
+      );
+    });
+  }
+
+  function buildActiveContractDiv() {
+    let outerDiv = document.createElement("div");
+    let innerDiv = document.createElement("div");
+    outerDiv.classList.add("nfh-active-contract", "nfh-section", "m-top10");
+    outerDiv.appendChild(innerDiv);
+    return outerDiv;
+  }
+
+  function buildContractInfoContainer(contract) {
+    let contractInfoContainer = document.createElement("div");
+    contractInfoContainer.classList.add(
+      "nfh-active-contract-container",
+      "nfh-section-container"
+    );
+
+    let contractInfoList = document.createElement("ul");
+    contractInfoList.classList.add(
+      "nfh-active-contract-list",
+      "nfh-section-list"
+    );
+
+    // Add contract details
+    contractInfoList.appendChild(
+      createContractListItem(
+        "Minimum Revive Chance",
+        `${contract.rule_revive_chance_percentage}%`
+      )
+    );
+    contractInfoList.appendChild(
+      createContractListItem(
+        "Player Status",
+        contract.rule_player_status
+          .replace(/_/g, " ")
+          .toLowerCase()
+          .replace(/\b\w/g, (l) => l.toUpperCase())
+      )
+    );
+    contractInfoList.appendChild(
+      createContractListItem(
+        "Online Required",
+        contract.rule_is_online ? "Yes" : "No"
+      )
+    );
+    contractInfoList.appendChild(
+      createContractListItem(
+        "Idle Allowed",
+        contract.rule_is_away ? "Yes" : "No"
+      )
+    );
+    contractInfoList.appendChild(
+      createContractListItem(
+        "Offline Allowed",
+        contract.rule_is_offline ? "Yes" : "No"
+      )
+    );
+    contractInfoList.appendChild(
+      createContractListItem(
+        "Premium Contract",
+        contract.is_premium ? "Yes" : "No"
+      )
+    );
+    contractInfoList.appendChild(
+      createContractListItem(
+        "Start Date",
+        new Date(contract.contract_start_date).toLocaleString()
+      )
+    );
+
+    if (contract.note) {
+      contractInfoList.appendChild(
+        createContractListItem("Note", contract.note)
+      );
+    }
+
+    contractInfoContainer.appendChild(contractInfoList);
+    return contractInfoContainer;
+  }
+
+  function createContractListItem(key, value) {
+    let li = document.createElement("li");
+    li.innerHTML = `<span class="nfh-list-key">${key}:</span><span class="nfh-list-value">${value}</span>`;
+    return li;
+  }
+
   // // Only inject if on URL: https://www.torn.com/factions.php
   // if (window.location.href.includes('factions.php')) {
   // 	insertPayoutHelperButtonForCash();
@@ -540,51 +624,6 @@ body.dark-mode .nfh-badge {
   // 	}
   // }
 
-  function getContracts(forceUpdate = false) {
-    const now = Date.now();
-    const cacheTime = forceUpdate ? 15 * 60 * 1000 : 3 * 60 * 60 * 1000; // 15 minutes or 3 hours
-
-    if (savedDataContracts === null) {
-      try {
-        savedDataContracts = JSON.parse(
-          localStorage.contractsList || '{"contracts": [], "timestamp": 0}'
-        );
-        contracts = savedDataContracts.contracts;
-      } catch (error) {
-        console.error("Error parsing saved contracts data:", error);
-        savedDataContracts = { contracts: [], timestamp: 0 };
-        contracts = [];
-      }
-    }
-
-    if (savedDataContracts && now - savedDataContracts.timestamp < cacheTime) {
-      return Promise.resolve(contracts);
-    }
-
-    return new Promise((resolve, reject) => {
-      GM_xmlhttpRequest({
-        method: "GET",
-        url: apiUrl + "/contracts/get_contracts",
-        headers: {
-          Accept: "application/json",
-          Authorization: "Bearer " + apiToken,
-        },
-        onload: function (response) {
-          const responseContracts = JSON.parse(response.responseText);
-          contracts = responseContracts;
-          savedDataContracts = { contracts: responseContracts, timestamp: now };
-          localStorage.contractsList = JSON.stringify(savedDataContracts);
-          LogInfo("Updated contracts local storage");
-          resolve(contracts);
-        },
-        onerror: function (error) {
-          LogInfo("Error fetching contracts: " + error);
-          reject(error);
-        },
-      });
-    });
-  }
-
   // Fetch from the nuke.family API the shitlist entries for everyone and cache it in GM storage
   function getShitList() {
     GM_xmlhttpRequest({
@@ -595,63 +634,38 @@ body.dark-mode .nfh-badge {
         Authorization: "Bearer " + apiToken,
       },
       onload: function (response) {
-        try {
-          const responseData = JSON.parse(response.responseText);
-          LogInfo("Received shit-lists response:", responseData); // Log the entire response
+        const responseEntries = JSON.parse(response.responseText)["data"];
 
-          let responseEntries = responseData;
-          if (responseData && responseData.data) {
-            responseEntries = responseData.data;
-          }
+        let toSave = {};
 
-          if (Array.isArray(responseEntries)) {
-            let toSave = {};
+        // Save data to cached storage
+        responseEntries.forEach(function (entry, index) {
+          let obj = {};
+          obj.entryId = entry.id;
+          obj.playerName = entry.playerName;
+          obj.playerId = entry.playerId;
+          obj.factionId = entry.factionId;
+          obj.factionName = entry.factionName;
+          obj.isFactionBan = entry.isFactionBan;
+          obj.isApproved = entry.isApproved;
+          obj.shitListCategoryId = entry.shitListCategoryId;
+          obj.reason = entry.reason;
+          obj.updatedAt = entry.updated_at;
+          obj.shitListCategory = entry.shitListCategory;
 
-            // Save data to cached storage
-            responseEntries.forEach(function (entry, index) {
-              if (entry && typeof entry === "object") {
-                let obj = {
-                  entryId: entry.id,
-                  playerName: entry.playerName,
-                  playerId: entry.playerId,
-                  factionId: entry.factionId,
-                  factionName: entry.factionName,
-                  isFactionBan: entry.isFactionBan,
-                  isApproved: entry.isApproved,
-                  shitListCategoryId: entry.shitListCategoryId,
-                  reason: entry.reason,
-                  updatedAt: entry.updated_at,
-                  shitListCategory: entry.shitListCategory,
-                };
+          // Finish making this object
+          if (entry.isFactionBan)
+            toSave["f" + entry.factionId + "#" + entry.id] = obj;
+          else toSave["p" + entry.playerId + "#" + entry.id] = obj;
+        });
 
-                // Finish making this object
-                if (entry.isFactionBan && entry.factionId)
-                  toSave["f" + entry.factionId + "#" + entry.id] = obj;
-                else if (entry.playerId)
-                  toSave["p" + entry.playerId + "#" + entry.id] = obj;
-              }
-            });
-
-            localStorage.shitListEntriesList = JSON.stringify({
-              shitListEntries: toSave,
-              timestamp: Date.now(),
-            });
-            LogInfo("Updated shitlist entries local storage");
-            shitListEntries = toSave;
-            refreshShitList();
-          } else {
-            LogInfo(
-              "Unexpected response format from shit-lists API. Response entries:",
-              responseEntries
-            );
-          }
-        } catch (error) {
-          LogInfo("Error parsing shit-lists response: " + error);
-          LogInfo("Raw response:", response.responseText);
-        }
-      },
-      onerror: function (error) {
-        LogInfo("Error fetching shit-lists: " + error);
+        localStorage.shitListEntriesList = JSON.stringify({
+          shitListEntries: toSave,
+          timestamp: Date.now(),
+        });
+        LogInfo("Updated shitlist entries local storage");
+        shitListEntries = toSave;
+        refreshShitList();
       },
     });
   }
@@ -740,16 +754,6 @@ body.dark-mode .nfh-badge {
         insertPayoutBalanceSuggestions(playerPayoutAmounts);
       },
     });
-  }
-
-  function isContractActive(contract) {
-    const now = new Date();
-    const startDate = new Date(contract.contract_start_date);
-    const endDate = contract.contract_end_date
-      ? new Date(contract.contract_end_date)
-      : null;
-
-    return startDate <= now && (!endDate || endDate > now);
   }
 
   function insertPayoutBalanceSuggestions(playerPayoutAmounts) {
@@ -1029,311 +1033,372 @@ body.dark-mode .nfh-badge {
   }
 
   let isProfilePageInjected = false;
-  async function injectProfilePage(node = undefined) {
+  function injectProfilePage(node = undefined) {
     if (isProfilePageInjected) return;
     LogInfo("Profile page detected");
+    let el;
 
     isProfilePageInjected = true;
-
-    // Wait for the shitlist injection point
-    waitForElm(".profile-status.m-top10").then(async (elm) => {
+    waitForElm(".profile-status.m-top10").then((elm) => {
+      // waitForElm('.basic-information.profile-left-wrapper.left').then((elm) => {
       LogInfo(elm);
-      let shitlistInjectPoint = elm;
-      LogInfo(shitlistInjectPoint);
+      el = document.querySelectorAll(".profile-status.m-top10");
 
+      let injectPoint = el[0];
+      LogInfo(injectPoint);
+
+      // Build the main wrapper div
       let shitListProfileDiv = buildShitListProfileDiv();
-      let shitListEntryContainer = await buildShitListEntryContainer();
 
-      shitListProfileDiv
-        .querySelector(".nfh-section-content")
-        .appendChild(shitListEntryContainer);
-      shitlistInjectPoint.parentNode.append(shitListProfileDiv);
-    });
+      let shitListProfileTitle = document.createElement("p");
+      shitListProfileTitle.innerText = "Nuke Family Shitlist";
+      shitListProfileTitle.classList.add(
+        "nfh-shitlist-profile-title",
+        "nfh-section-title",
+        "title-black",
+        "top-round"
+      );
 
-    // Wait for the User Information div to be available on the left side
-    waitForElm(
-      "#profileroot > div > div > div > div.profile-wrapper > div.profile-left-wrapper.left"
-    ).then(async (leftColumn) => {
+      // Create the unordered list for the shitlist entries and make the shitlist-entry-container div
+      let shitListEntryContainer = buildShitListEntryContainer();
+
+      shitListProfileDiv.appendChild(shitListProfileTitle);
+      shitListProfileDiv.appendChild(shitListEntryContainer);
+
+      injectPoint.parentNode.append(shitListProfileDiv);
+
       // Check for active contract
-      try {
-        const factionId = await getFactionId();
-        if (factionId) {
-          const contracts = await getContracts(true);
-          const activeContract = contracts.find(
-            (c) => c.faction_id == factionId && isContractActive(c)
-          );
-          if (activeContract) {
-            let contractDiv = buildActiveContractDiv(activeContract);
-            leftColumn.appendChild(contractDiv);
-          }
-        }
-      } catch (error) {
-        LogInfo("Error checking for active contract: " + error);
-      }
+      getContracts();
     });
   }
 
   // HTML BUILDER FUNCTIONS
   function buildShitListEntry(entry) {
-    let entryDiv = document.createElement("div");
-    entryDiv.classList.add("nfh-shitlist-entry");
+    let li = document.createElement("li");
 
-    let content = `
-        <p>${entry.reason} (${entry.shitListCategory.name})</p>
-        ${
-          entry.isFactionBan
-            ? '<span class="nfh-badge nfh-faction-ban-badge">Faction Ban</span>'
-            : ""
-        }
-        ${
-          !entry.isApproved
-            ? '<span class="nfh-badge nfh-pending-approval-badge">Pending Approval</span>'
-            : ""
-        }
+    let extraShitListConditions = entry.isFactionBan ? " [Faction Ban]" : "";
+    let approvalStatus =
+      !entry.isApproved && !entry.isFactionBan ? " [Pending Approval]" : "";
+
+    li.innerHTML = `
+        <div><span class="nfh-list-key">Reason:</span><span class="nfh-list-value">${entry.reason}</span></div>
+        <div><span class="nfh-list-key">Category:</span><span class="nfh-list-value">${entry.shitListCategory.name}${extraShitListConditions}${approvalStatus}</span></div>
     `;
 
-    entryDiv.innerHTML = content;
-    return entryDiv;
+    return li;
   }
-
-  function buildActiveContractDiv(contract) {
-    let outerDiv = document.createElement("div");
-    outerDiv.classList.add("nfh-section", "nfh-active-contract");
-
-    let title = document.createElement("div");
-    title.innerHTML = '<span><i class="nfh-icon">📋</i>Active Contract</span>';
-    title.classList.add("nfh-section-title");
-
-    let contentDiv = document.createElement("div");
-    contentDiv.classList.add("nfh-section-content");
-
-    let content = `
-        <p><strong>Minimum Revive Chance:</strong> ${
-          contract.rule_revive_chance_percentage
-        }%</p>
-        <p><strong>Eligible Status:</strong> ${getEligibleStatus(contract)}</p>
-        <p><strong>Player Status:</strong> ${toTitleCase(
-          contract.rule_player_status
-        )}</p>
-        <p><strong>Premium Contract:</strong> ${
-          contract.is_premium ? "Yes" : "No"
-        }</p>
-        <p><strong>Start Date:</strong> ${new Date(
-          contract.contract_start_date
-        ).toLocaleString()}</p>
-        ${contract.note ? `<p><strong>Note:</strong> ${contract.note}</p>` : ""}
-    `;
-
-    contentDiv.innerHTML = content;
-
-    outerDiv.appendChild(title);
-    outerDiv.appendChild(contentDiv);
-    return outerDiv;
-  }
-
-  function getEligibleStatus(contract) {
-    let status = [];
-    if (contract.rule_is_online) status.push("Online");
-    if (contract.rule_is_away) status.push("Idle");
-    if (contract.rule_is_offline) status.push("Offline");
-    return status.join(", ") || "None";
-  }
-
-  function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function (txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-  }
-
   function buildShitListProfileDiv() {
     let outerDiv = document.createElement("div");
-    outerDiv.classList.add("nfh-section", "nfh-shitlist-profile");
-
-    let title = document.createElement("div");
-    title.classList.add("nfh-section-title");
-    title.innerHTML =
-      '<span><i class="nfh-icon">📋</i>Nuke Family Shitlist</span>';
-
-    let contentDiv = document.createElement("div");
-    contentDiv.classList.add("nfh-section-content");
-
-    outerDiv.appendChild(title);
-    outerDiv.appendChild(contentDiv);
-
+    let innerDiv = document.createElement("div");
+    outerDiv.classList.add("nfh-shitlist-profile", "nfh-section", "m-top10");
+    outerDiv.appendChild(innerDiv);
     return outerDiv;
   }
 
   function setShitListCategoryDescription(categoryId) {
+    // Set the description of the category based on the category ID
+    // Lookup the category in the shitListCategories object
+    let category = shitListCategories[categoryId];
+    LogInfo(category);
+
+    // Update the description textarea with the description of the category
     let description = document.getElementById("shitlist-category-description");
-    if (shitListCategories[categoryId]) {
-      description.value = shitListCategories[categoryId].description;
-    } else {
-      description.value = "No description available for this category.";
-    }
+    description.innerText = category.description;
   }
 
   function buildShitListAddContainer(firstLoad = false) {
-    console.log("shitListCategories:", shitListCategories);
-    let shitListAddContainer = document.createElement("div");
-    shitListAddContainer.id = "shitlist-add-container";
-    shitListAddContainer.classList.add("nfh-shitlist-add-container");
+    // This will contain a mini form to add a new shitlist entry
+    // The form will have a dropdown for the category, a text input for the reason, and a submit button
+    // When the category is changed it should update a read-only text area with the description of the category
+    // On the firstLoad the category dropdown should not be populated/loaded and the container should be hidden
+    // When firstLoad is false, the container should be shown and the category dropdown should be populated. The description should be updated based on the selected category
+    // When the submit button is clicked, the form should be hidden and the new entry should be added to the shitlist entries list
 
-    let shitListAddForm = document.createElement("form");
-    shitListAddForm.classList.add("nfh-shitlist-add-form");
+    if (firstLoad) {
+      let shitListAddContainer = document.createElement("div");
+      shitListAddContainer.id = "shitlist-add-container";
+      shitListAddContainer.classList.add(
+        "nfh-shitlist-add-container",
+        "cont",
+        "bottom-round"
+      );
 
-    let reason = document.createElement("input");
-    reason.id = "shitlist-category-reason";
-    reason.setAttribute("type", "text");
-    reason.setAttribute("placeholder", "Reason/Explanation");
-    reason.classList.add("nfh-input");
+      let shitListAddForm = document.createElement("form");
+      shitListAddForm.classList.add("nfh-shitlist-add-form");
 
-    let select = document.createElement("select");
-    select.id = "shitlist-category-select";
-    select.classList.add("nfh-select");
+      let reason = document.createElement("input");
+      reason.id = "shitlist-category-reason";
+      reason.setAttribute("type", "text");
+      reason.setAttribute("placeholder", "Reason/Explanation");
+      reason.classList.add("nfh-shitlist-add-reason");
+      reason.style.marginBottom = "10px";
 
-    let description = document.createElement("textarea");
-    description.setAttribute("readonly", true);
-    description.id = "shitlist-category-description";
-    description.classList.add("nfh-textarea");
+      let select = document.createElement("select");
+      select.id = "shitlist-category-select";
+      select.classList.add("nfh-shitlist-add-select");
+      select.style.marginBottom = "10px";
 
-    let error = document.createElement("p");
-    error.id = "shitlist-add-error";
-    error.classList.add("nfh-error");
+      let option = document.createElement("option");
+      option.value = "";
+      option.text = "Select a category";
+      select.appendChild(option);
 
-    let submit = document.createElement("button");
-    submit.setAttribute("type", "button");
-    submit.id = "shitlist-add-submit";
-    submit.classList.add("nfh-add-to-shitlist");
-    submit.innerText = "Submit to Shitlist";
+      let description = document.createElement("textarea");
+      description.setAttribute("readonly", true);
+      description.id = "shitlist-category-description";
+      description.classList.add("nfh-shitlist-add-description");
+      description.style.marginBottom = "10px";
+      description.style.width = "100%";
+      description.style.height = "50px";
 
-    shitListAddForm.appendChild(reason);
-    shitListAddForm.appendChild(select);
-    shitListAddForm.appendChild(description);
-    shitListAddForm.appendChild(error);
-    shitListAddForm.appendChild(submit);
-    shitListAddContainer.appendChild(shitListAddForm);
+      // Hidden error message spot
+      let error = document.createElement("p");
+      error.id = "shitlist-add-error";
+      error.classList.add("nfh-shitlist-add-error");
+      error.style.color = "red";
 
-    shitListAddContainer.style.display = firstLoad ? "none" : "block";
+      let submit = document.createElement("button");
+      submit.setAttribute("type", "button");
+      submit.id = "shitlist-add-submit";
+      submit.classList.add("nfh-btn", "nfh-shitlist-add-submit");
+      submit.innerText = "Submit to Shitlist";
 
-    if (!firstLoad) {
-      // Update select element to use the version in the dom
-      select = document.getElementById("shitlist-category-select");
+      shitListAddForm.appendChild(reason);
+      shitListAddForm.appendChild(select);
+      shitListAddForm.appendChild(description);
+      shitListAddForm.appendChild(error);
+      shitListAddForm.appendChild(submit);
+      shitListAddContainer.appendChild(shitListAddForm);
 
+      // Do not display the div, it should be hidden
+      shitListAddContainer.style.display = "none";
+      return shitListAddContainer;
+    } else {
       // Populate the select element with options
-      console.log(select);
-      select.innerHTML = '<option value="">Select a category</option>';
-      console.log("Populating categories...");
+      let select = document.getElementById("shitlist-category-select");
+      select.innerHTML = "";
+
       for (let key in shitListCategories) {
-        console.log("Category:", key, shitListCategories[key]);
         let category = shitListCategories[key];
         let option = document.createElement("option");
         option.value = category.entryId;
         option.text = category.name;
         select.appendChild(option);
       }
-      console.log("Final select options:", select.innerHTML);
 
-      // Set the first category as default and show its description
-      if (select.options.length > 0) {
-        select.selectedIndex = 0;
-        let firstCategoryId = select.options[0].value;
-        setShitListCategoryDescription(firstCategoryId);
-      }
+      setShitListCategoryDescription(select.value);
 
       // Listen for changes to the select element
       select.addEventListener("change", function () {
         let selectedCategoryId = this.value;
+
         setShitListCategoryDescription(selectedCategoryId);
       });
 
-      // Get submit button from the dom
-      submit = document.getElementById("shitlist-add-submit");
-
       // Add event listener to the submit button
-      submit.addEventListener("click", submitShitListEntry);
-    }
+      let submit = document.getElementById("shitlist-add-submit");
+      submit.addEventListener("click", function () {
+        // Get the selected category
+        let selectedCategoryId = document.getElementById(
+          "shitlist-category-select"
+        ).value;
+        LogInfo(selectedCategoryId);
 
-    return shitListAddContainer;
+        // Get the reason
+        let reason = document.getElementById("shitlist-category-reason").value;
+        LogInfo(reason);
+
+        // Get the player ID
+        let playerId = getPlayerId();
+        LogInfo(playerId);
+
+        // Get the player name
+        let playerName = getPlayerName();
+        LogInfo(playerName);
+
+        let userscriptPlayerId = getUserscriptUsersPlayerId();
+        LogInfo(userscriptPlayerId);
+
+        let userscriptPlayerName = getUserscriptUsersPlayerName();
+        LogInfo(userscriptPlayerName);
+
+        // If the category is not selected or there is no reason given (false/empty), show an error message
+        if (!selectedCategoryId || !reason || reason.trim() === "") {
+          document.getElementById("shitlist-add-error").innerText =
+            "Please ensure you select a category and provide a reason/explanation for the shitlisting";
+          return;
+        }
+
+        // Clear the error message
+        document.getElementById("shitlist-add-error").innerText = "";
+
+        // Submit the new shitlist entry to nuke.family via a POST request to /shit-lists
+        // It must submit the following fields: playerName, playerId, reporterPlayerName, reporterPlayerId, shitListCategoryId, reason
+        GM_xmlhttpRequest({
+          method: "POST",
+          url: apiUrl + "/shit-lists",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: "Bearer " + apiToken,
+          },
+          data: JSON.stringify({
+            playerName: playerName,
+            playerId: playerId,
+            reporterPlayerName: userscriptPlayerName,
+            reporterPlayerId: userscriptPlayerId,
+            shitListCategoryId: selectedCategoryId,
+            reason: reason,
+          }),
+          onload: function (response) {
+            let errorData = JSON.parse(response.responseText);
+            if (response.status >= 200 && response.status < 300) {
+              LogInfo("Shitlist entry successfully submitted.");
+              // Hide the form
+              document.getElementById("shitlist-add-container").style.display =
+                "none";
+              document.getElementById("shitlist-add-success").style.display =
+                "block";
+
+              // Also hide the Add Another Shitlist Reason button with class "nfh-add-to-shitlist" to prevent another submission
+              document.getElementsByClassName(
+                "nfh-add-to-shitlist"
+              )[0].style.display = "none";
+
+              // Update the shitlist so that the user has the new addition
+              getShitList();
+            } else {
+              LogInfo("Failed to submit shitlist entry: " + errorData.message);
+              document.getElementById("shitlist-add-error").innerText =
+                "There was an error submitting your shitlisting. Please contact Fogest for help if this persists." +
+                errorData.message;
+            }
+          },
+          onerror: function (error) {
+            let errorData = JSON.parse(error.responseText);
+            LogInfo(
+              "Error occurred while submitting shitlist entry: " +
+                errorData.message
+            );
+            document.getElementById("shitlist-add-error").innerText =
+              "There was an error submitting your shitlisting. Please contact Fogest for help if this persists." +
+              errorData.message;
+          },
+        });
+      });
+
+      // Show the container
+      document.getElementById("shitlist-add-container").style.display = "block";
+    }
+    return null;
   }
 
-  async function buildShitListEntryContainer() {
+  function buildShitListEntryContainer() {
     let shitListEntryContainer = document.createElement("div");
-    shitListEntryContainer.classList.add("nfh-shitlist-entry-container");
+    shitListEntryContainer.classList.add(
+      "nfh-shitlist-entry-container",
+      "nfh-section-container",
+      "cont",
+      "bottom-round"
+    );
 
     let shitListEntryProfileContainer = document.createElement("div");
     shitListEntryProfileContainer.id = "nfh-shitlist-entry-profile-container";
     shitListEntryProfileContainer.classList.add(
-      "nfh-shitlist-entry-profile-container"
+      "nfh-shitlist-entry-profile-container",
+      "profile-container"
     );
 
-    let shitListProfileList = document.createElement("div");
+    let shitListProfileList = document.createElement("ul");
     shitListProfileList.id = "nfh-shitlist-profile-list";
-    shitListProfileList.classList.add("nfh-shitlist-profile-list");
+    shitListProfileList.classList.add(
+      "nfh-shitlist-profile-list",
+      "cont",
+      "bottom-round"
+    );
+    // shitListProfileList.style.listStyleType = "disclosure-closed"; // Right pointing arrow
+    // shitListProfileList.style.listStylePosition = "inside";
 
+    // add li for each shitlist entry that matches the profile ID.
     let playerId = getPlayerId();
-    let existingEntry = false;
-    let hasFriendlyEntry = false;
-    let hasFactionBan = false;
 
-    try {
-      const factionId = await getFactionId();
+    let btnAddToShitList = document.createElement("button");
+    btnAddToShitList.setAttribute("type", "submit");
+    btnAddToShitList.id = "nfh-add-to-shitlist";
+    btnAddToShitList.classList.add("torn-btn", "nfh-add-to-shitlist");
+
+    let existingEntry = false;
+
+    waitForElm("a[href^='/factions.php?step=profile&ID=']").then((elm) => {
+      let factionId = getFactionId();
       LogInfo("Faction ID: " + factionId);
 
       for (let key in shitListEntries) {
-        let entry = shitListEntries[key];
-        if (
-          entry.isFactionBan &&
-          factionId &&
-          key.startsWith("f" + factionId + "#")
-        ) {
-          let entryElement = buildShitListEntry(entry);
-          if (entryElement instanceof Node) {
-            shitListProfileList.appendChild(entryElement);
-            existingEntry = true;
-            hasFactionBan = true;
-            if (entry.shitListCategory.isFriendly) {
-              hasFriendlyEntry = true;
-            }
+        if (key.startsWith("f" + factionId + "#")) {
+          let entry = shitListEntries[key];
+          shitListProfileList.appendChild(buildShitListEntry(entry));
+          shitListEntryProfileContainer.classList.add(
+            "nfh-shitlist-entry-profile-container-faction-ban"
+          );
+
+          LogInfo(entry.shitListCategory);
+          if (entry.shitListCategory.is_friendly) {
+            LogInfo("IS FRIENDLY");
+            shitListEntryProfileContainer.classList.add(
+              "nfh-shitlist-entry-profile-container-friendly"
+            );
+            shitListEntryContainer.classList.add(
+              "nfh-shitlist-entry-container-friendly"
+            );
+          } else {
+            shitListEntryContainer.classList.add(
+              "nfh-shitlist-entry-container-entry-present"
+            );
           }
-        } else if (
-          !entry.isFactionBan &&
-          key.startsWith("p" + playerId + "#")
-        ) {
-          let entryElement = buildShitListEntry(entry);
-          if (entryElement instanceof Node) {
-            shitListProfileList.appendChild(entryElement);
-            existingEntry = true;
-            if (entry.shitListCategory.isFriendly) {
-              hasFriendlyEntry = true;
-            }
-          }
+          btnAddToShitList.style.marginTop = "7px";
         }
       }
+    });
 
-      updateShitListStyling(existingEntry, hasFriendlyEntry, hasFactionBan);
-    } catch (error) {
-      LogInfo("Error getting faction ID: " + error);
+    LogInfo("Player ID: " + playerId);
+
+    for (let key in shitListEntries) {
+      if (key.startsWith("p" + playerId + "#")) {
+        existingEntry = true;
+        let entry = shitListEntries[key];
+        shitListProfileList.appendChild(buildShitListEntry(entry));
+        shitListEntryProfileContainer.classList.add(
+          "nfh-shitlist-entry-profile-container-profile-ban"
+        );
+        shitListEntryContainer.classList.add(
+          "nfh-shitlist-entry-container-entry-present"
+        );
+        btnAddToShitList.style.marginTop = "7px";
+      }
     }
 
-    let btnAddToShitList = document.createElement("button");
-    btnAddToShitList.setAttribute("type", "button");
-    btnAddToShitList.id = "nfh-add-to-shitlist";
-    btnAddToShitList.classList.add("nfh-add-to-shitlist");
-    btnAddToShitList.innerText = existingEntry
-      ? "Add another Shitlist Reason"
-      : "Add to Shitlist";
+    if (existingEntry) {
+      btnAddToShitList.innerText = "Add another Shitlist Reason";
+    } else {
+      btnAddToShitList.innerText = "Add to Shitlist";
+    }
 
     let shitListAddShitListContainer = buildShitListAddContainer(true);
 
     btnAddToShitList.addEventListener("click", function () {
       buildShitListAddContainer(false);
-      shitListAddShitListContainer.style.display = "block";
+
+      // Hide the button
       btnAddToShitList.style.display = "none";
     });
 
+    // Add a success message that is outside of the container
+    // This message should be displayed when a new entry is successfully added to the shitlist
+    // It should be hidden by default
     let successMessage = document.createElement("p");
     successMessage.id = "shitlist-add-success";
     successMessage.classList.add("nfh-shitlist-add-success");
+    successMessage.style.color = "green";
     successMessage.style.display = "none";
     successMessage.innerText = "Shitlist entry successfully added!";
 
@@ -1342,97 +1407,7 @@ body.dark-mode .nfh-badge {
     shitListEntryProfileContainer.appendChild(successMessage);
     shitListEntryProfileContainer.appendChild(shitListAddShitListContainer);
     shitListEntryContainer.appendChild(shitListEntryProfileContainer);
-
     return shitListEntryContainer;
-  }
-
-  function updateShitListStyling(
-    existingEntry,
-    hasFriendlyEntry,
-    hasFactionBan
-  ) {
-    let shitListProfileDiv = document.querySelector(".nfh-shitlist-profile");
-    let title = shitListProfileDiv.querySelector(".nfh-section-title");
-
-    if (existingEntry) {
-      if (hasFriendlyEntry) {
-        shitListProfileDiv.classList.add("nfh-friendly-entry");
-        title.innerHTML =
-          '<span><i class="nfh-icon">👥</i>Nuke Family Friendly</span>';
-      } else {
-        shitListProfileDiv.classList.add("nfh-shitlist-entry-present");
-        title.innerHTML =
-          '<span><i class="nfh-icon">⚠️</i>Nuke Family Shitlist</span><span class="nfh-badge">New</span>';
-      }
-      if (hasFactionBan) {
-        title.innerHTML +=
-          '<span class="nfh-badge nfh-faction-ban-badge">Faction Ban</span>';
-      }
-    } else {
-      shitListProfileDiv.classList.add("nfh-no-entries");
-      title.innerHTML =
-        '<span><i class="nfh-icon">📋</i>Nuke Family Shitlist</span>';
-    }
-  }
-
-  function submitShitListEntry() {
-    LogInfo("Submitting shitlist entry...");
-    let selectedCategoryId = document.getElementById(
-      "shitlist-category-select"
-    ).value;
-    let reason = document.getElementById("shitlist-category-reason").value;
-    let playerId = getPlayerId();
-    let playerName = getPlayerName();
-    let userscriptPlayerId = getUserscriptUsersPlayerId();
-    let userscriptPlayerName = getUserscriptUsersPlayerName();
-
-    if (!selectedCategoryId || !reason || reason.trim() === "") {
-      document.getElementById("shitlist-add-error").innerText =
-        "Please ensure you select a category and provide a reason/explanation for the shitlisting";
-      return;
-    }
-
-    document.getElementById("shitlist-add-error").innerText = "";
-
-    GM_xmlhttpRequest({
-      method: "POST",
-      url: apiUrl + "/shit-lists",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: "Bearer " + apiToken,
-      },
-      data: JSON.stringify({
-        playerName: playerName,
-        playerId: playerId,
-        reporterPlayerName: userscriptPlayerName,
-        reporterPlayerId: userscriptPlayerId,
-        shitListCategoryId: selectedCategoryId,
-        reason: reason,
-      }),
-      onload: function (response) {
-        let responseData = JSON.parse(response.responseText);
-        if (response.status >= 200 && response.status < 300) {
-          LogInfo("Shitlist entry successfully submitted.");
-          document.getElementById("shitlist-add-container").style.display =
-            "none";
-          document.getElementById("shitlist-add-success").style.display =
-            "block";
-          document.getElementById("nfh-add-to-shitlist").style.display = "none";
-          getShitList();
-        } else {
-          LogInfo("Failed to submit shitlist entry: " + responseData.message);
-          document.getElementById("shitlist-add-error").innerText =
-            "There was an error submitting your shitlisting. Please contact Fogest for help if this persists. " +
-            responseData.message;
-        }
-      },
-      onerror: function (error) {
-        LogInfo("Error occurred while submitting shitlist entry: " + error);
-        document.getElementById("shitlist-add-error").innerText =
-          "There was an error submitting your shitlisting. Please contact Fogest for help if this persists.";
-      },
-    });
   }
 
   // Webpage specific functions
@@ -1480,33 +1455,21 @@ body.dark-mode .nfh-badge {
   }
 
   function getFactionId() {
-    return new Promise((resolve) => {
-      const checkForFaction = () => {
-        const factionUrl = document.querySelector(
-          "a[href^='/factions.php?step=profile&ID=']"
-        );
-        if (factionUrl) {
-          const urlParams = new URLSearchParams(factionUrl.href);
-          resolve(urlParams.get("ID"));
-        } else {
-          // If no faction found after 5 seconds, resolve with null
-          setTimeout(() => resolve(null), 5000);
-        }
-      };
-
-      // Start checking immediately
-      checkForFaction();
-
-      // Also set up a MutationObserver to check as the DOM changes
-      const observer = new MutationObserver(checkForFaction);
-      observer.observe(document.body, { childList: true, subtree: true });
-
-      // Cleanup the observer after 5 seconds
-      setTimeout(() => observer.disconnect(), 5000);
-    });
+    const factionUrl = document.querySelector(
+      "a[href^='/factions.php?step=profile&ID=']"
+    );
+    LogInfo("Faction URL: " + factionUrl);
+    if (factionUrl != undefined) {
+      let hrefFaction = factionUrl.href;
+      const urlParams = new URLSearchParams(hrefFaction);
+      LogInfo(urlParams.get("ID"));
+      return urlParams.get("ID");
+    } else {
+      return null;
+    }
   }
 
-  async function refreshShitList() {
+  function refreshShitList() {
     let shitListProfileList = document.getElementById(
       "nfh-shitlist-profile-list"
     );
@@ -1516,50 +1479,26 @@ body.dark-mode .nfh-badge {
     let btnAddToShitList = document.getElementById("nfh-add-to-shitlist");
 
     let playerId = getPlayerId();
-    let existingEntry = false;
-    let hasFriendlyEntry = false;
-    let hasFactionBan = false;
+    let factionId = getFactionId();
 
     shitListProfileList.innerHTML = "";
 
-    try {
-      const factionId = await getFactionId();
-      LogInfo("Faction ID: " + factionId);
-
-      for (let key in shitListEntries) {
+    for (let key in shitListEntries) {
+      if (key.startsWith("f" + factionId + "#")) {
         let entry = shitListEntries[key];
-        if (
-          entry.isFactionBan &&
-          factionId &&
-          key.startsWith("f" + factionId + "#")
-        ) {
-          shitListProfileList.appendChild(buildShitListEntry(entry));
-          existingEntry = true;
-          hasFactionBan = true;
-          if (entry.shitListCategory.isFriendly) {
-            hasFriendlyEntry = true;
-          }
-        } else if (
-          !entry.isFactionBan &&
-          key.startsWith("p" + playerId + "#")
-        ) {
-          shitListProfileList.appendChild(buildShitListEntry(entry));
-          existingEntry = true;
-          if (entry.shitListCategory.isFriendly) {
-            hasFriendlyEntry = true;
-          }
-        }
+        shitListProfileList.appendChild(buildShitListEntry(entry));
+        shitListEntryProfileContainer.style.backgroundColor = "#5b3e3e"; // dim red
+        btnAddToShitList.style.marginTop = "7px";
       }
+    }
 
-      updateShitListStyling(existingEntry, hasFriendlyEntry, hasFactionBan);
-
-      if (existingEntry) {
-        btnAddToShitList.innerText = "Add another Shitlist Reason";
-      } else {
-        btnAddToShitList.innerText = "Add to Shitlist";
+    for (let key in shitListEntries) {
+      if (key.startsWith("p" + playerId + "#")) {
+        let entry = shitListEntries[key];
+        shitListProfileList.appendChild(buildShitListEntry(entry));
+        shitListEntryProfileContainer.style.backgroundColor = "#5b3e3e"; // dim red
+        btnAddToShitList.style.marginTop = "7px";
       }
-    } catch (error) {
-      LogInfo("Error refreshing shitlist: " + error);
     }
   }
 
