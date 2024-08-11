@@ -21,7 +21,7 @@
 // ONLY LEAVE ACTIVE FOR DEV
 const debug = false;
 
-const DEFAULT_VERSION = "2.4.7";
+const DEFAULT_VERSION = "2.6.0";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -124,63 +124,123 @@ let contracts = null;
 
   // Inject styles onto page
   const styles = `
-		.nfh-shitlist-entry-container {
-			border-width: 4px;
-			border-style: solid;
-		}
-
-		.nfh-shitlist-entry-container-entry-present {
-			border-color: #ff000073;
-		}
-
-		.nfh-shitlist-entry-container-friendly {
-			border-color: #00ff0073;
-		}
-		.nfh-shitlist-entry-profile-container {
-			padding: 10px !important;
-		}
-		.nfh-shitlist-entry-profile-container-profile-ban {
-			background-color: #b500001c !important;
-		}
-		.nfh-shitlist-entry-profile-container-faction-ban {
-			background-color: #b500001c !important;
-		}
-		.nfh-shitlist-entry-profile-container-friendly {
-			background-color: #00ff001c !important;
-		}
-		.nfh-shitlist-player {
-			font-size: 13px;
-			color: var(--default-color);
-		}
-		.nfh-shitlist-faction-ban {
-			font-size: 13px;
-			color: var(--default-color);
-		}
-		.nfh-extra-shitlist-entry-condition {
-			font-size: 13px;
-			color: rgb(0 127 5);
-		}
-		.nfh-extra-condition-pending-approval {
-			font-weight: bold;
-			color: rgb(0 4 175);
-		}
-          .nfh-active-contract {
+    .nfh-section {
         margin-top: 10px;
+        background-color: #1a1a1a;
+        border-radius: 5px;
+        overflow: hidden;
+        font-family: 'Roboto', sans-serif;
     }
 
-    .nfh-active-contract-container {
-        padding: 10px !important;
+    .nfh-section-title {
+        padding: 8px 12px;
+        font-weight: 600;
+        font-size: 14px;
+        background-color: #2a2a2a;
+        color: #e0e0e0;
     }
 
-    .nfh-active-contract-list {
+    .nfh-section-container {
+        padding: 10px 12px !important;
+        background-color: #222;
+    }
+
+    .nfh-section-list {
         list-style-type: none;
         padding-left: 0;
+        margin: 0;
     }
 
-    .nfh-active-contract-list li {
-        margin-bottom: 5px;
+    .nfh-section-list li {
+        margin-bottom: 8px;
+        padding: 8px 10px 8px 20px;
+        background-color: #2a2a2a;
+        border-radius: 3px;
+        font-size: 13px;
+        line-height: 1.4;
+        color: #e0e0e0;
+        position: relative;
     }
-	`;
+
+    .nfh-shitlist-entry-profile-container {
+      background-color: #222 !important;
+      border-bottom: 0px !important;
+    }
+
+    .nfh-section-list li::before {
+        content: '▶';
+        position: absolute;
+        left: 8px;
+        top: 11px;
+        color: #4caf50;
+        font-size: 10px;
+    }
+
+    .nfh-shitlist-profile-list li {
+      margin-bottom: 8px;
+        padding: 8px 10px 8px 20px;
+        background-color: #2a2a2a;
+        border-radius: 3px;
+        font-size: 13px;
+        line-height: 1.4;
+        color: #e0e0e0;
+        position: relative;
+    }
+
+    .nfh-shitlist-profile-list li::before {
+        content: '▶';
+        position: absolute;
+        left: 8px;
+        top: 11px;
+        color: #4caf50;
+        font-size: 10px;
+  }
+
+    .nfh-list-key {
+        font-weight: 600;
+        color: #b0b0b0;
+        display: inline-block;
+        width: 100px;
+        vertical-align: top;
+    }
+
+    .nfh-list-value {
+        display: inline-block;
+        width: calc(100% - 105px);
+        vertical-align: top;
+    }
+
+    .nfh-shitlist-entry-container {
+        border-left: 3px solid #4caf50;
+        background-color: #222
+    }
+
+    .nfh-extra-shitlist-entry-condition {
+        font-size: 12px;
+        color: #4caf50;
+        margin-left: 5px;
+    }
+
+    .nfh-btn {
+        background-color: #333;
+        color: #e0e0e0;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 13px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 8px;
+    }
+
+    .nfh-btn:hover {
+        background-color: #444;
+    }
+`;
+
   addStyle(styles);
 
   LogInfo("Nuke Family Helper Script Loaded");
@@ -416,7 +476,9 @@ let contracts = null;
   }
 
   function insertActiveContractSection(contract) {
-    waitForElm(".profile-status.m-top10").then((elm) => {
+    waitForElm(
+      "#profileroot > div > div > div > div:nth-child(1) > div.profile-left-wrapper.left > div"
+    ).then((elm) => {
       const injectPoint = elm;
 
       // Build the main wrapper div
@@ -426,6 +488,7 @@ let contracts = null;
       activeContractTitle.innerText = "Active Contract";
       activeContractTitle.classList.add(
         "nfh-active-contract-title",
+        "nfh-section-title",
         "title-black",
         "top-round"
       );
@@ -446,7 +509,7 @@ let contracts = null;
   function buildActiveContractDiv() {
     let outerDiv = document.createElement("div");
     let innerDiv = document.createElement("div");
-    outerDiv.classList.add("nfh-active-contract", "m-top10");
+    outerDiv.classList.add("nfh-active-contract", "nfh-section", "m-top10");
     outerDiv.appendChild(innerDiv);
     return outerDiv;
   }
@@ -455,60 +518,75 @@ let contracts = null;
     let contractInfoContainer = document.createElement("div");
     contractInfoContainer.classList.add(
       "nfh-active-contract-container",
-      "cont",
-      "bottom-round"
+      "nfh-section-container"
     );
 
     let contractInfoList = document.createElement("ul");
-    contractInfoList.classList.add("nfh-active-contract-list");
+    contractInfoList.classList.add(
+      "nfh-active-contract-list",
+      "nfh-section-list"
+    );
 
     // Add contract details
     contractInfoList.appendChild(
-      createListItem(
-        `Minimum Revive Chance: ${contract.rule_revive_chance_percentage}%`
+      createContractListItem(
+        "Minimum Revive Chance",
+        `${contract.rule_revive_chance_percentage}%`
       )
     );
     contractInfoList.appendChild(
-      createListItem(
-        `Player Status: ${contract.rule_player_status
+      createContractListItem(
+        "Player Status",
+        contract.rule_player_status
           .replace(/_/g, " ")
           .toLowerCase()
-          .replace(/\b\w/g, (l) => l.toUpperCase())}`
+          .replace(/\b\w/g, (l) => l.toUpperCase())
       )
     );
     contractInfoList.appendChild(
-      createListItem(
-        `Online Required: ${contract.rule_is_online ? "Yes" : "No"}`
+      createContractListItem(
+        "Online Required",
+        contract.rule_is_online ? "Yes" : "No"
       )
     );
     contractInfoList.appendChild(
-      createListItem(`Idle Allowed: ${contract.rule_is_away ? "Yes" : "No"}`)
-    );
-    contractInfoList.appendChild(
-      createListItem(
-        `Offline Allowed: ${contract.rule_is_offline ? "Yes" : "No"}`
+      createContractListItem(
+        "Idle Allowed",
+        contract.rule_is_away ? "Yes" : "No"
       )
     );
     contractInfoList.appendChild(
-      createListItem(`Premium Contract: ${contract.is_premium ? "Yes" : "No"}`)
+      createContractListItem(
+        "Offline Allowed",
+        contract.rule_is_offline ? "Yes" : "No"
+      )
     );
     contractInfoList.appendChild(
-      createListItem(
-        `Start Date: ${new Date(contract.contract_start_date).toLocaleString()}`
+      createContractListItem(
+        "Premium Contract",
+        contract.is_premium ? "Yes" : "No"
+      )
+    );
+    contractInfoList.appendChild(
+      createContractListItem(
+        "Start Date",
+        new Date(contract.contract_start_date).toLocaleString()
       )
     );
 
     if (contract.note) {
-      contractInfoList.appendChild(createListItem(`Note: ${contract.note}`));
+      contractInfoList.appendChild(
+        createContractListItem("Note", contract.note)
+      );
     }
 
     contractInfoContainer.appendChild(contractInfoList);
     return contractInfoContainer;
   }
 
-  function createListItem(text) {
+  function createContractListItem(key, value) {
     let li = document.createElement("li");
-    li.innerText = text;
+    li.innerHTML = `<span class="nfh-list-key">${key}:</span><span class="nfh-list-value">${value}</span>`;
     return li;
   }
 
@@ -967,6 +1045,7 @@ let contracts = null;
       shitListProfileTitle.innerText = "Nuke Family Shitlist";
       shitListProfileTitle.classList.add(
         "nfh-shitlist-profile-title",
+        "nfh-section-title",
         "title-black",
         "top-round"
       );
@@ -988,48 +1067,21 @@ let contracts = null;
   function buildShitListEntry(entry) {
     let li = document.createElement("li");
 
-    let extraShitListConditions = "";
+    let extraShitListConditions = entry.isFactionBan ? " [Faction Ban]" : "";
+    let approvalStatus =
+      !entry.isApproved && !entry.isFactionBan ? " [Pending Approval]" : "";
 
-    let extraShitListBeforeReason = "";
-    let extraShitListAfterReason = "";
+    li.innerHTML = `
+        <div><span class="nfh-list-key">Reason:</span><span class="nfh-list-value">${entry.reason}</span></div>
+        <div><span class="nfh-list-key">Category:</span><span class="nfh-list-value">${entry.shitListCategory.name}${extraShitListConditions}${approvalStatus}</span></div>
+    `;
 
-    if (entry.isFactionBan) {
-      extraShitListConditions =
-        ' <span class="nfh-extra-shitlist-entry-condition">[Faction Ban]</span>';
-    }
-
-    if (!entry.isApproved && !entry.isFactionBan) {
-      // Prepend text to extraShitListConditions and keep the rest of the text. Make it indianred and bold it
-      extraShitListConditions =
-        ' <span class="nfh-extra-shitlist-entry-condition nfh-extra-condition-pending-approval">[Pending Approval]</span>' +
-        extraShitListConditions;
-
-      // Strike through the reason
-      extraShitListBeforeReason = "<strike>";
-      extraShitListAfterReason = "</strike>";
-    }
-
-    li.innerHTML =
-      extraShitListBeforeReason +
-      entry.reason +
-      extraShitListAfterReason +
-      " (" +
-      entry.shitListCategory.name +
-      ")" +
-      extraShitListConditions;
-
-    if (entry.isFactionBan) {
-      li.classList.add("nfh-shitlist-faction-ban");
-    } else {
-      li.classList.add("nfh-shitlist-player");
-    }
     return li;
   }
-
   function buildShitListProfileDiv() {
     let outerDiv = document.createElement("div");
     let innerDiv = document.createElement("div");
-    outerDiv.classList.add("nfh-shitlist-profile", "m-top10");
+    outerDiv.classList.add("nfh-shitlist-profile", "nfh-section", "m-top10");
     outerDiv.appendChild(innerDiv);
     return outerDiv;
   }
@@ -1099,7 +1151,7 @@ let contracts = null;
       let submit = document.createElement("button");
       submit.setAttribute("type", "button");
       submit.id = "shitlist-add-submit";
-      submit.classList.add("torn-btn", "nfh-shitlist-add-submit");
+      submit.classList.add("nfh-btn", "nfh-shitlist-add-submit");
       submit.innerText = "Submit to Shitlist";
 
       shitListAddForm.appendChild(reason);
@@ -1236,6 +1288,7 @@ let contracts = null;
     let shitListEntryContainer = document.createElement("div");
     shitListEntryContainer.classList.add(
       "nfh-shitlist-entry-container",
+      "nfh-section-container",
       "cont",
       "bottom-round"
     );
@@ -1254,8 +1307,8 @@ let contracts = null;
       "cont",
       "bottom-round"
     );
-    shitListProfileList.style.listStyleType = "disclosure-closed"; // Right pointing arrow
-    shitListProfileList.style.listStylePosition = "inside";
+    // shitListProfileList.style.listStyleType = "disclosure-closed"; // Right pointing arrow
+    // shitListProfileList.style.listStylePosition = "inside";
 
     // add li for each shitlist entry that matches the profile ID.
     let playerId = getPlayerId();
