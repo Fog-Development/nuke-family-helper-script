@@ -21,7 +21,7 @@
 // ONLY LEAVE ACTIVE FOR DEV
 const debug = false;
 
-const DEFAULT_VERSION = "2.6.0";
+const DEFAULT_VERSION = "2.7.0";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
