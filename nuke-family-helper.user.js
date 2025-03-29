@@ -1098,9 +1098,23 @@ let contracts = null;
     let approvalStatus =
       !entry.isApproved && !entry.isFactionBan ? " [Pending Approval]" : "";
 
+    // Convert the updatedAt string into a relative time
+    let lastUpdatedHTML = "";
+    if (entry.updatedAt) {
+      const updatedAtDate = new Date(entry.updatedAt);
+      const tooltipDate = formatDateTime(updatedAtDate); // "yyyy-mm-dd HH:mm"
+      const relativeDate = timeSince(updatedAtDate); // "2 days ago", etc.
+      lastUpdatedHTML = `
+      <div>
+        <span class="nfh-list-key">Updated:</span>
+        <span class="nfh-list-value relative-date" title="${tooltipDate}">${relativeDate}</span>
+      </div>`;
+    }
+
     li.innerHTML = `
         <div><span class="nfh-list-key">Reason:</span><span class="nfh-list-value">${entry.reason}</span></div>
         <div><span class="nfh-list-key">Category:</span><span class="nfh-list-value">${entry.shitListCategory.name}${extraShitListConditions}${approvalStatus}</span></div>
+        ${lastUpdatedHTML}
     `;
 
     return li;
@@ -1643,6 +1657,40 @@ let contracts = null;
       childList: false,
       characterData: false,
     });
+  }
+
+  // Utility function to format date as "YYYY-MM-DD HH:mm"
+  function formatDateTime(dateObj) {
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    const hours = String(dateObj.getHours()).padStart(2, "0");
+    const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  }
+
+  // Utility function to generate a rough "time ago" string (e.g. "2 hours ago")
+  function timeSince(dateObj) {
+    const seconds = Math.floor((Date.now() - dateObj.getTime()) / 1000);
+    if (seconds < 60) {
+      return "just now";
+    }
+    const intervals = [
+      { label: "year", secs: 31536000 },
+      { label: "month", secs: 2592000 },
+      { label: "day", secs: 86400 },
+      { label: "hour", secs: 3600 },
+      { label: "minute", secs: 60 },
+    ];
+    for (const interval of intervals) {
+      const count = Math.floor(seconds / interval.secs);
+      if (count >= 1) {
+        return count === 1
+          ? `${count} ${interval.label} ago`
+          : `${count} ${interval.label}s ago`;
+      }
+    }
+    return "just now";
   }
 
   function randomProperty(obj) {
