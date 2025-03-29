@@ -120,7 +120,7 @@ let savedDataContracts = null;
 let contracts = null;
 
 (function () {
-  "use strict";
+  ("use strict");
 
   // Inject styles onto page
   const styles = `
@@ -296,7 +296,7 @@ let contracts = null;
   let apiToken = GM_getValue("apiToken", "");
 
   if (debug) {
-    apiToken = "94|ia46tZQ0a75k89yveTX2fQfCVqytkghHYNH2KRwq31e85451";
+    apiToken = "423|T6eyUoGadynPm4WhYhV6h63D83eQyi97RlPmlTa1d0ce2271";
     apiUrl = "http://nuke.test/api";
     GM_setValue("apiToken", apiToken);
   }
@@ -311,10 +311,20 @@ let contracts = null;
       'You will only be asked to enter this key once from the automatic page. If you need to change it later, you can do so by clicking the "Change Payout Nuke Family Key" button on the faction "controls" page.'
     );
   } else if (!apiToken && !IsPage(PageType.NukeFamily3rdParty)) {
-    apiToken = prompt(
+    let maybeApiToken = prompt(
       "Please enter your Nuke API key from Fogest's site (https://nuke.family/user)"
     );
-    GM_setValue("apiToken", apiToken);
+    // If the user cancels, maybeApiToken could be null
+    if (maybeApiToken && maybeApiToken.length < 30) {
+      alert(
+        "That key is too short. Please ensure you are using your Nuke.Family " +
+          "key (around 50 characters), NOT your Torn API key!"
+      );
+    } else if (maybeApiToken) {
+      // Only store if the token is valid length
+      GM_setValue("apiToken", maybeApiToken);
+      apiToken = maybeApiToken;
+    }
   }
 
   let xanaxPlayerList = GM_getValue("xanaxPlayerList", {});
@@ -914,9 +924,17 @@ let contracts = null;
   function changePayoutNukeFamilyKey() {
     // Prompt and save changes to the apiToken in GM storage
     let newKey = prompt(
-      "Enter the new nuke family key to use for payout retrieval:"
+      "Enter the new Nuke.Family API key (should be ~50 characters)."
     );
+
     if (newKey) {
+      if (newKey.length < 30) {
+        alert(
+          "That key is too short. Please ensure you are using your Nuke.Family " +
+            "key, NOT your Torn API key!"
+        );
+        return;
+      }
       GM_setValue("apiToken", newKey);
       apiToken = newKey;
     }
