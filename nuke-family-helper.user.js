@@ -1220,6 +1220,10 @@ let contracts = null;
 
       for (let key in shitListCategories) {
         let category = shitListCategories[key];
+        // Skip categories where is_faction = 1
+        if (category.isFactionBan) {
+          continue;
+        }
         let option = document.createElement("option");
         option.value = category.entryId;
         option.text = category.name;
