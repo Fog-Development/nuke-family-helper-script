@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.7.0
+// @version      2.8.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -21,7 +21,7 @@
 // ONLY LEAVE ACTIVE FOR DEV
 const debug = false;
 
-const DEFAULT_VERSION = "2.7.0";
+const DEFAULT_VERSION = "2.8.0";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -119,6 +119,60 @@ let nfhUserRole = null;
 let savedDataContracts = null;
 let contracts = null;
 
+// Settings manager for shitlist category visibility
+const SettingsManager = {
+  getHiddenCategories: () => {
+    try {
+      return JSON.parse(
+        localStorage.getItem("hiddenShitlistCategories") || "[]"
+      );
+    } catch (e) {
+      console.error("Error parsing hidden categories:", e);
+      return [];
+    }
+  },
+
+  setHiddenCategories: (hiddenIds) => {
+    localStorage.setItem("hiddenShitlistCategories", JSON.stringify(hiddenIds));
+  },
+
+  isCategoryVisible: (categoryId, isFaction) => {
+    // Faction categories are always visible
+    if (isFaction) return true;
+
+    console.log("Checking visibility for category:", categoryId, isFaction);
+
+    console.log(
+      "Is category visible?",
+      !SettingsManager.getHiddenCategories().includes(String(categoryId))
+    );
+
+    // Check if category is in hidden list
+    return !SettingsManager.getHiddenCategories().includes(String(categoryId));
+  },
+
+  toggleCategory: (categoryId, isVisible) => {
+    const hidden = SettingsManager.getHiddenCategories();
+    console.log("Hidden Categories:", hidden);
+    let updated;
+
+    if (isVisible) {
+      // Remove from hidden list
+      updated = hidden.filter((id) => id !== categoryId);
+    } else {
+      // Add to hidden list if not already there
+      if (!hidden.includes(String(categoryId))) {
+        updated = [...hidden, String(categoryId)];
+      } else {
+        updated = hidden;
+      }
+    }
+
+    SettingsManager.setHiddenCategories(updated);
+    return updated;
+  },
+};
+
 (function () {
   ("use strict");
 
@@ -194,7 +248,7 @@ let contracts = null;
         top: 11px;
         color: #4caf50;
         font-size: 10px;
-  }
+    }
 
     .nfh-list-key {
         font-weight: 600;
@@ -247,6 +301,111 @@ let contracts = null;
     .nfh-shitlist-entry-container-friendly {
       background-color: #00ff1466 !important;
       border-left: 0px !important;
+    }
+
+    /* Settings panel styles */
+    .nfh-shitlist-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+    }
+
+    .nfh-settings-cog {
+        cursor: pointer;
+        color: #e0e0e0;
+        font-size: 16px;
+        margin-right: 10px;
+        transition: transform 0.3s ease;
+    }
+
+    .nfh-settings-cog:hover {
+        color: #4caf50;
+        transform: rotate(90deg);
+    }
+
+    .nfh-settings-panel {
+        background-color: #2a2a2a;
+        border-radius: 5px;
+        padding: 15px;
+        border: 1px solid #444;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        position: fixed;
+        z-index: 9999;
+        width: 250px;
+        right: 20px;
+        bottom: 50px;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+        max-width: 95vw;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .nfh-shitlist-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative; /* Ensure the header is a positioning context */
+    }
+
+    .nfh-settings-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #e0e0e0;
+        border-bottom: 1px solid #444;
+        padding-bottom: 5px;
+    }
+
+    .nfh-category-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 5px;
+        border-radius: 3px;
+        transition: background-color 0.2s;
+    }
+
+    .nfh-category-item:hover {
+        background-color: #333;
+    }
+
+    .nfh-category-item input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+    .nfh-category-item.faction-locked {
+        opacity: 0.8;
+        pointer-events: none;
+    }
+
+    .nfh-category-item.faction-locked input[type="checkbox"] {
+        cursor: not-allowed;
+    }
+
+    .nfh-hidden-count {
+        font-size: 11px;
+        color: #999;
+        margin-top: 5px;
+        font-style: italic;
+    }
+
+    .nfh-close-settings {
+        background-color: #333;
+        color: #e0e0e0;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-top: 10px;
+        transition: background-color 0.2s;
+        width: 100%;
+    }
+
+    .nfh-close-settings:hover {
+        background-color: #444;
     }
 `;
 
@@ -1068,6 +1227,10 @@ let contracts = null;
       // Build the main wrapper div
       let shitListProfileDiv = buildShitListProfileDiv();
 
+      // Create header with settings cog
+      let headerDiv = document.createElement("div");
+      headerDiv.classList.add("nfh-shitlist-header");
+
       let shitListProfileTitle = document.createElement("p");
       shitListProfileTitle.innerText = "Nuke Family Shitlist";
       shitListProfileTitle.classList.add(
@@ -1077,10 +1240,33 @@ let contracts = null;
         "top-round"
       );
 
+      // Create settings cog icon
+      let settingsCog = document.createElement("span");
+      settingsCog.innerHTML = "⚙️"; // Unicode gear icon
+      settingsCog.classList.add("nfh-settings-cog");
+      settingsCog.title = "Shitlist Settings";
+
+      // Create settings panel
+      let settingsPanel = createSettingsPanel();
+
+      // Add click event to toggle settings panel
+      settingsCog.addEventListener("click", function () {
+        if (settingsPanel.style.display === "none") {
+          settingsPanel.style.display = "block";
+        } else {
+          settingsPanel.style.display = "none";
+        }
+      });
+
+      // Add elements to header
+      headerDiv.appendChild(shitListProfileTitle);
+      headerDiv.appendChild(settingsCog);
+      headerDiv.appendChild(settingsPanel);
+
       // Create the unordered list for the shitlist entries and make the shitlist-entry-container div
       let shitListEntryContainer = buildShitListEntryContainer();
 
-      shitListProfileDiv.appendChild(shitListProfileTitle);
+      shitListProfileDiv.appendChild(headerDiv);
       shitListProfileDiv.appendChild(shitListEntryContainer);
 
       injectPoint.parentNode.append(shitListProfileDiv);
@@ -1125,6 +1311,65 @@ let contracts = null;
     outerDiv.classList.add("nfh-shitlist-profile", "nfh-section", "m-top10");
     outerDiv.appendChild(innerDiv);
     return outerDiv;
+  }
+
+  function createSettingsPanel() {
+    const panel = document.createElement("div");
+    panel.classList.add("nfh-settings-panel");
+    panel.style.display = "none";
+
+    const title = document.createElement("div");
+    title.classList.add("nfh-settings-title");
+    title.textContent = "Shitlist Settings";
+
+    const categoryList = document.createElement("div");
+    categoryList.classList.add("nfh-category-list");
+
+    // Add category toggles
+    for (let categoryId in shitListCategories) {
+      const category = shitListCategories[categoryId];
+      const categoryItem = document.createElement("div");
+      categoryItem.classList.add("nfh-category-item");
+
+      if (category.isFactionBan) {
+        categoryItem.classList.add("faction-locked");
+      }
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = SettingsManager.isCategoryVisible(
+        categoryId,
+        category.isFactionBan
+      );
+      checkbox.disabled = category.isFactionBan;
+      checkbox.dataset.categoryId = categoryId;
+
+      checkbox.addEventListener("change", function () {
+        console.log("Checkbox changed:", this.checked);
+        SettingsManager.toggleCategory(categoryId, this.checked);
+        refreshShitList();
+      });
+
+      const label = document.createElement("span");
+      label.textContent = category.name;
+
+      categoryItem.appendChild(checkbox);
+      categoryItem.appendChild(label);
+      categoryList.appendChild(categoryItem);
+    }
+
+    const closeButton = document.createElement("button");
+    closeButton.classList.add("nfh-close-settings");
+    closeButton.textContent = "Close";
+    closeButton.addEventListener("click", function () {
+      panel.style.display = "none";
+    });
+
+    panel.appendChild(title);
+    panel.appendChild(categoryList);
+    panel.appendChild(closeButton);
+
+    return panel;
   }
 
   function setShitListCategoryDescription(categoryId) {
@@ -1249,9 +1494,6 @@ let contracts = null;
         LogInfo(selectedCategoryId);
 
         // Get the reason
-        let reason = document.getElementById("shitlist-category-reason").value;
-        LogInfo(reason);
-
         // Get the player ID
         let playerId = getPlayerId();
         LogInfo(playerId);
@@ -1372,6 +1614,8 @@ let contracts = null;
     btnAddToShitList.classList.add("torn-btn", "nfh-add-to-shitlist");
 
     let existingEntry = false;
+    let totalEntries = 0;
+    let visibleEntries = 0;
 
     waitForElm("a[href^='/factions.php?step=profile&ID=']").then((elm) => {
       let factionId = getFactionId();
@@ -1380,27 +1624,50 @@ let contracts = null;
       for (let key in shitListEntries) {
         if (key.startsWith("f" + factionId + "#")) {
           let entry = shitListEntries[key];
-          shitListProfileList.appendChild(buildShitListEntry(entry));
-          shitListEntryProfileContainer.classList.add(
-            "nfh-shitlist-entry-profile-container-faction-ban"
-          );
+          totalEntries++;
 
-          LogInfo(entry.shitListCategory);
-          if (entry.shitListCategory.is_friendly) {
-            LogInfo("IS FRIENDLY");
+          // Check if category is visible
+          if (
+            SettingsManager.isCategoryVisible(
+              entry.shitListCategoryId,
+              entry.isFactionBan
+            )
+          ) {
+            shitListProfileList.appendChild(buildShitListEntry(entry));
+            visibleEntries++;
+
             shitListEntryProfileContainer.classList.add(
-              "nfh-shitlist-entry-profile-container-friendly"
+              "nfh-shitlist-entry-profile-container-faction-ban"
             );
-            shitListEntryContainer.classList.add(
-              "nfh-shitlist-entry-container-friendly"
-            );
-          } else {
-            shitListEntryContainer.classList.add(
-              "nfh-shitlist-entry-container-entry-present"
-            );
+
+            LogInfo(entry.shitListCategory);
+            if (entry.shitListCategory.is_friendly) {
+              LogInfo("IS FRIENDLY");
+              shitListEntryProfileContainer.classList.add(
+                "nfh-shitlist-entry-profile-container-friendly"
+              );
+              shitListEntryContainer.classList.add(
+                "nfh-shitlist-entry-container-friendly"
+              );
+            } else {
+              shitListEntryContainer.classList.add(
+                "nfh-shitlist-entry-container-entry-present"
+              );
+            }
+            btnAddToShitList.style.marginTop = "7px";
           }
-          btnAddToShitList.style.marginTop = "7px";
         }
+      }
+
+      // Add hidden count message if needed after processing faction entries
+      if (totalEntries > visibleEntries) {
+        const hiddenCount = totalEntries - visibleEntries;
+        const hiddenMsg = document.createElement("div");
+        hiddenMsg.classList.add("nfh-hidden-count");
+        hiddenMsg.textContent = `${hiddenCount} ${
+          hiddenCount === 1 ? "entry" : "entries"
+        } hidden by category settings`;
+        shitListEntryProfileContainer.appendChild(hiddenMsg);
       }
     });
 
@@ -1408,20 +1675,47 @@ let contracts = null;
 
     for (let key in shitListEntries) {
       if (key.startsWith("p" + playerId + "#")) {
-        existingEntry = true;
+        totalEntries++;
         let entry = shitListEntries[key];
-        shitListProfileList.appendChild(buildShitListEntry(entry));
-        shitListEntryProfileContainer.classList.add(
-          "nfh-shitlist-entry-profile-container-profile-ban"
-        );
-        shitListEntryContainer.classList.add(
-          "nfh-shitlist-entry-container-entry-present"
-        );
-        btnAddToShitList.style.marginTop = "7px";
+
+        // Check if category is visible
+        if (
+          SettingsManager.isCategoryVisible(
+            entry.shitListCategoryId,
+            entry.isFactionBan
+          )
+        ) {
+          existingEntry = true;
+          shitListProfileList.appendChild(buildShitListEntry(entry));
+          visibleEntries++;
+
+          shitListEntryProfileContainer.classList.add(
+            "nfh-shitlist-entry-profile-container-profile-ban"
+          );
+          shitListEntryContainer.classList.add(
+            "nfh-shitlist-entry-container-entry-present"
+          );
+          btnAddToShitList.style.marginTop = "7px";
+        }
       }
     }
 
-    if (existingEntry) {
+    // Add hidden count message if needed after processing player entries
+    // Only add if not already added by faction entries
+    if (
+      totalEntries > visibleEntries &&
+      !document.querySelector(".nfh-hidden-count")
+    ) {
+      const hiddenCount = totalEntries - visibleEntries;
+      const hiddenMsg = document.createElement("div");
+      hiddenMsg.classList.add("nfh-hidden-count");
+      hiddenMsg.textContent = `${hiddenCount} ${
+        hiddenCount === 1 ? "entry" : "entries"
+      } hidden by category settings`;
+      shitListEntryProfileContainer.appendChild(hiddenMsg);
+    }
+
+    if (visibleEntries > 0) {
       btnAddToShitList.innerText = "Add another Shitlist Reason";
     } else {
       btnAddToShitList.innerText = "Add to Shitlist";
@@ -1527,22 +1821,68 @@ let contracts = null;
 
     shitListProfileList.innerHTML = "";
 
+    // Remove any existing hidden count message
+    const existingHiddenMsg = document.querySelector(".nfh-hidden-count");
+    if (existingHiddenMsg) {
+      existingHiddenMsg.remove();
+    }
+
+    let totalEntries = 0;
+    let visibleEntries = 0;
+
+    // Process faction entries
     for (let key in shitListEntries) {
       if (key.startsWith("f" + factionId + "#")) {
         let entry = shitListEntries[key];
-        shitListProfileList.appendChild(buildShitListEntry(entry));
-        shitListEntryProfileContainer.style.backgroundColor = "#5b3e3e"; // dim red
-        btnAddToShitList.style.marginTop = "7px";
+        totalEntries++;
+
+        // Check if category is visible
+        if (
+          SettingsManager.isCategoryVisible(
+            entry.shitListCategoryId,
+            entry.isFactionBan
+          )
+        ) {
+          shitListProfileList.appendChild(buildShitListEntry(entry));
+          visibleEntries++;
+
+          shitListEntryProfileContainer.style.backgroundColor = "#5b3e3e"; // dim red
+          btnAddToShitList.style.marginTop = "7px";
+        }
       }
     }
 
+    // Process player entries
     for (let key in shitListEntries) {
       if (key.startsWith("p" + playerId + "#")) {
         let entry = shitListEntries[key];
-        shitListProfileList.appendChild(buildShitListEntry(entry));
-        shitListEntryProfileContainer.style.backgroundColor = "#5b3e3e"; // dim red
-        btnAddToShitList.style.marginTop = "7px";
+        totalEntries++;
+
+        // Check if category is visible
+        if (
+          SettingsManager.isCategoryVisible(
+            entry.shitListCategoryId,
+            entry.isFactionBan
+          )
+        ) {
+          shitListProfileList.appendChild(buildShitListEntry(entry));
+          visibleEntries++;
+
+          shitListEntryProfileContainer.style.backgroundColor = "#5b3e3e"; // dim red
+          btnAddToShitList.style.marginTop = "7px";
+        }
       }
+    }
+
+    // Add hidden count message if needed
+    if (totalEntries > visibleEntries) {
+      const hiddenCount = totalEntries - visibleEntries;
+      const hiddenMsg = document.createElement("div");
+      hiddenMsg.classList.add("nfh-hidden-count");
+      hiddenMsg.textContent = `${hiddenCount} ${
+        hiddenCount === 1 ? "entry" : "entries"
+      } hidden by category settings`;
+      shitListEntryProfileContainer.appendChild(hiddenMsg);
     }
   }
 
