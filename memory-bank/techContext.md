@@ -234,6 +234,69 @@ GM_xmlhttpRequest({
 });
 ```
 
+### Example of API Responses
+
+#### GET Request to /api/shit-lists
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "playerName": "CooterDefender",
+      "playerId": 2605637,
+      "factionId": null,
+      "factionName": null,
+      "isFactionBan": null,
+      "shitListCategoryId": 4,
+      "reason": "Left to go join Lat's faction :(",
+      "isApproved": true,
+      "reporterPlayerName": "Fogest",
+      "reporterPlayerId": 2254826,
+      "approvedByUserId": 645,
+      "approvedByPlayerId": 2254826,
+      "updatedByUserId": null,
+      "updatedByPlayerId": null,
+      "created_at": "2024-03-30T02:43:04.000000Z",
+      "updated_at": "2024-04-07T06:25:21.000000Z",
+      "shitListCategory": {
+        "id": 4,
+        "name": "Absolute Scum Lords",
+        "slug": "absolute-scum-lords",
+        "description": "People who have been MASSIVE scum lords in Torn. We are talking things like hurting the faction family in big ways.",
+        "is_faction": 0,
+        "is_friendly": 0
+      }
+    }
+  ]
+}
+```
+
+#### GET Request to /api/shit-list-categories
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Enemy Alliance",
+      "slug": "enemy-alliance",
+      "description": "This player is in an enemy alliance faction against our family.",
+      "is_faction": 1,
+      "is_friendly": 0
+    },
+    {
+      "id": 2,
+      "name": "Buy Mugger",
+      "slug": "buy-mugger",
+      "description": "Just your typical buy mugging SCUM!",
+      "is_faction": 0,
+      "is_friendly": 0
+    }
+  ]
+}
+```
+
 ### Error Handling
 
 ```javascript
