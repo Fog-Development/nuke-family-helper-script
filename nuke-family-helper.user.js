@@ -1158,12 +1158,20 @@ let contracts = null;
       let shitListAddForm = document.createElement("form");
       shitListAddForm.classList.add("nfh-shitlist-add-form");
 
-      let reason = document.createElement("input");
+      let reason = document.createElement("textarea");
       reason.id = "shitlist-category-reason";
-      reason.setAttribute("type", "text");
       reason.setAttribute("placeholder", "Reason/Explanation");
       reason.classList.add("nfh-shitlist-add-reason");
       reason.style.marginBottom = "10px";
+      reason.style.width = "100%";
+      reason.style.height = "65px";
+      reason.style.padding = "8px";
+      reason.style.resize = "vertical";
+      reason.style.borderRadius = "3px";
+      reason.style.border = "1px solid #444";
+      reason.style.backgroundColor = "#2a2a2a";
+      reason.style.color = "#e0e0e0";
+      reason.style.boxSizing = "border-box";
 
       let select = document.createElement("select");
       select.id = "shitlist-category-select";
