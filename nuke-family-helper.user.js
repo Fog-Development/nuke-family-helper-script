@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.8.1
+// @version      2.9.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -106,7 +106,8 @@ var mapPageAddressEndWith = {
   [PageType.FactionControlApplications]: "tab=controls&option=application",
 };
 
-const cacheLength = 60; //minutes
+const cacheLength = 720; //minutes (12 hours)
+const CACHE_CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 let savedDataShitEntries = null;
 let savedDataShitCategories = null;
@@ -427,16 +428,23 @@ const SettingsManager = {
     savedDataNfhUserRole = JSON.parse(
       localStorage.nfhUserRole || '{"role" : "", "timestamp" : 0}'
     );
+    // Load saved contracts data
+    savedDataContracts = JSON.parse(
+      localStorage.contractsList || '{"contracts": [], "timestamp": 0}'
+    );
 
     shitListEntries = savedDataShitEntries.shitListEntries;
     shitListCategories = savedDataShitCategories.shitListCategories;
     nfhUserRole = savedDataNfhUserRole.role;
+    contracts = savedDataContracts.contracts; // Initialize contracts variable
 
-    LogInfo(shitListEntries);
-    LogInfo(shitListCategories);
-    LogInfo(nfhUserRole);
+    LogInfo("Loaded Shitlist Entries:", shitListEntries);
+    LogInfo("Loaded Shitlist Categories:", shitListCategories);
+    LogInfo("Loaded NFH User Role:", nfhUserRole);
+    LogInfo("Loaded Contracts:", contracts);
+    LogInfo("Saved Contracts Data:", savedDataContracts);
   } catch (error) {
-    console.error(error);
+    console.error("Error loading saved data:", error);
     alert("error loading saved data, please reload page!");
   }
 
@@ -493,43 +501,8 @@ const SettingsManager = {
     xanaxPlayerList = {};
   }
 
-  // Update any data that has expired caches...
-
-  if (
-    savedDataShitEntries.timestamp == undefined ||
-    Date.now() - savedDataShitEntries.timestamp > cacheLength * 60 * 1000
-  ) {
-    //minutes * seconds * miliseconds
-    LogInfo(
-      "shitlist data is older than " + cacheLength + " minutes, updating now"
-    );
-    getShitList();
-  }
-
-  if (
-    savedDataShitCategories.timestamp == undefined ||
-    Date.now() - savedDataShitCategories.timestamp > cacheLength * 60 * 1000
-  ) {
-    //minutes * seconds * miliseconds
-    LogInfo(
-      "shitlist categories data is older than " +
-        cacheLength +
-        " minutes, updating now"
-    );
-    getShitListCategories();
-  }
-
-  if (
-    savedDataNfhUserRole.timestamp == undefined ||
-    Date.now() - savedDataNfhUserRole.timestamp >
-      (cacheLength + 2880) * 60 * 1000
-  ) {
-    // every 2 days + cacheLength
-    LogInfo(
-      "user role data is older than " + cacheLength + " minutes, updating now"
-    );
-    getPlayersRoles();
-  }
+  // Initial cache checks are now handled by checkCacheUpdates() which runs immediately on load.
+  // The old time-based checks below are redundant.
 
   // Retrieve the anchor from the URL (stuff after the #)
   const anchor = getAnchor();
@@ -601,13 +574,17 @@ const SettingsManager = {
     }
   }
 
-  function getContracts(forceFetch = false) {
+  // Modified to accept serverTimestamp for accurate cache tracking
+  function getContracts(forceFetch = false, serverTimestamp = null) {
     const now = Date.now();
-    const cacheAge = now - (savedDataContracts?.timestamp || 0);
-    const shouldFetch =
-      forceFetch || !savedDataContracts || cacheAge > 3 * 60 * 60 * 1000; // 3 hours
+    // Keep the time-based check as a fallback within performTimeBasedCacheCheck
+    // The primary trigger is now the timestamp comparison in checkCacheUpdates
 
-    if (shouldFetch) {
+    // Always fetch if forceFetch is true (triggered by timestamp mismatch or fallback)
+    if (forceFetch) {
+      LogInfo(
+        `Fetching contracts. Forced: ${forceFetch}, Server Timestamp: ${serverTimestamp}`
+      );
       GM_xmlhttpRequest({
         method: "GET",
         url: apiUrl + "/contracts/get_contracts",
@@ -616,41 +593,69 @@ const SettingsManager = {
           Authorization: "Bearer " + apiToken,
         },
         onload: function (response) {
-          const contractsData = JSON.parse(response.responseText);
-          savedDataContracts = {
-            contracts: contractsData,
-            timestamp: now,
-          };
-          localStorage.contractsList = JSON.stringify(savedDataContracts);
-          contracts = contractsData;
-          checkAndInsertActiveContract();
+          if (response.status >= 200 && response.status < 300) {
+            const contractsData = JSON.parse(response.responseText);
+            // Use serverTimestamp (converted to ms) if provided, otherwise use current time (for fallback)
+            const timestampToStore = serverTimestamp
+              ? serverTimestamp * 1000
+              : now;
+            savedDataContracts = {
+              contracts: contractsData,
+              timestamp: timestampToStore, // Store the server's update time (in ms) or now()
+            };
+            localStorage.contractsList = JSON.stringify(savedDataContracts);
+            contracts = contractsData;
+            LogInfo(
+              `Contracts updated and stored with timestamp: ${timestampToStore}`
+            );
+            checkAndInsertActiveContract();
+          } else {
+            LogInfo(`Failed to fetch contracts. Status: ${response.status}`);
+            // Optionally handle error, maybe retry or rely on older cache
+          }
+        },
+        onerror: function (error) {
+          console.error("Error fetching contracts:", error);
+          LogInfo("Error fetching contracts.");
         },
       });
-    } else {
+    } else if (savedDataContracts?.contracts) {
+      // If not forcing fetch, but data exists, use it
       contracts = savedDataContracts.contracts;
-      checkAndInsertActiveContract();
+      checkAndInsertActiveContract(); // Still need to potentially insert the section
+    } else {
+      // Initial load or cache is empty and not forced fetch (shouldn't happen often with checkCacheUpdates)
+      LogInfo("No contracts data available and fetch not forced.");
     }
   }
 
   function checkAndInsertActiveContract() {
-    const factionId = getFactionId();
-    if (!factionId) {
-      return; // No faction, no contract
-    }
+    // Check if factionId is available before proceeding
+    LogInfo("Waiting for faction info to load before checking contracts...");
+    waitForElm(
+      "#profileroot > div > div > div > div:nth-child(5) > div.basic-information.profile-left-wrapper.left > div > div.cont.bottom-round > div > ul > li:nth-child(3) > div.user-information-section"
+    ).then((elm) => {
+      LogInfo("Checking for active contract...");
+      const factionId = getFactionId();
+      if (!factionId) {
+        return; // No faction, no contract
+      }
 
-    const now = new Date();
-    const activeContract = contracts.find((contract) => {
-      return (
-        contract.faction_id == factionId &&
-        new Date(contract.contract_start_date) <= now &&
-        (!contract.contract_end_date ||
-          new Date(contract.contract_end_date) > now)
-      );
+      const now = new Date();
+      const activeContract = contracts.find((contract) => {
+        return (
+          contract.faction_id == factionId &&
+          new Date(contract.contract_start_date) <= now &&
+          (!contract.contract_end_date ||
+            new Date(contract.contract_end_date) > now)
+        );
+      });
+
+      if (activeContract) {
+        LogInfo("Inserting active contract section:", activeContract);
+        insertActiveContractSection(activeContract);
+      }
     });
-
-    if (activeContract) {
-      insertActiveContractSection(activeContract);
-    }
   }
 
   function insertActiveContractSection(contract) {
@@ -794,7 +799,10 @@ const SettingsManager = {
   // }
 
   // Fetch from the nuke.family API the shitlist entries for everyone and cache it in GM storage
-  function getShitList() {
+  // Modified to accept serverTimestamp for accurate cache tracking
+  function getShitList(serverTimestamp = null) {
+    const now = Date.now();
+    LogInfo(`Fetching shitlist. Server Timestamp: ${serverTimestamp}`);
     GM_xmlhttpRequest({
       method: "GET",
       url: apiUrl + "/shit-lists",
@@ -803,44 +811,67 @@ const SettingsManager = {
         Authorization: "Bearer " + apiToken,
       },
       onload: function (response) {
-        const responseEntries = JSON.parse(response.responseText)["data"];
+        if (response.status >= 200 && response.status < 300) {
+          const responseEntries = JSON.parse(response.responseText)["data"];
+          let toSave = {};
 
-        let toSave = {};
+          // Save data to cached storage
+          responseEntries.forEach(function (entry, index) {
+            let obj = {};
+            obj.entryId = entry.id;
+            obj.playerName = entry.playerName;
+            obj.playerId = entry.playerId;
+            obj.factionId = entry.factionId;
+            obj.factionName = entry.factionName;
+            obj.isFactionBan = entry.isFactionBan;
+            obj.isApproved = entry.isApproved;
+            obj.shitListCategoryId = entry.shitListCategoryId;
+            obj.reason = entry.reason;
+            obj.updatedAt = entry.updated_at;
+            obj.shitListCategory = entry.shitListCategory;
 
-        // Save data to cached storage
-        responseEntries.forEach(function (entry, index) {
-          let obj = {};
-          obj.entryId = entry.id;
-          obj.playerName = entry.playerName;
-          obj.playerId = entry.playerId;
-          obj.factionId = entry.factionId;
-          obj.factionName = entry.factionName;
-          obj.isFactionBan = entry.isFactionBan;
-          obj.isApproved = entry.isApproved;
-          obj.shitListCategoryId = entry.shitListCategoryId;
-          obj.reason = entry.reason;
-          obj.updatedAt = entry.updated_at;
-          obj.shitListCategory = entry.shitListCategory;
+            // Finish making this object
+            if (entry.isFactionBan)
+              toSave["f" + entry.factionId + "#" + entry.id] = obj;
+            else toSave["p" + entry.playerId + "#" + entry.id] = obj;
+          });
 
-          // Finish making this object
-          if (entry.isFactionBan)
-            toSave["f" + entry.factionId + "#" + entry.id] = obj;
-          else toSave["p" + entry.playerId + "#" + entry.id] = obj;
-        });
-
-        localStorage.shitListEntriesList = JSON.stringify({
-          shitListEntries: toSave,
-          timestamp: Date.now(),
-        });
-        LogInfo("Updated shitlist entries local storage");
-        shitListEntries = toSave;
-        refreshShitList();
+          // Use serverTimestamp (converted to ms) if provided, otherwise use current time (for fallback)
+          const timestampToStore = serverTimestamp
+            ? serverTimestamp * 1000
+            : now;
+          savedDataShitEntries = {
+            shitListEntries: toSave,
+            timestamp: timestampToStore, // Store the server's update time (in ms) or now()
+          };
+          localStorage.shitListEntriesList =
+            JSON.stringify(savedDataShitEntries);
+          LogInfo(
+            `Shitlist updated and stored with timestamp: ${timestampToStore}`
+          );
+          shitListEntries = toSave;
+          // Refresh the display only if the profile page elements are present
+          if (document.getElementById("nfh-shitlist-profile-list")) {
+            refreshShitList();
+          }
+        } else {
+          LogInfo(`Failed to fetch shitlist. Status: ${response.status}`);
+        }
+      },
+      onerror: function (error) {
+        console.error("Error fetching shitlist:", error);
+        LogInfo("Error fetching shitlist.");
       },
     });
   }
 
   // Fetch from the nuke.family API the shitlist categories and cache it in GM storage
-  function getShitListCategories() {
+  // Modified to accept serverTimestamp for accurate cache tracking
+  function getShitListCategories(serverTimestamp = null) {
+    const now = Date.now();
+    LogInfo(
+      `Fetching shitlist categories. Server Timestamp: ${serverTimestamp}`
+    );
     GM_xmlhttpRequest({
       method: "GET",
       url: apiUrl + "/shit-list-categories",
@@ -849,35 +880,62 @@ const SettingsManager = {
         Authorization: "Bearer " + apiToken,
       },
       onload: function (response) {
-        const responseEntries = JSON.parse(response.responseText)["data"];
+        if (response.status >= 200 && response.status < 300) {
+          const responseEntries = JSON.parse(response.responseText)["data"];
+          let toSave = {};
 
-        let toSave = {};
+          LogInfo(response.responseText);
 
-        LogInfo(response.responseText);
+          // Save data to cached storage
+          responseEntries.forEach(function (entry, index) {
+            let obj = {};
+            obj.entryId = entry.id;
+            obj.name = entry.name;
+            obj.description = entry.description;
+            obj.isFactionBan = entry.is_faction;
+            obj.isFriendly = entry.is_friendly;
 
-        // Save data to cached storage
-        responseEntries.forEach(function (entry, index) {
-          let obj = {};
-          obj.entryId = entry.id;
-          obj.name = entry.name;
-          obj.description = entry.description;
-          obj.isFactionBan = entry.is_faction;
-          obj.isFriendly = entry.is_friendly;
+            toSave[entry.id] = obj;
+          });
 
-          toSave[entry.id] = obj;
-        });
-
-        localStorage.shitListCategoriesList = JSON.stringify({
-          shitListCategories: toSave,
-          timestamp: Date.now(),
-        });
-        LogInfo("Updated shitlist categories local storage");
-        shitListCategories = toSave;
+          // Use serverTimestamp (converted to ms) if provided, otherwise use current time (for fallback)
+          const timestampToStore = serverTimestamp
+            ? serverTimestamp * 1000
+            : now;
+          savedDataShitCategories = {
+            shitListCategories: toSave,
+            timestamp: timestampToStore, // Store the server's update time (in ms) or now()
+          };
+          localStorage.shitListCategoriesList = JSON.stringify(
+            savedDataShitCategories
+          );
+          LogInfo(
+            `Shitlist categories updated and stored with timestamp: ${timestampToStore}`
+          );
+          shitListCategories = toSave;
+          // Potentially update settings panel if it's open
+          if (document.querySelector(".nfh-settings-panel")) {
+            // Rebuild or update the settings panel if necessary
+            // For now, just log, as direct update might be complex
+            LogInfo(
+              "Settings panel might need refresh due to category update."
+            );
+          }
+        } else {
+          LogInfo(
+            `Failed to fetch shitlist categories. Status: ${response.status}`
+          );
+        }
+      },
+      onerror: function (error) {
+        console.error("Error fetching shitlist categories:", error);
+        LogInfo("Error fetching shitlist categories.");
       },
     });
   }
 
   // Fetch the players own role that they have on nuke.family via the API
+  // This one doesn't need the new cache check logic as it's checked less frequently
   function getPlayersRoles() {
     GM_xmlhttpRequest({
       method: "GET",
@@ -1938,11 +1996,152 @@ const SettingsManager = {
     localStorage.setItem("nfhLastUpdateCheckTime", currentTime);
   }
 
-  ////// HELPER FUNCTIONS //////
+  // Function to check for cache updates using the new endpoint, throttled to run at most every 5 minutes.
+  async function checkCacheUpdates() {
+    if (!apiToken) {
+      LogInfo("API token not available, skipping cache check.");
+      // Still run the time-based checks as a fallback even without API token
+      performTimeBasedCacheCheck();
+      return;
+    }
 
-  function LogInfo(value) {
+    const now = Date.now();
+    const lastApiCheckTimestamp = parseInt(
+      localStorage.getItem("nfhLastApiCheckTime") || "0"
+    );
+
+    // Check if 5 minutes have passed since the last API check
+    if (now - lastApiCheckTimestamp < CACHE_CHECK_INTERVAL) {
+      LogInfo(
+        `Skipping API cache check, last check was less than ${
+          CACHE_CHECK_INTERVAL / 60000
+        } minutes ago. Running time-based checks instead.`
+      );
+      performTimeBasedCacheCheck(); // Run standard time-based checks if API check is skipped
+      return;
+    }
+
+    LogInfo(
+      "Attempting API cache check (more than 5 minutes since last check)."
+    );
+    try {
+      const response = await new Promise((resolve, reject) => {
+        GM_xmlhttpRequest({
+          method: "GET",
+          url: apiUrl + "/cache/last-updates",
+          headers: {
+            Accept: "application/json",
+            Authorization: "Bearer " + apiToken,
+          },
+          onload: resolve,
+          onerror: reject,
+          ontimeout: reject,
+        });
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        // Successfully checked API, store the current time as the last check time
+        localStorage.setItem("nfhLastApiCheckTime", now.toString());
+        LogInfo(
+          `API cache check successful. Last check time updated to: ${new Date(
+            now
+          ).toISOString()}`
+        );
+
+        const serverTimes = JSON.parse(response.responseText);
+        LogInfo("Server timestamps:", serverTimes);
+
+        // Load local timestamps safely (these are already loaded at script start, but re-accessing is fine)
+        const localContractsTimestamp = savedDataContracts?.timestamp || 0;
+        const localShitlistTimestamp = savedDataShitEntries?.timestamp || 0;
+        const localCategoriesTimestamp =
+          savedDataShitCategories?.timestamp || 0;
+
+        LogInfo("Local timestamps:", {
+          contracts: localContractsTimestamp,
+          shitlist: localShitlistTimestamp,
+          categories: localCategoriesTimestamp,
+        });
+
+        // Compare and fetch if necessary (Convert server time (seconds) to ms for comparison)
+        if (
+          serverTimes.contract_cache_last_update * 1000 >
+          localContractsTimestamp
+        ) {
+          LogInfo("Contracts data is outdated, fetching new data.");
+          getContracts(true, serverTimes.contract_cache_last_update); // Pass server timestamp (still in seconds)
+        }
+        if (
+          serverTimes.shitlist_cache_last_update * 1000 >
+          localShitlistTimestamp
+        ) {
+          LogInfo("Shitlist data is outdated, fetching new data.");
+          getShitList(serverTimes.shitlist_cache_last_update); // Pass server timestamp (still in seconds)
+        }
+        if (
+          serverTimes.shitlist_category_cache_last_update * 1000 >
+          localCategoriesTimestamp
+        ) {
+          LogInfo("Shitlist categories data is outdated, fetching new data.");
+          getShitListCategories(
+            serverTimes.shitlist_category_cache_last_update // Pass server timestamp (still in seconds)
+          );
+        }
+        // After processing API results, also run the time-based checks
+        // This ensures things like the user role (not covered by API check) still get updated periodically
+        LogInfo(
+          "Performing standard time-based checks after successful API check."
+        );
+        performTimeBasedCacheCheck();
+      } else {
+        LogInfo(
+          `Cache check API request failed with status: ${response.status}. Using time-based fallback.`
+        );
+        // Don't update lastApiCheckTimestamp on failure
+        performTimeBasedCacheCheck(); // Fallback to time-based check
+      }
+    } catch (error) {
+      console.error("Cache check API request failed:", error);
+      LogInfo("Cache check API request failed. Using time-based fallback.");
+      // Don't update lastApiCheckTimestamp on failure
+      performTimeBasedCacheCheck(); // Fallback to time-based check
+    }
+  }
+
+  // Function for the original time-based cache checks (fallback)
+  function performTimeBasedCacheCheck() {
+    const now = Date.now();
+    if (
+      !savedDataContracts ||
+      now - (savedDataContracts.timestamp || 0) > 6 * 60 * 60 * 1000 // 6 hours
+    ) {
+      LogInfo("Contracts cache expired (time-based), fetching...");
+      getContracts(true); // Fetch using current time as timestamp
+    }
+    if (
+      !savedDataShitEntries ||
+      now - (savedDataShitEntries.timestamp || 0) > cacheLength * 60 * 1000
+    ) {
+      LogInfo("Shitlist cache expired (time-based), fetching...");
+      getShitList(); // Fetch using current time as timestamp
+    }
+    if (
+      !savedDataShitCategories ||
+      now - (savedDataShitCategories.timestamp || 0) > cacheLength * 60 * 1000
+    ) {
+      LogInfo("Categories cache expired (time-based), fetching...");
+      getShitListCategories(); // Fetch using current time as timestamp
+    }
+  }
+
+  // Run the cache check logic once on script load
+  checkCacheUpdates();
+
+  ////// HELPER FUNCTIONS //////
+  function LogInfo(...values) {
+    if (!debug) return;
     var now = new Date();
-    console.log(": [//* NFH *\\\\] " + now.toISOString(), value);
+    console.log(": [//* NFH *\\\\] " + now.toISOString(), ...values);
   }
 
   function IsPage(pageType) {
