@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.10.0
+// @version      2.10.1
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -21,7 +21,7 @@
 // ONLY LEAVE ACTIVE FOR DEV
 const debug = false;
 
-const DEFAULT_VERSION = "2.10.0";
+const DEFAULT_VERSION = "2.10.1";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -1997,10 +1997,14 @@ const SettingsManager = {
         const match = response.responseText.match(/@version\s+([\d.]+)/);
         if (match) {
           const githubVersion = match[1];
-          if (githubVersion > CURRENT_VERSION) {
+          // Semantic version comparison
+          const isNewer = compareVersions(githubVersion, CURRENT_VERSION);
+          if (isNewer) {
             if (
               confirm(
-                "A new version of the Nuclear Family Helper script is available. Do you want to update now?"
+                "A new version of the Nuclear Family Helper script is available (v" +
+                  githubVersion +
+                  "). Do you want to update now?"
               )
             ) {
               window.location.href = GITHUB_URL;
@@ -2020,6 +2024,21 @@ const SettingsManager = {
 
     // Update the last check time
     localStorage.setItem("nfhLastUpdateCheckTime", currentTime);
+  }
+
+  // Function to compare version strings (e.g., "2.10.0" > "2.9.1")
+  function compareVersions(v1, v2) {
+    const v1Parts = v1.split(".").map(Number);
+    const v2Parts = v2.split(".").map(Number);
+    const len = Math.max(v1Parts.length, v2Parts.length);
+
+    for (let i = 0; i < len; i++) {
+      const v1Part = i < v1Parts.length ? v1Parts[i] : 0;
+      const v2Part = i < v2Parts.length ? v2Parts[i] : 0;
+      if (v1Part > v2Part) return true;
+      if (v1Part < v2Part) return false;
+    }
+    return false; // Versions are equal
   }
 
   // Function to check for cache updates using the new endpoint, throttled to run at most every 5 minutes.
