@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.9.1
+// @version      2.10.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -21,7 +21,7 @@
 // ONLY LEAVE ACTIVE FOR DEV
 const debug = false;
 
-const DEFAULT_VERSION = "2.9.1";
+const DEFAULT_VERSION = "2.10.0";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -179,9 +179,35 @@ const SettingsManager = {
 
   // Inject styles onto page
   const styles = `
+    /* Theme-aware CSS variables */
+    :root {
+        --nfh-bg: #1a1a1a;
+        --nfh-text: #ffffff;
+        --nfh-section-bg: #2a2a2a;
+        --nfh-container-bg: #222;
+        --nfh-btn-bg: #333;
+        --nfh-btn-hover: #444;
+        --nfh-border: #444;
+        --nfh-list-key: #b0b0b0;
+        --nfh-hidden-count: #999;
+    }
+
+    /* Light theme overrides */
+    body:not(.dark-mode) {
+        --nfh-bg: #f5f5f5;
+        --nfh-text: #333333;
+        --nfh-section-bg: #ffffff;
+        --nfh-container-bg: #eaeaea;
+        --nfh-btn-bg: #dddddd;
+        --nfh-btn-hover: #cccccc;
+        --nfh-border: #cccccc;
+        --nfh-list-key: #666666;
+        --nfh-hidden-count: #666666;
+    }
+
     .nfh-section {
         margin-top: 10px;
-        background-color: #1a1a1a;
+        background-color: var(--nfh-bg);
         border-radius: 5px;
         overflow: hidden;
         font-family: 'Roboto', sans-serif;
@@ -191,13 +217,13 @@ const SettingsManager = {
         padding: 8px 12px;
         font-weight: 600;
         font-size: 14px;
-        background-color: #2a2a2a;
-        color: #e0e0e0;
+        background-color: var(--nfh-section-bg);
+        color: var(--nfh-text);
     }
 
     .nfh-section-container {
         padding: 10px 12px !important;
-        background-color: #222;
+        background-color: var(--nfh-container-bg);
     }
 
     .nfh-section-list {
@@ -209,16 +235,16 @@ const SettingsManager = {
     .nfh-section-list li {
         margin-bottom: 8px;
         padding: 8px 10px 8px 20px;
-        background-color: #2a2a2a;
+        background-color: var(--nfh-section-bg);
         border-radius: 3px;
         font-size: 13px;
         line-height: 1.4;
-        color: #e0e0e0;
+        color: var(--nfh-text);
         position: relative;
     }
 
     .nfh-shitlist-entry-profile-container {
-      background-color: #222 !important;
+      background-color: var(--nfh-container-bg) !important;
       border-bottom: 0px !important;
     }
 
@@ -234,11 +260,11 @@ const SettingsManager = {
     .nfh-shitlist-profile-list li {
       margin-bottom: 8px;
         padding: 8px 10px 8px 20px;
-        background-color: #2a2a2a;
+        background-color: var(--nfh-section-bg);
         border-radius: 3px;
         font-size: 13px;
         line-height: 1.4;
-        color: #e0e0e0;
+        color: var(--nfh-text);
         position: relative;
     }
 
@@ -253,7 +279,7 @@ const SettingsManager = {
 
     .nfh-list-key {
         font-weight: 600;
-        color: #b0b0b0;
+        color: var(--nfh-list-key);
         display: inline-block;
         width: 100px;
         vertical-align: top;
@@ -267,7 +293,7 @@ const SettingsManager = {
 
     .nfh-shitlist-entry-container {
         border-left: 3px solid #4caf50;
-        background-color: #222
+        background-color: var(--nfh-container-bg);
     }
 
     .nfh-extra-shitlist-entry-condition {
@@ -277,8 +303,8 @@ const SettingsManager = {
     }
 
     .nfh-btn {
-        background-color: #333;
-        color: #e0e0e0;
+        background-color: var(--nfh-btn-bg);
+        color: var(--nfh-text);
         border: none;
         padding: 6px 10px;
         border-radius: 3px;
@@ -292,7 +318,7 @@ const SettingsManager = {
     }
 
     .nfh-btn:hover {
-        background-color: #444;
+        background-color: var(--nfh-btn-hover);
     }
     
     .nfh-shitlist-entry-profile-container-friendly {
@@ -314,7 +340,7 @@ const SettingsManager = {
 
     .nfh-settings-cog {
         cursor: pointer;
-        color: #e0e0e0;
+        color: var(--nfh-text);
         font-size: 16px;
         margin-right: 10px;
         transition: transform 0.3s ease;
@@ -326,10 +352,10 @@ const SettingsManager = {
     }
 
     .nfh-settings-panel {
-        background-color: #2a2a2a;
+        background-color: var(--nfh-section-bg);
         border-radius: 5px;
         padding: 15px;
-        border: 1px solid #444;
+        border: 1px solid var(--nfh-border);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         position: fixed;
         z-index: 9999;
@@ -354,8 +380,8 @@ const SettingsManager = {
         font-size: 14px;
         font-weight: 600;
         margin-bottom: 10px;
-        color: #e0e0e0;
-        border-bottom: 1px solid #444;
+        color: var(--nfh-text);
+        border-bottom: 1px solid var(--nfh-border);
         padding-bottom: 5px;
     }
 
@@ -369,7 +395,7 @@ const SettingsManager = {
     }
 
     .nfh-category-item:hover {
-        background-color: #333;
+        background-color: var(--nfh-btn-bg);
     }
 
     .nfh-category-item input[type="checkbox"] {
@@ -387,14 +413,14 @@ const SettingsManager = {
 
     .nfh-hidden-count {
         font-size: 11px;
-        color: #999;
+        color: var(--nfh-hidden-count);
         margin-top: 5px;
         font-style: italic;
     }
 
     .nfh-close-settings {
-        background-color: #333;
-        color: #e0e0e0;
+        background-color: var(--nfh-btn-bg);
+        color: var(--nfh-text);
         border: none;
         padding: 5px 10px;
         border-radius: 3px;
@@ -406,7 +432,7 @@ const SettingsManager = {
     }
 
     .nfh-close-settings:hover {
-        background-color: #444;
+        background-color: var(--nfh-btn-hover);
     }
 `;
 
