@@ -1696,6 +1696,106 @@ const SettingsManager = {
     description.innerText = category.description;
   }
 
+  function showShitlistWarningDialogue(onConfirm) {
+    // Create overlay
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+    overlay.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+    overlay.style.zIndex = "10000";
+    overlay.style.display = "flex";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+
+    // Create dialogue box
+    const dialogue = document.createElement("div");
+    dialogue.style.backgroundColor = "#2a2a2a";
+    dialogue.style.border = "2px solid #444";
+    dialogue.style.borderRadius = "8px";
+    dialogue.style.padding = "25px";
+    dialogue.style.maxWidth = "500px";
+    dialogue.style.color = "#ddd";
+    dialogue.style.fontFamily = "Arial, sans-serif";
+    dialogue.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.5)";
+
+    // Create warning content
+    const title = document.createElement("h3");
+    title.textContent = "⚠️ Shitlist Submission Warning";
+    title.style.color = "#ff6b6b";
+    title.style.marginTop = "0";
+    title.style.marginBottom = "15px";
+    title.style.fontSize = "18px";
+
+    const content = document.createElement("div");
+    content.innerHTML = `
+      <p><strong>Please ensure you provide a detailed explanation:</strong></p>
+      <ul style="margin-left: 20px; line-height: 1.6; list-style-type: disc !important; padding-left: 20px;">
+        <li style="display: list-item !important; list-style-type: disc !important; margin-bottom: 8px;">All shitlist entries require a clear, detailed reason</li>
+        <li style="display: list-item !important; list-style-type: disc !important; margin-bottom: 8px;"><strong>For "buy mugging" reports:</strong> You MUST include a log showing both the buy transaction AND the attack entry, or your report will be rejected</li>
+        <li style="display: list-item !important; list-style-type: disc !important; margin-bottom: 8px;">Vague or incomplete reasons will result in rejection</li>
+        <li style="display: list-item !important; list-style-type: disc !important; margin-bottom: 8px;">Review your submission carefully before proceeding</li>
+      </ul>
+    `;
+    content.style.marginBottom = "20px";
+    content.style.lineHeight = "1.5";
+
+    // Create button container
+    const buttonContainer = document.createElement("div");
+    buttonContainer.style.display = "flex";
+    buttonContainer.style.gap = "10px";
+    buttonContainer.style.justifyContent = "flex-end";
+
+    // Create buttons
+    const proceedBtn = document.createElement("button");
+    proceedBtn.textContent = "I Understand - Proceed";
+    proceedBtn.classList.add("torn-btn");
+    proceedBtn.style.backgroundColor = "#28a745";
+    proceedBtn.style.border = "none";
+    proceedBtn.style.borderRadius = "4px";
+    proceedBtn.style.color = "white";
+    proceedBtn.style.cursor = "pointer";
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.classList.add("torn-btn");
+    cancelBtn.style.backgroundColor = "#6c757d";
+    cancelBtn.style.border = "none";
+    cancelBtn.style.borderRadius = "4px";
+    cancelBtn.style.color = "white";
+    cancelBtn.style.cursor = "pointer";
+
+    // Add event listeners
+    proceedBtn.addEventListener("click", function() {
+      document.body.removeChild(overlay);
+      onConfirm();
+    });
+
+    cancelBtn.addEventListener("click", function() {
+      document.body.removeChild(overlay);
+    });
+
+    // Close on overlay click
+    overlay.addEventListener("click", function(e) {
+      if (e.target === overlay) {
+        document.body.removeChild(overlay);
+      }
+    });
+
+    // Assemble dialogue
+    buttonContainer.appendChild(cancelBtn);
+    buttonContainer.appendChild(proceedBtn);
+    dialogue.appendChild(title);
+    dialogue.appendChild(content);
+    dialogue.appendChild(buttonContainer);
+    overlay.appendChild(dialogue);
+
+    // Add to page
+    document.body.appendChild(overlay);
+  }
+
   function buildShitListAddContainer(firstLoad = false) {
     // This will contain a mini form to add a new shitlist entry
     // The form will have a dropdown for the category, a text input for the reason, and a submit button
@@ -2039,10 +2139,12 @@ const SettingsManager = {
     let shitListAddShitListContainer = buildShitListAddContainer(true);
 
     btnAddToShitList.addEventListener("click", function () {
-      buildShitListAddContainer(false);
-
-      // Hide the button
-      btnAddToShitList.style.display = "none";
+      // Show warning dialogue first
+      showShitlistWarningDialogue(() => {
+        buildShitListAddContainer(false);
+        // Hide the button
+        btnAddToShitList.style.display = "none";
+      });
     });
 
     // Add a success message that is outside of the container
