@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.11.10
+// @version      2.12.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -221,7 +221,7 @@ if (isPda && typeof window.GM_xmlhttpRequest === "undefined") {
   })(window, Object, DOMException, AbortController, Promise, localStorage);
 }
 
-const DEFAULT_VERSION = "2.10.1";
+const DEFAULT_VERSION = "2.12.0";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -1768,17 +1768,17 @@ const SettingsManager = {
     cancelBtn.style.cursor = "pointer";
 
     // Add event listeners
-    proceedBtn.addEventListener("click", function() {
+    proceedBtn.addEventListener("click", function () {
       document.body.removeChild(overlay);
       onConfirm();
     });
 
-    cancelBtn.addEventListener("click", function() {
+    cancelBtn.addEventListener("click", function () {
       document.body.removeChild(overlay);
     });
 
     // Close on overlay click
-    overlay.addEventListener("click", function(e) {
+    overlay.addEventListener("click", function (e) {
       if (e.target === overlay) {
         document.body.removeChild(overlay);
       }
@@ -1900,6 +1900,13 @@ const SettingsManager = {
       // Add event listener to the submit button
       let submit = document.getElementById("shitlist-add-submit");
       submit.addEventListener("click", function () {
+        // Prevent double-click submissions
+        if (submit.disabled) {
+          return;
+        }
+        submit.disabled = true;
+        submit.innerText = "Submitting...";
+
         // Get the selected category
         let selectedCategoryId = document.getElementById(
           "shitlist-category-select"
@@ -1927,6 +1934,9 @@ const SettingsManager = {
         if (!selectedCategoryId || !reason || reason.trim() === "") {
           document.getElementById("shitlist-add-error").innerText =
             "Please ensure you select a category and provide a reason/explanation for the shitlisting";
+          // Re-enable the button since validation failed
+          submit.disabled = false;
+          submit.innerText = "Submit to Shitlist";
           return;
         }
 
@@ -1973,6 +1983,9 @@ const SettingsManager = {
               document.getElementById("shitlist-add-error").innerText =
                 "There was an error submitting your shitlisting. Please contact Fogest for help if this persists." +
                 errorData.message;
+              // Re-enable the button on error
+              submit.disabled = false;
+              submit.innerText = "Submit to Shitlist";
             }
           },
           onerror: function (error) {
@@ -1984,6 +1997,9 @@ const SettingsManager = {
             document.getElementById("shitlist-add-error").innerText =
               "There was an error submitting your shitlisting. Please contact Fogest for help if this persists." +
               errorData.message;
+            // Re-enable the button on error
+            submit.disabled = false;
+            submit.innerText = "Submit to Shitlist";
           },
         });
       });
