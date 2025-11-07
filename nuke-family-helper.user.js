@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.12.0
+// @version      2.13.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 // ONLY LEAVE ACTIVE FOR DEV
-const debug = false;
+const debug = true;
 
 // -------------------------------------------------------------------
 // Detect if this script is running inside the TornPDA mobile app and,
@@ -221,7 +221,7 @@ if (isPda && typeof window.GM_xmlhttpRequest === "undefined") {
   })(window, Object, DOMException, AbortController, Promise, localStorage);
 }
 
-const DEFAULT_VERSION = "2.12.0";
+const DEFAULT_VERSION = "2.13.0";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -865,7 +865,7 @@ const SettingsManager = {
     // Check if factionId is available before proceeding
     LogInfo("Waiting for faction info to load before checking contracts...");
     waitForElm(
-      "#profileroot > div > div > div > div:nth-child(5) > div.basic-information.profile-left-wrapper.left > div > div.cont.bottom-round > div > ul > li:nth-child(3) > div.user-information-section"
+      "div.basic-information.profile-left-wrapper.left > div > div.cont.bottom-round > div > ul"
     ).then((elm) => {
       LogInfo("Checking for active contract...");
       const factionId = getFactionId();
@@ -874,13 +874,32 @@ const SettingsManager = {
       }
 
       const now = new Date();
+      const currentPlayerId = getPlayerId();
+      LogInfo("Current Player ID:", currentPlayerId);
+      LogInfo("Faction ID:", factionId);
+      LogInfo("Current Date:", now);
+
       const activeContract = contracts.find((contract) => {
-        return (
-          contract.faction_id == factionId &&
+        // Check faction and date requirements
+        const factionMatches = contract.faction_id == factionId;
+        const dateValid =
           new Date(contract.contract_start_date) <= now &&
           (!contract.contract_end_date ||
-            new Date(contract.contract_end_date) > now)
-        );
+            new Date(contract.contract_end_date) > now);
+
+        // Check focus_players filter
+        // If focus_players is empty or not defined, contract applies to everyone in faction
+        // If focus_players has values, only show to players in that list
+        let playerMatches = true;
+        if (contract.focus_players && contract.focus_players.trim() !== "") {
+          // Parse CSV string of player IDs
+          const focusPlayerIds = contract.focus_players
+            .split(",")
+            .map((id) => id.trim());
+          playerMatches = focusPlayerIds.includes(currentPlayerId);
+        }
+
+        return factionMatches && dateValid && playerMatches;
       });
 
       if (activeContract) {
