@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.13.0
+// @version      2.13.1
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
 // @match        https://www.torn.com/profiles.php*
+// @match        https://www.torn.com/hospitalview.php*
 // @match				 https://nuke.family/auth/token-generation*
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAsVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAADAgEIBwIJCAILCQMODAQUEQUYFQcaFgcfGgggGwklIAotJgwyKg46MhA8MxBKPxRQRBZgUhthUhthUxt1ZCB9aiOEcCSIdCaQeyihiSyiiS21mjLBpDXFpzbGqDfHqTfIqjjTszrXtzzZuTzlw0DmxEDnxEDpxkHuy0LxzUNZTIHlAAAAD3RSTlMAAh4tMVtig4WRlqvq8v4ZRfBIAAABcElEQVQ4y4VT2ZKCMBBEReTSVhEX8T5BFMVb8/8ftokhJB5b2w9U9VFkMpnRNImSbpiWZRp6SfuGiu0ih2tXPuyy04CChlN+9at1vKFeVf0aVX5Um5Hai+8np470O6fEVxJVIDgQspKBFSGHAMhPKdfhU5/ce8Lv3Sk9+KjzSh0gIQwbEdg8aQI4z/s3MCEcY+6PczpBg/XDRjPLlV2L+a1dTrMmbNpfFyMisGCBRUFHcEuaDsSFsmeBfUFjQNcMIBXCOehHUT84C54ChmYCNyHM+xdCLv254DfA1Cx4xS/DiH2jsBA8WDSggAdUxWJHSPAjVMVkRaoJWuSLYLBrSnRnYTjrqorOGiWxZjWsFYE2ira6wODBAo+BVGz+WAJbfrmtHM1K/twcU3H9qVAcMTBPtI8icGzng1suRo5hWTSQLLlSVYcawVUGrgE+xhrDTAay4avPF6c5ilP6sLc0HjXfF0eunud9X73/l/fP9f8FWPxZz4MGj9YAAAAASUVORK5CYII=
 // @run-at       document-end
@@ -19,7 +20,7 @@
 // ==/UserScript==
 
 // ONLY LEAVE ACTIVE FOR DEV
-const debug = true;
+const debug = false;
 
 // -------------------------------------------------------------------
 // Detect if this script is running inside the TornPDA mobile app and,
@@ -221,7 +222,7 @@ if (isPda && typeof window.GM_xmlhttpRequest === "undefined") {
   })(window, Object, DOMException, AbortController, Promise, localStorage);
 }
 
-const DEFAULT_VERSION = "2.13.0";
+const DEFAULT_VERSION = "2.13.1";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -297,7 +298,6 @@ if (debug) {
   mapPageTypeAddress[PageType.NukeFamily3rdParty] =
     "http://nuke.test/auth/token-generation";
 }
-console.log(mapPageTypeAddress);
 
 var mapPageAddressEndWith = {
   [PageType.FactionControl]: "/tab=controls",
@@ -530,6 +530,19 @@ const SettingsManager = {
       border-left: 0px !important;
     }
 
+    /* Hospital row highlight styles */
+    .nfh-hospital-contract {
+      background-color: #20b2aa7d !important;
+    }
+
+    .nfh-hospital-friendly {
+      background-color: #009d0075 !important;
+    }
+
+    .nfh-hospital-shitlist {
+      background-color: #f933337d !important;
+    }
+
     /* Settings panel styles */
     .nfh-shitlist-header {
         display: flex;
@@ -740,6 +753,7 @@ const SettingsManager = {
   const anchor = getAnchor();
 
   let isNukeFamilyInjected = false;
+  let isHospitalObserverSetup = false;
 
   // Start observer, to inject within dynamically loaded content
   var observer = new MutationObserver(function (mutations, observer) {
@@ -754,6 +768,11 @@ const SettingsManager = {
             insertPayoutHelperButtonForDrugs();
           } else if (IsPage(PageType.FactionControl)) {
             insertPayoutHelperButtonForCash();
+          }
+
+          if (IsPage(PageType.Hospital) && !isHospitalObserverSetup) {
+            isHospitalObserverSetup = true;
+            observeHospitalChanges();
           }
         }
       }
@@ -862,6 +881,9 @@ const SettingsManager = {
   }
 
   function checkAndInsertActiveContract() {
+    if (!IsPage(PageType.Profile)) {
+      return; // Only run on profile pages
+    }
     // Check if factionId is available before proceeding
     LogInfo("Waiting for faction info to load before checking contracts...");
     waitForElm(
@@ -2602,6 +2624,257 @@ const SettingsManager = {
         childList: true,
         subtree: true,
       });
+    });
+  }
+
+  /**
+   * Extract player ID and faction ID from a hospital row
+   * @param {HTMLElement} li - The hospital list item element
+   * @returns {{playerId: string|null, factionId: string|null}}
+   */
+  function getPlayerAndFactionFromHospitalRow(li) {
+    let playerId = null;
+    let factionId = null;
+
+    try {
+      // Extract player ID from <a class="user name" href="/profiles.php?XID=XXXXX">
+      const playerLink = li.querySelector('a.user.name[href*="profiles.php"]');
+      if (playerLink && playerLink.href) {
+        const playerMatch = playerLink.href.match(/XID=(\d+)/);
+        if (playerMatch) {
+          playerId = playerMatch[1];
+        }
+      }
+
+      // Extract faction ID from <a class="user faction" href="/factions.php?step=profile&ID=XXXXX">
+      const factionLink = li.querySelector(
+        'a.user.faction[href*="factions.php"]'
+      );
+      if (factionLink && factionLink.href) {
+        const factionMatch = factionLink.href.match(/ID=(\d+)/);
+        if (factionMatch) {
+          factionId = factionMatch[1];
+        }
+      }
+    } catch (error) {
+      LogInfo("Error parsing hospital row: " + error.message);
+    }
+
+    return { playerId, factionId };
+  }
+
+  /**
+   * Check if a player has an active contract
+   * @param {string} playerId - The player's ID
+   * @param {string} factionId - The player's faction ID (can be null)
+   * @param {Array} contracts - Array of contract objects
+   * @returns {boolean}
+   */
+  function checkActiveContractForHospital(playerId, factionId, contracts) {
+    if (!factionId || !contracts || contracts.length === 0) {
+      return false;
+    }
+
+    const now = new Date();
+
+    const activeContract = contracts.find((contract) => {
+      // Check 1: Faction ID must match
+      const factionMatches = contract.faction_id == factionId;
+
+      // Check 2: Date must be valid (within start and end date)
+      const dateValid =
+        new Date(contract.contract_start_date) <= now &&
+        (!contract.contract_end_date ||
+          new Date(contract.contract_end_date) > now);
+
+      // Check 3: If focus_players is specified, player must be in the list
+      let playerMatches = true;
+      if (contract.focus_players && contract.focus_players.trim() !== "") {
+        const focusPlayerIds = contract.focus_players
+          .split(",")
+          .map((id) => id.trim());
+        playerMatches = focusPlayerIds.includes(playerId);
+      }
+
+      return factionMatches && dateValid && playerMatches;
+    });
+
+    return !!activeContract;
+  }
+
+  /**
+   * Check shitlist status for a player
+   * @param {string} playerId - The player's ID
+   * @param {string} factionId - The player's faction ID (can be null)
+   * @param {Object} shitListEntries - Object containing shitlist entries
+   * @returns {string|null} - Returns 'friendly', 'shitlist', or null
+   */
+  function checkShitlistStatusForHospital(
+    playerId,
+    factionId,
+    shitListEntries
+  ) {
+    if (!shitListEntries) {
+      return null;
+    }
+
+    // Check faction-level entries first (if faction exists)
+    if (factionId) {
+      for (let key in shitListEntries) {
+        if (key.startsWith("f" + factionId + "#")) {
+          let entry = shitListEntries[key];
+
+          // Respect category visibility settings
+          if (
+            SettingsManager.isCategoryVisible(
+              entry.shitListCategoryId,
+              entry.isFactionBan
+            )
+          ) {
+            // Check if this is a friendly faction
+            if (entry.shitListCategory && entry.shitListCategory.is_friendly) {
+              return "friendly";
+            } else {
+              return "shitlist";
+            }
+          }
+        }
+      }
+    }
+
+    // Check player-level entries (player bans are never friendly)
+    if (playerId) {
+      for (let key in shitListEntries) {
+        if (key.startsWith("p" + playerId + "#")) {
+          let entry = shitListEntries[key];
+
+          // Respect category visibility settings
+          if (
+            SettingsManager.isCategoryVisible(
+              entry.shitListCategoryId,
+              entry.isFactionBan
+            )
+          ) {
+            return "shitlist";
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Apply color styling to a hospital row
+   * @param {HTMLElement} li - The hospital list item element
+   * @param {string} status - The status: 'contract', 'friendly', or 'shitlist'
+   */
+  function applyHospitalRowColor(li, status) {
+    // Remove any existing hospital color classes
+    li.classList.remove(
+      "nfh-hospital-contract",
+      "nfh-hospital-friendly",
+      "nfh-hospital-shitlist"
+    );
+
+    // Apply the appropriate class
+    if (status === "contract") {
+      li.classList.add("nfh-hospital-contract");
+    } else if (status === "friendly") {
+      li.classList.add("nfh-hospital-friendly");
+    } else if (status === "shitlist") {
+      li.classList.add("nfh-hospital-shitlist");
+    }
+  }
+
+  /**
+   * Process all hospital rows and apply appropriate colors
+   */
+  function processHospitalRows() {
+    LogInfo("Processing hospital rows...");
+
+    // Use global variables that are already loaded
+    if (!contracts && !shitListEntries) {
+      LogInfo("No contracts or shitlist data available");
+      return;
+    }
+
+    // Find all hospital rows
+    const userInfoList = document.querySelector(".user-info-list-wrap");
+    if (!userInfoList) {
+      LogInfo("Hospital list not found");
+      return;
+    }
+
+    const listItems = userInfoList.querySelectorAll("li");
+    LogInfo(`Found ${listItems.length} hospital rows`);
+
+    listItems.forEach((li) => {
+      // Skip if already processed
+      if (li.classList.contains("nfh-hospital-processed")) {
+        return;
+      }
+
+      // Extract player and faction IDs
+      const { playerId, factionId } = getPlayerAndFactionFromHospitalRow(li);
+
+      if (!playerId) {
+        LogInfo("Could not extract player ID from row");
+        return;
+      }
+
+      LogInfo(`Processing player ${playerId}, faction ${factionId || "none"}`);
+
+      // Priority 1: Check for active contract (highest priority)
+      if (checkActiveContractForHospital(playerId, factionId, contracts)) {
+        LogInfo(`Player ${playerId} has active contract - applying teal`);
+        applyHospitalRowColor(li, "contract");
+        li.classList.add("nfh-hospital-processed");
+        return;
+      }
+
+      // Priority 2 & 3: Check shitlist (friendly or regular)
+      const shitlistStatus = checkShitlistStatusForHospital(
+        playerId,
+        factionId,
+        shitListEntries
+      );
+      if (shitlistStatus) {
+        LogInfo(`Player ${playerId} has shitlist status: ${shitlistStatus}`);
+        applyHospitalRowColor(li, shitlistStatus);
+        li.classList.add("nfh-hospital-processed");
+        return;
+      }
+
+      // Mark as processed even if no status found
+      li.classList.add("nfh-hospital-processed");
+    });
+  }
+
+  /**
+   * Setup MutationObserver to watch for hospital list changes
+   */
+  function observeHospitalChanges() {
+    LogInfo("Setting up hospital observer...");
+
+    waitForElm(".user-info-list-wrap").then((userInfoList) => {
+      LogInfo("Hospital list found, processing initial rows...");
+
+      // Process initial rows
+      processHospitalRows();
+
+      // Setup observer for dynamic content
+      const observer = new MutationObserver((mutations) => {
+        LogInfo("Hospital list changed, reprocessing rows...");
+        processHospitalRows();
+      });
+
+      observer.observe(userInfoList, {
+        childList: true,
+        subtree: true,
+      });
+
+      LogInfo("Hospital observer active");
     });
   }
 
