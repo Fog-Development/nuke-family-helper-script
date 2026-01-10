@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.13.1
+// @version      2.13.2
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -222,7 +222,7 @@ if (isPda && typeof window.GM_xmlhttpRequest === "undefined") {
   })(window, Object, DOMException, AbortController, Promise, localStorage);
 }
 
-const DEFAULT_VERSION = "2.13.1";
+const DEFAULT_VERSION = "2.13.2";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -904,10 +904,14 @@ const SettingsManager = {
       const activeContract = contracts.find((contract) => {
         // Check faction and date requirements
         const factionMatches = contract.faction_id == factionId;
-        const dateValid =
-          new Date(contract.contract_start_date) <= now &&
-          (!contract.contract_end_date ||
-            new Date(contract.contract_end_date) > now);
+        // Parse dates as UTC by appending 'Z' (API returns UTC times)
+        const startDate = new Date(
+          contract.contract_start_date.replace(" ", "T") + "Z"
+        );
+        const endDate = contract.contract_end_date
+          ? new Date(contract.contract_end_date.replace(" ", "T") + "Z")
+          : null;
+        const dateValid = startDate <= now && (!endDate || endDate > now);
 
         // Check focus_players filter
         // If focus_players is empty or not defined, contract applies to everyone in faction
@@ -932,10 +936,16 @@ const SettingsManager = {
   }
 
   function insertActiveContractSection(contract) {
-    waitForElm(
-      "#profileroot > div > div > div > div:nth-child(1) > div.profile-left-wrapper.left > div"
-    ).then((elm) => {
-      const injectPoint = elm;
+    // Prevent duplicate insertion
+    if (document.querySelector(".nfh-active-contract")) {
+      return;
+    }
+
+    waitForElm("div.profile-left-wrapper").then((elm) => {
+      // Double-check after waiting for element
+      if (document.querySelector(".nfh-active-contract")) {
+        return;
+      }
 
       // Build the main wrapper div
       let activeContractDiv = buildActiveContractDiv();
@@ -955,10 +965,13 @@ const SettingsManager = {
       activeContractDiv.appendChild(activeContractTitle);
       activeContractDiv.appendChild(contractInfoContainer);
 
-      injectPoint.parentNode.insertBefore(
-        activeContractDiv,
-        injectPoint.nextSibling
-      );
+      // Insert after the first child of profile-left-wrapper
+      const firstChild = elm.firstChild;
+      if (firstChild && firstChild.nextSibling) {
+        elm.insertBefore(activeContractDiv, firstChild.nextSibling);
+      } else {
+        elm.appendChild(activeContractDiv);
+      }
     });
   }
 
