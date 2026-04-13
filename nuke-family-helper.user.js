@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.13.2
+// @version      2.14.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -94,7 +94,7 @@ if (isPda && typeof window.GM_xmlhttpRequest === "undefined") {
       function notify(text, title, onclick, ondone) {
         if (!text)
           throw new TypeError(
-            "No notification text supplied to GM_notification"
+            "No notification text supplied to GM_notification",
           );
         confirm(`${title ?? "No title specified"}\n${text}`) && onclick?.();
         ondone?.();
@@ -173,7 +173,7 @@ if (isPda && typeof window.GM_xmlhttpRequest === "undefined") {
           if (!url) rej("No URL supplied");
           abortSignal.addEventListener("abort", () => rej("Request aborted"));
           timeoutSignal.addEventListener("abort", () =>
-            rej("Request timed out")
+            rej("Request timed out"),
           );
           if (!method || method.toLowerCase() !== "post") {
             PDA_httpGet(url).then(res).catch(rej);
@@ -222,7 +222,7 @@ if (isPda && typeof window.GM_xmlhttpRequest === "undefined") {
   })(window, Object, DOMException, AbortController, Promise, localStorage);
 }
 
-const DEFAULT_VERSION = "2.13.2";
+const DEFAULT_VERSION = "2.14.0";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -325,7 +325,7 @@ const SettingsManager = {
   getHiddenCategories: () => {
     try {
       return JSON.parse(
-        localStorage.getItem("hiddenShitlistCategories") || "[]"
+        localStorage.getItem("hiddenShitlistCategories") || "[]",
       );
     } catch (e) {
       console.error("Error parsing hidden categories:", e);
@@ -345,7 +345,7 @@ const SettingsManager = {
 
     console.log(
       "Is category visible?",
-      !SettingsManager.getHiddenCategories().includes(String(categoryId))
+      !SettingsManager.getHiddenCategories().includes(String(categoryId)),
     );
 
     // Check if category is in hidden list
@@ -371,6 +371,20 @@ const SettingsManager = {
 
     SettingsManager.setHiddenCategories(updated);
     return updated;
+  },
+
+  isReputationVisible: () => {
+    try {
+      const stored = localStorage.getItem("nfhShowReputation");
+      // Default to true (enabled) if not set
+      return stored === null ? true : stored === "true";
+    } catch (e) {
+      return true;
+    }
+  },
+
+  setReputationVisible: (isVisible) => {
+    localStorage.setItem("nfhShowReputation", String(isVisible));
   },
 };
 
@@ -658,18 +672,18 @@ const SettingsManager = {
   try {
     savedDataShitEntries = JSON.parse(
       localStorage.shitListEntriesList ||
-        '{"shitListEntries" : {}, "timestamp" : 0}'
+        '{"shitListEntries" : {}, "timestamp" : 0}',
     );
     savedDataShitCategories = JSON.parse(
       localStorage.shitListCategoriesList ||
-        '{"shitListCategories" : {}, "timestamp" : 0}'
+        '{"shitListCategories" : {}, "timestamp" : 0}',
     );
     savedDataNfhUserRole = JSON.parse(
-      localStorage.nfhUserRole || '{"role" : "", "timestamp" : 0}'
+      localStorage.nfhUserRole || '{"role" : "", "timestamp" : 0}',
     );
     // Load saved contracts data
     savedDataContracts = JSON.parse(
-      localStorage.contractsList || '{"contracts": [], "timestamp": 0}'
+      localStorage.contractsList || '{"contracts": [], "timestamp": 0}',
     );
 
     shitListEntries = savedDataShitEntries.shitListEntries;
@@ -709,7 +723,7 @@ const SettingsManager = {
 
   if (!apiToken && !GM_getValue("apiTokenFirstTime", false)) {
     alert(
-      "No Nuke.Family API key set yet. You require a https://nuke.family account and key, I'll open a new tab for you to generate the token and will automatically save it for you! Create an account if needed"
+      "No Nuke.Family API key set yet. You require a https://nuke.family account and key, I'll open a new tab for you to generate the token and will automatically save it for you! Create an account if needed",
     );
     GM_setValue("apiTokenFirstTime", true);
     // When running inside Torn PDA there is no concept of a new browser tab.
@@ -720,17 +734,17 @@ const SettingsManager = {
       window.open("https://nuke.family/auth/token-generation", "_blank");
     }
     alert(
-      'You will only be asked to enter this key once from the automatic page. If you need to change it later, you can do so by clicking the "Change Payout Nuke Family Key" button on the faction "controls" page.'
+      'You will only be asked to enter this key once from the automatic page. If you need to change it later, you can do so by clicking the "Change Payout Nuke Family Key" button on the faction "controls" page.',
     );
   } else if (!apiToken && !IsPage(PageType.NukeFamily3rdParty)) {
     let maybeApiToken = prompt(
-      "Please enter your Nuke API key from Fogest's site (https://nuke.family/user)"
+      "Please enter your Nuke API key from Fogest's site (https://nuke.family/user)",
     );
     // If the user cancels, maybeApiToken could be null
     if (maybeApiToken && maybeApiToken.length < 30) {
       alert(
         "That key is too short. Please ensure you are using your Nuke.Family " +
-          "key (around 50 characters), NOT your Torn API key!"
+          "key (around 50 characters), NOT your Torn API key!",
       );
     } else if (maybeApiToken) {
       // Only store if the token is valid length
@@ -834,7 +848,7 @@ const SettingsManager = {
     // Always fetch if forceFetch is true (triggered by timestamp mismatch or fallback)
     if (forceFetch) {
       LogInfo(
-        `Fetching contracts. Forced: ${forceFetch}, Server Timestamp: ${serverTimestamp}`
+        `Fetching contracts. Forced: ${forceFetch}, Server Timestamp: ${serverTimestamp}`,
       );
       GM_xmlhttpRequest({
         method: "GET",
@@ -857,7 +871,7 @@ const SettingsManager = {
             localStorage.contractsList = JSON.stringify(savedDataContracts);
             contracts = contractsData;
             LogInfo(
-              `Contracts updated and stored with timestamp: ${timestampToStore}`
+              `Contracts updated and stored with timestamp: ${timestampToStore}`,
             );
             checkAndInsertActiveContract();
           } else {
@@ -887,7 +901,7 @@ const SettingsManager = {
     // Check if factionId is available before proceeding
     LogInfo("Waiting for faction info to load before checking contracts...");
     waitForElm(
-      "div.basic-information.profile-left-wrapper.left > div > div.cont.bottom-round > div > ul"
+      "div.basic-information.profile-left-wrapper.left > div > div.cont.bottom-round > div > ul",
     ).then((elm) => {
       LogInfo("Checking for active contract...");
       const factionId = getFactionId();
@@ -906,7 +920,7 @@ const SettingsManager = {
         const factionMatches = contract.faction_id == factionId;
         // Parse dates as UTC by appending 'Z' (API returns UTC times)
         const startDate = new Date(
-          contract.contract_start_date.replace(" ", "T") + "Z"
+          contract.contract_start_date.replace(" ", "T") + "Z",
         );
         const endDate = contract.contract_end_date
           ? new Date(contract.contract_end_date.replace(" ", "T") + "Z")
@@ -956,7 +970,7 @@ const SettingsManager = {
         "nfh-active-contract-title",
         "nfh-section-title",
         "title-black",
-        "top-round"
+        "top-round",
       );
 
       // Create the contract info container
@@ -987,21 +1001,21 @@ const SettingsManager = {
     let contractInfoContainer = document.createElement("div");
     contractInfoContainer.classList.add(
       "nfh-active-contract-container",
-      "nfh-section-container"
+      "nfh-section-container",
     );
 
     let contractInfoList = document.createElement("ul");
     contractInfoList.classList.add(
       "nfh-active-contract-list",
-      "nfh-section-list"
+      "nfh-section-list",
     );
 
     // Add contract details
     contractInfoList.appendChild(
       createContractListItem(
         "Minimum Revive Chance",
-        `${contract.rule_revive_chance_percentage}%`
-      )
+        `${contract.rule_revive_chance_percentage}%`,
+      ),
     );
     contractInfoList.appendChild(
       createContractListItem(
@@ -1009,43 +1023,43 @@ const SettingsManager = {
         contract.rule_player_status
           .replace(/_/g, " ")
           .toLowerCase()
-          .replace(/\b\w/g, (l) => l.toUpperCase())
-      )
+          .replace(/\b\w/g, (l) => l.toUpperCase()),
+      ),
     );
     contractInfoList.appendChild(
       createContractListItem(
         "Online Required",
-        contract.rule_is_online ? "Yes" : "No"
-      )
+        contract.rule_is_online ? "Yes" : "No",
+      ),
     );
     contractInfoList.appendChild(
       createContractListItem(
         "Idle Allowed",
-        contract.rule_is_away ? "Yes" : "No"
-      )
+        contract.rule_is_away ? "Yes" : "No",
+      ),
     );
     contractInfoList.appendChild(
       createContractListItem(
         "Offline Allowed",
-        contract.rule_is_offline ? "Yes" : "No"
-      )
+        contract.rule_is_offline ? "Yes" : "No",
+      ),
     );
     contractInfoList.appendChild(
       createContractListItem(
         "Premium Contract",
-        contract.is_premium ? "Yes" : "No"
-      )
+        contract.is_premium ? "Yes" : "No",
+      ),
     );
     contractInfoList.appendChild(
       createContractListItem(
         "Start Date",
-        new Date(contract.contract_start_date).toLocaleString()
-      )
+        new Date(contract.contract_start_date).toLocaleString(),
+      ),
     );
 
     if (contract.note) {
       contractInfoList.appendChild(
-        createContractListItem("Note", contract.note)
+        createContractListItem("Note", contract.note),
       );
     }
 
@@ -1133,7 +1147,7 @@ const SettingsManager = {
           localStorage.shitListEntriesList =
             JSON.stringify(savedDataShitEntries);
           LogInfo(
-            `Shitlist updated and stored with timestamp: ${timestampToStore}`
+            `Shitlist updated and stored with timestamp: ${timestampToStore}`,
           );
           shitListEntries = toSave;
           // Refresh the display only if the profile page elements are present
@@ -1156,7 +1170,7 @@ const SettingsManager = {
   function getShitListCategories(serverTimestamp = null) {
     const now = Date.now();
     LogInfo(
-      `Fetching shitlist categories. Server Timestamp: ${serverTimestamp}`
+      `Fetching shitlist categories. Server Timestamp: ${serverTimestamp}`,
     );
     GM_xmlhttpRequest({
       method: "GET",
@@ -1193,10 +1207,10 @@ const SettingsManager = {
             timestamp: timestampToStore, // Store the server's update time (in ms) or now()
           };
           localStorage.shitListCategoriesList = JSON.stringify(
-            savedDataShitCategories
+            savedDataShitCategories,
           );
           LogInfo(
-            `Shitlist categories updated and stored with timestamp: ${timestampToStore}`
+            `Shitlist categories updated and stored with timestamp: ${timestampToStore}`,
           );
           shitListCategories = toSave;
           // Potentially update settings panel if it's open
@@ -1204,12 +1218,12 @@ const SettingsManager = {
             // Rebuild or update the settings panel if necessary
             // For now, just log, as direct update might be complex
             LogInfo(
-              "Settings panel might need refresh due to category update."
+              "Settings panel might need refresh due to category update.",
             );
           }
         } else {
           LogInfo(
-            `Failed to fetch shitlist categories. Status: ${response.status}`
+            `Failed to fetch shitlist categories. Status: ${response.status}`,
           );
         }
       },
@@ -1259,7 +1273,7 @@ const SettingsManager = {
           LogInfo(
             payoutList[i]["reviver_id"] +
               " - " +
-              payoutList[i]["revive_payout_raw"]
+              payoutList[i]["revive_payout_raw"],
           );
           playerPayoutAmounts[payoutList[i]["reviver_id"]] =
             payoutList[i]["revive_payout_raw"];
@@ -1271,7 +1285,7 @@ const SettingsManager = {
 
   function insertPayoutBalanceSuggestions(playerPayoutAmounts) {
     let playersOnPage = document.querySelectorAll(
-      "#money > div.userlist-wrapper > ul > li > div > a"
+      "#money > div.userlist-wrapper > ul > li > div > a",
     );
     for (let i = 0; i < playersOnPage.length; i++) {
       const playerId = playersOnPage[i].getAttribute("href").split("=")[1];
@@ -1286,7 +1300,7 @@ const SettingsManager = {
         let display = parentElement.querySelector(".money");
         // Strip out dollar sign and commas to get raw integer
         let displayRawMoney = parseInt(
-          display.innerText.replace(/[^0-9]/g, "")
+          display.innerText.replace(/[^0-9]/g, ""),
         );
 
         let valueElement = parentElement.querySelector("div.edit input");
@@ -1304,7 +1318,7 @@ const SettingsManager = {
       }
     }
     alert(
-      'Payout balances updated. If a users balance is in red, this means they earned money. All you need to do is hit the "edit" pencil and then save it. The red amount and amount in the box is their NEW balance with the payout amount already added for you. You just need to save this.'
+      'Payout balances updated. If a users balance is in red, this means they earned money. All you need to do is hit the "edit" pencil and then save it. The red amount and amount in the box is their NEW balance with the payout amount already added for you. You just need to save this.',
     );
   }
 
@@ -1339,13 +1353,13 @@ const SettingsManager = {
               payoutList[i]["reviver_id"] +
                 " - " +
                 payoutList[i]["revive_xanax_payout"] +
-                " xanax"
+                " xanax",
             );
             playerXanaxPayoutAmounts[payoutList[i]["reviver_id"]] = xanax;
           }
         }
         alert(
-          'Ready to start paying out xanax! If you refresh and come back to this page it will remember where you left off in your xanax payout. If you need to reset hit the reset button, but remember this will show people again who you may have already paid out xanax to. Also if you hit "cancel" instead of "give" this still counts as the user being paid and they won\'t be in the pay window again.'
+          'Ready to start paying out xanax! If you refresh and come back to this page it will remember where you left off in your xanax payout. If you need to reset hit the reset button, but remember this will show people again who you may have already paid out xanax to. Also if you hit "cancel" instead of "give" this still counts as the user being paid and they won\'t be in the pay window again.',
         );
         addXanaxToStoredVariable(playerXanaxPayoutAmounts);
       },
@@ -1396,7 +1410,7 @@ const SettingsManager = {
     }
 
     let existingMessage = insertLocation.querySelector(
-      ".xanax-payouts-left-message"
+      ".xanax-payouts-left-message",
     );
     if (existingMessage) {
       existingMessage.innerText =
@@ -1415,7 +1429,7 @@ const SettingsManager = {
 
   function insertPayoutXanaxSuggestions(playerXanaxPayoutAmounts) {
     let monitorElm = document.querySelector(
-      "div.img-wrap[data-itemid='206']"
+      "div.img-wrap[data-itemid='206']",
     ).parentElement;
     watchForClassChanges(monitorElm, playerXanaxPayoutAmounts); // Start watching for changes to the class of the element
   }
@@ -1438,14 +1452,14 @@ const SettingsManager = {
   function changePayoutNukeFamilyKey() {
     // Prompt and save changes to the apiToken in GM storage
     let newKey = prompt(
-      "Enter the new Nuke.Family API key (should be ~50 characters)."
+      "Enter the new Nuke.Family API key (should be ~50 characters).",
     );
 
     if (newKey) {
       if (newKey.length < 30) {
         alert(
           "That key is too short. Please ensure you are using your Nuke.Family " +
-            "key, NOT your Torn API key!"
+            "key, NOT your Torn API key!",
         );
         return;
       }
@@ -1456,12 +1470,12 @@ const SettingsManager = {
     alert(
       "Nuke family key changed to: " +
         newKey +
-        ". This key will be used next time you click the payout helper button."
+        ". This key will be used next time you click the payout helper button.",
     );
   }
 
   function insertChangePayoutNukeFamilyKeyButton(
-    insertLocation = "#faction-armoury-tabs"
+    insertLocation = "#faction-armoury-tabs",
   ) {
     waitForElm(insertLocation).then((elm) => {
       const buttonInsertLocation = elm;
@@ -1592,7 +1606,7 @@ const SettingsManager = {
         "nfh-shitlist-profile-title",
         "nfh-section-title",
         "title-black",
-        "top-round"
+        "top-round",
       );
 
       // Create settings cog icon
@@ -1640,6 +1654,9 @@ const SettingsManager = {
 
       // Check for active contract
       getContracts();
+
+      // Check and insert reputation section (async, non-blocking)
+      checkAndInsertReputation();
     });
   }
 
@@ -1706,7 +1723,7 @@ const SettingsManager = {
       checkbox.type = "checkbox";
       checkbox.checked = SettingsManager.isCategoryVisible(
         categoryId,
-        category.isFactionBan
+        category.isFactionBan,
       );
       checkbox.disabled = category.isFactionBan;
       checkbox.dataset.categoryId = categoryId;
@@ -1725,6 +1742,46 @@ const SettingsManager = {
       categoryList.appendChild(categoryItem);
     }
 
+    // Reputation visibility toggle
+    const reputationSection = document.createElement("div");
+    reputationSection.classList.add("nfh-category-list");
+    reputationSection.style.marginTop = "10px";
+    reputationSection.style.borderTop = "1px solid var(--nfh-border)";
+    reputationSection.style.paddingTop = "8px";
+
+    const reputationSectionTitle = document.createElement("div");
+    reputationSectionTitle.classList.add("nfh-settings-title");
+    reputationSectionTitle.style.marginBottom = "6px";
+    reputationSectionTitle.textContent = "Reputation Settings";
+
+    const reputationItem = document.createElement("div");
+    reputationItem.classList.add("nfh-category-item");
+
+    const reputationCheckbox = document.createElement("input");
+    reputationCheckbox.type = "checkbox";
+    reputationCheckbox.checked = SettingsManager.isReputationVisible();
+    reputationCheckbox.addEventListener("change", function () {
+      SettingsManager.setReputationVisible(this.checked);
+      const existing = document.querySelector(".nfh-reputation");
+      if (this.checked) {
+        if (!existing) {
+          checkAndInsertReputation();
+        }
+      } else {
+        if (existing) {
+          existing.remove();
+        }
+      }
+    });
+
+    const reputationLabel = document.createElement("span");
+    reputationLabel.textContent = "Show Reputation box on profiles";
+
+    reputationItem.appendChild(reputationCheckbox);
+    reputationItem.appendChild(reputationLabel);
+    reputationSection.appendChild(reputationSectionTitle);
+    reputationSection.appendChild(reputationItem);
+
     const closeButton = document.createElement("button");
     closeButton.classList.add("nfh-close-settings");
     closeButton.textContent = "Close";
@@ -1734,6 +1791,7 @@ const SettingsManager = {
 
     panel.appendChild(title);
     panel.appendChild(categoryList);
+    panel.appendChild(reputationSection);
     panel.appendChild(closeButton);
 
     return panel;
@@ -1864,7 +1922,7 @@ const SettingsManager = {
       shitListAddContainer.classList.add(
         "nfh-shitlist-add-container",
         "cont",
-        "bottom-round"
+        "bottom-round",
       );
 
       let shitListAddForm = document.createElement("form");
@@ -1963,7 +2021,7 @@ const SettingsManager = {
 
         // Get the selected category
         let selectedCategoryId = document.getElementById(
-          "shitlist-category-select"
+          "shitlist-category-select",
         ).value;
         LogInfo(selectedCategoryId);
 
@@ -2027,7 +2085,7 @@ const SettingsManager = {
 
               // Also hide the Add Another Shitlist Reason button with class "nfh-add-to-shitlist" to prevent another submission
               document.getElementsByClassName(
-                "nfh-add-to-shitlist"
+                "nfh-add-to-shitlist",
               )[0].style.display = "none";
 
               // Update the shitlist so that the user has the new addition
@@ -2046,7 +2104,7 @@ const SettingsManager = {
             let errorData = JSON.parse(error.responseText);
             LogInfo(
               "Error occurred while submitting shitlist entry: " +
-                errorData.message
+                errorData.message,
             );
             document.getElementById("shitlist-add-error").innerText =
               "There was an error submitting your shitlisting. Please contact Fogest for help if this persists." +
@@ -2070,14 +2128,14 @@ const SettingsManager = {
       "nfh-shitlist-entry-container",
       "nfh-section-container",
       "cont",
-      "bottom-round"
+      "bottom-round",
     );
 
     let shitListEntryProfileContainer = document.createElement("div");
     shitListEntryProfileContainer.id = "nfh-shitlist-entry-profile-container";
     shitListEntryProfileContainer.classList.add(
       "nfh-shitlist-entry-profile-container",
-      "profile-container"
+      "profile-container",
     );
 
     let shitListProfileList = document.createElement("ul");
@@ -2085,7 +2143,7 @@ const SettingsManager = {
     shitListProfileList.classList.add(
       "nfh-shitlist-profile-list",
       "cont",
-      "bottom-round"
+      "bottom-round",
     );
     // shitListProfileList.style.listStyleType = "disclosure-closed"; // Right pointing arrow
     // shitListProfileList.style.listStylePosition = "inside";
@@ -2115,28 +2173,28 @@ const SettingsManager = {
           if (
             SettingsManager.isCategoryVisible(
               entry.shitListCategoryId,
-              entry.isFactionBan
+              entry.isFactionBan,
             )
           ) {
             shitListProfileList.appendChild(buildShitListEntry(entry));
             visibleEntries++;
 
             shitListEntryProfileContainer.classList.add(
-              "nfh-shitlist-entry-profile-container-faction-ban"
+              "nfh-shitlist-entry-profile-container-faction-ban",
             );
 
             LogInfo(entry.shitListCategory);
             if (entry.shitListCategory.is_friendly) {
               LogInfo("IS FRIENDLY");
               shitListEntryProfileContainer.classList.add(
-                "nfh-shitlist-entry-profile-container-friendly"
+                "nfh-shitlist-entry-profile-container-friendly",
               );
               shitListEntryContainer.classList.add(
-                "nfh-shitlist-entry-container-friendly"
+                "nfh-shitlist-entry-container-friendly",
               );
             } else {
               shitListEntryContainer.classList.add(
-                "nfh-shitlist-entry-container-entry-present"
+                "nfh-shitlist-entry-container-entry-present",
               );
             }
             btnAddToShitList.style.marginTop = "7px";
@@ -2167,7 +2225,7 @@ const SettingsManager = {
         if (
           SettingsManager.isCategoryVisible(
             entry.shitListCategoryId,
-            entry.isFactionBan
+            entry.isFactionBan,
           )
         ) {
           existingEntry = true;
@@ -2175,10 +2233,10 @@ const SettingsManager = {
           visibleEntries++;
 
           shitListEntryProfileContainer.classList.add(
-            "nfh-shitlist-entry-profile-container-profile-ban"
+            "nfh-shitlist-entry-profile-container-profile-ban",
           );
           shitListEntryContainer.classList.add(
-            "nfh-shitlist-entry-container-entry-present"
+            "nfh-shitlist-entry-container-entry-present",
           );
           btnAddToShitList.style.marginTop = "7px";
         }
@@ -2268,7 +2326,7 @@ const SettingsManager = {
 
   function getPlayerName() {
     const nameElement = document.querySelector(
-      ".info-table > li:first-child > div.user-info-value > span"
+      ".info-table > li:first-child > div.user-info-value > span",
     );
     if (nameElement != undefined) {
       const nameMatch = nameElement.innerText.match(/^(.*?)\s*\[/);
@@ -2281,7 +2339,7 @@ const SettingsManager = {
 
   function getFactionId() {
     const factionUrl = document.querySelector(
-      "a[href^='/factions.php?step=profile&ID=']"
+      "a[href^='/factions.php?step=profile&ID=']",
     );
     LogInfo("Faction URL: " + factionUrl);
     if (factionUrl != undefined) {
@@ -2296,10 +2354,10 @@ const SettingsManager = {
 
   function refreshShitList() {
     let shitListProfileList = document.getElementById(
-      "nfh-shitlist-profile-list"
+      "nfh-shitlist-profile-list",
     );
     let shitListEntryProfileContainer = document.getElementById(
-      "nfh-shitlist-entry-profile-container"
+      "nfh-shitlist-entry-profile-container",
     );
     let btnAddToShitList = document.getElementById("nfh-add-to-shitlist");
 
@@ -2327,7 +2385,7 @@ const SettingsManager = {
         if (
           SettingsManager.isCategoryVisible(
             entry.shitListCategoryId,
-            entry.isFactionBan
+            entry.isFactionBan,
           )
         ) {
           shitListProfileList.appendChild(buildShitListEntry(entry));
@@ -2349,7 +2407,7 @@ const SettingsManager = {
         if (
           SettingsManager.isCategoryVisible(
             entry.shitListCategoryId,
-            entry.isFactionBan
+            entry.isFactionBan,
           )
         ) {
           shitListProfileList.appendChild(buildShitListEntry(entry));
@@ -2383,7 +2441,7 @@ const SettingsManager = {
       currentTime - lastCheckTime < CHECK_INTERVAL
     ) {
       LogInfo(
-        "Skipping update check, not enough time has passed since the last check and force update button not pressed"
+        "Skipping update check, not enough time has passed since the last check and force update button not pressed",
       );
       // Not enough time has passed since the last check and force is not true
       return;
@@ -2405,7 +2463,7 @@ const SettingsManager = {
               confirm(
                 "A new version of the Nuclear Family Helper script is available (v" +
                   githubVersion +
-                  "). Do you want to update now?"
+                  "). Do you want to update now?",
               )
             ) {
               window.location.href = GITHUB_URL;
@@ -2416,7 +2474,7 @@ const SettingsManager = {
                 CURRENT_VERSION +
                 ". And the latest published version is " +
                 githubVersion +
-                "."
+                ".",
             );
           }
         }
@@ -2453,7 +2511,7 @@ const SettingsManager = {
 
     const now = Date.now();
     const lastApiCheckTimestamp = parseInt(
-      localStorage.getItem("nfhLastApiCheckTime") || "0"
+      localStorage.getItem("nfhLastApiCheckTime") || "0",
     );
 
     // Check if 5 minutes have passed since the last API check
@@ -2461,14 +2519,14 @@ const SettingsManager = {
       LogInfo(
         `Skipping API cache check, last check was less than ${
           CACHE_CHECK_INTERVAL / 60000
-        } minutes ago. Running time-based checks instead.`
+        } minutes ago. Running time-based checks instead.`,
       );
       performTimeBasedCacheCheck(); // Run standard time-based checks if API check is skipped
       return;
     }
 
     LogInfo(
-      "Attempting API cache check (more than 5 minutes since last check)."
+      "Attempting API cache check (more than 5 minutes since last check).",
     );
     try {
       const response = await new Promise((resolve, reject) => {
@@ -2490,8 +2548,8 @@ const SettingsManager = {
         localStorage.setItem("nfhLastApiCheckTime", now.toString());
         LogInfo(
           `API cache check successful. Last check time updated to: ${new Date(
-            now
-          ).toISOString()}`
+            now,
+          ).toISOString()}`,
         );
 
         const serverTimes = JSON.parse(response.responseText);
@@ -2530,18 +2588,18 @@ const SettingsManager = {
         ) {
           LogInfo("Shitlist categories data is outdated, fetching new data.");
           getShitListCategories(
-            serverTimes.shitlist_category_cache_last_update // Pass server timestamp (still in seconds)
+            serverTimes.shitlist_category_cache_last_update, // Pass server timestamp (still in seconds)
           );
         }
         // After processing API results, also run the time-based checks
         // This ensures things like the user role (not covered by API check) still get updated periodically
         LogInfo(
-          "Performing standard time-based checks after successful API check."
+          "Performing standard time-based checks after successful API check.",
         );
         performTimeBasedCacheCheck();
       } else {
         LogInfo(
-          `Cache check API request failed with status: ${response.status}. Using time-based fallback.`
+          `Cache check API request failed with status: ${response.status}. Using time-based fallback.`,
         );
         // Don't update lastApiCheckTimestamp on failure
         performTimeBasedCacheCheck(); // Fallback to time-based check
@@ -2661,7 +2719,7 @@ const SettingsManager = {
 
       // Extract faction ID from <a class="user faction" href="/factions.php?step=profile&ID=XXXXX">
       const factionLink = li.querySelector(
-        'a.user.faction[href*="factions.php"]'
+        'a.user.faction[href*="factions.php"]',
       );
       if (factionLink && factionLink.href) {
         const factionMatch = factionLink.href.match(/ID=(\d+)/);
@@ -2725,7 +2783,7 @@ const SettingsManager = {
   function checkShitlistStatusForHospital(
     playerId,
     factionId,
-    shitListEntries
+    shitListEntries,
   ) {
     if (!shitListEntries) {
       return null;
@@ -2741,7 +2799,7 @@ const SettingsManager = {
           if (
             SettingsManager.isCategoryVisible(
               entry.shitListCategoryId,
-              entry.isFactionBan
+              entry.isFactionBan,
             )
           ) {
             // Check if this is a friendly faction
@@ -2765,7 +2823,7 @@ const SettingsManager = {
           if (
             SettingsManager.isCategoryVisible(
               entry.shitListCategoryId,
-              entry.isFactionBan
+              entry.isFactionBan,
             )
           ) {
             return "shitlist";
@@ -2787,7 +2845,7 @@ const SettingsManager = {
     li.classList.remove(
       "nfh-hospital-contract",
       "nfh-hospital-friendly",
-      "nfh-hospital-shitlist"
+      "nfh-hospital-shitlist",
     );
 
     // Apply the appropriate class
@@ -2850,7 +2908,7 @@ const SettingsManager = {
       const shitlistStatus = checkShitlistStatusForHospital(
         playerId,
         factionId,
-        shitListEntries
+        shitListEntries,
       );
       if (shitlistStatus) {
         LogInfo(`Player ${playerId} has shitlist status: ${shitlistStatus}`);
@@ -2957,5 +3015,166 @@ const SettingsManager = {
 
   function countProperties(obj) {
     return Object.keys(obj).length;
+  }
+
+  // ── Reputation ──────────────────────────────────────────────────────────────
+
+  const REPUTATION_CACHE_PREFIX = "nfh_reputation_";
+  const REPUTATION_CACHE_TTL_MS = 60 * 60 * 1000; // 60 minutes
+
+  /**
+   * Remove any cached reputation entries that have passed their TTL.
+   * Called on each reputation fetch so cleanup is naturally periodic.
+   */
+  function sweepStaleReputationCache() {
+    const now = Date.now();
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key || !key.startsWith(REPUTATION_CACHE_PREFIX)) continue;
+      try {
+        const parsed = JSON.parse(localStorage.getItem(key));
+        if (
+          !parsed ||
+          !parsed.timestamp ||
+          now - parsed.timestamp >= REPUTATION_CACHE_TTL_MS
+        ) {
+          keysToRemove.push(key);
+        }
+      } catch (e) {
+        keysToRemove.push(key); // corrupt entry
+      }
+    }
+    keysToRemove.forEach((k) => localStorage.removeItem(k));
+  }
+
+  /**
+   * Fetch reputation data for a player, using a per-player localStorage cache.
+   * Calls onReady(data) once data is available (from cache or network).
+   */
+  function getReputationForPlayer(playerId, onReady) {
+    sweepStaleReputationCache();
+
+    const cacheKey = REPUTATION_CACHE_PREFIX + playerId;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (
+          parsed &&
+          parsed.timestamp &&
+          Date.now() - parsed.timestamp < REPUTATION_CACHE_TTL_MS
+        ) {
+          LogInfo(`Reputation cache hit for player ${playerId}`);
+          onReady(parsed.data);
+          return;
+        }
+      } catch (e) {
+        // fall through to network fetch
+      }
+    }
+
+    LogInfo(`Fetching reputation for player ${playerId}`);
+    GM_xmlhttpRequest({
+      method: "GET",
+      url: apiUrl + "/reputation/" + playerId,
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + apiToken,
+      },
+      onload: function (response) {
+        if (response.status >= 200 && response.status < 300) {
+          const data = JSON.parse(response.responseText);
+          localStorage.setItem(
+            cacheKey,
+            JSON.stringify({
+              data: data,
+              timestamp: Date.now(),
+            }),
+          );
+          LogInfo(`Reputation fetched for player ${playerId}:`, data);
+          onReady(data);
+        } else {
+          LogInfo(`Failed to fetch reputation. Status: ${response.status}`);
+        }
+      },
+      onerror: function (error) {
+        console.error("Error fetching reputation:", error);
+        LogInfo("Error fetching reputation.");
+      },
+    });
+  }
+
+  /**
+   * Build and insert the reputation section on a profile page.
+   * Fully async — waits for the DOM element, then fires the network request.
+   */
+  function checkAndInsertReputation() {
+    if (!IsPage(PageType.Profile)) {
+      return;
+    }
+
+    if (!SettingsManager.isReputationVisible()) {
+      return;
+    }
+
+    const playerId = getPlayerId();
+    if (!playerId) {
+      return;
+    }
+
+    // Prevent duplicate insertion
+    if (document.querySelector(".nfh-reputation")) {
+      return;
+    }
+
+    getReputationForPlayer(playerId, function (data) {
+      // Guard against duplicate insertion if callback fires twice
+      if (document.querySelector(".nfh-reputation")) {
+        return;
+      }
+
+      waitForElm("div.profile-left-wrapper").then((elm) => {
+        if (document.querySelector(".nfh-reputation")) {
+          return;
+        }
+
+        const outerDiv = document.createElement("div");
+        outerDiv.classList.add("nfh-reputation", "nfh-section", "m-top10");
+
+        const innerDiv = document.createElement("div");
+
+        const title = document.createElement("p");
+        title.innerText = "Nuke Family Reputation";
+        title.classList.add("nfh-section-title", "title-black", "top-round");
+
+        const container = document.createElement("div");
+        container.classList.add("nfh-section-container");
+
+        const list = document.createElement("ul");
+        list.classList.add("nfh-section-list");
+
+        const li = document.createElement("li");
+        li.innerHTML = `<span class="nfh-list-key">Paid Revives:</span><span class="nfh-list-value"><strong>${data.paid_revives_90d}</strong> confirmed paid revive${data.paid_revives_90d !== 1 ? "s" : ""} (last ${data.window_days} days)</span>`;
+        list.appendChild(li);
+
+        container.appendChild(list);
+        innerDiv.appendChild(title);
+        innerDiv.appendChild(container);
+        outerDiv.appendChild(innerDiv);
+
+        // Insert after the first child of profile-left-wrapper (same as active contract section)
+        const firstChild = elm.firstChild;
+        if (firstChild && firstChild.nextSibling) {
+          elm.insertBefore(outerDiv, firstChild.nextSibling);
+        } else {
+          elm.appendChild(outerDiv);
+        }
+
+        LogInfo(
+          `Reputation section injected for player ${playerId}: ${data.paid_revives_90d} paid revives`,
+        );
+      });
+    });
   }
 })();
