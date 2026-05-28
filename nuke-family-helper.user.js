@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.14.0
+// @version      2.14.1
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -222,7 +222,7 @@ if (isPda && typeof window.GM_xmlhttpRequest === "undefined") {
   })(window, Object, DOMException, AbortController, Promise, localStorage);
 }
 
-const DEFAULT_VERSION = "2.14.0";
+const DEFAULT_VERSION = "2.14.1";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -2160,7 +2160,9 @@ const SettingsManager = {
     let totalEntries = 0;
     let visibleEntries = 0;
 
-    waitForElm("a[href^='/factions.php?step=profile&ID=']").then((elm) => {
+    waitForElm(
+      ".basic-information .info-table a[href^='/factions.php?step=profile&ID=']",
+    ).then((elm) => {
       let factionId = getFactionId();
       LogInfo("Faction ID: " + factionId);
 
@@ -2339,7 +2341,7 @@ const SettingsManager = {
 
   function getFactionId() {
     const factionUrl = document.querySelector(
-      "a[href^='/factions.php?step=profile&ID=']",
+      ".basic-information .info-table a[href^='/factions.php?step=profile&ID=']",
     );
     LogInfo("Faction URL: " + factionUrl);
     if (factionUrl != undefined) {
