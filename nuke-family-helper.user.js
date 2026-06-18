@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.14.1
+// @version      2.15.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -3107,6 +3107,197 @@ const SettingsManager = {
     });
   }
 
+  // ── Recruiting score (ML) ─────────────────────────────────────────────────────
+
+  const RECRUITING_PERMISSION = "recruiting.predict";
+  const PERMISSIONS_CACHE_KEY = "nfhUserPermissions";
+  const PERMISSIONS_CACHE_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
+
+  /**
+   * Fetch the current user's permission list, cached in localStorage for 12h.
+   * Calls onReady(permissionsArray); on any failure it yields an empty list so
+   * gated UI simply stays hidden.
+   */
+  function getOwnPermissions(onReady) {
+    try {
+      const cached = JSON.parse(localStorage.getItem(PERMISSIONS_CACHE_KEY));
+      if (
+        cached &&
+        Array.isArray(cached.permissions) &&
+        cached.timestamp &&
+        Date.now() - cached.timestamp < PERMISSIONS_CACHE_TTL_MS
+      ) {
+        onReady(cached.permissions);
+        return;
+      }
+    } catch (e) {
+      // fall through to network fetch
+    }
+
+    GM_xmlhttpRequest({
+      method: "GET",
+      url: apiUrl + "/user/get-own-permissions",
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + apiToken,
+      },
+      onload: function (response) {
+        let permissions = [];
+        if (response.status >= 200 && response.status < 300) {
+          try {
+            permissions = JSON.parse(response.responseText)["permissions"] || [];
+          } catch (e) {
+            permissions = [];
+          }
+          localStorage.setItem(
+            PERMISSIONS_CACHE_KEY,
+            JSON.stringify({ permissions: permissions, timestamp: Date.now() }),
+          );
+        } else {
+          LogInfo(`Failed to fetch permissions. Status: ${response.status}`);
+        }
+        onReady(permissions);
+      },
+      onerror: function (error) {
+        console.error("Error fetching permissions:", error);
+        onReady([]);
+      },
+    });
+  }
+
+  /**
+   * Fetch a player's ML recruiting score. Deliberately NOT cached client-side:
+   * every click is an intentional check that the server logs for audit, and the
+   * server already caches the underlying computation so re-checks stay cheap.
+   */
+  function getRecruitingScoreForPlayer(playerId, onReady, onError) {
+    GM_xmlhttpRequest({
+      method: "GET",
+      url: apiUrl + "/candidate-score/" + playerId,
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + apiToken,
+      },
+      onload: function (response) {
+        if (response.status >= 200 && response.status < 300) {
+          try {
+            onReady(JSON.parse(response.responseText));
+          } catch (e) {
+            onError("Bad response from server.");
+          }
+        } else if (response.status === 403) {
+          onError("You don't have permission to use recruiting scores.");
+        } else {
+          let msg = "Failed to fetch recruiting score.";
+          try {
+            const parsed = JSON.parse(response.responseText);
+            if (parsed && parsed.error) msg = parsed.error;
+          } catch (e) {
+            // keep default message
+          }
+          onError(msg);
+        }
+      },
+      onerror: function () {
+        onError("Network error fetching recruiting score.");
+      },
+    });
+  }
+
+  /** Traffic-light colour for a 0–100 sub-score (high = good). */
+  function recruitingScoreColor(score) {
+    if (score === null || score === undefined || isNaN(score)) return "#999";
+    if (score >= 67) return "#3a3";
+    if (score >= 34) return "#c90";
+    return "#d33";
+  }
+
+  /** Render the recruiting score + per-sub-score drivers into a container. */
+  function renderRecruitingScore(container, data) {
+    const subs = [
+      ["Activity", data.activity, "activity"],
+      ["Kick Safety", data.kick_safety, "kick_safety"],
+      ["Retention", data.retention, "retention"],
+      ["Combat", data.combat, "combat"],
+    ];
+    const explanation = data.explanation || {};
+
+    let html =
+      `<div style="margin-top:8px;font-weight:bold;">Recruiting Score: ` +
+      `<span style="color:${recruitingScoreColor(data.composite)};">${data.composite}</span>/100</div>`;
+
+    if (data.feature_set === "public") {
+      html += `<div style="font-size:11px;opacity:0.7;">Public model (battle stats not available)</div>`;
+    }
+
+    html += `<ul class="nfh-section-list" style="margin-top:6px;">`;
+    subs.forEach(function (entry) {
+      const name = entry[0];
+      const val = entry[1];
+      const drivers = explanation[entry[2]] || {};
+      const up = (drivers.up || [])[0];
+      const down = (drivers.down || [])[0];
+      let hints = "";
+      if (up) hints += `<span style="color:#3a3;">▲ ${up.label}</span> `;
+      if (down) hints += `<span style="color:#d33;">▼ ${down.label}</span>`;
+      html +=
+        `<li><span class="nfh-list-key">${name}:</span>` +
+        `<span class="nfh-list-value"><strong style="color:${recruitingScoreColor(val)};">${val}</strong>` +
+        (hints ? `<br><span style="font-size:11px;">${hints}</span>` : "") +
+        `</span></li>`;
+    });
+    html += `</ul>`;
+
+    container.innerHTML = html;
+  }
+
+  /**
+   * If the user holds the recruiting permission, add a "Check Recruiting Score"
+   * button below the reputation list that fetches and renders the score in place.
+   */
+  function maybeAddRecruitingButton(container, playerId) {
+    getOwnPermissions(function (permissions) {
+      if (!permissions.includes(RECRUITING_PERMISSION)) return;
+      if (container.querySelector(".nfh-recruiting-wrap")) return;
+
+      const wrap = document.createElement("div");
+      wrap.classList.add("nfh-recruiting-wrap");
+      wrap.style.marginTop = "8px";
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.classList.add("nfh-recruiting-btn");
+      btn.innerText = "Check Recruiting Score";
+      btn.style.cssText =
+        "cursor:pointer;width:100%;padding:5px 8px;border-radius:5px;border:1px solid var(--nfh-border, #444);background:var(--nfh-bg, #2b2b2b);color:inherit;";
+
+      const result = document.createElement("div");
+      result.classList.add("nfh-recruiting-result");
+
+      btn.addEventListener("click", function () {
+        btn.disabled = true;
+        btn.innerText = "Checking…";
+        getRecruitingScoreForPlayer(
+          playerId,
+          function (data) {
+            wrap.removeChild(btn);
+            renderRecruitingScore(result, data);
+            LogInfo(`Recruiting score for player ${playerId}: ${data.composite}`);
+          },
+          function (errorMessage) {
+            btn.disabled = false;
+            btn.innerText = "Check Recruiting Score";
+            result.innerHTML = `<div style="color:#d33;margin-top:6px;font-size:12px;">${errorMessage}</div>`;
+          },
+        );
+      });
+
+      wrap.appendChild(btn);
+      wrap.appendChild(result);
+      container.appendChild(wrap);
+    });
+  }
+
   /**
    * Build and insert the reputation section on a profile page.
    * Fully async — waits for the DOM element, then fires the network request.
@@ -3161,6 +3352,10 @@ const SettingsManager = {
         list.appendChild(li);
 
         container.appendChild(list);
+
+        // Recruiting score button — only shown to users with the permission.
+        maybeAddRecruitingButton(container, playerId);
+
         innerDiv.appendChild(title);
         innerDiv.appendChild(container);
         outerDiv.appendChild(innerDiv);
