@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.15.0
+// @version      2.16.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -222,13 +222,18 @@ if (isPda && typeof window.GM_xmlhttpRequest === "undefined") {
   })(window, Object, DOMException, AbortController, Promise, localStorage);
 }
 
-const DEFAULT_VERSION = "2.14.1";
+const DEFAULT_VERSION = "2.16.0";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
     : DEFAULT_VERSION;
 // const CURRENT_VERSION = DEFAULT_VERSION;
 const CHECK_INTERVAL = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
+// How long a newer version must have been seen by the script before we bug the
+// user with a manual-update prompt. Userscript managers (e.g. Tampermonkey)
+// usually auto-update roughly daily, so we give that a few days to happen before
+// nagging. The manual "Check NFH Updates" button bypasses this grace period.
+const UPDATE_NOTIFY_GRACE_PERIOD = 3 * 24 * 60 * 60 * 1000; // 3 days in milliseconds
 const GITHUB_URL =
   "https://github.com/Fog-Development/nuke-family-helper-script/raw/master/nuke-family-helper.user.js";
 
@@ -2461,23 +2466,43 @@ const SettingsManager = {
           // Semantic version comparison
           const isNewer = compareVersions(githubVersion, CURRENT_VERSION);
           if (isNewer) {
-            if (
-              confirm(
-                "A new version of the Nuclear Family Helper script is available (v" +
+            // Only nag the user once the newer version has been around for a
+            // while. The script manager typically auto-updates within a day or
+            // so; if it hasn't after the grace period, the user's auto-updates
+            // are likely off/broken and a manual prompt is warranted.
+            // A forced check (the manual button) always prompts immediately.
+            if (force || hasUpdateGracePeriodElapsed(githubVersion)) {
+              if (
+                confirm(
+                  "A new version of the Nuclear Family Helper script is available (v" +
+                    githubVersion +
+                    "). Do you want to update now?",
+                )
+              ) {
+                window.location.href = GITHUB_URL;
+              }
+            } else {
+              LogInfo(
+                "New version " +
                   githubVersion +
-                  "). Do you want to update now?",
-              )
-            ) {
-              window.location.href = GITHUB_URL;
+                  " seen but still within the " +
+                  UPDATE_NOTIFY_GRACE_PERIOD / (24 * 60 * 60 * 1000) +
+                  "-day grace period; not prompting yet.",
+              );
             }
-          } else if (force) {
-            alert(
-              "No updates available. You are running version " +
-                CURRENT_VERSION +
-                ". And the latest published version is " +
-                githubVersion +
-                ".",
-            );
+          } else {
+            // No newer version available; clear any pending-update record so a
+            // future update starts its grace period fresh.
+            localStorage.removeItem("nfhPendingUpdate");
+            if (force) {
+              alert(
+                "No updates available. You are running version " +
+                  CURRENT_VERSION +
+                  ". And the latest published version is " +
+                  githubVersion +
+                  ".",
+              );
+            }
           }
         }
       },
@@ -2485,6 +2510,31 @@ const SettingsManager = {
 
     // Update the last check time
     localStorage.setItem("nfhLastUpdateCheckTime", currentTime);
+  }
+
+  // Tracks the first time the script saw a given newer version and reports
+  // whether the grace period has elapsed since then. Returns true once the
+  // newer version has been seen for longer than UPDATE_NOTIFY_GRACE_PERIOD.
+  function hasUpdateGracePeriodElapsed(githubVersion) {
+    const now = Date.now();
+    let pending = null;
+    try {
+      pending = JSON.parse(localStorage.getItem("nfhPendingUpdate"));
+    } catch (e) {
+      pending = null;
+    }
+
+    // First time we've seen this particular version (or no/invalid record):
+    // start the clock and don't prompt yet.
+    if (!pending || pending.version !== githubVersion) {
+      localStorage.setItem(
+        "nfhPendingUpdate",
+        JSON.stringify({ version: githubVersion, firstSeen: now }),
+      );
+      return false;
+    }
+
+    return now - pending.firstSeen >= UPDATE_NOTIFY_GRACE_PERIOD;
   }
 
   // Function to compare version strings (e.g., "2.10.0" > "2.9.1")
