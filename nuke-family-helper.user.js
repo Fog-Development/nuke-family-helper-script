@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.16.0
+// @version      2.17.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -3272,6 +3272,21 @@ const SettingsManager = {
     ];
     const explanation = data.explanation || {};
 
+    // One compact, tinted line of up to 3 drivers (green = pushed the score up,
+    // red = pushed it down). Each label tooltips its raw feature value. The API
+    // already returns up to 3 of each per sub-score, so we just render them all.
+    function driverLine(items, marker, color) {
+      if (!items || !items.length) return "";
+      const parts = items.slice(0, 3).map(function (d) {
+        const tip =
+          d.value === null || d.value === undefined
+            ? d.label
+            : `${d.label} = ${d.value}`;
+        return `<span title="${tip}">${d.label}</span>`;
+      });
+      return `<div style="color:${color};margin-top:1px;">${marker} ${parts.join(" · ")}</div>`;
+    }
+
     let html =
       `<div style="margin-top:8px;font-weight:bold;">Recruiting Score: ` +
       `<span style="color:${recruitingScoreColor(data.composite)};">${data.composite}</span>/100</div>`;
@@ -3285,15 +3300,14 @@ const SettingsManager = {
       const name = entry[0];
       const val = entry[1];
       const drivers = explanation[entry[2]] || {};
-      const up = (drivers.up || [])[0];
-      const down = (drivers.down || [])[0];
-      let hints = "";
-      if (up) hints += `<span style="color:#3a3;">▲ ${up.label}</span> `;
-      if (down) hints += `<span style="color:#d33;">▼ ${down.label}</span>`;
+      const lines =
+        driverLine(drivers.up, "▲", "#3a3") + driverLine(drivers.down, "▼", "#d33");
       html +=
         `<li><span class="nfh-list-key">${name}:</span>` +
         `<span class="nfh-list-value"><strong style="color:${recruitingScoreColor(val)};">${val}</strong>` +
-        (hints ? `<br><span style="font-size:11px;">${hints}</span>` : "") +
+        (lines
+          ? `<div style="font-size:11px;line-height:1.5;margin-top:3px;">${lines}</div>`
+          : "") +
         `</span></li>`;
     });
     html += `</ul>`;
