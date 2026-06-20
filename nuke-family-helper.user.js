@@ -222,7 +222,7 @@ if (isPda && typeof window.GM_xmlhttpRequest === "undefined") {
   })(window, Object, DOMException, AbortController, Promise, localStorage);
 }
 
-const DEFAULT_VERSION = "2.16.0";
+const DEFAULT_VERSION = "2.17.0";
 const CURRENT_VERSION =
   typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version
     ? GM_info.script.version
@@ -3195,7 +3195,8 @@ const SettingsManager = {
         let permissions = [];
         if (response.status >= 200 && response.status < 300) {
           try {
-            permissions = JSON.parse(response.responseText)["permissions"] || [];
+            permissions =
+              JSON.parse(response.responseText)["permissions"] || [];
           } catch (e) {
             permissions = [];
           }
@@ -3301,7 +3302,8 @@ const SettingsManager = {
       const val = entry[1];
       const drivers = explanation[entry[2]] || {};
       const lines =
-        driverLine(drivers.up, "▲", "#3a3") + driverLine(drivers.down, "▼", "#d33");
+        driverLine(drivers.up, "▲", "#3a3") +
+        driverLine(drivers.down, "▼", "#d33");
       html +=
         `<li><span class="nfh-list-key">${name}:</span>` +
         `<span class="nfh-list-value"><strong style="color:${recruitingScoreColor(val)};">${val}</strong>` +
@@ -3346,7 +3348,9 @@ const SettingsManager = {
           function (data) {
             wrap.removeChild(btn);
             renderRecruitingScore(result, data);
-            LogInfo(`Recruiting score for player ${playerId}: ${data.composite}`);
+            LogInfo(
+              `Recruiting score for player ${playerId}: ${data.composite}`,
+            );
           },
           function (errorMessage) {
             btn.disabled = false;
