@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.18.0
+// @version      2.18.1
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -473,7 +473,7 @@ body:not(.dark-mode) {
 
   // src/core/config.js
   var DEBUG = false;
-  var DEFAULT_VERSION = "2.18.0";
+  var DEFAULT_VERSION = "2.18.1";
   var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : DEFAULT_VERSION;
   var API_URL = DEBUG ? "http://nuke.test/api" : "https://nuke.family/api";
   var TOKEN_GENERATION_URL = DEBUG ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
