@@ -45,7 +45,7 @@ Before releasing: run through `TESTING.md`, bump `version` in `package.json`, `n
 - `config.js` — build-time constants: `DEBUG`, version, `API_URL`, GitHub update URL.
 - `api.js` — `api(path, {method, data})`: promise-based, authenticated JSON calls to the nuke.family API via `GM_xmlhttpRequest`; throws `ApiError` with `.status`/`.body` on non-2xx. `request()` is the low-level wrapper.
 - `auth.js` — API token storage (GM storage) and the first-run token acquisition flow. The first-run flow navigates the **current tab** to nuke.family (stashing the Torn URL in GM storage for the return trip) rather than using `window.open`, which popup blockers reject outside a click handler.
-- `synced-store.js` + `cache-sync.js` — localStorage-backed stores (shitlist, categories, contracts) refreshed via the server's `/cache/last-updates` timestamps, with per-store TTL fallback. Store keys match the pre-refactor layout so existing installs keep their cache. `refreshAllCaches()` force-refetches every store plus role and permissions (used by the "Check NFH Updates" button as a stale-data escape hatch); stores are registered in `main.js` before any feature runs so it always covers all of them.
+- `synced-store.js` + `cache-sync.js` — localStorage-backed stores (shitlist, categories, contracts) refreshed via the server's `/cache/last-updates` timestamps, with per-store TTL fallback. Store keys match the pre-refactor layout so existing installs keep their cache, except contracts, which moved to `contractCoverage` when it switched to `/contracts/active-coverage`. `refreshAllCaches()` force-refetches every store plus role and permissions (used by the "Check NFH Updates" button as a stale-data escape hatch); stores are registered in `main.js` before any feature runs so it always covers all of them.
 - `pages.js` — `PageType` enum, URL matching (`IsPage`), navigation events (`onNavigate`).
 - `torn-page.js` — scraping helpers for Torn's DOM (viewed player/faction, logged-in user via `uid` cookie).
 - `settings.js` — user preferences (category visibility, reputation box) in localStorage.
@@ -56,7 +56,7 @@ Before releasing: run through `TESTING.md`, bump `version` in `package.json`, `n
 ### Features (`src/features/`)
 
 - `shitlist/` — data stores (`data.js`), profile section (`profile.js`), unified entry renderer (`render.js`), submission form + warning dialog (`form.js`), settings panel (`settings-panel.js`).
-- `contracts.js` — contract store, active-contract matching (UTC date parsing), profile "Active Contract" section.
+- `contracts.js` — coverage store (`/contracts/active-coverage`: each entry has an optional `faction_id` and optional `player_ids`, so player or group contracts need no script change), active-contract matching (UTC date parsing), profile "Active Contract" section (lists every rule when a contract has several).
 - `hospital.js` — hospital row colour-coding (contract > friendly > shitlist).
 - `reputation.js` / `recruiting.js` — profile reputation box and permission-gated ML recruiting score.
 - `faction-buttons.js` — "Change Nuke Family Key" and "Check NFH Updates" (which also force-refreshes all caches) on the faction controls page. This is the only settings surface outside the profile-page cog, and the first-run token alert points users here.

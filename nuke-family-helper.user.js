@@ -1073,33 +1073,31 @@ body:not(.dark-mode) {
 
   // src/features/contracts.js
   var contractsStore = createSyncedStore({
-    storageKey: "contractsList",
-    dataField: "contracts",
+    storageKey: "contractCoverage",
+    dataField: "coverage",
     emptyValue: [],
     serverField: "contract_cache_last_update",
     fallbackTtlMs: 6 * 60 * 60 * 1e3,
     // 6 hours
-    fetcher: () => api("/contracts/get_contracts")
+    fetcher: async () => (await api("/contracts/active-coverage")).coverage || []
   });
   contractsStore.onUpdate = () => maybeInsertActiveContract();
   function findActiveContract(factionId, playerId) {
-    const contracts = contractsStore.data;
-    if (!factionId || !contracts || contracts.length === 0) {
+    const coverage = contractsStore.data;
+    if (!Array.isArray(coverage) || coverage.length === 0) {
       return null;
     }
     const now = /* @__PURE__ */ new Date();
-    return contracts.find((contract) => {
-      const factionMatches = contract.faction_id == factionId;
+    const match = coverage.find((entry) => {
+      const contract = entry.contract || {};
+      const factionMatches = entry.faction_id == null || factionId && entry.faction_id == factionId;
+      const playerMatches = !Array.isArray(entry.player_ids) || entry.player_ids.some((id) => String(id) === String(playerId));
       const startDate = parseApiUtcDate(contract.contract_start_date);
       const endDate = parseApiUtcDate(contract.contract_end_date);
       const dateValid = startDate <= now && (!endDate || endDate > now);
-      let playerMatches = true;
-      if (contract.focus_players && contract.focus_players.trim() !== "") {
-        const focusPlayerIds = contract.focus_players.split(",").map((id) => id.trim());
-        playerMatches = focusPlayerIds.includes(playerId);
-      }
-      return factionMatches && dateValid && playerMatches;
-    }) || null;
+      return factionMatches && playerMatches && dateValid;
+    });
+    return match ? match.contract : null;
   }
   function maybeInsertActiveContract() {
     if (!IsPage(PageType.Profile)) {
@@ -1110,11 +1108,7 @@ body:not(.dark-mode) {
       "div.basic-information.profile-left-wrapper.left > div > div.cont.bottom-round > div > ul"
     ).then(() => {
       LogInfo("Checking for active contract...");
-      const factionId = getFactionId();
-      if (!factionId) {
-        return;
-      }
-      const activeContract = findActiveContract(factionId, getPlayerId());
+      const activeContract = findActiveContract(getFactionId(), getPlayerId());
       if (activeContract) {
         LogInfo("Inserting active contract section:", activeContract);
         insertActiveContractSection(activeContract);
@@ -1166,18 +1160,27 @@ body:not(.dark-mode) {
       "nfh-active-contract-list",
       "nfh-section-list"
     );
-    const items = [
-      ["Minimum Revive Chance", `${contract.rule_revive_chance_percentage}%`],
+    const rules = Array.isArray(contract.rules) ? contract.rules : [];
+    const items = rules.length > 1 ? rules.map((rule, index) => [`Rule ${index + 1}`, rule]) : [
+      [
+        "Minimum Revive Chance",
+        `${contract.rule_revive_chance_percentage}%`
+      ],
       [
         "Player Status",
         contract.rule_player_status.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())
       ],
       ["Online Required", contract.rule_is_online ? "Yes" : "No"],
       ["Idle Allowed", contract.rule_is_away ? "Yes" : "No"],
-      ["Offline Allowed", contract.rule_is_offline ? "Yes" : "No"],
-      ["Premium Contract", contract.is_premium ? "Yes" : "No"],
-      ["Start Date", new Date(contract.contract_start_date).toLocaleString()]
+      ["Offline Allowed", contract.rule_is_offline ? "Yes" : "No"]
     ];
+    items.push(
+      ["Premium Contract", contract.is_premium ? "Yes" : "No"],
+      [
+        "Start Date",
+        parseApiUtcDate(contract.contract_start_date).toLocaleString()
+      ]
+    );
     if (contract.note) {
       items.push(["Note", contract.note]);
     }
