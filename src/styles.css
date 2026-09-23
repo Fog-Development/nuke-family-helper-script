@@ -1,0 +1,261 @@
+/* Theme-aware CSS variables */
+:root {
+    --nfh-bg: #1a1a1a;
+    --nfh-text: #ffffff;
+    --nfh-section-bg: #2a2a2a;
+    --nfh-container-bg: #222;
+    --nfh-btn-bg: #333;
+    --nfh-btn-hover: #444;
+    --nfh-border: #444;
+    --nfh-list-key: #b0b0b0;
+    --nfh-hidden-count: #999;
+}
+
+/* Light theme overrides */
+body:not(.dark-mode) {
+    --nfh-bg: #f5f5f5;
+    --nfh-text: #333333;
+    --nfh-section-bg: #ffffff;
+    --nfh-container-bg: #eaeaea;
+    --nfh-btn-bg: #dddddd;
+    --nfh-btn-hover: #cccccc;
+    --nfh-border: #cccccc;
+    --nfh-list-key: #666666;
+    --nfh-hidden-count: #666666;
+}
+
+.nfh-section {
+    margin-top: 10px;
+    background-color: var(--nfh-bg);
+    border-radius: 5px;
+    overflow: hidden;
+    font-family: 'Roboto', sans-serif;
+}
+
+.nfh-section-title {
+    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 14px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+}
+
+.nfh-section-container {
+    padding: 10px 12px !important;
+    background-color: var(--nfh-container-bg);
+}
+
+.nfh-section-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.nfh-section-list li {
+    margin-bottom: 8px;
+    padding: 8px 10px 8px 20px;
+    background-color: var(--nfh-section-bg);
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--nfh-text);
+    position: relative;
+}
+
+.nfh-shitlist-entry-profile-container {
+  background-color: var(--nfh-container-bg) !important;
+  border-bottom: 0px !important;
+}
+
+.nfh-section-list li::before {
+    content: '▶';
+    position: absolute;
+    left: 8px;
+    top: 11px;
+    color: #4caf50;
+    font-size: 10px;
+}
+
+.nfh-shitlist-profile-list li {
+  margin-bottom: 8px;
+    padding: 8px 10px 8px 20px;
+    background-color: var(--nfh-section-bg);
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--nfh-text);
+    position: relative;
+}
+
+.nfh-shitlist-profile-list li::before {
+    content: '▶';
+    position: absolute;
+    left: 8px;
+    top: 11px;
+    color: #4caf50;
+    font-size: 10px;
+}
+
+.nfh-list-key {
+    font-weight: 600;
+    color: var(--nfh-list-key);
+    display: inline-block;
+    width: 100px;
+    vertical-align: top;
+}
+
+.nfh-list-value {
+    display: inline-block;
+    width: calc(100% - 105px);
+    vertical-align: top;
+}
+
+.nfh-shitlist-entry-container {
+    border-left: 3px solid #4caf50;
+    background-color: var(--nfh-container-bg);
+}
+
+.nfh-extra-shitlist-entry-condition {
+    font-size: 12px;
+    color: #4caf50;
+    margin-left: 5px;
+}
+
+.nfh-btn {
+    background-color: var(--nfh-btn-bg);
+    color: var(--nfh-text);
+    border: none;
+    padding: 6px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+}
+
+.nfh-btn:hover {
+    background-color: var(--nfh-btn-hover);
+}
+
+.nfh-shitlist-entry-profile-container-friendly {
+  border-right: 3px solid #4caf50;
+}
+
+.nfh-shitlist-entry-container-friendly {
+  background-color: #00ff1466 !important;
+  border-left: 0px !important;
+}
+
+/* Hospital row highlight styles */
+.nfh-hospital-contract {
+  background-color: #20b2aa7d !important;
+}
+
+.nfh-hospital-friendly {
+  background-color: #009d0075 !important;
+}
+
+.nfh-hospital-shitlist {
+  background-color: #f933337d !important;
+}
+
+/* Settings panel styles */
+.nfh-shitlist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.nfh-settings-cog {
+    cursor: pointer;
+    color: var(--nfh-text);
+    font-size: 16px;
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+}
+
+.nfh-settings-cog:hover {
+    color: #4caf50;
+    transform: rotate(90deg);
+}
+
+.nfh-settings-panel {
+    background-color: var(--nfh-section-bg);
+    border-radius: 5px;
+    padding: 15px;
+    border: 1px solid var(--nfh-border);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    position: fixed;
+    z-index: 9999;
+    width: 250px;
+    right: 20px;
+    bottom: 50px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    max-width: 95vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.nfh-settings-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--nfh-text);
+    border-bottom: 1px solid var(--nfh-border);
+    padding-bottom: 5px;
+}
+
+.nfh-category-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 5px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.nfh-category-item:hover {
+    background-color: var(--nfh-btn-bg);
+}
+
+.nfh-category-item input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.nfh-category-item.faction-locked {
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.nfh-category-item.faction-locked input[type="checkbox"] {
+    cursor: not-allowed;
+}
+
+.nfh-hidden-count {
+    font-size: 11px;
+    color: var(--nfh-hidden-count);
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.nfh-close-settings {
+    background-color: var(--nfh-btn-bg);
+    color: var(--nfh-text);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+.nfh-close-settings:hover {
+    background-color: var(--nfh-btn-hover);
+}

@@ -8,7 +8,9 @@
 
    - ES6+ features for modern syntax and capabilities
    - Browser-compatible code that runs in userscript environments
-   - No transpilation or bundling required
+   - Source is split into ES modules under `src/`, bundled by esbuild
+     (`npm run build`) into the single installable file
+     `nuke-family-helper.user.js` at the repo root
 
 2. **DOM Manipulation**
 
@@ -56,8 +58,12 @@ The project uses a simple development setup:
 
 1. **Local Editing**:
 
-   - Edit the script files in a code editor
-   - Use the dev.user.js file which loads the main script from a local path:
+   - Edit the ES modules under `src/` (never the generated
+     `nuke-family-helper.user.js` — CI rejects a committed file that doesn't
+     match a fresh build)
+   - Run `npm run watch` (or `npm run watch:debug` for the nuke.test API +
+     console logging) so esbuild rebuilds the bundle on save
+   - Use the dev.user.js file which loads the built bundle from a local path:
 
    ```javascript
    // @require file://C:\Users\Justin\Documents\Coding\nuke-family-helper-script\nuke-family-helper.user.js
@@ -71,15 +77,13 @@ The project uses a simple development setup:
    // @match http://nuke.test/auth/token-generation*
    ```
 
-   - Debug mode can be enabled in the script:
-
-   ```javascript
-   const debug = true;
-   ```
+   - Debug mode is a build flag (`npm run watch:debug`), not a source edit;
+     see `TESTING.md` for the pre-release manual test checklist
 
 3. **Deployment**:
-   - Update version number in the script header
-   - Commit changes to GitHub repository
+   - Update `version` in `package.json`
+   - Run `npm run build` and commit `src/` plus the regenerated
+     `nuke-family-helper.user.js` together
    - Users will be prompted to update when a new version is available
 
 ## Technical Constraints

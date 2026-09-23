@@ -1,0 +1,35 @@
+name: Verify build output
+
+# The committed nuke-family-helper.user.js at the repo root is what users
+# install and what the in-script update checker downloads. It is generated
+# from src/ by `npm run build`. This workflow fails if the committed file does
+# not match a fresh production build — i.e. someone edited the generated file
+# directly, or changed src/ without rebuilding.
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  verify-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify committed userscript matches the build
+        run: |
+          if ! git diff --exit-code -- nuke-family-helper.user.js; then
+            echo "::error::nuke-family-helper.user.js is out of date. Run 'npm run build' and commit the result."
+            exit 1
+          fi

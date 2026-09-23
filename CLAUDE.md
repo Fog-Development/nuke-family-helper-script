@@ -4,82 +4,66 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a userscript for the Nuke Family faction in the online game Torn. The script enhances the game interface with faction management tools including shitlist management, payout distribution, and contract tracking. The script integrates with the Nuke.Family API and requires faction leadership permissions.
+This is a userscript for the Nuke Family faction in the online game Torn. The script enhances the game interface with faction management tools including shitlist management, contract tracking, hospital row highlighting, reputation display, and ML recruiting scores. The script integrates with the Nuke.Family API and requires faction leadership permissions for most features.
+
+The legacy "Payout Helper" features (cash payouts on faction controls, xanax payouts on the armoury drugs tab) were removed in the modular refactor — payouts are handled elsewhere now. Don't reintroduce them.
+
+## Build System
+
+The source lives in `src/` as ES modules and is bundled by esbuild into the single userscript file users install: `nuke-family-helper.user.js` at the repo root. **Never edit `nuke-family-helper.user.js` directly** — edit `src/` and rebuild. CI (`.github/workflows/verify-build.yml`) fails if the committed file doesn't match a fresh production build.
+
+```bash
+npm install          # once
+npm run build        # production build (ALWAYS run before committing)
+npm run watch        # rebuild on save (production settings)
+npm run watch:debug  # rebuild on save with debug on (nuke.test API + console logging)
+```
+
+- The userscript metadata header is generated from `src/header.txt`; the `@version` comes from `version` in `package.json` (single source of truth).
+- `__DEBUG__` and `__VERSION__` are compile-time defines injected by `build.mjs` (see `src/core/config.js`).
+- Debug builds point at `http://nuke.test/api`. There is no hardcoded dev token; set one via the token-generation page on nuke.test or `GM_setValue("apiToken", "...")` from the userscript manager console.
 
 ## Development Workflow
 
-### Local Development Setup
+For local testing, install `dev.user.js` in your userscript manager. It loads the built file from disk via `@require file://...`, so run `npm run watch` and reload the Torn page after each change. `dev.user.js` also matches `http://nuke.test/auth/token-generation` for testing the token flow against a local nuke.family instance.
 
-For development, use the `dev.user.js` file which loads the main script from a local file path:
-```javascript
-// @require file://C:\Users\Justin\Documents\Coding\nuke-family-helper-script\nuke-family-helper.user.js
-```
-
-### Debug Mode
-Enable debug mode by setting `const debug = true;` in `nuke-family-helper.user.js:22`
-
-### Testing Environment
-The dev script includes test match patterns:
-- `https://nuke.family/auth/token-generation*`
-- `http://nuke.test/auth/token-generation*`
+Before releasing: run through `TESTING.md`, bump `version` in `package.json`, `npm run build`, commit `src/` and the regenerated `nuke-family-helper.user.js` together. Users install from the raw GitHub URL of the root file and the in-script update checker scrapes `@version` from it, so the built file must stay committed at that exact path.
 
 ## Code Architecture
 
-### Core Components
+### Entry point and feature dispatch
 
-**PageType Enum** (`nuke-family-helper.user.js:234`): Defines different page types (Profile, Faction, etc.)
+`src/main.js` bootstraps the script. On the nuke.family token-generation page it only runs token capture and returns (the Torn-side bootstrap, including the first-run token prompt, must never run there). On Torn: PDA polyfill first, then styles, update check, cached-data load, API-token flow, and finally feature dispatch. A **feature** is a module exporting `{ name, pages: [PageType], init() }`. `dispatchFeatures()` runs `init()` for every feature whose page matches the current URL, both on load and on SPA navigation (`onNavigate` in `src/core/pages.js` hooks hashchange/popstate/pushState plus a deduped poll — Torn's faction page switches tabs via the location hash).
 
-**SettingsManager** (`nuke-family-helper.user.js:324`): Handles API token storage and retrieval using GM_getValue/GM_setValue
+`init()` must be idempotent, and **must guard on DOM presence, not a module-level boolean**. Torn rebuilds whole tab panels when you navigate away and back, so a "already injected" flag stays set while the injected elements are gone — this was a real bug where faction-page buttons disappeared until a full reload. For containers the page may rebuild asynchronously, use `ensureInjected()` from `core/dom.js`, which re-checks on a short bounded schedule and repairs a wiped injection.
 
-**Main Observer Pattern** (`nuke-family-helper.user.js:745`): Uses MutationObserver to detect page changes and inject appropriate UI elements
+**To add a new feature:** create a module in `src/features/` exporting the descriptor, register it in the `features` array in `main.js`, and add a `@match` line in `src/header.txt` if it targets a URL not already matched.
 
-### Key Features
+### Core modules (`src/core/`)
 
-1. **Shitlist Management**
-   - `getShitList()` - Fetches shitlist entries with caching
-   - `getShitListCategories()` - Fetches available categories
-   - Caching system with configurable expiration (default 60 minutes)
+- `pda-polyfill.js` — GM_* API polyfill for the TornPDA mobile app; must be imported first. Exports `isPda`.
+- `config.js` — build-time constants: `DEBUG`, version, `API_URL`, GitHub update URL.
+- `api.js` — `api(path, {method, data})`: promise-based, authenticated JSON calls to the nuke.family API via `GM_xmlhttpRequest`; throws `ApiError` with `.status`/`.body` on non-2xx. `request()` is the low-level wrapper.
+- `auth.js` — API token storage (GM storage) and the first-run token acquisition flow. The first-run flow navigates the **current tab** to nuke.family (stashing the Torn URL in GM storage for the return trip) rather than using `window.open`, which popup blockers reject outside a click handler.
+- `synced-store.js` + `cache-sync.js` — localStorage-backed stores (shitlist, categories, contracts) refreshed via the server's `/cache/last-updates` timestamps, with per-store TTL fallback. Store keys match the pre-refactor layout so existing installs keep their cache. `refreshAllCaches()` force-refetches every store plus role and permissions (used by the "Check NFH Updates" button as a stale-data escape hatch); stores are registered in `main.js` before any feature runs so it always covers all of them.
+- `pages.js` — `PageType` enum, URL matching (`IsPage`), navigation events (`onNavigate`).
+- `torn-page.js` — scraping helpers for Torn's DOM (viewed player/faction, logged-in user via `uid` cookie).
+- `settings.js` — user preferences (category visibility, reputation box) in localStorage.
+- `user.js` — nuke.family role + permissions (12h cache) for gating UI, with `refreshUserRole()` / `refreshPermissions()` for forced refetches.
+- `update-checker.js` — GitHub version check with 6h throttle and 3-day nag grace period.
+- `dom.js` — `waitForElm`, `addStyle`, `escapeHtml`. **All API/user-sourced strings interpolated into innerHTML must go through `escapeHtml`.**
 
-2. **Payout System**
-   - `getPlayerPayoutList()` - Cash payouts to faction members
-   - `getPlayerXanaxPayoutList()` - Xanax distribution system
-   - Balance suggestion integration
+### Features (`src/features/`)
 
-3. **Contract Management**
-   - `getContracts()` - Active contract display
-   - `checkAndInsertActiveContract()` - UI injection for contract info
+- `shitlist/` — data stores (`data.js`), profile section (`profile.js`), unified entry renderer (`render.js`), submission form + warning dialog (`form.js`), settings panel (`settings-panel.js`).
+- `contracts.js` — contract store, active-contract matching (UTC date parsing), profile "Active Contract" section.
+- `hospital.js` — hospital row colour-coding (contract > friendly > shitlist).
+- `reputation.js` / `recruiting.js` — profile reputation box and permission-gated ML recruiting score.
+- `faction-buttons.js` — "Change Nuke Family Key" and "Check NFH Updates" (which also force-refreshes all caches) on the faction controls page. This is the only settings surface outside the profile-page cog, and the first-run token alert points users here.
+- `token-capture.js` — captures the API token on the nuke.family token-generation page and sends the user back to Torn if they arrived via the first-run flow. Not a registered feature; `main.js` calls `initTokenCapture()` directly.
 
-### Data Flow
+### Conventions
 
-1. **API Communication**: Uses `GM_xmlhttpRequest` with Bearer token authentication
-2. **Caching**: localStorage with timestamp-based expiration
-3. **UI Injection**: DOM manipulation with custom CSS classes (nfh-* prefix)
-4. **Page Detection**: URL-based page type identification
-
-### API Endpoints
-
-Base URL determined by SettingsManager:
-- `/shit-lists` - Shitlist entries
-- `/shit-list-categories` - Category definitions  
-- `/user/get-own-roles` - User permission roles
-- `/payout/get-payout-table` - Payout information
-- `/contracts/get_contracts` - Contract data
-
-### TornPDA Compatibility
-
-The script includes a polyfill for TornPDA mobile app (`nuke-family-helper.user.js:32-150`) that provides GM_* API compatibility when running in the mobile environment.
-
-### Styling Convention
-
-All custom elements use the `nfh-` CSS class prefix to avoid conflicts with the game's styling.
-
-### Error Handling
-
-Critical data operations are wrapped in try-catch blocks with user-facing alerts for cache corruption or API failures.
-
-## Key Patterns
-
-- **Async Data Fetching**: Promise-based with GM_xmlhttpRequest
-- **DOM Waiting**: `waitForElm()` utility for dynamic content
-- **Element Creation**: Dedicated builder functions for consistent UI components
-- **Logging**: `LogInfo()` function with timestamp formatting
+- All injected elements use the `nfh-` CSS class prefix; styles live in `src/styles.css` (theme-aware via CSS variables).
+- `LogInfo()` (in `core/log.js`) for debug logging — it's a no-op in production builds; don't use bare `console.log` except for real errors.
+- localStorage keys are shared with the game's origin; GM storage (`GM_getValue`/`GM_setValue`) holds the API token.

@@ -1,5 +1,32 @@
 # Active Context: Nuke Family Helper Script
 
+## July 2026: Modular refactor (v2.18.0)
+
+The single-file script was refactored into ES modules under `src/`, bundled by
+esbuild into the same installable `nuke-family-helper.user.js` at the repo
+root (build docs in `CLAUDE.md`, architecture in `src/`, manual test checklist
+in `TESTING.md`). Functional behaviour was preserved; notable fixes made
+during the refactor: implemented the previously-missing `getCookie` (shitlist
+reporter ID was being submitted as `false`), removed the document-wide
+MutationObserver in favour of page-type dispatch + navigation events, unified
+the duplicated shitlist render paths, HTML-escaped API-sourced strings, and
+removed the hardcoded dev API token from the distributed file.
+
+Also in this change:
+
+- **Payout Helper removed entirely** (cash payouts on faction controls and the
+  xanax payout flow on the armoury drugs tab). This functionality is legacy and
+  handled elsewhere now. The "Change Nuke Family Key" / "Check NFH Updates"
+  buttons that lived alongside it moved to their own `faction-buttons` feature
+  on the controls page.
+- **Injection guards are DOM-based, not module booleans.** Torn rebuilds tab
+  panels on hash navigation, so a boolean flag left the faction buttons missing
+  until a full reload once you navigated away and back. `ensureInjected()` in
+  `core/dom.js` handles the container-rebuild race.
+- **"Check NFH Updates" now force-refreshes every cache** (shitlist,
+  categories, contracts, role, permissions) before checking for a script
+  update, giving users a manual fix for stale data.
+
 ## Current Work Focus
 
 The current focus of the Nuke Family Helper Script is on maintaining and enhancing the core functionality while ensuring compatibility with the Torn game interface. Specific areas of focus include:
@@ -16,10 +43,8 @@ The current focus of the Nuke Family Helper Script is on maintaining and enhanci
    - Showing detailed contract requirements and terms
    - Highlighting compliance status
 
-3. **Payout System Refinement**
-   - Streamlining the cash payout process
-   - Enhancing the Xanax distribution workflow
-   - Improving tracking of completed payouts
+3. ~~**Payout System Refinement**~~ — removed in v2.18.0 as legacy; payouts
+   are no longer handled by this script.
 
 ## Recent Changes
 
