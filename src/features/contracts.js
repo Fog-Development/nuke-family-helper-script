@@ -21,7 +21,7 @@ export const contractsStore = createSyncedStore({
 
 // Insert the section (again) whenever fresh contract data arrives; the
 // insertion is a no-op off profile pages or when the section already exists.
-contractsStore.onUpdate = () => maybeInsertActiveContract();
+contractsStore.subscribe(() => maybeInsertActiveContract());
 
 // Find the active contract (if any) covering a player, who may have no
 // faction. A coverage entry with a faction_id only covers that faction's

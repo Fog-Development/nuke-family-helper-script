@@ -105,6 +105,22 @@ function applyHospitalRowColor(li, status) {
   }
 }
 
+// Re-colour every row from scratch. Used when cached data changes: rows
+// processed before the data arrived (or with only part of it, e.g. the
+// shitlist before the contracts) would otherwise keep a stale colour.
+function reprocessHospitalRows() {
+  document
+    .querySelectorAll(".user-info-list-wrap .nfh-hospital-processed")
+    .forEach((li) => li.classList.remove("nfh-hospital-processed"));
+  processHospitalRows();
+}
+
+// Fresh data can land after the rows were first processed (cold cache), and
+// the DOM observer only reacts to Torn changing the list, so listen to the
+// stores too. No-op when the hospital list isn't on the page.
+shitlistStore.subscribe(reprocessHospitalRows);
+contractsStore.subscribe(reprocessHospitalRows);
+
 function processHospitalRows() {
   LogInfo("Processing hospital rows...");
 
@@ -119,7 +135,8 @@ function processHospitalRows() {
     return;
   }
 
-  const listItems = userInfoList.querySelectorAll("li");
+  // Direct rows only: each row also contains a nested status-icon <li>.
+  const listItems = userInfoList.querySelectorAll(":scope > li");
   LogInfo(`Found ${listItems.length} hospital rows`);
 
   listItems.forEach((li) => {

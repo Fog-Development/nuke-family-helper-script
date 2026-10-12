@@ -14,6 +14,7 @@ export function createSyncedStore({
 }) {
   let data = emptyValue;
   let timestamp = 0;
+  const listeners = [];
 
   const store = {
     serverField,
@@ -26,10 +27,13 @@ export function createSyncedStore({
       return timestamp;
     },
 
-    // Assignable hook, called with the fresh data after every successful
-    // refresh. Assigned by feature modules (kept assignable rather than a
-    // constructor arg to avoid circular imports between data and UI modules).
-    onUpdate: null,
+    // Register a callback invoked with the fresh data after every successful
+    // refresh. Several features can listen to one store (e.g. the profile
+    // page and hospital rows both render the shitlist); registering after
+    // construction avoids circular imports between data and UI modules.
+    subscribe(listener) {
+      listeners.push(listener);
+    },
 
     // Load previously cached data from localStorage. Corrupt entries are
     // discarded (the next refresh repopulates them) instead of alerting.
@@ -63,7 +67,13 @@ export function createSyncedStore({
           JSON.stringify({ [dataField]: data, timestamp }),
         );
         LogInfo(`${storageKey} updated and stored with timestamp:`, timestamp);
-        store.onUpdate?.(data);
+        for (const listener of listeners) {
+          try {
+            listener(data);
+          } catch (error) {
+            console.error(`Listener for ${storageKey} failed:`, error);
+          }
+        }
       } catch (error) {
         console.error(`Error refreshing ${storageKey}:`, error);
       }

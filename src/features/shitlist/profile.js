@@ -12,7 +12,7 @@ import { createSettingsPanel } from "./settings-panel.js";
 
 // Re-render the profile list whenever fresh shitlist data arrives (no-op when
 // the section isn't on the page).
-shitlistStore.onUpdate = () => renderShitList();
+shitlistStore.subscribe(() => renderShitList());
 
 // Gear Icon SVG
 const cogSVG = `
