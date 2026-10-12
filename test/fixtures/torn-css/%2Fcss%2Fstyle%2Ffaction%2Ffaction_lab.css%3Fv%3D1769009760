@@ -1,0 +1,876 @@
+.d .faction-lab .build-steps {
+	top: 0;
+	left: 0;
+	position: relative;
+	font-size: 0;
+	display: table;
+	overflow: hidden;
+}
+
+.d .faction-lab .build-steps > li {
+	background-color: #333;
+	border-bottom: 1px solid #000;
+    top: 0;
+    left: 0;
+    position: relative;
+}
+
+.d .faction-lab .build-steps > li.c-title {
+	height: 60px;
+	width: 112px;
+	display: inline-block;
+	border-right: 1px solid #000;
+	border-left: 1px solid #555;
+	line-height: 60px;
+	text-align: center;
+	cursor: pointer;
+	box-sizing: border-box;
+}
+
+.d .faction-lab .build-steps > li.c-title:first-child {
+	border-left-color: transparent;
+}
+
+.d .faction-lab .build-steps > li.c-title.last {
+	border-right-color: transparent;
+}
+
+.d .faction-lab .build-steps > li.enable.active.c-title + .c-desc-wrap {
+	display: inline-block;
+}
+
+.d .faction-lab .build-steps > li.enable.c-title .c-desc-wrap {
+	display: none;
+}
+
+.d .faction-lab .build-steps > li.c-desc-wrap {
+	color: #CCC;
+	text-shadow: 1px 1px 2px rgba(0,0,0,0.65);
+	text-shadow: var(--tutorial-title-shadow);
+	text-align: center;
+	font-size: 12px;
+	float: right;
+	height: 40px;
+	border-top: 1px solid #555;
+	line-height: 21px;
+	padding: 10px 0;
+	width: 784px;
+	display: none;
+}
+
+.d .faction-lab .build-steps > li.c-desc-wrap .c-name {
+	font-family: 'Fjalla One';
+	color: #FFF;
+	font-size: 15px;
+}
+
+.d .faction-lab .build-steps > li.clear {
+	padding: 0;
+	margin: 0;
+	font-size: 0;
+	height: 0;
+	border: 0;
+	width: 0;
+	line-height: 0;
+	float: none;
+}
+
+.d .faction-lab .build-steps > li .c-main-icon,
+.d .faction-lab .build-steps > li .c-state {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.d .faction-lab .build-steps > li .c-main-icon {
+	width: 42px;
+	height: 51px;
+	background: url('/images/v2/faction/controls/steps_976.png') 0 0 no-repeat;
+}
+
+.d .faction-lab #components .c-main-icon {
+	width: 50px;
+	height: 51px;
+	background: url('/images/v2/faction/controls/steps_976.png') 0 0 no-repeat;
+}
+
+.d .faction-lab .build-steps > li.active {
+	background: url('/images/v2/faction/controls/lab_steps_selected.png') 0 0 repeat-x;
+}
+
+.d .faction-lab .build-steps > li.c-desc-wrap.active {
+	background: none #333;
+}
+
+.d .faction-lab .build-steps > li.enable.step-1 .c-main-icon,
+.d .faction-lab #components .step-wrap-1 .c-main-icon {
+	background-position: 0 -102px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-1.active .c-main-icon,
+.d .faction-lab #components.step-1 .step-wrap-1 .c-main-icon {
+	background-position: 0 -51px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-1 .c-main-icon,
+.d .faction-lab #components.step-2 .step-wrap-1 .c-main-icon,
+.d .faction-lab #components.step-3 .step-wrap-1 .c-main-icon,
+.d .faction-lab #components.step-4 .step-wrap-1 .c-main-icon,
+.d .faction-lab #components.step-5 .step-wrap-1 .c-main-icon,
+.d .faction-lab #components.step-6 .step-wrap-1 .c-main-icon,
+.d .faction-lab #components.step-7 .step-wrap-1 .c-main-icon {
+	background-position: 0 0;
+}
+
+.d .faction-lab .build-steps > li.step-2 .c-main-icon,
+.d .faction-lab #components .step-wrap-2 .c-main-icon {
+	background-position: -50px -102px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-2.active .c-main-icon,
+.d .faction-lab #components.step-2 .step-wrap-2 .c-main-icon {
+	background-position: -50px -51px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-2 .c-main-icon,
+.d .faction-lab #components.step-3 .step-wrap-2 .c-main-icon,
+.d .faction-lab #components.step-4 .step-wrap-2 .c-main-icon,
+.d .faction-lab #components.step-5 .step-wrap-2 .c-main-icon,
+.d .faction-lab #components.step-6 .step-wrap-2 .c-main-icon,
+.d .faction-lab #components.step-7 .step-wrap-2 .c-main-icon {
+	background-position: -50px 0;
+}
+
+.d .faction-lab .build-steps > li.step-3 .c-main-icon,
+.d .faction-lab #components .step-wrap-3 .c-main-icon {
+	background-position: -100px -102px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-3.active .c-main-icon,
+.d .faction-lab #components.step-3 .step-wrap-3 .c-main-icon {
+	background-position: -100px -51px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-3 .c-main-icon,
+.d .faction-lab #components.step-4 .step-wrap-3 .c-main-icon,
+.d .faction-lab #components.step-5 .step-wrap-3 .c-main-icon,
+.d .faction-lab #components.step-6 .step-wrap-3 .c-main-icon,
+.d .faction-lab #components.step-7 .step-wrap-3 .c-main-icon{
+	background-position: -100px 0;
+}
+
+.d .faction-lab .build-steps > li.step-4 .c-main-icon,
+.d .faction-lab #components .step-wrap-4 .c-main-icon {
+	background-position: -150px -102px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-4.active .c-main-icon,
+.d .faction-lab #components.step-4 .step-wrap-4 .c-main-icon {
+	background-position: -150px -51px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-4 .c-main-icon,
+.d .faction-lab #components.step-5 .step-wrap-4 .c-main-icon,
+.d .faction-lab #components.step-6 .step-wrap-4 .c-main-icon,
+.d .faction-lab #components.step-7 .step-wrap-4 .c-main-icon {
+	background-position: -150px 0;
+}
+
+.d .faction-lab .build-steps > li.step-5 .c-main-icon,
+.d .faction-lab #components .step-wrap-5 .c-main-icon {
+	background-position: -200px -102px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-5.active .c-main-icon,
+.d .faction-lab #components.step-5 .step-wrap-5 .c-main-icon {
+	background-position: -200px -51px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-5 .c-main-icon,
+.d .faction-lab #components.step-6 .step-wrap-5 .c-main-icon,
+.d .faction-lab #components.step-7 .step-wrap-5 .c-main-icon {
+	background-position: -200px 0;
+}
+
+.d .faction-lab .build-steps > li.step-6 .c-main-icon,
+.d .faction-lab #components .step-wrap-6 .c-main-icon {
+	background-position: -250px -102px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-6.active .c-main-icon,
+.d .faction-lab #components.step-6 .step-wrap-6 .c-main-icon {
+	background-position: -250px -51px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-6 .c-main-icon,
+.d .faction-lab #components.step-7 .step-wrap-6 .c-main-icon {
+	background-position: -250px 0;
+}
+
+.d .faction-lab .build-steps > li.step-7 .c-main-icon,
+.d .faction-lab #components .step-wrap-7 .c-main-icon {
+	background-position: -300px -102px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-7.active .c-main-icon,
+.d .faction-lab #components.step-7 .step-wrap-7 .c-main-icon {
+	background-position: -300px -51px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-7 .c-main-icon {
+	background-position: -300px 0;
+}
+
+.d .faction-lab .build-steps > li .c-state {
+	font-family:"Fjalla One";
+	font-size:12px;
+	color:#555555;
+	text-shadow:1px 1px 2px rgba(0,0,0,0.65);
+}
+
+.d .faction-lab .build-steps > li.step-1 .c-state,
+.d .faction-lab .build-steps > li.step-2 .c-state,
+.d .faction-lab .build-steps > li.step-3 .c-state,
+.d .faction-lab .build-steps > li.step-6 .c-state,
+.d .faction-lab .build-steps > li.step-1 + .c-desc-wrap .c-state  {
+	width: 23px;
+	height: 23px;
+	background: url('/images/v2/faction/controls/lab_check_cross.png') -92px 0 no-repeat;
+
+}
+
+.d .faction-lab .build-steps > li.enable.step-1.active .c-state,
+.d .faction-lab .build-steps > li.enable.step-1.active + .c-desc-wrap .c-state {
+	background-position: 0 0;
+}
+
+.d .faction-lab .build-steps > li.enable.step-1 .c-state,
+.d .faction-lab .build-steps > li.enable.step-1 + .c-desc-wrap .c-state {
+	background-position: 0 -23px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-1.active + .c-desc-wrap .c-state {
+	color: #54A800;
+}
+
+.d .faction-lab .build-steps > li.enable.step-1 + .c-desc-wrap .c-state {
+	color: #428400;
+}
+
+.d .faction-lab .build-steps > li.enable.step-2.active .c-state,
+.d .faction-lab .build-steps > li.enable.step-2.active + .c-desc-wrap .c-state {
+	background-position: -23px 0;
+}
+
+.d .faction-lab .build-steps > li.enable.step-2 .c-state,
+.d .faction-lab .build-steps > li.enable.step-2 + .c-desc-wrap .c-state {
+	background-position: -23px -23px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-2.active + .c-desc-wrap .c-state {
+	color: #85B200;
+}
+
+.d .faction-lab .build-steps > li.enable.step-2 + .c-desc-wrap .c-state {
+	color: #759B00;
+}
+
+.d .faction-lab .build-steps > li.enable.step-3.active .c-state,
+.d .faction-lab .build-steps > li.enable.step-3.active + .c-desc-wrap .c-state {
+	background-position: -46px 0;
+}
+
+.d .faction-lab .build-steps > li.enable.step-3 .c-state,
+.d .faction-lab .build-steps > li.enable.step-3 + .c-desc-wrap .c-state {
+	background-position: -46px -23px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-3.active + .c-desc-wrap .c-state {
+	color: #B2B200;
+}
+
+.d .faction-lab .build-steps > li.enable.step-3 + .c-desc-wrap .c-state {
+	color: #8C8C00;
+}
+
+.d .faction-lab .build-steps > li.enable.step-4.active .c-state,
+.d .faction-lab .build-steps > li.enable.step-4.active + .c-desc-wrap .c-state {
+	color: #D9A300;
+}
+
+.d .faction-lab .build-steps > li.enable.step-4 .c-state,
+.d .faction-lab .build-steps > li.enable.step-4 + .c-desc-wrap .c-state {
+	color: #9D7A10;
+}
+
+.d .faction-lab .build-steps > li.enable.step-5.active .c-state,
+.d .faction-lab .build-steps > li.enable.step-5.active + .c-desc-wrap .c-state {
+	color: #D96D00;
+}
+
+.d .faction-lab .build-steps > li.enable.step-5 .c-state,
+.d .faction-lab .build-steps > li.enable.step-5 + .c-desc-wrap .c-state {
+	color: #9D5710;
+}
+
+.d .faction-lab .build-steps > li.enable.step-6.active .c-state,
+.d .faction-lab .build-steps > li.enable.step-6.active + .c-desc-wrap .c-state {
+	background-position: -69px 0;
+}
+
+.d .faction-lab .build-steps > li.enable.step-6 .c-state,
+.d .faction-lab .build-steps > li.enable.step-6 + .c-desc-wrap .c-state {
+	background-position: -69px -23px;
+}
+
+.d .faction-lab .build-steps > li.enable.step-6.active + .c-desc-wrap .c-state {
+	color: #FF4000;
+}
+
+.d .faction-lab .build-steps > li.enable.step-6 + .c-desc-wrap .c-state {
+	color: #D53500;
+}
+
+.d .faction-lab .build-steps > li.enable.step-7.active .c-state,
+.d .faction-lab .build-steps > li.enable.step-7.active + .c-desc-wrap .c-state {
+	color: #D90000;
+}
+
+.d .faction-lab .build-steps > li.enable.step-7 .c-state,
+.d .faction-lab .build-steps > li.enable.step-7 + .c-desc-wrap .c-state {
+	color: #9D1010;
+}
+
+.d .faction-lab .build-wrap {
+	top: 0;
+	left: 0;
+	position: relative;
+	overflow: hidden;
+	width: 784px;
+	height: 456px;
+	border-top: 1px solid #555;
+	text-align: center;
+	background: url('/images/v2/faction/controls/lab_bg_graphics_no_steps.png') 0 0 #333 no-repeat;
+}
+
+.d .faction-lab .build-wrap .dial-wrap {
+	top: 0;
+	left: 0;
+	position: relative;
+	width: 361px;
+	height: 361px;
+	margin: 50px auto 0 auto;
+	background: url('/images/v2/faction/controls/lab_images_bg.png') 0 0 no-repeat;
+}
+
+.d .faction-lab .build-wrap .dial-wrap .dial-img {
+	height: 324px;
+	width: 324px;
+	margin-top: 18px;
+	display: inline-block;
+	background: url('/images/v2/faction/controls/lab_images.png') 0 0 no-repeat;
+}
+
+.d .faction-lab #components.step-1 .build-wrap .dial-wrap .dial-img {
+	background-position: 0 0;
+}
+
+.d .faction-lab #components.step-2 .build-wrap .dial-wrap .dial-img {
+	background-position: 0 -324px;
+}
+
+.d .faction-lab #components.step-3 .build-wrap .dial-wrap .dial-img {
+	background-position: 0 -648px;
+}
+
+.d .faction-lab #components.step-4 .build-wrap .dial-wrap .dial-img {
+	background-position: 0 -972px;
+}
+
+.d .faction-lab #components.step-5 .build-wrap .dial-wrap .dial-img {
+	background-position: 0 -1296px;
+}
+
+.d .faction-lab #components.step-6 .build-wrap .dial-wrap .dial-img {
+	background-position: 0 -1620px;
+}
+
+.d .faction-lab #components.step-7 .build-wrap .dial-wrap .dial-img {
+	background-position: 0 -1944px;
+}
+
+.d .faction-lab .build-steps > li.step-7.c-desc-wrap .btn-wrap {
+	display: none;
+}
+
+.d .faction-lab .build-wrap .btn-wrap,
+.d .faction-lab .build-steps > li.step-7.c-desc-wrap .btn-wrap {
+	margin-top: 10px;
+}
+
+.d .faction-lab .build-wrap .btn-wrap .btn,
+.d .faction-lab .build-steps > li.step-7.c-desc-wrap .btn-wrap .btn {
+	cursor: pointer;
+}
+
+.d .faction-lab #components .c-main-icon,
+.d .faction-lab #components .curves {
+	position: absolute;
+}
+
+.d .faction-lab #components .step-wrap-1 .c-main-icon {
+	top: 34px;
+	left: 14px;
+}
+
+.d .faction-lab #components .step-wrap-2 .c-main-icon {
+	top: 26px;
+	left: 175px;
+}
+
+.d .faction-lab #components .step-wrap-3 .c-main-icon {
+	top: 10px;
+	left: 250px;
+}
+
+.d .faction-lab #components .step-wrap-4 .c-main-icon {
+	top: 60px;
+	left: 620px;
+}
+
+.d .faction-lab #components .step-wrap-5 .c-main-icon {
+	top: 283px;
+	left: 25px;
+}
+
+.d .faction-lab #components .step-wrap-6 .c-main-icon {
+	top: 315px;
+	left: 585px;
+}
+
+.d .faction-lab #components .step-wrap-7 .c-main-icon {
+	top: 327px;
+	left: 720px;
+}
+
+.d .faction-lab #components .step-wrap-1 .curves {
+    top: 21px;
+    left: 55px;
+    width: 180px;
+    height: 58px;
+    background: url('/images/v2/faction/controls/path_respect.png') -180px 0 no-repeat;
+}
+
+.d .faction-lab #components .step-wrap-2 .curves {
+    top: 65px;
+    left: 25px;
+    width: 197px;
+    height: 164px;
+    background: url('/images/v2/faction/controls/path_lab.png') -197px 0 no-repeat;
+}
+
+.d .faction-lab #components .step-wrap-3 .curves {
+	top: 20px;
+	left: 274px;
+	width: 345px;
+	height: 88px;
+	background: url('/images/v2/faction/controls/path_sciene_course.png') -345px 0 no-repeat;
+}
+
+.d .faction-lab #components.step-2 .step-wrap-1 .curves,
+.d .faction-lab #components.step-3 .step-wrap-1 .curves,
+.d .faction-lab #components.step-3 .step-wrap-2 .curves,
+.d .faction-lab #components.step-4 .step-wrap-1 .curves,
+.d .faction-lab #components.step-4 .step-wrap-2 .curves,
+.d .faction-lab #components.step-4 .step-wrap-3 .curves,
+.d .faction-lab #components.step-5 .step-wrap-1 .curves,
+.d .faction-lab #components.step-5 .step-wrap-2 .curves,
+.d .faction-lab #components.step-5 .step-wrap-3 .curves,
+.d .faction-lab #components.step-5 .step-wrap-4 .curves,
+.d .faction-lab #components.step-6 .step-wrap-1 .curves,
+.d .faction-lab #components.step-6 .step-wrap-2 .curves,
+.d .faction-lab #components.step-6 .step-wrap-3 .curves,
+.d .faction-lab #components.step-6 .step-wrap-4 .curves,
+.d .faction-lab #components.step-6 .step-wrap-5 .curves,
+.d .faction-lab #components.step-7 .step-wrap-1 .curves,
+.d .faction-lab #components.step-7 .step-wrap-2 .curves,
+.d .faction-lab #components.step-7 .step-wrap-3 .curves,
+.d .faction-lab #components.step-7 .step-wrap-4 .curves,
+.d .faction-lab #components.step-7 .step-wrap-5 .curves,
+.d .faction-lab #components.step-7 .step-wrap-6 .curves,
+.d .faction-lab #components.step-7 .step-wrap-7 .curves {
+	background-position: 0 0;
+}
+
+.d .faction-lab #components .step-wrap-4 .curves {
+	top: 20px;
+	left: 522px;
+	width: 247px;
+	height: 284px;
+	background: url('/images/v2/faction/controls/path_members.png') -247px 0 no-repeat;
+}
+
+.d .faction-lab #components .step-wrap-5 .curves {
+	top: 268px;
+	left: 25px;
+	width: 270px;
+	height: 171px;
+	background: url('/images/v2/faction/controls/path_cesium.png') -270px 0 no-repeat;
+}
+
+.d .faction-lab #components .step-wrap-6 .curves {
+	top: 283px;
+	left: 480px;
+	width: 231px;
+	height: 146px;
+	background: url('/images/v2/faction/controls/path_hazmat.png') -231px 0 no-repeat;
+}
+
+.d .faction-lab #components .step-wrap-7 .curves {
+	top: 239px;
+	left: 671px;
+	width: 67px;
+	height: 152px;
+	background: url('/images/v2/faction/controls/path_db.png') -67px 0 no-repeat;
+}
+
+.d .faction-lab .build-steps > li .tablet-wrap {
+    text-align: left;
+    display: none;
+}
+
+.d .faction-lab .build-steps > li:first-child .t-delimiter,
+.d .faction-lab .build-steps > li:first-child .b-delimiter {
+    display: none;
+}
+
+.d .faction-lab .t-delimiter,
+.d .faction-lab .b-delimiter {
+    height: 20px;
+    width: 2px;
+    position: absolute;
+    left: -2px;
+}
+
+.d .faction-lab .t-delimiter {
+    top: 0;
+    background: -moz-linear-gradient(top,  rgba(46,46,46,1) 0%, rgba(46,46,46,0) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(46,46,46,1)), color-stop(100%,rgba(46,46,46,0))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(46,46,46,1) 0%,rgba(46,46,46,0) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(46,46,46,1) 0%,rgba(46,46,46,0) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(46,46,46,1) 0%,rgba(46,46,46,0) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(46,46,46,1) 0%,rgba(46,46,46,0) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2e2e2e', endColorstr='#002e2e2e',GradientType=0 ); /* IE6-9 */
+}
+
+.d .faction-lab .b-delimiter {
+    bottom: -1px;
+    background: -moz-linear-gradient(top,  rgba(46,46,46,0) 0%, rgba(46,46,46,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(46,46,46,0)), color-stop(100%,rgba(46,46,46,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(46,46,46,0) 0%,rgba(46,46,46,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(46,46,46,0) 0%,rgba(46,46,46,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(46,46,46,0) 0%,rgba(46,46,46,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(46,46,46,0) 0%,rgba(46,46,46,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#002e2e2e', endColorstr='#2e2e2e',GradientType=0 ); /* IE6-9 */
+}
+
+.d .laboratory-tooltip {
+	background-color: #444;
+	box-shadow: 0 0 2px #00000073;
+	color: #FFF;
+	z-index: 999;
+	width: 300px;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 12px;
+	line-height: 13px;
+}
+
+.d .laboratory-tooltip .tooltip-name {
+	font-family: "Fjalla One", Arial, sans-serif;
+	border-bottom: 1px solid #000;
+	padding: 10px;
+}
+
+.d .laboratory-tooltip .tooltip-desc {
+	font-family: Arial, sans-serif;
+	border-top: 1px solid #FFFFFF14;
+	padding: 10px;
+}
+
+.d .laboratory-tooltip .tooltip-arrow {
+	border-color: transparent transparent #444;
+	border-width: 0 7px 7px;
+	top: -7px;
+	left: 50%;
+	overflow: hidden;
+	position: absolute;
+	border-style: solid;
+	width: 0;
+	height: 0;
+	background: transparent;
+	transform: translateX(-50%);
+	bottom: -7px;
+	margin: 0;
+	pointer-events: none;
+}
+
+.d .laboratory-tooltip-data {
+	top: 0;
+	left: 0;
+	position: absolute;
+	z-index: 9;
+	width: 112px;
+	height: 61px;
+}
+
+.d .build-steps > li.c-desc-wrap .laboratory-tooltip-data {
+	display: none;
+}
+
+@media screen and (max-width: 784px) {
+	.r .faction-lab #components {
+		display: none;
+	}
+
+	.r .faction-lab .build-steps {
+		background-color: #333;
+        border-radius: 5px;
+	}
+
+	.r .faction-lab .build-steps > li .c-state {
+		display: none;
+	}
+
+	.r .faction-lab .build-steps > li.c-title,
+	.r .faction-lab .build-steps > li.c-desc-wrap {
+		vertical-align: middle;
+		display: inline-block;
+		height: auto;
+	}
+
+	.r .faction-lab .build-steps > li {
+        cursor: pointer;
+		background-color: transparent;
+	}
+
+    .r .faction-lab .build-steps > li.last,
+    .r .faction-lab .build-steps > li.last + .c-desc-wrap {
+        border-bottom: 1px solid transparent;
+    }
+
+	.r .faction-lab .build-steps > li.c-title {
+		border: 1px solid transparent;
+		background: transparent;
+		border-right: 0;
+		width: 50px;
+
+	}
+
+	.r .faction-lab .build-steps > li.c-desc-wrap {
+		margin-left: -50px;
+		padding-left: 50px;
+		padding-top: 0;
+		padding-bottom: 0;
+		width: 334px;
+		float: none;
+	}
+
+	.r .faction-lab .build-steps > li .c-main-icon {
+		width: 40px;
+	}
+
+	.r .faction-lab .build-steps > li.c-desc-wrap .t-r-border {
+		padding: 10px;
+		border-left: 1px solid #555;
+		text-align: left;
+	}
+
+	.r .faction-lab .build-steps > li.c-desc-wrap .t-l-border {
+		border-left: 1px solid #000;
+	}
+
+    .r .faction-lab .build-steps > li.c-desc-wrap .c-name {
+        text-align: left;
+    }
+
+	.r .faction-lab .build-steps > li.c-desc-wrap .c-desc {
+		line-height: 16px;
+		display: none;
+		text-align: left;
+	}
+
+    .r .faction-lab .build-steps > li.step-1 .tablet-wrap .c-state,
+    .r .faction-lab .build-steps > li.step-2 .tablet-wrap .c-state,
+    .r .faction-lab .build-steps > li.step-3 .tablet-wrap .c-state,
+    .r .faction-lab .build-steps > li.step-6 .tablet-wrap .c-state {
+        margin-left: -6px;
+    }
+
+    .r .faction-lab .build-steps > li .tablet-wrap,
+	.r .faction-lab .build-steps > li .tablet-wrap .c-state {
+		display: block;
+	}
+
+    .r .faction-lab .build-steps > li + .c-desc-wrap .c-incomplete,
+    .r .faction-lab .build-steps > li.enable + .c-desc-wrap .c-complete {
+        display: block;
+        margin-left: 25px;
+    }
+
+    .r .faction-lab .build-steps > li + .c-desc-wrap .c-complete,
+	.r .faction-lab .build-steps > li.enable + .c-desc-wrap .c-incomplete {
+		margin-left: 25px;
+		display: none;
+	}
+
+    .r .faction-lab .build-steps > li .c-main-icon {
+        width: 42px;
+        height: 41px;
+        background: url('/images/v2/faction/controls/steps_320_578.png') 0 0 no-repeat;
+    }
+
+    .r .faction-lab .build-steps > li.step-1 .c-main-icon {
+        background-position: 0 -82px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-1 .c-main-icon {
+        background-position: 0 -40px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-1.active .c-main-icon {
+        background-position: 0 0;
+    }
+
+    .r .faction-lab .build-steps > li.step-2 .c-main-icon {
+        background-position: -42px -82px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-2 .c-main-icon {
+        background-position: -42px -40px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-2.active .c-main-icon {
+        background-position: -42px 0;
+    }
+
+    .r .faction-lab .build-steps > li.step-3 .c-main-icon {
+        background-position: -84px -82px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-3 .c-main-icon {
+        background-position: -84px -40px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-3.active .c-main-icon {
+        background-position: -84px 0;
+    }
+
+    .r .faction-lab .build-steps > li.step-4 .c-main-icon {
+        background-position: -126px -82px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-4 .c-main-icon {
+        background-position: -126px -40px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-4.active .c-main-icon {
+        background-position: -126px 0;
+    }
+
+    .r .faction-lab .build-steps > li.step-5 .c-main-icon {
+        background-position: -168px -82px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-5 .c-main-icon {
+        background-position: -168px -40px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-5.active .c-main-icon {
+        background-position: -168px 0;
+    }
+
+    .r .faction-lab .build-steps > li.step-6 .c-main-icon {
+        background-position: -210px -82px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-6 .c-main-icon {
+        background-position: -210px -40px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-6.active .c-main-icon {
+        background-position: -210px 0;
+    }
+
+    .r .faction-lab .build-steps > li.step-7 .c-main-icon {
+        background-position: -252px -82px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-7 .c-main-icon {
+        background-position: -252px -40px;
+    }
+
+    .r .faction-lab .build-steps > li.enable.step-7.active .c-main-icon {
+        background-position: -252px 0;
+    }
+
+    .r .faction-lab .build-steps > li .t-delimiter,
+    .r .faction-lab .build-steps > li .b-delimiter {
+        display: none;
+    }
+
+	.r .faction-lab .build-steps > li.enable.active.c-title,
+	.r .faction-lab .build-steps > li.enable.active + .c-desc-wrap .t-l-border {
+		background-color: #202020;
+	}
+
+	.r .faction-lab .build-steps > li.enable.active + .c-desc-wrap .c-desc {
+		display: block;
+	}
+
+	.r .faction-lab .build-steps > li.enable.active {
+		z-index: 9;
+		background-color: #202020;
+	}
+
+	.r .faction-lab .build-steps > li.step-7.enable.active + .c-desc-wrap .btn-wrap {
+		display: inline-block;
+	}
+
+	.r .faction-lab .build-steps > li.c-desc-wrap.active {
+		background-color: #202020;
+	}
+
+	.r .laboratory-tooltip-data {
+		width: 384px;
+		height: 100%
+	}
+
+	.r .build-steps > li.c-desc-wrap .laboratory-tooltip-data {
+		display: block;
+	}
+
+	.r .build-steps > li.c-title .laboratory-tooltip-data {
+		display: none;
+	}
+
+	.r .faction-lab .build-steps > li .build-db {
+		position: relative;
+		z-index: 99;
+	}
+}
+
+@media screen and (max-width: 386px) {
+
+	.r .faction-lab .build-steps {
+		border-radius: 0;
+	}
+
+    .r .faction-lab .build-steps > li.c-desc-wrap {
+        width: 269px;
+    }
+
+	.r .laboratory-tooltip-data {
+		width: 319px;
+	}
+
+}

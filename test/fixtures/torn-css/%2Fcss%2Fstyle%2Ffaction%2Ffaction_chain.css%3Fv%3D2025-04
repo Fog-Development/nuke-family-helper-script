@@ -1,0 +1,635 @@
+@import './faction_chain_bonuses_icons.css';
+
+.d .chain-war-icon {
+    display: inline-block;
+    width: 20px;
+    height: 22px;
+    background: url("/images/v2/faction/chain/chain_war_icon.png") -7px -6px no-repeat;
+}
+
+.d .no-active .chain-war-icon  {
+    background-position: -41px -6px;
+}
+
+.d [class*=icon-chain-box-stat] {
+    background: url("/images/v2/faction/chain/chain_box_icons.png") 0 34px no-repeat;
+    display: inline-block;
+    height: 14px;
+    width: 15px;
+    vertical-align: bottom;
+}
+
+.d .icon-chain-box-stat-members {
+    background-position: -10px -10px;
+}
+
+.d .icon-chain-box-stat-targets-hit {
+    background-position: -10px -44px;
+}
+
+.d .icon-chain-box-stat-war-hits {
+    background-position: -10px -78px;
+}
+
+.d .icon-chain-box-stat-best-hit {
+    background-position: -10px -112px;
+}
+
+.d .icon-chain-box-stat-assists {
+    background-position: -10px -146px;
+}
+
+.d .icon-chain-box-stat-retaliations {
+    background-position: -10px -180px;
+}
+
+.d .icon-chain-box-stat-overseas-hits {
+    background-position: -10px -214px;
+}
+
+.d .icon-chain-box-stat-losses {
+    background-position: -10px -248px;
+}
+
+.d .no-active .icon-chain-box-stat-members {
+    background-position: -44px -10px;
+}
+
+.d .no-active .icon-chain-box-stat-targets-hit {
+    background-position: -44px -44px;
+}
+
+.d .no-active .icon-chain-box-stat-war-hits {
+    background-position: -44px -78px;
+}
+
+.d .no-active .icon-chain-box-stat-best-hit {
+    background-position: -44px -112px;
+}
+
+.d .no-active .icon-chain-box-stat-assists {
+    background-position: -44px -146px;
+}
+
+.d .no-active .icon-chain-box-stat-retaliations {
+    background-position: -44px -180px;
+}
+
+.d .no-active .icon-chain-box-stat-overseas-hits {
+    background-position: -44px -214px;
+}
+
+.d .no-active .icon-chain-box-stat-losses {
+    background-position: -44px -248px;
+}
+
+.d .chain-box {
+    min-height: 119px;
+}
+
+.d .chain-box .chain-box-general-info {
+    text-align: center;
+    padding-top: 10px;
+    min-width: 127px;
+}
+
+.d .chain-box-title-block {
+    align-items: center;
+    color: #888;
+    display: flex;
+    padding: 4px 10px;
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .chain-box .chain-box-top-stat,
+.d .chain-box .chain-box-center-stat,
+.d .chain-box .chain-box-timeleft {
+    display: block;
+}
+
+.d .chain-box .chain-box-top-stat,
+.d .chain-box .chain-box-timeleft {
+    color: #888888;
+    font-size: 12px;
+    margin-left: 1px;
+}
+
+.d .chain-box .chain-box-center-stat {
+    color: #798C3D;
+    font-size: 29px;
+    letter-spacing: -1pt;
+    margin: 4px 0;
+}
+
+.d .no-active .chain-box .chain-box-center-stat {
+    color: #999;
+	color: var(--default-gray-9-color);
+}
+
+.d .chain-box .chain-war-icon {
+    margin-left: auto;
+}
+
+.d .chain-box .chain-box-stats-block {
+    display: flex;
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .chain-box .chain-box-stats-list {
+    font-size: 11px;
+    color: #999;
+	color: var(--default-gray-9-color);
+    width: 100%;
+    position: relative;
+}
+
+.d .chain-box .chain-box-stats-list:before,
+.d .chain-box .chain-box-stats-list:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -4px;
+    right: auto;
+    width: 1px;
+}
+
+.d .chain-box .chain-box-stats-list:before,
+.d .chain-box .chain-box-stats-list:after {
+    bottom: 0;
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 1px;
+}
+
+.d .chain-box .chain-box-stats-list:before {
+    background: -moz-linear-gradient(top, rgba(249,249,249,0) 6%, rgba(249,249,249,1) 50%, rgba(249,249,249,0) 94%);
+    background: -webkit-linear-gradient(top, rgba(249,249,249,0) 6%,rgba(249,249,249,1) 50%,rgba(249,249,249,0) 94%);
+    background: linear-gradient(to bottom, rgba(249,249,249,0) 6%,rgba(249,249,249,1) 50%,rgba(249,249,249,0) 94%);
+    background: var(--default-divider-left-linear-gradient);
+    left: 0;
+}
+
+.d .chain-box .chain-box-stats-list:after {
+    /*left: -5px;*/
+    background: -moz-linear-gradient(top, rgba(255,255,255,0) 6%, rgba(206,206,191,1) 50%, rgba(249,249,242,0) 94%);
+    background: -webkit-linear-gradient(top, rgba(255,255,255,0) 6%,rgba(206,206,191,1) 50%,rgba(249,249,242,0) 94%);
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 6%,rgba(206,206,191,1) 50%,rgba(249,249,242,0) 94%);
+    background: var(--default-divider-right-linear-gradient);
+    left: -1px;
+}
+
+.d .chain-box .chain-box-stats-list > li {
+    padding: 3px 3px 2px;
+}
+
+.d .chain-box .chain-box-stats-list > li i {
+    margin-right: 5px;
+}
+
+/* Attacks */
+
+.d .chain-attacks-list {
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+    color: #777;
+}
+
+.d .chain-attacks-list > li {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,1);
+    box-shadow: inset 0 1px 0 0 var(--default-panel-divider-inner-side-color);
+}
+
+.d .chain-attacks-list > li.your {
+  background-color: rgba(108,195,21,.07);
+  /*border-top-color: #c3ccc0;*/
+    border-top-color: var(--default-panel-divider-outer-side-color);
+  border-bottom-color: transparent;
+}
+
+.d .chain-attacks-list > li.enemy {
+  background-color: rgba(229,76,25,.1);
+  border-top-color: #d9c4bf;
+  border-bottom-color: transparent;
+}
+
+.d .chain-attacks-list.current-attacks > li {
+    min-height: 40px;
+}
+
+.d .chain-attacks-title {
+    color: #777;
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+    min-height: 13px;
+    padding: 10px;
+    padding-top: 12px;
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    -webkit-box-shadow: inset 0 1px 0 0 rgba(255,255,255,1);
+    -moz-box-shadow: inset 0 1px 0 0 rgba(255,255,255,1);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,1);
+}
+
+.d .chain-attacks-title:first-child {
+    border-top: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.d .chain-attacks-list .attack-number,
+.d .chain-attacks-list .player,
+.d .chain-attacks-list .respect,
+.d .chain-attacks-list .time,
+.d .chain-attacks-list .link {
+    height: 34px;
+    line-height: 34px;
+    padding: 0 10px;
+    border-left: none;
+    border-right: none;
+}
+
+.d .chain-attacks-list.current-attacks .attack-number,
+.d .chain-attacks-list.current-attacks .player,
+.d .chain-attacks-list.current-attacks .respect,
+.d .chain-attacks-list.current-attacks .time,
+.d .chain-attacks-list.current-attacks .link {
+    height: 40px;
+    line-height: 40px;
+}
+
+.d .chain-attacks-list .attack-number {
+    border-left: 0;
+    color: #999;
+	color: var(--default-gray-9-color);
+    padding-left: 10px;
+    min-width: 59px;
+}
+
+
+.d .chain-attacks-list .player .tags {
+    display: inline-block;
+    margin-left: 5px;
+    line-height: normal;
+    vertical-align: middle;
+}
+
+.d .chain-attacks-list .player .user-faction,
+.d .chain-attacks-list .player .user-name {
+    display: inline-block;
+    /*padding-top: 5px;*/
+    /*height: 31px;*/
+    text-decoration: none;
+}
+
+.d .chain-attacks-list .player .user-faction img {
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+    overflow: hidden;
+    max-width: 25px;
+    max-height: 19px;
+}
+
+.d .chain-attacks-list .player img {
+    vertical-align: top;
+}
+
+.d .chain-attacks-list .player .user-faction {
+    margin-right: 5px;
+}
+
+.d .chain-attacks-list .player {
+    width: 154px;
+    padding: 0 5px 0 7px;
+}
+
+.d .chain-attacks-list .player .member {
+    padding-top: 1px;
+}
+
+.d .chain-attacks-list .player .player-icons {
+    display: inline-block;
+    vertical-align: middle;
+    height: 18px;
+}
+
+.d .chain-attacks-list .arrow {
+    width: 35px;
+    text-align: center;
+}
+
+.d .chain-attacks-list .chain-arrow-icon {
+	display: inline-block;
+	width: 25px;
+    height: 28px;
+	background: url(/images/v2/faction/chain/arrows_desktop_tablet.png) 0 -1px no-repeat;
+}
+
+.d .chain-attacks-list .chain-arrow-icon.enemy {
+	background-position: 0 -43px;
+}
+
+.d .chain-attacks-list .player-icons > li {
+    margin: 0;
+    float: none;
+}
+
+.d .chain-attacks-list .respect {
+    width: 104px;
+    padding-right: 2px;
+}
+
+.respect.no-attackers {
+    color: #BBB;
+}
+
+.d .chain-attacks-list .respect .value {
+    display: inline-block;
+    margin-right: 3px;
+}
+
+.d .chain-attacks-list .respect .red {
+    color: #FF5926;
+}
+
+.d .chain-attacks-list .respect .green {
+    color: #85B200;
+}
+
+.d .chain-attacks-list .bonuses {
+	width: 134px;
+	font-size: 0;
+	text-align: center;
+}
+
+.d .chain-attacks-list .bonuses .chain-bonus {
+    display: inline-block;
+	width: 118px;
+	height: 18px;
+	border-radius: 100px;
+	background-color: #77971A;
+	border: 1px solid #77971A;
+	color: #FFF;
+	font-weight: 700;
+	font-size: 14px;
+	text-align: center;
+    font-family: 'Arial';
+    font-weight: 700;
+    line-height: 18px;
+}
+
+.d .chain-attacks-list .bonuses .chain-bonus.faded {
+	background-color: #A1B664;
+	border-color: #A1B664;
+}
+
+.d .chain-attacks-list .bonuses .chain-bonus.transparent {
+	background-color: #C9D4AB;
+	border-color: #C9D4AB;
+}
+
+.d .chain-attacks-list .bonuses .chain-bonus.enemy {
+	background-color: #E54C19;
+	border-color: #E54C19;
+}
+
+.d .chain-attacks-list .bonuses .chain-bonus.enemy.faded {
+	background-color: #E98563;
+	border-color: #E98563;
+}
+
+.d .chain-attacks-list .bonuses .chain-bonus.enemy.transparent {
+	background-color: #EEBBAB;
+	border-color: #EEBBAB;
+}
+
+.d .chain-attacks-list .bonuses .chain-bonus.colourless {
+	background-color: transparent;
+	border-color: #BBBBBB;
+}
+
+.d .chain-attacks-list .bonuses .chain-bonus-icon {
+    margin-right: 5px;
+}
+
+.d .chain-attacks-list .bonuses .chain-bonus-icon:last-child {
+    margin-right: 0;
+}
+
+.d .chain-attacks-list .time {
+    color: #999;
+	color: var(--default-gray-9-color);
+    width: 30px;
+    text-align: right;
+}
+
+.d .chain-attacks-list .link {
+    border-right: 0;
+}
+
+.d .chain-attacks-list .link a,
+.d .f-war-list.war-new .report-link {
+    color: var(--faction-war-default-blue-color);
+    text-decoration: none;
+    font-weight: normal;
+}
+
+.d .f-war-list.war-new .report-link {
+    position: relative;
+    float: right;
+    right: 10px;
+    top: 13px;
+}
+
+.d .chain-attacks-list .link a:hover,
+.d .f-war-list.war-new .report-link:hover {
+    color: #999;
+	color: var(--default-gray-9-color);
+}
+
+.d .chain-attacks-list .link a.disabled,
+.d .chain-attacks-list .link a.disabled:hover {
+    color: #CCC;
+    cursor: default;
+}
+
+.d .chain-attacks-list .chain-attacks-title {
+    display: block;
+    padding: 10px;
+}
+
+.d .chain-attacks-list .player-progress {
+    height: 3px;
+    margin-top: 2px;
+    background: rgb(255,122,77);
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJod…EiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-linear-gradient(top, rgba(255,122,77,1) 0%, rgba(217,54,0,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(255,122,77,1) 0%,rgba(217,54,0,1) 100%);
+    background: linear-gradient(to bottom, rgba(255,122,77,1) 0%,rgba(217,54,0,1) 100%);
+}
+
+.d .chain-attacks-list .player-progress .player-progress-line {
+    height: 100%;
+    background: rgb(163,217,0);
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJod…EiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-linear-gradient(top, rgba(163,217,0,1) 0%, rgba(105,140,0,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(163,217,0,1) 0%,rgba(105,140,0,1) 100%);
+    background: linear-gradient(to bottom, rgba(163,217,0,1) 0%,rgba(105,140,0,1) 100%);
+}
+
+@media screen and (max-width: 784px) {
+    .r .chain-attacks-list > li {
+        flex-wrap: wrap;
+    }
+
+    .r .chain-attacks-list .attack-number,
+    .r .chain-attacks-list .player,
+    .r .chain-attacks-list .respect,
+    .r .chain-attacks-list .time,
+    .r .chain-attacks-list .link {
+        order: 1;
+    }
+
+    .r .chain-attacks-list .right-player {
+        border-right: 0;
+    }
+
+    .r .chain-attacks-list .time {
+        width: 35px;
+    }
+
+    .r .chain-attacks-list .respect {
+        width: 109px;
+        padding: 0;
+        text-align: right;
+    }
+
+    .r .chain-attacks-list .player .user-faction {
+        margin-right: 1px;
+    }
+
+    .r .chain-attacks-list .player {
+        height: auto;
+        min-height: 34px;
+        width: 170px;
+        padding: 0 0 0 5px;
+    }
+
+    .r .chain-attacks-list .left-player {
+        border-left: 0;
+        order: 0;
+    }
+
+    .r .chain-attacks-list .arrow {
+        order: 1;
+    }
+
+    .r .chain-attacks-list .right-player {
+        border-left: 0;
+        order: 2;
+    }
+
+    .r .chain-attacks-list .attack-number {
+        order: 3;
+    }
+
+    .r .chain-attacks-list .respect {
+    	width: 92px;
+      order: 4;
+    }
+
+    .r .chain-attacks-list .bonuses {
+        order: 5;
+    }
+
+    .r .chain-attacks-list .time {
+        order: 6;
+        padding: 0 5px;
+    	width: 44px;
+    }
+
+    .r .chain-attacks-list .link {
+        order: 7;
+    }
+
+    .r .chain-attacks-list .respect,
+    .r .chain-attacks-list .time,
+    .r .chain-attacks-list .link,
+    .r .chain-attacks-list .attack-number {
+        border: 0;
+    }
+
+    .r .chain-attacks-list .attack-number {
+        min-width: 44px;
+    }
+
+    .r .chain-box .chain-box-stats-list:before {
+        left: -10px;
+    }
+
+    .r .chain-box .chain-box-stats-list:after {
+        left: -11px;
+    }
+
+    .r .chain-box .chain-box-stats-list > li i {
+        margin-right: 8px;
+    }
+}
+
+@media screen and (max-width: 386px) {
+    .r .chain-attacks-list .attack-number {
+        min-width: 38px;
+    }
+
+    .r .chain-attacks-list .player {
+        width: 151px;
+        padding-left: 4px;
+    }
+
+    .r .chain-attacks-list .player .tags {
+        margin-left: 0;
+    }
+
+    .r .chain-attacks-list .respect {
+	    width: 65px;
+	    padding: 0 5px;
+    }
+
+	.r .chain-attacks-list .arrow {
+		width: 9px;
+	}
+
+	.r .chain-attacks-list .bonuses {
+    	width: 116px;
+	}
+
+	.r .chain-attacks-list .bonuses .chain-bonus-icon {
+		margin-right: 2px;
+	}
+
+	.r .chain-attacks-list .chain-arrow-icon {
+		display: inline-block;
+		width: 7px;
+	    height: 26px;
+		background: url(/images/v2/faction/chain/arrows_mobile.png) 0 0 no-repeat;
+	}
+
+	.r .chain-attacks-list .chain-arrow-icon.enemy {
+		background-position: 0 -26px;
+	}
+
+	.r .chain-attacks-list .time {
+    	width: 27px;
+    	padding: 0;
+	}
+}

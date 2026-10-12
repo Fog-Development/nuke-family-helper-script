@@ -1,0 +1,544 @@
+[class*="-crime-v2"] .md-icon {
+    background: url(/images/v2/main/medals/crimes.svg) left top no-repeat;
+}
+
+.d .theft1-crime-v2 .md-icon {
+    background-position: 0 0;
+}
+
+.d .theft2-crime-v2 .md-icon {
+    background-position: -33px 0;
+}
+
+.d .theft3-crime-v2 .md-icon {
+    background-position: -66px 0;
+}
+
+.d .theft4-crime-v2 .md-icon {
+    background-position: -99px 0;
+}
+
+.d .theft5-crime-v2 .md-icon {
+    background-position: -132px 0;
+}
+
+.d .theft6-crime-v2 .md-icon {
+    background-position: -165px 0;
+}
+
+.d .theft7-crime-v2 .md-icon {
+    background-position: -198px 0;
+}
+
+.d .theft8-crime-v2 .md-icon {
+    background-position: -231px 0;
+}
+
+.d .theft9-crime-v2 .md-icon {
+    background-position: -264px 0;
+}
+
+.d .theft10-crime-v2 .md-icon {
+    background-position: -297px 0;
+}
+
+.d .theft11-crime-v2 .md-icon {
+    background-position: -330px 0;
+}
+
+.d .theft12-crime-v2 .md-icon {
+    background-position: -363px 0;
+}
+
+.d .theft13-crime-v2 .md-icon {
+    background-position: -396px 0;
+}
+
+.d .theft14-crime-v2 .md-icon {
+    background-position: -429px 0;
+}
+
+.d .theft15-crime-v2 .md-icon {
+    background-position: -462px 0;
+}
+
+.d .extortion1-crime-v2 .md-icon {
+    background-position: 0 -65px;
+}
+
+.d .extortion2-crime-v2 .md-icon {
+    background-position: -33px -65px;
+}
+
+.d .extortion3-crime-v2 .md-icon {
+    background-position: -66px -65px;
+}
+
+.d .extortion4-crime-v2 .md-icon {
+    background-position: -99px -65px;
+}
+
+.d .extortion5-crime-v2 .md-icon {
+    background-position: -132px -65px;
+}
+
+.d .extortion6-crime-v2 .md-icon {
+    background-position: -165px -65px;
+}
+
+.d .extortion7-crime-v2 .md-icon {
+    background-position: -198px -65px;
+}
+
+.d .extortion8-crime-v2 .md-icon {
+    background-position: -231px -65px;
+}
+
+.d .extortion9-crime-v2 .md-icon {
+    background-position: -264px -65px;
+}
+
+.d .extortion10-crime-v2 .md-icon {
+    background-position: -297px -65px;
+}
+
+.d .extortion11-crime-v2 .md-icon {
+    background-position: -330px -65px;
+}
+
+.d .extortion12-crime-v2 .md-icon {
+    background-position: -363px -65px;
+}
+
+.d .extortion13-crime-v2 .md-icon {
+    background-position: -396px -65px;
+}
+
+.d .extortion14-crime-v2 .md-icon {
+    background-position: -429px -65px;
+}
+
+.d .extortion15-crime-v2 .md-icon {
+    background-position: -462px -65px;
+}
+
+.d .fraud1-crime-v2 .md-icon {
+    background-position: 0 -130px;
+}
+
+.d .fraud2-crime-v2 .md-icon {
+    background-position: -33px -130px;
+}
+
+.d .fraud3-crime-v2 .md-icon {
+    background-position: -66px -130px;
+}
+
+.d .fraud4-crime-v2 .md-icon {
+    background-position: -99px -130px;
+}
+
+.d .fraud5-crime-v2 .md-icon {
+    background-position: -132px -130px;
+}
+
+.d .fraud6-crime-v2 .md-icon {
+    background-position: -165px -130px;
+}
+
+.d .fraud7-crime-v2 .md-icon {
+    background-position: -198px -130px;
+}
+
+.d .fraud8-crime-v2 .md-icon {
+    background-position: -231px -130px;
+}
+
+.d .fraud9-crime-v2 .md-icon {
+    background-position: -264px -130px;
+}
+
+.d .fraud10-crime-v2 .md-icon {
+    background-position: -297px -130px;
+}
+
+.d .fraud11-crime-v2 .md-icon {
+    background-position: -330px -130px;
+}
+
+.d .fraud12-crime-v2 .md-icon {
+    background-position: -363px -130px;
+}
+
+.d .fraud13-crime-v2 .md-icon {
+    background-position: -396px -130px;
+}
+
+.d .fraud14-crime-v2 .md-icon {
+    background-position: -429px -130px;
+}
+
+.d .fraud15-crime-v2 .md-icon {
+    background-position: -462px -130px;
+}
+
+.d .counterfeiting1-crime-v2 .md-icon {
+    background-position: 0 -195px;
+}
+
+.d .counterfeiting2-crime-v2 .md-icon {
+    background-position: -33px -195px;
+}
+
+.d .counterfeiting3-crime-v2 .md-icon {
+    background-position: -66px -195px;
+}
+
+.d .counterfeiting4-crime-v2 .md-icon {
+    background-position: -99px -195px;
+}
+
+.d .counterfeiting5-crime-v2 .md-icon {
+    background-position: -132px -195px;
+}
+
+.d .counterfeiting6-crime-v2 .md-icon {
+    background-position: -165px -195px;
+}
+
+.d .counterfeiting7-crime-v2 .md-icon {
+    background-position: -198px -195px;
+}
+
+.d .counterfeiting8-crime-v2 .md-icon {
+    background-position: -231px -195px;
+}
+
+.d .counterfeiting9-crime-v2 .md-icon {
+    background-position: -264px -195px;
+}
+
+.d .counterfeiting10-crime-v2 .md-icon {
+    background-position: -297px -195px;
+}
+
+.d .counterfeiting11-crime-v2 .md-icon {
+    background-position: -330px -195px;
+}
+
+.d .counterfeiting12-crime-v2 .md-icon {
+    background-position: -363px -195px;
+}
+
+.d .counterfeiting13-crime-v2 .md-icon {
+    background-position: -396px -195px;
+}
+
+.d .counterfeiting14-crime-v2 .md-icon {
+    background-position: -429px -195px;
+}
+
+.d .counterfeiting15-crime-v2 .md-icon {
+    background-position: -462px -195px;
+}
+
+.d .illicitservices1-crime-v2 .md-icon {
+    background-position: 0 -260px;
+}
+
+.d .illicitservices2-crime-v2 .md-icon {
+    background-position: -33px -260px;
+}
+
+.d .illicitservices3-crime-v2 .md-icon {
+    background-position: -66px -260px;
+}
+
+.d .illicitservices4-crime-v2 .md-icon {
+    background-position: -99px -260px;
+}
+
+.d .illicitservices5-crime-v2 .md-icon {
+    background-position: -132px -260px;
+}
+
+.d .illicitservices6-crime-v2 .md-icon {
+    background-position: -165px -260px;
+}
+
+.d .illicitservices7-crime-v2 .md-icon {
+    background-position: -198px -260px;
+}
+
+.d .illicitservices8-crime-v2 .md-icon {
+    background-position: -231px -260px;
+}
+
+.d .illicitservices9-crime-v2 .md-icon {
+    background-position: -264px -260px;
+}
+
+.d .illicitservices10-crime-v2 .md-icon {
+    background-position: -297px -260px;
+}
+
+.d .illicitservices11-crime-v2 .md-icon {
+    background-position: -330px -260px;
+}
+
+.d .illicitservices12-crime-v2 .md-icon {
+    background-position: -363px -260px;
+}
+
+.d .illicitservices13-crime-v2 .md-icon {
+    background-position: -396px -260px;
+}
+
+.d .illicitservices14-crime-v2 .md-icon {
+    background-position: -429px -260px;
+}
+
+.d .illicitservices15-crime-v2 .md-icon {
+    background-position: -462px -260px;
+}
+
+.d .cybercrime1-crime-v2 .md-icon {
+    background-position: 0 -325px;
+}
+
+.d .cybercrime2-crime-v2 .md-icon {
+    background-position: -33px -325px;
+}
+
+.d .cybercrime3-crime-v2 .md-icon {
+    background-position: -66px -325px;
+}
+
+.d .cybercrime4-crime-v2 .md-icon {
+    background-position: -99px -325px;
+}
+
+.d .cybercrime5-crime-v2 .md-icon {
+    background-position: -132px -325px;
+}
+
+.d .cybercrime6-crime-v2 .md-icon {
+    background-position: -165px -325px;
+}
+
+.d .cybercrime7-crime-v2 .md-icon {
+    background-position: -198px -325px;
+}
+
+.d .cybercrime8-crime-v2 .md-icon {
+    background-position: -231px -325px;
+}
+
+.d .cybercrime9-crime-v2 .md-icon {
+    background-position: -264px -325px;
+}
+
+.d .cybercrime10-crime-v2 .md-icon {
+    background-position: -297px -325px;
+}
+
+.d .cybercrime11-crime-v2 .md-icon {
+    background-position: -330px -325px;
+}
+
+.d .cybercrime12-crime-v2 .md-icon {
+    background-position: -363px -325px;
+}
+
+.d .cybercrime13-crime-v2 .md-icon {
+    background-position: -396px -325px;
+}
+
+.d .cybercrime14-crime-v2 .md-icon {
+    background-position: -429px -325px;
+}
+
+.d .cybercrime15-crime-v2 .md-icon {
+    background-position: -462px -325px;
+}
+
+.d .illegalproduction1-crime-v2 .md-icon {
+    background-position: 0 -390px;
+}
+
+.d .illegalproduction2-crime-v2 .md-icon {
+    background-position: -33px -390px;
+}
+
+.d .illegalproduction3-crime-v2 .md-icon {
+    background-position: -66px -390px;
+}
+
+.d .illegalproduction4-crime-v2 .md-icon {
+    background-position: -99px -390px;
+}
+
+.d .illegalproduction5-crime-v2 .md-icon {
+    background-position: -132px -390px;
+}
+
+.d .illegalproduction6-crime-v2 .md-icon {
+    background-position: -165px -390px;
+}
+
+.d .illegalproduction7-crime-v2 .md-icon {
+    background-position: -198px -390px;
+}
+
+.d .illegalproduction8-crime-v2 .md-icon {
+    background-position: -231px -390px;
+}
+
+.d .illegalproduction9-crime-v2 .md-icon {
+    background-position: -264px -390px;
+}
+
+.d .illegalproduction10-crime-v2 .md-icon {
+    background-position: -297px -390px;
+}
+
+.d .illegalproduction11-crime-v2 .md-icon {
+    background-position: -330px -390px;
+}
+
+.d .illegalproduction12-crime-v2 .md-icon {
+    background-position: -363px -390px;
+}
+
+.d .illegalproduction13-crime-v2 .md-icon {
+    background-position: -396px -390px;
+}
+
+.d .illegalproduction14-crime-v2 .md-icon {
+    background-position: -429px -390px;
+}
+
+.d .illegalproduction15-crime-v2 .md-icon {
+    background-position: -462px -390px;
+}
+
+.d .vandalism1-crime-v2 .md-icon {
+    background-position: 0 -455px;
+}
+
+.d .vandalism2-crime-v2 .md-icon {
+    background-position: -33px -455px;
+}
+
+.d .vandalism3-crime-v2 .md-icon {
+    background-position: -66px -455px;
+}
+
+.d .vandalism4-crime-v2 .md-icon {
+    background-position: -99px -455px;
+}
+
+.d .vandalism5-crime-v2 .md-icon {
+    background-position: -132px -455px;
+}
+
+.d .vandalism6-crime-v2 .md-icon {
+    background-position: -165px -455px;
+}
+
+.d .vandalism7-crime-v2 .md-icon {
+    background-position: -198px -455px;
+}
+
+.d .vandalism8-crime-v2 .md-icon {
+    background-position: -231px -455px;
+}
+
+.d .vandalism9-crime-v2 .md-icon {
+    background-position: -264px -455px;
+}
+
+.d .vandalism10-crime-v2 .md-icon {
+    background-position: -297px -455px;
+}
+
+.d .vandalism11-crime-v2 .md-icon {
+    background-position: -330px -455px;
+}
+
+.d .vandalism12-crime-v2 .md-icon {
+    background-position: -363px -455px;
+}
+
+.d .vandalism13-crime-v2 .md-icon {
+    background-position: -396px -455px;
+}
+
+.d .vandalism14-crime-v2 .md-icon {
+    background-position: -429px -455px;
+}
+
+.d .vandalism15-crime-v2 .md-icon {
+    background-position: -462px -455px;
+}
+
+
+.d .criminaloffenses1-crime-v2 .md-icon {
+    background-position: 0 -520px;
+}
+
+.d .criminaloffenses2-crime-v2 .md-icon {
+    background-position: -33px -520px;
+}
+
+.d .criminaloffenses3-crime-v2 .md-icon {
+    background-position: -66px -520px;
+}
+
+.d .criminaloffenses4-crime-v2 .md-icon {
+    background-position: -99px -520px;
+}
+
+.d .criminaloffenses5-crime-v2 .md-icon {
+    background-position: -132px -520px;
+}
+
+.d .criminaloffenses6-crime-v2 .md-icon {
+    background-position: -165px -520px;
+}
+
+.d .criminaloffenses7-crime-v2 .md-icon {
+    background-position: -198px -520px;
+}
+
+.d .criminaloffenses8-crime-v2 .md-icon {
+    background-position: -231px -520px;
+}
+
+.d .criminaloffenses9-crime-v2 .md-icon {
+    background-position: -264px -520px;
+}
+
+.d .criminaloffenses10-crime-v2 .md-icon {
+    background-position: -297px -520px;
+}
+
+.d .criminaloffenses11-crime-v2 .md-icon {
+    background-position: -330px -520px;
+}
+
+.d .criminaloffenses12-crime-v2 .md-icon {
+    background-position: -363px -520px;
+}
+
+.d .criminaloffenses13-crime-v2 .md-icon {
+    background-position: -396px -520px;
+}
+
+.d .criminaloffenses14-crime-v2 .md-icon {
+    background-position: -429px -520px;
+}
+
+.d .criminaloffenses15-crime-v2 .md-icon {
+    background-position: -462px -520px;
+}

@@ -7,15 +7,18 @@ in both Torn themes.
 ```bash
 npm install
 npx playwright install chromium   # once
-npm run fixtures:css              # once (and after adding fixtures): downloads Torn's CSS
 npm test                          # runs test/**/*.test.mjs (Node 20+, any OS)
 npm test -- hospital              # only test files whose path contains "hospital"
 ```
 
 Screenshots of each themed render are written to `test/screenshots/`
 (gitignored) so they can be eyeballed (e.g. by Claude Code reading the PNGs).
-Without `fixtures:css` the tests still run, but pages render unstyled and the
-contrast/screenshot checks are meaningless.
+Torn's stylesheets are committed in `test/fixtures/torn-css/`, so no network is
+needed. After adding a fixture run `npm run fixtures:css` to download any
+stylesheet it references that is missing (it also removes unreferenced ones).
+To bring the CSS up to Torn's current styling run `npm run fixtures:css:refresh`
+and review the git diff. If a page ever renders unstyled, a stylesheet is
+missing: run `fixtures:css`.
 
 ## How it works
 
@@ -23,7 +26,7 @@ contrast/screenshot checks are meaningless.
 
 1. Serves `test/fixtures/pages/<page>.html` at the real Torn URL listed in
    `fixtures/pages/manifest.json` (so `IsPage()` matches). Torn's stylesheets
-   come from `fixtures/torn-css/`; every other request gets an empty 200, so
+   come from the committed `fixtures/torn-css/`; every other request gets an empty 200, so
    tests never touch the network.
 2. Stubs the userscript-manager APIs (`GM_getValue/SetValue/xmlhttpRequest/info`).
    `GM_xmlhttpRequest` is answered from `test/fixtures/api/default.json`
@@ -73,7 +76,7 @@ so `background-color` alone is not enough).
    name/ID it replaced, a token-looking string, or anything in `<dir>/deny.txt`**
    (one string per line: your real name, etc.). The real→fake map is saved to
    `<dir>/sanitize-map.json`: keep it out of the repo.
-3. Add the page's URL to `manifest.json`, run `npm run fixtures:css`, then look
+3. Add the page's URL to `manifest.json`, run `npm run fixtures:css` (fetches the new page's stylesheets), then look
    at the screenshots before committing: the automated check only knows the
    identifiers it has seen, so free text is worth a skim. Public Torn content
    (news ticker text, faction promo text, organized-crime story names) is left

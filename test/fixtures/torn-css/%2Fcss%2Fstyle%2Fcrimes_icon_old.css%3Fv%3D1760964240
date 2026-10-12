@@ -1,0 +1,331 @@
+[class*="-crime-v1"] .md-icon {
+    background: url(/images/v2/main/medals/crime_slices.svg) left top no-repeat;
+}
+
+.d .auto-theft1-crime-v1 .md-icon {
+    background-position: 0 0;
+}
+
+.d .auto-theft2-crime-v1 .md-icon {
+    background-position: -33px 0;
+}
+
+.d .auto-theft3-crime-v1 .md-icon {
+    background-position: -66px 0;
+}
+
+.d .auto-theft4-crime-v1 .md-icon {
+    background-position: -99px 0;
+}
+
+.d .auto-theft5-crime-v1 .md-icon {
+    background-position: -132px 0;
+}
+
+.d .auto-theft6-crime-v1 .md-icon {
+    background-position: -165px 0;
+}
+
+.d .auto-theft7-crime-v1 .md-icon {
+    background-position: -198px 0;
+}
+
+.d .auto-theft8-crime-v1 .md-icon {
+    background-position: -231px 0;
+}
+
+.d .auto-theft9-crime-v1 .md-icon {
+    background-position: -264px 0;
+}
+
+.d .auto-theft10-crime-v1 .md-icon {
+    background-position: -297px 0;
+}
+
+.d .auto-theft11-crime-v1 .md-icon {
+    background-position: -330px 0;
+}
+
+.d .auto-theft12-crime-v1 .md-icon {
+    background-position: -363px 0;
+}
+
+.d .auto-theft13-crime-v1 .md-icon {
+    background-position: -396px 0;
+}
+
+.d .auto-theft14-crime-v1 .md-icon {
+    background-position: -429px 0;
+}
+
+.d .auto-theft15-crime-v1 .md-icon {
+    background-position: -462px 0;
+}
+
+.d .auto-theft16-crime-v1 .md-icon {
+    background-position: -495px 0;
+}
+
+.d .auto-theft17-crime-v1 .md-icon {
+    background-position: -528px 0;
+}
+
+.d .auto-theft18-crime-v1 .md-icon {
+    background-position: -561px 0;
+}
+
+.d .auto-theft19-crime-v1 .md-icon {
+    background-position: -594px 0;
+}
+
+.d .auto-theft20-crime-v1 .md-icon {
+    background-position: -627px 0;
+}
+
+.d .auto-theft21-crime-v1 .md-icon {
+    background-position: -660px 0;
+}
+
+.d .pc-crimes1-crime-v1 .md-icon {
+    background-position: 0 -65px;
+}
+
+.d .pc-crimes2-crime-v1 .md-icon {
+    background-position: -33px -65px;
+}
+
+.d .pc-crimes3-crime-v1 .md-icon {
+    background-position: -66px -65px;
+}
+
+.d .pc-crimes4-crime-v1 .md-icon {
+    background-position: -99px -65px;
+}
+
+.d .pc-crimes5-crime-v1 .md-icon {
+    background-position: -132px -65px;
+}
+
+.d .pc-crimes6-crime-v1 .md-icon {
+    background-position: -165px -65px;
+}
+
+.d .pc-crimes7-crime-v1 .md-icon {
+    background-position: -198px -65px;
+}
+
+.d .pc-crimes8-crime-v1 .md-icon {
+    background-position: -231px -65px;
+}
+
+.d .pc-crimes9-crime-v1 .md-icon {
+    background-position: -264px -65px;
+}
+
+.d .pc-crimes10-crime-v1 .md-icon {
+    background-position: -297px -65px;
+}
+
+.d .pc-crimes11-crime-v1 .md-icon {
+    background-position: -330px -65px;
+}
+
+.d .pc-crimes12-crime-v1 .md-icon {
+    background-position: -363px -65px;
+}
+
+.d .pc-crimes13-crime-v1 .md-icon {
+    background-position: -396px -65px;
+}
+
+.d .pc-crimes14-crime-v1 .md-icon {
+    background-position: -429px -65px;
+}
+
+.d .pc-crimes15-crime-v1 .md-icon {
+    background-position: -462px -65px;
+}
+
+.d .pc-crimes16-crime-v1 .md-icon {
+    background-position: -495px -65px;
+}
+
+.d .drug-deals1-crime-v1 .md-icon {
+    background-position: 0 -130px;
+}
+
+.d .drug-deals2-crime-v1 .md-icon {
+    background-position: -33px -130px;
+}
+
+.d .drug-deals3-crime-v1 .md-icon {
+    background-position: -66px -130px;
+}
+
+.d .drug-deals4-crime-v1 .md-icon {
+    background-position: -99px -130px;
+}
+
+.d .drug-deals5-crime-v1 .md-icon {
+    background-position: -132px -130px;
+}
+
+.d .drug-deals6-crime-v1 .md-icon {
+    background-position: -165px -130px;
+}
+
+.d .drug-deals7-crime-v1 .md-icon {
+    background-position: -198px -130px;
+}
+
+.d .drug-deals8-crime-v1 .md-icon {
+    background-position: -231px -130px;
+}
+
+.d .fraud1-crime-v1 .md-icon {
+    background-position: 0 -195px;
+}
+
+.d .fraud2-crime-v1 .md-icon {
+    background-position: -33px -195px;
+}
+
+.d .fraud3-crime-v1 .md-icon {
+    background-position: -66px -195px;
+}
+
+.d .fraud4-crime-v1 .md-icon {
+    background-position: -99px -195px;
+}
+
+.d .fraud5-crime-v1 .md-icon {
+    background-position: -132px -195px;
+}
+
+.d .fraud6-crime-v1 .md-icon {
+    background-position: -165px -195px;
+}
+
+.d .fraud7-crime-v1 .md-icon {
+    background-position: -198px -195px;
+}
+
+.d .fraud8-crime-v1 .md-icon {
+    background-position: -231px -195px;
+}
+
+.d .fraud9-crime-v1 .md-icon {
+    background-position: -264px -195px;
+}
+
+.d .fraud10-crime-v1 .md-icon {
+    background-position: -297px -195px;
+}
+
+.d .fraud11-crime-v1 .md-icon {
+    background-position: -330px -195px;
+}
+
+.d .fraud12-crime-v1 .md-icon {
+    background-position: -363px -195px;
+}
+
+.d .fraud13-crime-v1 .md-icon {
+    background-position: -396px -195px;
+}
+
+.d .fraud14-crime-v1 .md-icon {
+    background-position: -429px -195px;
+}
+
+.d .fraud15-crime-v1 .md-icon {
+    background-position: -462px -195px;
+}
+
+.d .fraud16-crime-v1 .md-icon {
+    background-position: -495px -195px;
+}
+
+.d .murder1-crime-v1 .md-icon {
+    background-position: 0 -260px;
+}
+
+.d .murder2-crime-v1 .md-icon {
+    background-position: -33px -260px;
+}
+
+.d .murder3-crime-v1 .md-icon {
+    background-position: -66px -260px;
+}
+
+.d .murder4-crime-v1 .md-icon {
+    background-position: -99px -260px;
+}
+
+.d .murder5-crime-v1 .md-icon {
+    background-position: -132px -260px;
+}
+
+.d .murder6-crime-v1 .md-icon {
+    background-position: -165px -260px;
+}
+
+.d .murder7-crime-v1 .md-icon {
+    background-position: -198px -260px;
+}
+
+.d .murder8-crime-v1 .md-icon {
+    background-position: -231px -260px;
+}
+
+.d .murder9-crime-v1 .md-icon {
+    background-position: -264px -260px;
+}
+
+.d .murder10-crime-v1 .md-icon {
+    background-position: -297px -260px;
+}
+
+.d .theft1-crime-v1 .md-icon {
+    background-position: 0 -325px;
+}
+
+.d .theft2-crime-v1 .md-icon {
+    background-position: -33px -325px;
+}
+
+.d .theft3-crime-v1 .md-icon {
+    background-position: -66px -325px;
+}
+
+.d .theft4-crime-v1 .md-icon {
+    background-position: -99px -325px;
+}
+
+.d .theft5-crime-v1 .md-icon {
+    background-position: -132px -325px;
+}
+
+.d .theft6-crime-v1 .md-icon {
+    background-position: -165px -325px;
+}
+
+.d .theft7-crime-v1 .md-icon {
+    background-position: -198px -325px;
+}
+
+.d .theft8-crime-v1 .md-icon {
+    background-position: -231px -325px;
+}
+
+.d .theft9-crime-v1 .md-icon {
+    background-position: -264px -325px;
+}
+
+.d .theft10-crime-v1 .md-icon {
+    background-position: -297px -325px;
+}
+
+.d .theft11-crime-v1 .md-icon {
+    background-position: -330px -325px;
+}

@@ -1,0 +1,1556 @@
+.d .faction-armoury .armoury-drop-list {
+    display: none;
+}
+
+.d .armoury-tabs input[type='text'] {
+    padding: 9px 10px;
+}
+
+.d .armoury-tabs .btn-wrap {
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.d .armoury-tabs .list-title {
+    font-weight: bold;
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    color: #666;
+    color: var(--default-gray-6-color);
+    text-shadow: 0 1px 0 #FFF;
+    text-shadow: var(--title-text-shadow);
+}
+
+.d .armoury-tabs .list-title .item-title,
+.d .armoury-tabs .list-title .bonuses,
+.d .armoury-tabs .list-title .type,
+.d .armoury-tabs .list-title .loaned,
+.d .armoury-tabs .list-title .item-action,
+.d .armoury-tabs .item-list .img-wrap,
+.d .armoury-tabs .item-list .name,
+.d .armoury-tabs .item-list .bonuses,
+.d .armoury-tabs .item-list .type,
+.d .armoury-tabs .item-list .loaned,
+.d .armoury-tabs .item-list .item-action,
+.d .armoury-tabs .item-list .item-action .give,
+.d .armoury-tabs .item-list .item-action .loan,
+.d .armoury-tabs .item-list .item-action .retrieve,
+.d .armoury-tabs .item-list .check,
+.d .armoury-tabs .item-list .item-action .use,
+.d .armoury-tabs .item-list .give-cont,
+.d .armoury-tabs .item-list .loan-cont,
+.d .armoury-tabs .item-list .use-cont,
+.d .armoury-tabs .item-list .retrieve-cont,
+.d .armoury-tabs .item-list .options-wrap,
+.d .armoury-tabs .item-list .options-wrap .view,
+.d .armoury-tabs .item-list .options-wrap .options,
+.d .armoury-tabs .item-list .checkbox-container {
+    float: left;
+}
+
+.d .armoury-tabs .list-title .item-title,
+.d .armoury-tabs .list-title .bonuses,
+.d .armoury-tabs .list-title .type,
+.d .armoury-tabs .list-title .loaned,
+.d .armoury-tabs .list-title .item-action,
+.d .armoury-tabs .item-list .img-wrap,
+.d .armoury-tabs .item-list .name,
+.d .armoury-tabs .item-list .bonuses,
+.d .armoury-tabs .item-list .type,
+.d .armoury-tabs .item-list .loaned,
+.d .armoury-tabs .item-list .item-action,
+.d .armoury-tabs .item-list .item-action .give,
+.d .armoury-tabs .item-list .item-action .loan,
+.d .armoury-tabs .item-list .item-action .retrieve,
+.d .armoury-tabs .item-list .item-action .use,
+.d .armoury-tabs .item-list .options-wrap .view,
+.d .armoury-tabs .item-list .options-wrap .options,
+.d .armoury-tabs .item-list .bonuses > li {
+    height: 32px;
+    line-height: 32px;
+}
+
+.d .armory-main-tab > li {
+    flex: auto;
+}
+
+
+.d .armory-main-tab > li.weapons {
+    flex: 0 0 77px;
+}
+
+.d .armory-main-tab > li.armor {
+    flex: 0 0 60px;
+}
+
+.d .armory-main-tab > li.temporary {
+    flex: 0 0 86px;
+}
+
+.d .armory-main-tab > li.medical {
+    flex: 0 0 69px;
+}
+
+.d .armory-main-tab > li.consumables {
+    flex: 0 0 100px;
+}
+
+.d .armory-main-tab > li.drugs {
+    flex: 0 0 64px;
+}
+
+.d .armory-main-tab > li.utilities {
+    flex: 0 0 67px;
+}
+
+.d .armoury-tabs .item-list .bonuses > li.clear {
+    height: 0;
+    font-size: 0;
+    line-height: 0;
+    background: transparent;
+}
+
+.d .armoury-tabs .item-list .options-wrap .view,
+.d .armoury-tabs .item-list .options-wrap .options {
+    text-align: center;
+    width: 34px;
+    cursor: pointer;
+}
+
+.d .armoury-tabs .item-list .img-wrap,
+.d .armoury-tabs .item-list .name,
+.d .armoury-tabs .item-list .bonuses,
+.d .armoury-tabs .item-list .type,
+.d .armoury-tabs .item-list .loaned,
+.d .armoury-tabs .item-list .item-action {
+    margin-top: -1px;
+}
+
+.d .armoury-tabs .item-list .view-item-info .img-wrap {
+    float: none;
+}
+
+.d .armoury-tabs .list-title .item-title,
+.d .armoury-tabs .list-title .bonuses,
+.d .armoury-tabs .list-title .type,
+.d .armoury-tabs .list-title .loaned,
+.d .armoury-tabs .list-title .item-action,
+.d .armoury-tabs .item-list .type,
+.d .armoury-tabs .item-list .loaned,
+.d .armoury-tabs .item-list .use {
+    text-indent: 10px;
+}
+
+.d .armoury-tabs .list-title .item-title,
+.d .armoury-tabs .list-title .bonuses,
+.d .armoury-tabs .list-title .type,
+.d .armoury-tabs .list-title .loaned,
+.d .armoury-tabs .item-list .name,
+.d .armoury-tabs .item-list .bonuses,
+.d .armoury-tabs .item-list .type,
+.d .armoury-tabs .item-list .loaned,
+.d .armoury-tabs .item-list .item-action .give,
+.d .armoury-tabs .item-list .item-action .loan,
+.d .armoury-tabs .item-list .item-action .use,
+.d .armoury-tabs.armoury-weapons-wrap .item-list .item-action .retrieve,
+.d .armoury-tabs.armoury-armour-wrap .item-list .item-action .retrieve {
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .armoury-tabs .list-title .bonuses,
+.d .armoury-tabs .list-title .type,
+.d .armoury-tabs .list-title .loaned,
+.d .armoury-tabs .list-title .item-action,
+.d .armoury-tabs .item-list .item-action,
+.d .armoury-tabs .item-list .name,
+.d .armoury-tabs .item-list .bonuses,
+.d .armoury-tabs .item-list .type,
+.d .armoury-tabs .item-list .loaned,
+.d .armoury-tabs .item-list .item-action .loan,
+.d .armoury-tabs.armoury-weapons-wrap .item-list .item-action .give,
+.d .armoury-tabs.armoury-armour-wrap .item-list .item-action .give,
+.d .armoury-tabs .item-list .item-action .retrieve {
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .armoury-tabs.armoury-weapons-wrap .item-list .item-action .give,
+.d .armoury-tabs.armoury-armour-wrap .item-list .item-action .give {
+    border-right: none;
+}
+
+.d .armoury-tabs.armoury-weapons-wrap .item-list .item-action .retrieve,
+.d .armoury-tabs.armoury-armour-wrap .item-list .item-action .retrieve {
+    border-left: none;
+}
+
+.d .armoury-tabs .item-list .give-cont,
+.d .armoury-tabs .item-list .loan-cont,
+.d .armoury-tabs .item-list .retrieve-cont,
+.d .armoury-tabs .item-list .use-cont {
+    display: none;
+    padding: 10px;
+    width: 764px;
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .armoury-tabs .item-list > li.item-give-act,
+.d .armoury-tabs .item-list > li.item-loan-act,
+.d .armoury-tabs .item-list > li.item-retrieve-act,
+.d .armoury-tabs .item-list > li.item-info-act,
+.d .armoury-tabs .item-list > li.item-use-act {
+    background-color: #FFF;
+    background-color: var(--default-bg-panel-active-color);
+}
+
+.d .armoury-tabs .item-list .action-cont .cancel a {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.d .armoury-tabs .item-list > li.item-give-act .give-cont,
+.d .armoury-tabs .item-list > li.item-loan-act .loan-cont,
+.d .armoury-tabs .item-list > li.item-retrieve-act .retrieve-cont,
+.d .armoury-tabs .item-list > li.item-use-act .use-cont {
+    display: flex;
+}
+
+.d .armoury-tabs .item-list > li.item-use-act .use-cont.open-cache {
+    justify-content: center;
+}
+
+.d .armoury-tabs .item-list > li.item-use-act .use-cont.open-cache .use-act {
+    width: 100%;
+}
+
+.d .armoury-tabs .item-list,
+.d .armoury-tabs .item-list > li.last,
+.d .armoury-tabs .item-list > li.last .give-cont {
+    border-radius: 0 0 5px 5px;
+}
+
+.d .armoury-tabs .item-list > li {
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .armoury-tabs .item-list > li.last {
+    border-bottom: 0;
+}
+
+.d .armoury-tabs .item-list > li.clear {
+    border: none;
+}
+
+.d .armoury-tabs .list-title .item-title {
+    width: 238px;
+}
+
+.d .armoury-tabs .list-title .bonuses,
+.d .armoury-tabs .item-list .bonuses {
+    width: 150px;
+}
+
+.d .armoury-armour-wrap.armoury-tabs.items60x30 .list-title .bonuses,
+.d .armoury-armour-wrap.armoury-tabs.items60x30 .item-list .bonuses
+{
+    width: 98px;
+}
+
+.d .armoury-tabs .item-list .bonuses {
+    font-size: 11px;
+}
+
+.d .armoury-tabs .list-title .type,
+.d .armoury-tabs .item-list .type {
+    width: 76px;
+}
+
+.d .armoury-tabs .list-title .loaned,
+.d .armoury-tabs .item-list .loaned {
+    width: 128px;
+}
+
+.d .armoury-tabs .list-title .item-action,
+.d .armoury-tabs .item-list .item-action {
+    width: 145px;
+}
+
+.d .armoury-weapons-wrap .list-title .item-action,
+.d .armoury-weapons-wrap .item-list .item-action,
+.d .armoury-armour-wrap .list-title .item-action,
+.d .armoury-armour-wrap .item-list .item-action {
+    width: 184px;
+}
+
+.d .armoury-tabs.armoury-points-wrap .item-list .item-action {
+    width: 163px;
+}
+
+.d .armoury-tabs .item-list .img-wrap {
+    width: 50px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.d .armoury-tabs .item-list .img-wrap img,
+.d .armoury-tabs .item-list .img-wrap canvas.torn-item,
+.d .armoury-tabs .item-list .img-wrap canvas.item-glow  {
+    vertical-align: middle;
+}
+
+.d .armoury-tabs .item-list .name {
+    width: 161px;
+    padding-left: 10px;
+}
+
+.d .armoury-tabs .item-list .bonuses > li {
+    width: 50px;
+    text-align: center;
+}
+
+.d .armoury-tabs.armoury-armour-wrap .item-list .bonuses > li {
+    width: 54px;
+    text-align: center;
+}
+
+.d .armoury-tabs.armoury-armour-wrap .item-list .bonuses > li.bonus {
+    width: 30px;
+}
+
+.d .armoury-tabs .item-list .bonuses > li i,
+.d .armoury-tabs .item-list .bonuses > li span {
+    vertical-align: middle;
+}
+
+.d .armoury-tabs .item-list .bonuses > li span {
+    margin-right: 2px;
+    margin-left: -1px;
+}
+
+.d .armoury-tabs .item-list .bonuses > li:first-child {
+    background: transparent;
+}
+
+/*.d .armoury-tabs .item-list .bonuses .bonus i:first-child {
+    margin-right: 2px;
+}*/
+.d .armoury-tabs .item-list .bonuses .bonus i:nth-child(2) {
+    margin-left: 2px;
+}
+
+.d .armoury-tabs .item-list .item-action .give,
+.d .armoury-tabs .item-list .item-action .loan,
+.d .armoury-tabs .item-list .item-action .retrieve,
+.d .armoury-tabs .item-list .item-action .use {
+    text-align: center;
+    color: #999;
+	color: var(--default-gray-9-color);
+}
+
+.d .armoury-tabs .item-list .item-action .give.active,
+.d .armoury-tabs .item-list .item-action .loan.active,
+.d .armoury-tabs .item-list .item-action .retrieve.active,
+.d .armoury-tabs .item-list .item-action .use.active {
+    color: #006699;
+    color: var(--default-blue-color);
+    cursor: pointer;
+}
+
+.d .armoury-tabs .item-list .item-action .give.active:hover,
+.d .armoury-tabs .item-list .item-action .loan.active:hover,
+.d .armoury-tabs .item-list .item-action .retrieve.active:hover,
+.d .armoury-tabs .item-list .item-action .use.active:hover {
+    color: #999;
+	color: var(--default-gray-9-color);
+}
+
+.d .armoury-tabs .item-list .item-action .give,
+.d .armoury-tabs .item-list .item-action .use {
+    width: 42px;
+}
+
+.d .armoury-weapons-wrap .item-list .item-action .use,
+.d .armoury-weapons-wrap .item-list .item-action .give,
+.d .armoury-armour-wrap .item-list .item-action .use,
+.d .armoury-armour-wrap .item-list .item-action .give {
+    width: 60px;
+}
+
+.d .armoury-tabs .item-list .item-action .loan {
+    width: 52px;
+}
+
+.d .armoury-tabs .item-list .item-action .retrieve {
+    padding-left: 10px;
+    width: 55px;
+    text-align: left;
+}
+
+.d .armoury-weapons-wrap .item-list .item-action .retrieve,
+.d .armoury-armour-wrap .item-list .item-action .retrieve {
+    width: 60px;
+}
+
+.d .armoury-tabs.usable .item-list .item-action .use,
+.d .armoury-tabs.usable .item-list .item-action .give,
+.d .armoury-tabs.usable .item-list .item-action .loan,
+.d .armoury-tabs.usable .item-list .item-action .retrieve {
+    width: 61px;
+    text-align: center;
+    text-indent: 0;
+    padding-left: 0;
+}
+
+.d .armoury-tabs .item-list .check,
+.d .armoury-tabs .item-list .checkbox-container {
+    padding-left: 10px;
+    height: 32px;
+    line-height: 32px;
+    width: 25px;
+}
+
+.d .armoury-tabs .item-list .item-action .t-blue {
+    cursor: pointer;
+}
+
+.d .armoury-tabs .item-list .view-item-info {
+    display: none;
+    float: left;
+    width: 100%;
+}
+
+.d .armoury-tabs .item-list .view-item-info .img-wrap {
+    width: auto;
+    height: auto;
+}
+
+.d .armoury-tabs .item-list .view-item-info .item-desc-wrap {
+    padding: 10px;
+    background-color: #FFF;
+    background-color: var(--default-bg-panel-active-color);
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    line-height: 16px;
+}
+
+.d .armoury-tabs .item-list .view-item-info .item-desc-wrap .close-icon {
+    cursor: pointer;
+}
+
+.d .armoury-tabs .item-list .view-item-info .item-cont .close-icon {
+    display: block;
+}
+
+.d .armoury-tabs .item-list > li.item-info-act .view-item-info {
+    display: block;
+}
+
+.d .armoury-tabs .item-list .view-item-info .info-wrap,
+.d .armoury-tabs .item-list .view-item-info .additional-info {
+    border-bottom: none;
+}
+
+.d .armoury-tabs .item-list .view-item-info .item-cont .item-wrap {
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .armoury-tabs .item-list .view-item-info .item-cont .info-msg {
+    margin: 0;
+    padding: 10px;
+    width: 634px;
+    border-left: none;
+}
+
+.d .armoury-tabs .give-all {
+    display: none;
+}
+
+.d .armoury-tabs.give-all-act .give-all {
+    display: block;
+    border-top: 2px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    position: relative;
+    z-index: 1;
+}
+
+.d .armoury-tabs .give-all .select {
+    float: right;
+    padding: 15px 10px;
+    color: #999;
+	color: var(--default-gray-9-color);
+    text-shadow: 0 1px 1px #FFF;
+    text-shadow: var(--title-text-shadow);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.d .armoury-tabs .give-all .select:hover {
+    color: #333;
+    color: var(--default-color);
+}
+
+.d .armoury-tabs.give-all-act .item-list {
+    border-radius: 0;
+    border-bottom: none;
+}
+
+.d .armoury-tabs .give-all .member-send-to,
+.d .armoury-tabs .give-all .member-send-to .label {
+    display: inline-block;
+}
+
+.d #faction-armoury .tabs .tab-top-index {
+    position: absolute;
+    top: -9px;
+    color: #FFF;
+    font-family: "Imagine Font";
+    font-size: 8px;
+    padding: 1px 2px;
+    display: inline-block;
+    vertical-align: top;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.d #faction-armoury .tabs .tab-top-index.increased {
+    left: 10px;
+    color: #D2FF4D;
+    text-shadow: -1px -1px 5px rgba(89,178,0,0.45), 1px 1px 5px rgba(89,178,0,0.45);
+}
+
+.d #faction-armoury .tabs .tab-top-index.decreased {
+    right:10px;
+    color: #FFBF00;
+    text-shadow: -1px -1px 4px rgba(255,64,0,0.85), 1px 1px 4px rgba(255,64,0,0.85);
+}
+
+
+.d .armoury-temporary-wrap .list-title .item-title {
+    width: 390px;
+}
+
+.d .armoury-temporary-wrap.usable .list-title .item-title {
+    width: 290px;
+}
+
+.d .armoury-armour-wrap .list-title .item-title {
+    width: 290px;
+}
+
+.d .armoury-points-wrap .list-title .item-title {
+    width: 454px;
+}
+
+.d .armoury-cesium-wrap .item-list .name,
+.d .armoury-temporary-wrap .item-list .name {
+    width: 373px;
+}
+
+.d .armoury-armour-wrap .item-list .name {
+    width: 301px;
+}
+
+.d .armoury-armour-wrap .list-title .loaned,
+.d .armoury-armour-wrap .item-list .loaned {
+    width: 128px;
+}
+
+.d .armoury-points-wrap .item-list .name {
+    width: 565px;
+}
+
+.d .armoury-temporary-wrap .list-title .type,
+.d .armoury-temporary-wrap .item-list .type {
+    width: 102px;
+}
+
+.d .armoury-temporary-wrap.usable .list-title .type,
+.d .armoury-temporary-wrap.usable .item-list .type {
+    width: 98px;
+}
+
+.d .armoury-temporary-wrap .list-title .loaned,
+.d .armoury-temporary-wrap .item-list .loaned {
+    width: 102px;
+}
+
+.d .armoury-temporary-wrap.usable .list-title .loaned,
+.d .armoury-temporary-wrap.usable .item-list .loaned {
+    width: 140px;
+}
+
+.d .armoury-temporary-wrap .list-title .item-action,
+.d .armoury-temporary-wrap .item-list .item-action,
+.d .armoury-cesium-wrap .list-title .item-action,
+.d .armoury-cesium-wrap .item-list .item-action {
+    width: 173px;
+}
+
+.d .armoury-temporary-wrap.usable .list-title .item-action,
+.d .armoury-temporary-wrap.usable .item-list .item-action {
+    width: 250px;
+}
+
+.d .armoury-armour-wrap .item-list .item-action .give,
+.d .armoury-armour-wrap .item-list .item-action .loan,
+.d .armoury-cesium-wrap .item-list .item-action .give,
+.d .armoury-temporary-wrap .item-list .item-action .give,
+.d .armoury-points-wrap .item-list .item-action .give {
+    text-align: left;
+    text-indent: 10px;
+}
+
+.d .armoury-cesium-wrap .item-list .item-action .give,
+    /*.d .armoury-temporary-wrap .item-list .item-action .give,*/
+.d .armoury-points-wrap .item-list .item-action .give {
+    width: 100%;
+    border-right: none;
+}
+
+/*.d .armoury-armour-wrap .item-list .item-action .give,
+.d .armoury-armour-wrap .item-list .item-action .loan {
+    width: 85px;
+}*/
+
+/*.d .armoury-armour-wrap .item-list .item-action .loan {
+    border-right: none;
+}*/
+
+.d .armoury-tabs .item-list .give-cont {
+    justify-content: space-between;
+}
+
+.d .armoury-tabs .item-list .loan-cont {
+    justify-content: space-between;
+}
+
+.d .armoury-tabs .item-list .quantity {
+    text-align: right;
+    width: 45px;
+}
+
+.d .armoury-medical-wrap .list-title .item-title {
+    width: 290px;
+}
+
+.d .armoury-medical-wrap .item-list .name {
+    width: 199px;
+}
+
+.d .armoury-medical-wrap .list-title .type,
+.d .armoury-medical-wrap .item-list .type {
+    width: 162px;
+}
+
+.d .armoury-medical-wrap .list-title .item-action,
+.d .armoury-medical-wrap .item-list .item-action {
+    width: 325px;
+}
+
+.d .armoury-medical-wrap .item-list .item-action .give,
+.d .armoury-medical-wrap .item-list .item-action .use {
+    width: 161px;
+    text-align: left;
+    text-indent: 10px;
+}
+
+.d .armoury-medical-wrap .item-list .item-action .give {
+    border-right: 0;
+}
+
+.d .armoury-tabs .item-list .use-cont .use-wrap,
+.d .armoury-tabs .item-list .use-cont .out-wrap {
+    display: none;
+}
+
+.d .armoury-tabs .item-list .use-wrap {
+    width: inherit;
+}
+
+.d .armoury-tabs .item-list .action-cont {
+    line-height: 16px;
+}
+
+.d .armoury-tabs .item-list .action-cont .link-wrap {
+    display: block;
+}
+
+.d .armoury-tabs .item-list .action-cont .link-wrap a {
+    margin: 0;
+}
+
+.d .armoury-donate-wrap .list-title {
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .armoury-donate-wrap .list-title .type,
+.d .armoury-donate-wrap .item-list .type {
+    width: 212px;
+}
+
+.d .armoury-donate-wrap .list-title .item-action,
+.d .armoury-donate-wrap .item-list .item-action {
+    width: 71px;
+}
+
+.d .armoury-donate-wrap .item-list .item-action .prettycheckbox label {
+    display: none;
+}
+
+.d .armoury-donate-wrap .list-title .item-action,
+.d .armoury-donate-wrap .item-list .item-action {
+    text-align: center;
+    text-indent: 0;
+}
+
+.d .armoury-donate-wrap .item-list .item-action .amount {
+    line-height: 14px;
+    width: 35px;
+    text-align: right;
+}
+
+.d .armoury-donate-wrap .list-title .item-title {
+    width: 295px;
+}
+
+.d .armoury-donate-wrap .item-list .img-wrap {
+    width: 70px;
+}
+
+.d .armoury-donate-wrap .item-list .name {
+    color: #999;
+	color: var(--default-gray-9-color);
+    width: 213px;
+}
+
+.d .armoury-donate-wrap .item-list >li.new .name {
+    color: #333;
+    color: var(--default-color);
+}
+
+.d .armoury-donate-wrap .list-title .item-title,
+.d .armoury-donate-wrap .list-title .bonuses,
+.d .armoury-donate-wrap .list-title .type,
+.d .armoury-donate-wrap .list-title .item-action,
+.d .armoury-donate-wrap .item-list .img-wrap,
+.d .armoury-donate-wrap .item-list .name,
+.d .armoury-donate-wrap .item-list .bonuses,
+.d .armoury-donate-wrap .item-list .type,
+.d .armoury-donate-wrap .item-list .item-action {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.d .armoury-donate-wrap .item-list .view-item-info .img-wrap {
+    padding: 500px 0;
+    margin: -500px 0;
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.d .armoury-donate-wrap .donate-wrap {
+    overflow: hidden;
+}
+
+.d .armoury-donate-wrap .donate-wrap .info {
+    display: block;
+    padding: 0 0 10px;
+    text-align: center;
+}
+.d .armoury-donate-wrap .donate-wrap .info p{
+    padding: 2px 0;
+    display: inline;
+}
+
+.d .armoury-donate-wrap .donate-wrap .donate {
+    text-align: center;
+}
+
+.d .armoury-donate-wrap .donate-wrap .cash,
+.d .armoury-donate-wrap .donate-wrap .points,
+.d .armoury-donate-wrap .donate-wrap .cash-confirm,
+.d .armoury-donate-wrap .donate-wrap .points-confirm {
+    width: 370px;
+}
+
+.d .armoury-donate-wrap .donate-wrap .cash,
+.d .armoury-donate-wrap .donate-wrap .points {
+    padding: 10px 10px 40px 10px;
+    margin-bottom: -30px;
+}
+
+.d .armoury-donate-wrap .donate-wrap .cash-confirm,
+.d .armoury-donate-wrap .donate-wrap .points-confirm {
+    display: none;
+}
+
+.d .armoury-donate-wrap .donate-wrap .cash,
+.d .armoury-donate-wrap .donate-wrap .cash-confirm {
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .armoury-donate-wrap .donate-wrap .points,
+.d .armoury-donate-wrap .donate-wrap .points-confirm {
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .armoury-donate-wrap .donate-wrap .amount {
+    margin-right: 10px;
+    width: 126px;
+}
+
+.d .armoury-donate-wrap .donate-wrap .points .amount.input-money {
+    width: 126px;
+}
+
+.d .armoury-donate-wrap .donate-wrap .amount.input-money {
+    /*width: 64px;*/
+    width: 100px;
+}
+
+.d .faction-armoury .big-delimiter {
+    height: 10px;
+    width: 100%;
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    background-color: #FFF;
+    background-color: var(--default-bg-panel-active-color);
+}
+
+.d .armoury-donate-wrap .load-more {
+    display: inline-block;
+    height: 34px;
+    width: 100%;
+    line-height: 34px;
+    text-align: center;
+    background-color: #FFF;
+    background-color: var(--default-bg-panel-active-color);
+}
+
+.d .armoury-donate-wrap .donate-act-wrap {
+    border-top: 2px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    padding: 10px;
+}
+
+.d .armoury-donate-wrap .donate-wrap .cash-confirm,
+.d .armoury-donate-wrap .donate-wrap .points-confirm {
+    padding: 10px;
+    line-height: 24px;
+    text-align: center;
+}
+
+.d .armoury-tabs .item-list > li .action-cont {
+    border-bottom: 0;
+}
+
+.d .armoury-donate-wrap .donate-wrap .points-msg,
+.d .armoury-donate-wrap .donate-wrap .cash-msg {
+    display: none;
+}
+
+.d .armoury-donate-wrap .amount.error {
+    padding: 4px;
+}
+
+.d .armoury-donate-wrap .amount.input-money.error {
+    padding: 5px;
+}
+
+.d .info-wrap .item-cont .item-wrap.no-thumb .img-wrap {
+    display: none;
+}
+
+.d .info-wrap .item-cont .item-wrap.no-thumb .info-msg {
+    width: 754px;
+}
+
+.d .armoury-tabs.items60x30 .item-list .img-wrap {
+    width: 60px;
+}
+
+.d .armoury-armour-wrap.armoury-tabs.items60x30 .item-list .name {
+    width: 219px;
+}
+
+.d .armoury-tabs.items60x30 .item-list .name {
+    width: 167px;
+}
+
+.d .armoury-cesium-wrap.items60x30 .item-list .name,
+.d .armoury-temporary-wrap.items60x30 .item-list .name {
+    width: 319px;
+}
+
+.d .armoury-temporary-wrap.usable.items60x30 .item-list .name {
+    width: 219px;
+}
+
+.d .armoury-medical-wrap.items60x30 .item-list .name {
+    width: 219px;
+}
+
+.d .armoury-points-wrap.items60x30 .item-list .name {
+    width: 383px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.d .armoury-points-wrap .item-list .name .number.before {
+    display: none;
+}
+.d .armoury-points-wrap .item-list .name .number.after {
+    display: inline-block;
+}
+
+.d .armoury-tabs.items60x30 .item-list .view-item-info .img-wrap {
+    width: auto;
+}
+
+.d .armoury-tabs .item-list > li .cancel {
+    margin-left: 0;
+}
+
+@media screen and (max-width: 784px) {
+
+    .r .armoury-tabs input[type='text'] {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .r .faction-armoury .big-delimiter.t-show {
+        display: block;
+    }
+
+    .r #faction-armoury-tabs .tabs {
+        display: none;
+    }
+
+    .r #faction-armoury-tabs .torn-tabs {
+        display: none;
+    }
+
+    .r #faction-armoury-tabs .title-black {
+        width: 376px;
+    }
+
+    .r .armoury-tabs .list-title {
+        display: none;
+    }
+
+    .r .armoury-tabs .item-list .bonuses {
+        display: none;
+    }
+
+    .r .faction-armoury .armoury-drop-list {
+        display: block;
+        padding: 10px 8px;
+        background-color: #F2F2F2;
+        background-color: var(--default-bg-panel-color);
+    }
+
+    .r .armoury-tabs .ac-search.ui-autocomplete-input {
+        margin-left: 0;
+        margin-right: 0;
+        width: 354px;
+    }
+
+    .r .armoury-tabs .give-all .member-send-to {
+        border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .armoury-tabs .give-all .act-wrap {
+        display: block;
+        border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .armoury-tabs .give-all .act-wrap .btn-wrap,
+    .r .armoury-tabs .give-all .act-wrap .cancel {
+        margin-top: 10px;
+    }
+
+    .r .armoury-tabs .give-all .act-wrap .btn-wrap {
+        margin-left: 15px;
+    }
+
+    .r .armoury-tabs .give-all .select {
+        padding: 18px 10px;
+    }
+
+    .r .armoury-tabs .item-list .give-cont,
+    .r .armoury-tabs .item-list .loan-cont,
+    .r .armoury-tabs .item-list .retrieve-cont {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .r .armoury-armour-wrap .item-list .type,
+    .r .armoury-cesium-wrap .item-list .type,
+    .r .armoury-temporary-wrap .item-list .type {
+        display: none;
+    }
+
+    .r .armoury-armour-wrap .item-list .loaned,
+    .r .armoury-cesium-wrap .item-list .loaned,
+    .r .armoury-temporary-wrap .item-list .loaned {
+        display: none;
+    }
+
+    .r .armoury-cesium-wrap .item-list .name,
+    .r .armoury-temporary-wrap .item-list .name,
+    .r .armoury-points-wrap .item-list .name {
+        width: 280px;
+        border-right: none;
+    }
+
+    .d .armoury-points-wrap .item-list .item-action .give {
+        text-indent: 0;
+        padding: 0 10px;
+    }
+
+    .r .armoury-points-wrap .item-list .name .number.before {
+        display: inline-block;
+    }
+    .r .armoury-points-wrap .item-list .name .number.after {
+        display: none;
+    }
+
+    .r .armoury-armour-wrap .item-list .name {
+        width: 256px;
+        border-right: none;
+    }
+
+    .r .armoury-cesium-wrap .item-list .item-action,
+    .r .armoury-temporary-wrap .item-list .item-action {
+        width: 44px;
+        border-left: none;
+    }
+
+    .r .armoury-tabs.armoury-points-wrap .item-list .item-action,
+    .r .armoury-points-wrap .item-list .item-action {
+        width: auto;
+    }
+
+    .r .armoury-armour-wrap .item-list .item-action {
+        margin-top: 0;
+        border-top: 1px solid #CCC;
+	    border-top-color: var(--default-panel-divider-outer-side-color);
+        width: 100%;
+        border-left: none;
+    }
+
+    .r .armoury-tabs.armoury-armour-wrap .item-list .item-action {
+        width: 100%;
+    }
+
+    .r .armoury-armour-wrap .item-list .item-action .give,
+    .r .armoury-armour-wrap .item-list .item-action .loan {
+        text-align: center;
+        text-indent: 0;
+        width: 192px;
+    }
+
+    .r .armoury-tabs.armoury-armour-wrap .item-list .item-action .loan,
+    .r .armoury-tabs.armoury-armour-wrap .item-list .item-action .give {
+        width: 192px;
+    }
+
+    .r .armoury-tabs .item-list .give-cont,
+    .r .armoury-tabs .item-list .loan-cont {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .r .armoury-tabs.armoury-points-wrap .item-list .give-cont {
+        width: 366px;
+        padding: 10px;
+    }
+
+    .r .armoury-tabs .item-list .action-cont .link-wrap {
+        display: block;
+        text-align: center;
+        padding-top: 10px;
+    }
+
+    .r .armoury-tabs .item-list .give-cont .t-show,
+    .r .armoury-tabs .item-list .loan-cont .t-show {
+        margin-left: 10px;
+        margin-right: 5px;
+    }
+
+    .r .armoury-tabs .item-list .give-cont .member-wrap .member-cont,
+    .r .armoury-tabs .item-list .loan-cont .member-wrap .member-cont {
+        float: left;
+        width: 386px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .armoury-tabs .item-list .give-cont .btn-wrap,
+    .r .armoury-tabs .item-list .loan-cont .btn-wrap {
+        margin: 11px 5px 0 15px;
+    }
+
+    .r .armoury-tabs .item-list .give-cont .ac-search.ui-autocomplete-input,
+    .r .armoury-tabs .item-list .loan-cont .ac-search.ui-autocomplete-input {
+        width: 296px;
+    }
+
+    .r .armoury-tabs .item-list .view-item-info .item-cont .info-msg {
+        width: 225px;
+        padding-right: 20px;
+    }
+
+    .r .armoury-weapons-wrap .item-list .type,
+    .r .armoury-medical-wrap  .item-list .type {
+        display: none;
+    }
+
+    .r .armoury-weapons-wrap .item-list .name {
+        width: 256px;
+        border-right: none;
+    }
+
+    .r .armoury-weapons-wrap .item-list .loaned,
+    .r .armoury-armour-wrap .item-list .loaned,
+    .r .armoury-temporary-wrap .item-list .loaned,
+    .r .armoury-temporary-wrap.usable .item-list .loaned {
+        padding-left: 10px;
+        width: 376px;
+        border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+        border-left: none;
+        border-right: none;
+        text-indent: 0;
+    }
+
+    .r .armoury-weapons-wrap .item-list .loaned,
+    .r .armoury-temporary-wrap .item-list .loaned,
+    .r .armoury-temporary-wrap.usable .item-list .loaned {
+        border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .armoury-weapons-wrap .item-list .item-action {
+        width: 386px;
+        border-left: none;
+    }
+
+    .r .armoury-weapons-wrap .item-list .item-action .give,
+    .r .armoury-weapons-wrap .item-list .item-action .loan,
+    .r .armoury-weapons-wrap .item-list .item-action .retrieve {
+        width: 127px;
+    }
+
+    .r .armoury-armour-wrap .item-list .loaned,
+    .r .armoury-armour-wrap .item-list .item-action,
+    .r .armoury-weapons-wrap .item-list .loaned,
+    .r .armoury-weapons-wrap .item-list .item-action,
+    .r .armoury-medical-wrap .item-list .item-action,
+    .r .armoury-temporary-wrap .item-list .loaned,
+    .r .armoury-temporary-wrap .item-list .item-action {
+        display: none;
+    }
+
+    .r .armoury-armour-wrap .item-list > li.options-act .loaned,
+    .r .armoury-armour-wrap .item-list > li.options-act .item-action,
+    .r .armoury-weapons-wrap .item-list > li.options-act .loaned,
+    .r .armoury-weapons-wrap .item-list > li.options-act .item-action,
+    .r .armoury-medical-wrap .item-list > li.options-act .item-action,
+    .r .armoury-temporary-wrap .item-list > li.options-act .loaned,
+    .r .armoury-temporary-wrap .item-list > li.options-act .item-action {
+        display: block;
+    }
+
+    .r .armoury-medical-wrap .item-list > li.options-act .item-action {
+        border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .armoury-tabs .item-list > li.options-act {
+        background-color: #FFF;
+        background-color: var(--default-bg-panel-active-color);
+    }
+
+    .r .armoury-medical-wrap .item-list .name,
+    .r .armoury-temporary-wrap .item-list .name {
+        width: 290px;
+        border-right: 0;
+    }
+
+    .r .armoury-medical-wrap .list-title .item-action,
+    .r .armoury-medical-wrap .item-list .item-action,
+    .r .armoury-temporary-wrap .item-list .item-action,
+    .r .armoury-temporary-wrap.usable .item-list .item-action {
+        width: 386px;
+        border-left: 0;
+    }
+
+    .r .armoury-medical-wrap .item-list .item-action .give,
+    .r .armoury-medical-wrap .item-list .item-action .use {
+        width: 192px;
+        text-align: center;
+    }
+
+    .r .armoury-medical-wrap .item-list .use-cont .link-wrap {
+        display: block;
+        padding-top: 10px;
+    }
+
+    .r .armoury-tabs .item-list > li.item-use-act .use-cont {
+        width: auto;
+    }
+
+    .r .armoury-temporary-wrap .item-list .item-action {
+
+    }
+
+    .r .armoury-temporary-wrap .item-list .item-action .give,
+    .r .armoury-temporary-wrap .item-list .item-action .loan {
+        width: 127px;
+        text-align: center;
+    }
+
+    .r .armoury-temporary-wrap .item-list .item-action .retrieve {
+        width: 116px;
+        text-align: center;
+    }
+
+    .r .armoury-temporary-wrap.usable .item-list .item-action .use,
+    .r .armoury-temporary-wrap.usable .item-list .item-action .give,
+    .r .armoury-temporary-wrap.usable .item-list .item-action .loan,
+    .r .armoury-temporary-wrap.usable .item-list .item-action .retrieve {
+        width: 95px;
+        text-align: center;
+        padding-left: 0;
+    }
+
+    .r .armoury-donate-wrap .item-list .name {
+        width: 231px;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .info {
+        width: 366px;
+    }
+
+    .d .armoury-donate-wrap .donate-wrap .info p{
+        display: block;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .amount {
+        padding: 10px 5px;
+        width: 200px;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .input-money-group .amount.input-money {
+        width: 207px;
+        padding: 9px 5px;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .points .amount.input-money {
+        width: 233px;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .cash,
+    .r .armoury-donate-wrap .donate-wrap .points,
+    .r .armoury-donate-wrap .donate-wrap .cash-confirm,
+    .r .armoury-donate-wrap .donate-wrap .points-confirm {
+        margin: 0;
+        padding: 10px;
+        width: 366px;
+        border-left: none;
+        border-right: none;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .cash,
+    .r .armoury-donate-wrap .donate-wrap .cash-confirm {
+        border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .points,
+    .r .armoury-donate-wrap .donate-wrap .points-confirm {
+        border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .armoury-drop-list .select-wrap .select-list .ui-selectmenu-menu li {
+        width: 354px;
+    }
+
+    .r .armoury-drop-list .select-wrap .select-list .ui-selectmenu-menu li.ui-state-disabled a {
+        color: #999;
+    	color: var(--default-gray-9-color);
+    }
+
+    .r .armoury-tabs .item-list .action-cont .quantity-wrap {
+        margin-bottom: 8px;
+    }
+
+    .r .armoury-tabs .item-list .give-cont .quantity-wrap .t-show.m-right10 {
+        margin-right: 5px;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .points-msg,
+    .r .armoury-donate-wrap .donate-wrap .cash-msg {
+        padding: 10px;
+        display: none;
+        width: 366px;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .cash-msg {
+        border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .points-msg {
+        border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .armoury-donate-wrap .donate-act-wrap .msg-wrap {
+        display: none;
+        padding: 0 10px 10px 0;
+    }
+
+    .r .armoury-donate-wrap .amount.error {
+        padding: 9px 4px;
+        border: 2px solid #FFA396;
+    }
+
+    .r .armoury-donate-wrap .donate-act-wrap .items-selected {
+        margin-top: 12px;
+    }
+
+    .r .info-wrap .item-cont .item-wrap.no-thumb .info-msg {
+        width: 346px;
+    }
+
+    .r .armoury-tabs.items60x30 .item-list .name,
+    .r .armoury-armour-wrap.armoury-tabs.items60x30 .item-list .name,
+    .r .armoury-armour-wrap.armoury-tabs.usable.items60x30 .item-list .name {
+        width: 246px;
+    }
+
+    .r .armoury-temporary-wrap.items60x30 .item-list .name,
+    .r .armoury-medical-wrap.items60x30 .item-list .name,
+    .r .armoury-temporary-wrap.usable.items60x30 .item-list .name {
+        width: 280px;
+    }
+
+    .r .armoury-cesium-wrap.items60x30 .item-list .name {
+        width: 270px;
+    }
+
+    .r .armoury-points-wrap.items60x30 .item-list .name {
+        width: 140px;
+    }
+
+    .r .armoury-tabs .item-list > li .cancel {
+        margin-left: 0;
+        margin-top: 10px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+}
+
+@media screen and (max-width: 386px) {
+    .r .armoury-armour-wrap .item-list .give-cont,
+    .r .armoury-temporary-wrap .item-list .give-cont,
+    .r .armoury-cesium-wrap .item-list .give-cont,
+    .r .armoury-points-wrap .item-list .give-cont {
+        width: 320px;
+    }
+
+    .r #faction-armoury-tabs .title-black,
+    .r .armoury-armour-wrap .item-list .give-cont {
+        width: 310px;
+    }
+
+    .r .armoury-cesium-wrap .item-list .name,
+    .r .armoury-temporary-wrap .item-list .name,
+    .r .armoury-points-wrap .item-list .name {
+        width: 214px;
+    }
+
+    .r .armoury-armour-wrap .item-list .name {
+        width: 190px;
+    }
+
+    .r .armoury-armour-wrap .item-list .item-action .give,
+    .r .armoury-armour-wrap .item-list .item-action .loan {
+        width: 159px;
+    }
+
+    .r .armoury-armour-wrap .item-list .give-cont .member-wrap .member-cont,
+    .r .armoury-temporary-wrap .item-list .give-cont .member-wrap .member-cont,
+    .r .armoury-cesium-wrap .item-list .give-cont .member-wrap .member-cont {
+        width: 320px;
+    }
+
+    .r .armoury-tabs .item-list .give-cont .ac-search.ui-autocomplete-input,
+    .r .armoury-tabs .item-list .loan-cont .ac-search.ui-autocomplete-input {
+        width: 230px;
+    }
+
+    .r .armoury-tabs .item-list .view-item-info .item-cont .info-msg {
+        width: 159px;
+    }
+
+    .r .armoury-medical-wrap .item-list .name,
+    .r .armoury-temporary-wrap .item-list .name {
+        width: 224px;
+    }
+
+    .r .armoury-medical-wrap .item-list .item-action .give,
+    .r .armoury-medical-wrap .item-list .item-action .use {
+        width: 159px;
+    }
+
+    .r .armoury-tabs .item-list > li.item-use-act .use-cont,
+    .r .armoury-tabs.armoury-points-wrap .item-list .give-cont,
+    .r .armoury-tabs .item-list .retrieve-cont {
+        width: 300px;
+    }
+
+    .r .armoury-medical-wrap .list-title .item-action,
+    .r .armoury-medical-wrap .item-list .item-action {
+        width: 320px;
+    }
+
+    .r .armoury-weapons-wrap .item-list .name {
+        width: 190px;
+    }
+
+    .r .armoury-weapons-wrap .item-list .loaned,
+    .r .armoury-armour-wrap .item-list .loaned,
+    .r .armoury-temporary-wrap .item-list .loaned,
+    .r .armoury-temporary-wrap.usable .item-list .loaned {
+        width: 310px;
+    }
+
+    .r .armoury-weapons-wrap .item-list .item-action,
+    .r .armoury-tabs .item-list .give-cont,
+    .r .armoury-tabs .item-list .loan-cont {
+        width: 320px;
+    }
+
+    .r .armoury-weapons-wrap .item-list .item-action .give,
+    .r .armoury-weapons-wrap .item-list .item-action .loan,
+    .r .armoury-weapons-wrap .item-list .item-action .retrieve {
+        width: 105px;
+    }
+
+    .r .armoury-donate-wrap .item-list .item-action {
+        width: 64px;
+        border-left: none;
+    }
+
+    .r .armoury-donate-wrap .item-list .img-wrap {
+        width: 50px;
+    }
+
+    .r .armoury-donate-wrap .item-list .name {
+        width: 192px;
+        border-right: none;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .info,
+    .r .armoury-donate-wrap .donate-wrap .cash,
+    .r .armoury-donate-wrap .donate-wrap .points,
+    .r .armoury-donate-wrap .donate-wrap .cash-confirm,
+    .r .armoury-donate-wrap .donate-wrap .points-confirm,
+    .r .armoury-donate-wrap .donate-wrap .points-msg,
+    .r .armoury-donate-wrap .donate-wrap .cash-msg {
+        width: 300px;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .amount {
+        width: 137px;
+    }
+
+    .r .armoury-drop-list .select-wrap .ui-selectmenu,
+    .r .big-select-menu-wrap .select-wrap .ui-selectmenu-menu ul {
+        width: 290px !important;
+    }
+
+    .r .armoury-drop-list .select-list,
+    .r .armoury-drop-list .select-wrap .select-list .ui-selectmenu-menu li {
+        width: 290px;
+    }
+
+    .r .armoury-tabs .item-list .give-cont .member-wrap .member-cont,
+    .r .armoury-tabs .item-list .loan-cont .member-wrap .member-cont {
+        width: 320px;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .input-money-group .amount.input-money {
+        width: 141px;
+    }
+
+    .r .info-wrap .item-cont .item-wrap.no-thumb .info-msg {
+        width: 280px;
+    }
+
+    .r .armoury-donate-wrap .donate-wrap .points .amount.input-money {
+        width: 167px;
+    }
+
+    .r .armoury-temporary-wrap .item-list .item-action .give,
+    .r .armoury-temporary-wrap .item-list .item-action .loan {
+        width: 104px;
+    }
+
+    .r .armoury-temporary-wrap .item-list .item-action .retrieve {
+        width: 94px;
+    }
+
+    .r .armoury-tabs.items60x30 .item-list .name,
+    .r .armoury-armour-wrap.armoury-tabs.items60x30 .item-list .name {
+        width: 180px;
+    }
+
+    .r .armoury-temporary-wrap.items60x30 .item-list .name,
+    .r .armoury-temporary-wrap.usable.items60x30 .item-list .name,
+    .r .armoury-medical-wrap.items60x30 .item-list .name {
+        width: 214px;
+    }
+
+    .r .armoury-cesium-wrap.items60x30 .item-list .name {
+        width: 204px;
+    }
+
+    .r .armoury-points-wrap.items60x30 .item-list .name {
+        width: 75px;
+    }
+
+    .r .armoury-medical-wrap .list-title .item-action,
+    .r .armoury-medical-wrap .item-list .item-action,
+    .r .armoury-temporary-wrap .item-list .item-action,
+    .r .armoury-temporary-wrap.usable .item-list .item-action {
+        width: 320px;
+    }
+
+    .r .armoury-temporary-wrap.usable .item-list .item-action .use,
+    .r .armoury-temporary-wrap.usable .item-list .item-action .give,
+    .r .armoury-temporary-wrap.usable .item-list .item-action .loan,
+    .r .armoury-temporary-wrap.usable .item-list .item-action .retrieve {
+        width: 76px;
+    }
+}

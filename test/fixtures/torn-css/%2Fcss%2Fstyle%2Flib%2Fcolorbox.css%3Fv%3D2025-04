@@ -1,0 +1,91 @@
+/*
+    ColorBox Core Style:
+    The following CSS is consistent between example themes and should not be altered.
+*/
+
+#colorbox, #cboxOverlay, #cboxWrapper{position:absolute; top:0; left:0; z-index:99999999; overflow:hidden;}
+#cboxOverlay{position:fixed; width:100%; height:100%;}
+#cboxMiddleLeft, #cboxBottomLeft{clear:left;}
+#cboxContent{position:relative;}
+#cboxLoadedContent{overflow:auto;}
+#cboxTitle{margin:0;}
+#cboxLoadingOverlay, #cboxLoadingGraphic{position:absolute; top:0; left:0; width:100%; height:100%;}
+#cboxPrevious, #cboxNext, #cboxClose, #cboxSlideshow{cursor:pointer;}
+.cboxPhoto{float:left; margin:auto; border:0; display:block; max-width: none;}
+.cboxIframe{width:100%; height:100%; display:block; border:0;}
+#colorbox, #cboxContent, #cboxLoadedContent{box-sizing:content-box;}
+
+/* 
+    User Style:
+    Change the following styles to modify the appearance of ColorBox.  They are
+    ordered & tabbed in a way that represents the nesting of the generated HTML.
+*/
+#cboxOverlay{background:#000;}
+#colorbox {left: 50% !important; margin-left: -498px;}
+#colorbox.static,
+.static #cboxWrapper,
+.static #cboxContent,
+.static #cboxLoadedContent {
+    width: 996px !important;
+}
+#cboxContent{margin:20px 0 60px 0; background: #FFF;}
+.cboxIframe{background:#fff;}
+#cboxError{padding:50px; border:1px solid #ccc;}
+#cboxLoadedContent{border-top: 30px; border-left: 0; border-bottom: 90px; border-right: 0; border-style: solid; border-color: #000; background:#000;}
+#cboxTitle{position:absolute; top:-20px; left:0; color:#ccc;}
+#cboxCurrent{position:absolute; width:400px; bottom:65px; color:#ccc; left:50%; margin-left: -200px; text-align: center; color: #9F9F9F; text-shadow: none;}
+#cboxSlideshow{position:absolute; top:-20px; right:90px; color:#fff;}
+#cboxPrevious{position:absolute; top:50%; left:5px; margin-top:-32px; background:url(/images/v2/gallery_slices/full_screen/gallery_full_screen_arrows_sprite.png) no-repeat top left; width:28px; height:65px; text-indent:-9999px;}
+#cboxPrevious:hover{background-position:0 -128px;}
+#cboxNext{position:absolute; top:50%; right:5px; margin-top:-32px; background:url(/images/v2/gallery_slices/full_screen/gallery_full_screen_arrows_sprite.png) no-repeat top right; width:28px; height:65px; text-indent:-9999px;}
+#cboxNext:hover{background-position:-26px -128px;}
+#cboxLoadingOverlay{background:#000;}
+#cboxLoadingGraphic{background:url(/images/v2/gallery_slices/full_screen/loading.gif) no-repeat center center;}
+#cboxClose{position:absolute; top:10px; right:10px; display:block; background:url(/images/v2/gallery_slices/full_screen/gallery_fullscreen_exit_fullscreen.png) no-repeat left top; width:16px; height:19px; text-indent:-9999px;}
+#cboxClose:hover{background-position:right top;}
+.cboxPhoto {max-width: 100%; max-height: 100%;}
+
+#cboxCurrent a.t-blue {
+    color: #00A9F9;
+}
+
+#cboxCurrent a.t-blue:hover {
+    color: #999;
+}
+
+.image-action.full-screen{position: absolute; bottom: 15px; width: 100%; background: #121212; text-shadow: none; padding: 5px 0; text-align: center;}
+.image-action.full-screen a {color: #9f9f9f;}
+.image-action.full-screen a:hover {color: #333;}
+.image-action.full-screen a i {margin-left: 75px;}
+.image-action.full-screen .red:hover {color: inherit;}
+.image-action.full-screen .image-action-url{background: url(/images/v2/gallery_slices/full_screen/gallery_fullscreen_url.png) left top no-repeat;}
+.image-action.full-screen .image-action-delete{background: url(/images/v2/gallery_slices/full_screen/gallery_fullscreen_delete.png) left top no-repeat;}
+#copy-image-url-wrapper, .image-delete, .image-delete-confirm {display: inline-block; text-align: center;}
+.image-action.full-screen a i {margin: 0;}
+.image-action a {width: auto;}
+#copy-image-url-wrapper {margin-right: 15px;}
+.image-delete {margin-left: 15px;}
+
+@media screen and (max-width: 784px) {
+    .r #colorbox {left: 50% !important; margin-left: -290px;}
+    .r #colorbox.static,
+    .r .static #cboxWrapper,
+    .r .static #cboxContent,
+    .r .static #cboxLoadedContent { width: 578px !important; }
+
+    .r #cboxLoadedContent {
+        padding-top: 10px;
+    }
+
+    .r #cboxLoadedContent img {
+        height: auto;
+    }
+}
+
+@media screen and (max-width: 386px) {
+    .r #colorbox {left: 50% !important; margin-left: -160px;}
+    .r #colorbox.static,
+    .r .static #cboxWrapper,
+    .r .static #cboxContent,
+    .r .static #cboxLoadedContent { width: 320px !important; }
+}

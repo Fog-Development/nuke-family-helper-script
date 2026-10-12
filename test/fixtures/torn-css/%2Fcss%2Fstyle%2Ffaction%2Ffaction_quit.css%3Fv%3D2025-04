@@ -1,0 +1,13 @@
+.d .faction-quit-wrap .btn-wrap .btn {
+    cursor: pointer;
+}
+
+.d .faction-quit-wrap .cont-gray {
+    padding: 10px;
+}
+
+@media screen and (max-width: 784px) {
+    .r .faction-quit-wrap .btn-wrap {
+        display: inline-block;
+    }
+}

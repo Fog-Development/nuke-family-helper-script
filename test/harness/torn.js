@@ -48,8 +48,9 @@ export function fixtureUrl(name) {
   return manifest[name];
 }
 
-// Torn's own stylesheets are not committed; `npm run fixtures:css` downloads
-// the ones the fixtures reference. Without them pages render unstyled.
+// Torn's own stylesheets are committed in fixtures/torn-css (see
+// test/tools/fetch-torn-css.mjs). If a fixture references one that is missing,
+// `npm run fixtures:css` downloads it; without it that page renders unstyled.
 const CSS_DIR = `${ROOT}test/fixtures/torn-css`;
 let warnedNoCss = false;
 function tornCss(requestUrl) {

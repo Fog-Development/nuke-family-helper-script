@@ -1,0 +1,1010 @@
+.d .links.users-list.revive .reason,
+.d .users-list.revive .reason {
+    width: 302px;
+}
+
+.d .early-discharge {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--default-gray-7-color);
+    font-weight: bold;
+    text-shadow: var(--default-tabs-text-shadow);
+    background: var(--info-msg-bg-gradient);
+    box-shadow: var(--default-tabs-box-shadow);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.d .early-discharge .title-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 10px 20px;
+    font-size: 18px;
+    background: transparent var(--early-discharge-title-gradient-main) no-repeat padding-box;
+}
+
+.d .early-discharge .image-wrap {
+    display: block;
+    width: 25px;
+    height: 28px;
+    background: var(--early-discharge-title-image) no-repeat center center;
+    margin-right: 20px;
+}
+
+.d .early-discharge .title-wrap:after,
+.d .early-discharge .title-wrap:before {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+}
+
+.d .early-discharge .title-wrap:before {
+    background: transparent var(--early-discharge-title-gradient-before) no-repeat padding-box;
+}
+
+.d .early-discharge .title-wrap:after {
+    right: -1px;
+    background: transparent var(--early-discharge-title-gradient-after) no-repeat padding-box;
+}
+
+.d .early-discharge .description-wrap {
+    margin-right: auto;
+    padding-left: 20px;
+}
+
+.d .early-discharge .button-wrap {
+    padding-right: 20px;
+}
+.d .content-title .revive-availability-btn svg path {
+    display: none;
+}
+.d .content-title .revive-availability-btn.revive-option-everyone svg #revive_everyone {
+    display: block;
+}
+.d .content-title .revive-availability-btn.revive-option-friends svg #revive_friends {
+    display: block;
+}
+.d .content-title .revive-availability-btn.revive-option-nobody svg #revive_nobody {
+    display: block;
+}
+.d .content-title .revive-availability-btn.revive-option-everyone,
+.d .content-title a.revive-availability-btn.revive-option-everyone:hover,
+.d .content-title a.revive-availability-btn.revive-option-everyone:focus {
+    color: var(--revive-availability-btn-everyone-green);
+    text-shadow: var(--revive-availability-btn-everyone-green-shadow);
+}
+
+.d .content-title a.revive-availability-btn.revive-option-everyone:hover,
+.d .content-title a.revive-availability-btn.revive-option-everyone:focus {
+    color: var(--revive-availability-btn-everyone-green-hover);
+    text-shadow: var(--revive-availability-btn-everyone-green-shadow-hover);
+}
+
+.d .content-title .revive-availability-btn.revive-option-everyone svg path {
+    fill: var(--revive-availability-btn-everyone-green);
+}
+
+.d .content-title .revive-availability-btn.revive-option-everyone:hover svg path,
+.d .content-title .revive-availability-btn.revive-option-everyone:focus svg path {
+    fill: var(--revive-availability-btn-everyone-green-hover);
+}
+
+.d .content-title .revive-availability-btn.revive-option-everyone svg {
+    filter: drop-shadow(var(--revive-availability-btn-everyone-green-shadow));
+}
+
+.d .content-title .revive-availability-btn.revive-option-everyone:hover svg,
+.d .content-title .revive-availability-btn.revive-option-everyone:focus svg {
+    filter: drop-shadow(var(--revive-availability-btn-everyone-green-shadow-hover));
+}
+
+.d .content-title .revive-availability-btn.revive-option-friends,
+.d .content-title a.revive-availability-btn.revive-option-friends:hover,
+.d .content-title a.revive-availability-btn.revive-option-friends:focus {
+    color: var(--revive-availability-btn-everyone-orange);
+    text-shadow: var(--revive-availability-btn-everyone-orange-shadow);
+}
+
+.d .content-title a.revive-availability-btn.revive-option-friends:hover,
+.d .content-title a.revive-availability-btn.revive-option-friends:focus {
+    color: var(--revive-availability-btn-everyone-orange-hover);
+    text-shadow: var(--revive-availability-btn-everyone-orange-shadow-hover);
+}
+
+.d .content-title .revive-availability-btn.revive-option-friends svg path {
+    fill: var(--revive-availability-btn-everyone-orange);
+}
+
+.d .content-title .revive-availability-btn.revive-option-friends:hover svg path,
+.d .content-title .revive-availability-btn.revive-option-friends:focus svg path {
+    fill: var(--revive-availability-btn-everyone-orange-hover);
+}
+
+.d .content-title .revive-availability-btn.revive-option-friends svg {
+    filter: drop-shadow(var(--revive-availability-btn-everyone-orange-shadow));
+}
+
+.d .content-title .revive-availability-btn.revive-option-friends:hover svg,
+.d .content-title .revive-availability-btn.revive-option-friends:focus svg {
+    filter: drop-shadow(var(--revive-availability-btn-everyone-orange-shadow-hover));
+}
+
+.d .content-title .revive-availability-btn.revive-option-nobody,
+.d .content-title a.revive-availability-btn.revive-option-nobody:hover,
+.d .content-title a.revive-availability-btn.revive-option-nobody:focus {
+    color: var(--revive-availability-btn-everyone-red);
+    text-shadow: var(--revive-availability-btn-everyone-red-shadow);
+}
+
+.d .content-title a.revive-availability-btn.revive-option-nobody:hover,
+.d .content-title a.revive-availability-btn.revive-option-nobody:focus {
+    color: var(--revive-availability-btn-everyone-red-hover);
+    text-shadow: var(--revive-availability-btn-everyone-red-shadow-hover);
+}
+
+.d .content-title .revive-availability-btn.revive-option-nobody svg path {
+    fill: var(--revive-availability-btn-everyone-red);
+}
+.d .content-title .revive-availability-btn.revive-option-nobody:hover svg path,
+.d .content-title .revive-availability-btn.revive-option-nobody:focus svg path {
+    fill: var(--revive-availability-btn-everyone-red-hover);
+}
+
+.d .content-title .revive-availability-btn.revive-option-nobody svg {
+    filter: drop-shadow(var(--revive-availability-btn-everyone-red-shadow));
+}
+
+.d .content-title .revive-availability-btn.revive-option-nobody:hover svg,
+.d .content-title .revive-availability-btn.revive-option-nobody:focus svg {
+    filter: drop-shadow(var(--revive-availability-btn-everyone-red-shadow-hover));
+}
+
+.d .userlist-wrapper .user-info-list-wrap {
+    width: 100%;
+}
+
+.d .links.users-list .reason,
+.d .users-list .reason {
+    width: 365px;
+}
+
+.d .users-list li {
+    width: 100%;
+}
+
+.d .users-list .info-wrap .title,
+.d .users-list .info-wrap .title span,
+.d .users-list .revive .title,
+.d .users-list .reason .bold {
+    display: none;
+}
+
+.d .users-list .bye .title,
+.d .users-list .bust .title,
+.d .users-list .bye .title span,
+.d .users-list .bust .title span {
+
+}
+
+.d .users-list .revive .title {
+    font-size: 12px;
+}
+
+.d .confirm-bye,
+.d .confirm-bust,
+.d .confirm-revive {
+    display: none;
+    padding: 10px;
+    background-color: #FFF;
+	background-color: var(--default-bg-panel-active-color);
+    border-top: 1px solid;
+	border-top-color: #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    position: relative;
+    margin-bottom: -1px;
+    font-size: 12px;
+}
+
+.d .users-list-title .title,
+.d .users-list-title .time,
+.d .users-list-title .level,
+.d .users-list-title .reason,
+.d .users-list-title .action {
+    display: inline-block;
+}
+
+.d .users-list .bye-icon,
+.d .users-list .bust-icon,
+.d .users-list .revive-icon {
+    display: inline-block;
+    height: 18px;
+    width: 20px;
+    background: url(/images/v2/jail/buy_bust_revive.svg) left top no-repeat;
+    filter: drop-shadow(0px 1px 0px #fff);
+    filter: var(--default-icon-filter);
+}
+
+.d .users-list .revive {
+    display: inline-block;
+    height: 18px;
+    width: 43px;
+    vertical-align: middle;
+    border-left: 2px solid;
+	border-left-color: #CCC;
+	border-left-color: var(--default-panel-divider-outer-side-color);
+    margin: -250px 0;
+    padding: 250px 0;
+    text-align: center;
+    cursor: pointer;
+}
+
+.d .users-list .bye:hover,
+.d .users-list .bust:hover,
+.d .users-list .revive:hover {
+    background-color: #FFF;
+	background-color: var(--default-bg-panel-active-color);
+}
+
+.d .users-list .revive-icon {
+    background-position: 0 -36px;
+}
+
+.d .users-list .revive:hover .revive-icon,
+.d .users-list .active .revive-icon,
+.d .users-list .active.revive-icon {
+    background-position: -20px -36px;
+}
+
+.d .users-list-title .action.hosp {
+    width: 55px;
+}
+
+.d .users-list-title .title {
+    width: 266px;
+}
+
+.d .users-list-title .time,
+.d .users-list-title .level,
+.d .users-list-title .reason,
+.d .users-list-title .action {
+    border-left: 2px solid;
+	border-left-color: #CCC;
+	border-left-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .users-list-title .reason {
+    padding-left: 10px;
+}
+
+.d .users-list-title .time,
+.d .users-list-title .level,
+.d .users-list-title .action {
+    padding-left: 4px;
+    text-align: center;
+}
+
+.d .users-list-title .time {
+    width: 47px;
+}
+
+.d .users-list-title .level {
+    width: 49px;
+}
+
+.d .users-list-title .reason {
+    width: 277px;
+}
+
+.d .users-list-title .reason.hosp {
+    width: 308px;
+}
+
+.d .users-list-title .action {
+    width: 83px;
+}
+
+.d .users-list li {
+    overflow: hidden;
+    background-color: #F2F2F2;
+	background-color: var(--default-bg-panel-color);
+    border-bottom: 1px solid;
+	border-bottom-color: #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    position: relative;
+    font-size: 0;
+}
+
+.d .users-list li.active {
+    background-color: #FFF;
+	background-color: var(--default-bg-panel-active-color);
+}
+
+.d .users-list li:hover {
+    background-color: #FFF;
+    background-color: var(--default-bg-panel-active-color);
+}
+
+.d .users-list .bottom-white {
+    border-bottom: 1px solid;
+	border-bottom-color: #FFF;
+	border-bottom-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .users-list .first .wrap {
+    border-top: none;
+}
+
+.d .users-list .online-status {
+    padding: 7px;
+}
+
+.d .users-list .reason a {
+    color: #006699;
+    color: var(--default-blue-color);
+    text-decoration: none;
+}
+
+.d .users-list .reason a:hover {
+    color: #999;
+    color: var(--default-blue-hover-color);
+}
+
+.d .users-list-title .action,
+.d .users-list .revive {
+    display: none;
+}
+
+.d .users-list-title.revive .action,
+.d .users-list.revive .revive {
+    display: inline-block;
+}
+
+.d .users-list.revive .revive.reviveNotAvailable:before {
+    content: url(/images/profiles/cross.svg);
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    display: block;
+    width: 32px;
+    height: 32px;
+    transform: translate(-50%, -50%);
+}
+
+.d .users-list.revive .revive.reviveNotAvailable {
+    pointer-events: none;
+    position: relative;
+}
+
+.d .users-list.revive .info-wrap {
+    width: 460px;
+}
+
+.d .users-list .info-wrap {
+    width: 503px;
+    border-bottom: none;
+}
+
+.d .users-list .user-wrap,
+.d .users-list .online-status,
+.d .users-list .info-wrap,
+.d .users-list .reason,
+.d .users-list .time,
+.d .users-list .level,
+.d .users-list .bye,
+.d .users-list .bust,
+.d .users-list .user-status-16-online,
+.d .users-list .user-status-16-offline {
+    display: inline-block;
+}
+
+.d .users-list .online-status,
+.d .users-list .user-wrap,
+.d .users-list .time,
+.d .users-list .level,
+.d .users-list .bye,
+.d .users-list .bust {
+    line-height: 12px;
+}
+
+.d .users-list .online-status,
+.d .users-list .user-wrap,
+.d .users-list .time,
+.d .users-list .level,
+.d .users-list .reason,
+.d .users-list .bye,
+.d .users-list .bust {
+    vertical-align: middle;
+    font-size: 12px;
+}
+
+.d .users-list .info-wrap {
+    font-size: 0;
+	vertical-align: middle;
+}
+
+.d .users-list .info-wrap .time,
+.d .users-list .info-wrap .level,
+.d .users-list .info-wrap .reason {
+    font-size: 12px;
+    line-height: 12px;
+}
+
+.d .users-list .info-wrap .time,
+.d .users-list .info-wrap .level {
+    padding-bottom: 250px;
+}
+
+.d .users-list .info-wrap .reason {
+    padding-top: 259px;
+}
+
+.d .users-list.links .user-wrap,
+.d .users-list .time,
+.d .users-list .level,
+.d .users-list .reason,
+.d .users-list .bye,
+.d .users-list .bust {
+    border-left: 2px solid;
+	border-left-color: #CCC;
+	border-left-color: var(--default-panel-divider-outer-side-color);
+    margin-top: -250px;
+    margin-bottom: -250px;
+    padding-top: 250px;
+    padding-bottom: 250px;
+}
+
+.d .users-list .user-wrap.user-faction,
+.d .users-list .user-wrap.user-name,
+.d .users-list .time,
+.d .users-list .level,
+.d .users-list .bye,
+.d .users-list .bust {
+    text-align: center;
+}
+
+.d .users-list .online .user-status-16-offline {
+    background-position: 0 0;
+}
+
+
+.d .users-list .user-wrap.user-name,
+.d .users-list .user-wrap.user-faction {
+    display: inline-block;
+}
+
+.d .users-list .user-wrap.user-faction {
+    width: 30px;
+}
+
+.d .users-list .user-wrap.user-faction img {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.d .users-list .user-wrap.user-name {
+    width: 219px;
+}
+
+.d .users-list .time {
+    width: 54px;
+}
+
+.d .users-list .level {
+    width: 57px;
+}
+
+.d .users-list .reason {
+    padding: 260px 10px;
+}
+
+.d .users-list.links .user.faction,
+.d .users-list.links .user.name {
+    color: #006699;
+    color: var(--default-blue-color);
+    text-decoration: none;
+}
+
+.d .users-list .user.faction,
+.d .users-list .user.name {
+    height: 30px;
+    line-height: 30px;
+    display: inline-block;
+}
+
+.d .users-list.links .user.faction:hover,
+.d .users-list.links .user.faction:focus,
+.d .users-list.links .user.name:hover,
+.d .users-list.links .user.name:focus {
+    color: #999;
+	color: var(--default-blue-hover-color);
+}
+
+.d .users-list.links .user-wrap.user-faction {
+    width: 50px;
+}
+
+.d .users-list.links .user-wrap.user-name {
+    padding-left: 10px;
+    width: 185px;
+    text-align: left;
+}
+
+.d .users-list li.last {
+    border-radius: 0 0 5px 5px;
+}
+
+.d .users-list #iconTray > li {
+    margin-bottom: 0;
+    background-color: transparent;
+    border-bottom: none;
+}
+
+.d .users-list #iconTray {
+    display: inline-block;
+    padding: 0 7px;
+    width: 16px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.d .msg-info-wrap .msg .ajax-placeholder,
+.d .user-info-list-wrap .ajax-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -32px;
+    margin-top: -4px;
+}
+
+.d .ui-tooltip.white-tooltip {
+    z-index: 99999;
+}
+
+@media screen and (max-width: 1000px) {
+    .r .ui-tooltip.white-tooltip {
+        z-index: 99991;
+    }
+}
+
+@media screen and (max-width: 784px) {
+    .r .early-discharge {
+        flex-wrap: wrap;
+        padding-bottom: 10px;
+    }
+
+    .r .early-discharge .title-wrap {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    .r .early-discharge .description-wrap {
+        width: calc(100% - 135px);
+        padding-left: 10px;
+    }
+
+    .r .early-discharge .description-wrap .onlyDesktop {
+        display: none;
+    }
+
+    .r .early-discharge .button-wrap {
+        padding-right: 10px;
+    }
+
+
+    .r .users-list .user-wrap.user-faction,
+    .r .users-list .user-wrap.user-name,
+    .r .users-list .bye,
+    .r .users-list .bust,
+    .r .users-list .time,
+    .r .users-list .level,
+    .r .users-list .reason {
+        border-left: 1px solid;
+	    border-left-color: #FFF;
+	    border-left-color: var(--default-panel-divider-inner-side-color);
+        border-right: 1px solid;
+	    border-right-color: #CCC;
+	    border-right-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .links.users-list .reason,
+    .r .users-list .reason,
+    .r .links.users-list.revive .reason,
+    .r .users-list.revive .reason {
+        width: 225px;
+    }
+
+    .r .users-list-title .title {
+        width: 366px;
+    }
+
+    .r .users-list-title .time,
+    .r .users-list-title .level,
+    .r .users-list-title .reason,
+    .r .users-list-title .action {
+        display: none;
+    }
+
+    .r .users-list .time,
+    .r .users-list .level,
+    .r .users-list .reason {
+        float: left;
+    }
+
+    .r .users-list .time,
+    .r .users-list .level {
+        margin-top: -240px;
+        margin-bottom: -240px;
+    }
+
+    .r .users-list .info-wrap .title {
+        display: block;
+    }
+
+    .r .users-list.links .user-wrap.user-faction,
+    .r .users-list .user-wrap.user-faction {
+        width: 45px;
+    }
+
+    .r .users-list .user-wrap.user-name {
+        width: 307px;
+    }
+
+    .r .users-list.links .user-wrap,
+    .r .users-list .user-wrap {
+        height: 34px;
+    }
+
+    .r .users-list .user-wrap {
+        margin-top: 0;
+    }
+
+    .r .users-list.links .user-wrap {
+        margin: 0;
+        padding: 0;
+        line-height: 34px;
+    }
+
+    .r .users-list.links .user-wrap.user-name {
+        width: 224px;
+    }
+
+    .r .users-list .user-wrap img,
+    .r .user-wrap.user-name .honor-text {
+        margin-top: 2px;
+    }
+
+    .r .users-list .confirm-bye,
+    .r .users-list .confirm-bust,
+    .r .users-list .confirm-revive,
+    .r .users-list .user-wrap,
+    .r .users-list .info-wrap {
+        float: left;
+    }
+
+    .r .users-list .bottom-white {
+        clear: both;
+    }
+
+    .r .users-list .info-wrap {
+        display: inline-block;
+        overflow: hidden;
+        border-top: 1px solid;
+	    border-top-color: #CCC;
+	    border-top-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .users-list .info-wrap,
+    .r .users-list.revive .info-wrap {
+        width: 386px;
+    }
+
+    .r .users-list .user-wrap.user-faction,
+    .r .users-list .user-wrap.user-name,
+    .r .users-list .bust {
+        margin-right: 0;
+    }
+
+    .r .users-list .time {
+        border-left: none;
+    }
+
+    .r .users-list .bust,
+    .r .users-list .reason {
+        border-right: none;
+    }
+
+    .r .users-list .time {
+        width: 77px;
+    }
+
+    .r .users-list .level {
+        width: 60px;
+    }
+
+    .r .users-list .time,
+    .r .users-list .level,
+    .r .users-list .reason {
+        margin-right: 0;
+    }
+
+    .r .users-list .info-wrap .time,
+    .r .users-list .info-wrap .level {
+        padding-bottom: 250px;
+    }
+
+    .r .users-list .info-wrap .reason {
+        padding-top: 264px;
+    }
+
+    .r .users-list.revive .revive.reviveNotAvailable {
+        position: absolute;
+    }
+
+    .r .users-list .revive {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 0;
+        padding: 9px 0;
+        width: 41px;
+        border-left: 1px solid;
+	    border-left-color: #FFF;
+	    border-left-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .users-list .user-wrap.user-name {
+        border-right: none;
+    }
+
+    .r .users-list.revive .user-wrap.user-name {
+        width: 264px;
+        text-align: center;
+        padding-left: 0;
+        border-right: 1px solid;
+	    border-right-color: #CCC;
+	    border-right-color: var(--default-panel-divider-outer-side-color);
+    }
+
+	.r .users-list.links.revive .user-wrap.user-name {
+        width: 264px;
+    }
+
+    .r .users-list #iconTray {
+        float: left;
+        padding-top: 10px;
+        height: 24px;
+        border-right: 1px solid;
+	    border-right-color: #CCC;
+	    border-right-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .confirm-bye,
+    .r .confirm-bust,
+    .r .confirm-revive {
+        width: 366px;
+    }
+
+    .r .users-list .user-wrap.user-name {
+        text-align: left;
+        padding-left: 10px;
+        width: 297px;
+    }
+
+    .r .users-list .reason .bold,
+    .r .users-list .time span.t-show {
+        display: inline;
+    }
+
+}
+
+@media screen and (max-width: 386px) {
+    .r .travelling .content-title .tutorial-switcher {
+        display: none;
+    }
+
+    .r .info-msg .msg {
+        width: 270px;
+    }
+
+    .r .users-list-title .title {
+        width: 300px;
+    }
+
+    .r .users-list .info-wrap,
+    .r .users-list.revive .info-wrap {
+        width: 320px;
+    }
+
+    .r .links.users-list .reason,
+    .r .users-list .reason {
+        width: 300px;
+    }
+
+    .r .users-list .info-wrap .time,
+    .r .users-list .info-wrap .level {
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        line-height: 34px;
+    }
+
+    .r .users-list .info-wrap .reason {
+        padding: 10px;
+        margin: 0;
+    }
+
+    .r .users-list .time,
+    .r .users-list .level,
+    .r .users-list .reason {
+        float: none;
+    }
+
+    .r .users-list .time,
+    .r .users-list .level {
+        margin-top: -250px;
+        margin-bottom: -250px;
+    }
+
+    .r .users-list .online-status {
+        padding: 10px 17px;
+    }
+
+    .r .users-list .user-wrap.user-name {
+        border-right: none;
+    }
+
+    .r .users-list .time,
+    .r .users-list .level {
+        width: 159px;
+    }
+
+    .r .users-list .level {
+        border-right: none;
+    }
+
+    .r .users-list.revive .time {
+        width: 97px;
+    }
+
+    .r .users-list.revive .level {
+        width: 129px;
+        border-right: 1px solid;
+	    border-right-color: #CCC;
+	    border-right-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .users-list .time,
+    .r .users-list .level {
+        line-height: 34px;
+        height: 35px;
+    }
+
+    .r .links.users-list .reason,
+    .r .users-list .reason {
+        margin-right: 0;
+        padding: 10px;
+        border-left: none;
+        border-top: 1px solid;
+	    border-top-color: #FFF;
+	    border-top-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .users-list .info-wrap {
+        width: 320px;
+    }
+
+    .r .users-list .time,
+    .r .users-list .level,
+    .r .users-list .bye,
+    .r .users-list .bust {
+        border-bottom: 1px solid;
+	    border-bottom-color: #CCC;
+	    border-bottom-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .users-list .online-status,
+    .r .users-list .user-wrap {
+        border-bottom: 1px solid;
+	    border-bottom-color: #FFF;
+	    border-bottom-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .users-list .info-wrap .title,
+    .r .users-list .bye .title,
+    .r .users-list .bust .title,
+    .r .users-list .bye .title span,
+    .r .users-list .bust .title span,
+    .r .users-list .info-wrap .title span {
+        display: inline-block;
+    }
+
+    .r .users-list li.last {
+        border-radius: 0;
+    }
+
+    .r .users-list .user-wrap.user-faction {
+        width: 45px;
+    }
+
+    .r .users-list .user-wrap.user-name {
+        width: 210px;
+    }
+
+    .r .users-list.links .user-wrap.user-name {
+        width: 211px;
+    }
+
+	.r .users-list.links.revive .user-wrap.user-name {
+        width: 221px;
+    }
+
+    .r .users-list .revive {
+        position: absolute;
+        top: 38px;
+        right: 0;
+        padding: 8px 0 9px 0;
+        border-bottom: 1px solid;
+	    border-bottom-color: #CCC;
+	    border-bottom-color: var(--default-panel-divider-outer-side-color);
+        width: 90px;
+    }
+    .r .users-list.revive .revive.reviveNotAvailable {
+        position: absolute;
+    }
+
+    .r .users-list.revive .revive.reviveNotAvailable:before {
+        left: 20px;
+    }
+
+    .r .users-list .revive .title {
+        display: inline-block;
+        vertical-align: top;
+        margin: 3px 0 0 5px;
+    }
+
+    .r .links.users-list .reason,
+    .r .users-list .reason,
+    .r .links.users-list.revive .reason,
+    .r .users-list.revive .reason {
+        width: 300px;
+    }
+
+    .r .users-list.revive .user-wrap.user-name {
+        width: 221px;
+        border-right: none;
+    }
+
+    .r .users-list #iconTray {
+        padding-left: 17px;
+        padding-right: 17px;
+        border-bottom: 1px solid;
+	    border-bottom-color: #FFF;
+	    border-bottom-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .users-list #iconTray > li {
+        width: 16px;
+        display: inline-table;
+    }
+
+    .r .confirm-bye,
+    .r .confirm-bust,
+    .r .confirm-revive {
+        width: 300px;
+    }
+
+    .r .users-list .time span.t-show {
+        display: none;
+    }
+}

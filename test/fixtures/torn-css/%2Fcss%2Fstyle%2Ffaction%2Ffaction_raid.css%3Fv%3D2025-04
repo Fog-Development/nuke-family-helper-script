@@ -1,0 +1,840 @@
+
+.d .raid-war-icon {
+    display: inline-block;
+    width: 20px;
+    height: 22px;
+    background: var(--faction-raid-icons-url) no-repeat;
+}
+
+.d .raid-war-icon.green {
+  background-position: -7px -6px;
+}
+
+.d .raid-war-icon.red {
+   background-position: -7px -40px;
+}
+
+.d .raid-target-icon {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: var(--faction-raid-icons-url) -11px -113px no-repeat;
+  vertical-align: bottom;
+}
+
+.d .raid-check-icon {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: var(--faction-raid-icons-url) -11px -79px no-repeat;
+  vertical-align: bottom;
+}
+
+.d .raid-surrender-icon {
+  display: inline-block;
+  width: 12px;
+  height: 14px;
+  background: var(--faction-raid-icons-url) -11px -148px no-repeat;
+  vertical-align: middle;
+}
+
+.d .raid-cease-icon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: var(--faction-raid-icons-url) -9px -215px no-repeat;
+  vertical-align: middle;
+}
+
+.d .raid-graph-icon {
+  display: inline-block;
+  width: 12px;
+  height: 14px;
+  background: var(--faction-raid-icons-url) -11px -182px no-repeat;
+  vertical-align: middle;
+}
+
+.d .icon-link.active span,
+.d .icon-link:hover span {
+  color: #aaa;
+}
+
+.d .icon-link.active .raid-surrender-icon,
+.d .icon-link:hover .raid-surrender-icon {
+  background-position:  -45px -148px;
+}
+
+.d .icon-link.active .raid-cease-icon,
+.d .icon-link:hover .raid-cease-icon {
+  background-position:  -43px -215px;
+}
+
+.d .icon-link.active .raid-graph-icon,
+.d .icon-link:hover .raid-graph-icon {
+  background-position:  -45px -182px;
+}
+
+.d .raid-box {
+    min-height: 119px;
+}
+
+.d .raid-box .raid-box-general-info {
+  text-align: center;
+  /*margin-top: 10px;*/
+  min-width: 127px;
+  background: url("/images/v2/faction/raid/skull_progress.png") no-repeat;
+  background-size: 142px 240px;
+}
+
+.d .green-box .raid-box-general-info {
+  background-position-y: -82px;
+}
+
+.d .red-box .raid-box-general-info {
+  background-position-y: -166px;
+}
+
+.d .raid-box .raid-box-general-info.left-box {
+  background-position-x: 64px;
+}
+
+.d .raid-box .raid-box-general-info.right-box {
+  background-position-x: -77px;
+}
+
+.d .raid-box .raid-box-general-info.gray {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  height: 30px;
+  background-color: #F2F2F2;
+  background-color: var(--default-bg-panel-color);
+}
+
+.d .raid-box .raid-box-general-info.left-progress-box {
+  background-position: 64px 2px;
+}
+
+.d .raid-box .raid-box-general-info.right-progress-box {
+  background-position: -77px 2px;
+}
+
+.d .raid-box .green-box .progress-box {
+  border-bottom: 1px solid rgba(133,178,0,0.5);
+}
+
+.d .raid-box .red-box .progress-box {
+  border-bottom: 1px solid rgba(255,121,76,0.5);
+}
+
+.d .raid-box-title-block {
+    align-items: center;
+    color: var(--faction-war-box-text-color);
+    display: flex;
+    padding: 4px 10px;
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .raid-title {
+  position: relative;
+}
+
+.d .raid-box .raid-box-top-stat,
+.d .raid-box .raid-box-center-stat,
+.d .raid-box .raid-box-timeleft {
+    display: block;
+}
+
+.d .raid-box .raid-box-top-stat,
+.d .raid-box .raid-box-timeleft {
+    color: var(--faction-war-box-text-color);
+    font-size: 10px;
+    line-height: 12px;
+    margin-left: 1px;
+    text-align: center;
+}
+
+.d .raid-box .raid-box-center-stat {
+  /*color: #798C3D;*/
+  font-size: 14px;
+  letter-spacing: -1pt;
+  margin: 4px 0;
+  text-align: center;
+  height: 42px;
+  line-height: 42px;
+}
+
+.d .raid-box .half-box-wrapper {
+  position: relative;
+}
+
+.d .raid-box .score-wrapper-left,
+.d .raid-box .score-wrapper-right {
+  position: absolute;
+  width: 100%;
+  top: 0;
+}
+
+.d .raid-members-list .message-block {
+  width: 620px;
+  text-align: left;
+  display: inline-block;
+}
+
+.d .raid-members-list .buttons-block {
+  display: inline-block;
+  min-width: 84px;
+}
+
+.d .raid-members-list .buttons-block .btn {
+  padding: 0 12px 0 7px;
+  font-family: Arial;
+  /*font-weight: inherit;*/
+}
+
+.d .raid-members-list .buttons-block > div {
+  display: inline-block;
+}
+
+.d .raid-box .t-blue {
+  color: #0092D8;
+}
+
+.d .no-active .raid-box .raid-box-center-stat {
+    color: #999;
+	color: var(--default-gray-9-color);
+}
+
+.d .raid-box .raid-war-icon {
+    margin-left: auto;
+}
+
+.d .raid-box .raid-box-stats-block {
+  position: relative;
+  display: flex;
+  border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+  height: 78px;
+}
+
+.d .raid-box .raid-box-stats-block .score {
+  /*font-family: "Fjalla One" serif;*/
+  letter-spacing: 1px;
+}
+
+.d .raid-box .raid-box-stats-block .score-red {
+  color: #FF794C;
+}
+
+.d .raid-box .raid-box-stats-block .score-green {
+  color: #85B200;
+}
+
+.d .raid-box .raid-box-stats-list {
+    font-size: 11px;
+    color: #999;
+	color: var(--default-gray-9-color);
+    width: 100%;
+    position: relative;
+}
+
+.d .raid-box .raid-box-stats-list:before,
+.d .raid-box .raid-box-stats-list:after {
+    bottom: 0;
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 1px;
+}
+
+.d .raid-box .raid-box-stats-list:before {
+    background: -moz-linear-gradient(top, rgba(249,249,249,0) 6%, rgba(249,249,249,1) 50%, rgba(249,249,249,0) 94%);
+    background: -webkit-linear-gradient(top, rgba(249,249,249,0) 6%,rgba(249,249,249,1) 50%,rgba(249,249,249,0) 94%);
+    background: linear-gradient(to bottom, rgba(249,249,249,0) 6%,rgba(249,249,249,1) 50%,rgba(249,249,249,0) 94%);
+    background: var(--default-divider-left-linear-gradient);
+    left: 0;
+}
+
+.d .raid-box .raid-box-stats-list:after {
+    background: -moz-linear-gradient(top, rgba(255,255,255,0) 6%, rgba(206,206,191,1) 50%, rgba(249,249,242,0) 94%);
+    background: -webkit-linear-gradient(top, rgba(255,255,255,0) 6%,rgba(206,206,191,1) 50%,rgba(249,249,242,0) 94%);
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 6%,rgba(206,206,191,1) 50%,rgba(249,249,242,0) 94%);
+    background: var(--default-divider-right-linear-gradient);
+    left: -1px;
+}
+
+.d .raid-box .raid-box-stats-list > li {
+    padding: 3px 3px 2px;
+}
+
+.d .raid-box .raid-box-stats-list > li i {
+    margin-right: 5px;
+}
+
+/* Attacks */
+
+.d .raid-members-list {
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+    color: #777;
+}
+
+.d .raid-members-list .raid-desc-faction-name {
+  font-family: "Fjalla One", serif;
+  font-size:  25px;
+  color: var(--faction-war-box-text-color);
+}
+
+.d .raid-members-list > li {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    -webkit-box-shadow: inset 0 1px 0 0 rgba(255,255,255,1);
+    -moz-box-shadow: inset 0 1px 0 0 rgba(255,255,255,1);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,1);
+}
+
+.d .raid-members-list > li.your {
+  background-color: rgba(108,195,21,.07);
+  border-top-color: #c3ccc0;
+  border-bottom-color: transparent;
+}
+
+.d .raid-members-list > li.enemy {
+  background-color: rgba(229,76,25,.1);
+  border-top-color: #d9c4bf;
+  border-bottom-color: transparent;
+}
+
+.d .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .member {
+  padding-left: 6px;
+  height: 33px;
+  border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+  border-left: 5px solid transparent;
+}
+
+.d .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .members {
+  padding-left: 11px;
+  border-left: 0;
+}
+
+.d .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .your .member {
+    color: #85B200;
+    border-left-color: rgba(108, 195, 21, 0.3);
+}
+
+.d .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .enemy .member {
+    color: rgb(255,122,77);
+    border-left-color: rgba(229, 76, 25, 0.3);
+}
+
+.d .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .your .attack a,
+.d .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .your .attack a:hover {
+    color: #0092D8;
+    cursor: pointer;
+}
+
+.d .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .user-icons,
+.d .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .user-icons {
+    width: 236px;
+}
+
+.d .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .status,
+.d .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .status {
+    text-align: left;
+    padding-right: 0;
+    padding-left: 10px;
+}
+
+.d .raid-members-list.current-attacks > li {
+    min-height: 40px;
+}
+
+.d .raid-attacks-title {
+    color: #777;
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+    min-height: 13px;
+    padding: 10px;
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    -webkit-box-shadow: inset 0 1px 0 0 rgba(255,255,255,1);
+    -moz-box-shadow: inset 0 1px 0 0 rgba(255,255,255,1);
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,1);
+}
+
+.d .raid-attacks-title:first-child {
+    border-top: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.d .raid-members-list .attack-number,
+.d .raid-members-list .player,
+.d .raid-members-list .respect,
+.d .raid-members-list .time,
+.d .raid-members-list .link {
+    height: 34px;
+    line-height: 34px;
+    padding: 0 10px;
+    border-left: none;
+    border-right: none;
+}
+
+.d .raid-members-list.current-attacks .attack-number,
+.d .raid-members-list.current-attacks .player,
+.d .raid-members-list.current-attacks .respect,
+.d .raid-members-list.current-attacks .time,
+.d .raid-members-list.current-attacks .link {
+    height: 40px;
+    line-height: 40px;
+}
+
+.d .raid-members-list .attack-number {
+    border-left: 0;
+    color: #999;
+	color: var(--default-gray-9-color);
+    padding-left: 10px;
+    min-width: 59px;
+}
+
+
+.d .raid-members-list .player .tags {
+    display: inline-block;
+    margin-left: 5px;
+    line-height: normal;
+    vertical-align: middle;
+}
+
+.d .raid-members-list .player .user-faction,
+.d .raid-members-list .player .user-name {
+    display: inline-block;
+    /*padding-top: 5px;*/
+    /*height: 31px;*/
+    text-decoration: none;
+}
+
+.d .raid-members-list .player img {
+    vertical-align: top;
+}
+
+.d .raid-members-list .player .user-faction {
+    margin-right: 5px;
+}
+
+.d .raid-members-list .player {
+    width: 154px;
+    padding: 0 5px 0 7px;
+}
+
+.d .raid-members-list .player .member {
+    padding-top: 1px;
+}
+
+.d .raid-members-list .player .player-icons {
+    display: inline-block;
+    vertical-align: middle;
+    height: 18px;
+}
+
+.d .raid-members-list .arrow {
+    width: 35px;
+    text-align: center;
+}
+
+.d .raid-members-list .raid-arrow-icon {
+  display: inline-block;
+  width: 25px;
+  height: 28px;
+  background: url(/images/v2/faction/raid/arrows_desktop_tablet.png) 0 -1px no-repeat;
+}
+
+.d .raid-members-list .raid-arrow-icon.enemy {
+  background-position: 0 -43px;
+}
+
+.d .raid-members-list .player-icons > li {
+    margin: 0;
+    float: none;
+}
+
+.d .raid-members-list .respect {
+    width: 104px;
+    padding-right: 2px;
+}
+
+.respect.no-attackers {
+    color: #BBB;
+}
+
+.d .raid-members-list .respect .value {
+    display: inline-block;
+    margin-right: 3px;
+}
+
+.d .raid-members-list .respect .red {
+    color: #FF5926;
+}
+
+.d .raid-members-list .respect .green {
+    color: #85B200;
+}
+
+.d .raid-members-list .bonuses {
+  width: 134px;
+  font-size: 0;
+  text-align: center;
+}
+
+.d .raid-members-list .bonuses .raid-bonus {
+    display: inline-block;
+  width: 118px;
+  height: 18px;
+  border-radius: 100px;
+  background-color: #77971A;
+  border: 1px solid #77971A;
+  color: #FFF;
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+    font-family: 'Arial';
+    font-weight: 700;
+    line-height: 18px;
+}
+
+.d .raid-members-list .bonuses .raid-bonus.faded {
+  background-color: #A1B664;
+  border-color: #A1B664;
+}
+
+.d .raid-members-list .bonuses .raid-bonus.transparent {
+  background-color: #C9D4AB;
+  border-color: #C9D4AB;
+}
+
+.d .raid-members-list .bonuses .raid-bonus.enemy {
+  background-color: #E54C19;
+  border-color: #E54C19;
+}
+
+.d .raid-members-list .bonuses .raid-bonus.enemy.faded {
+  background-color: #E98563;
+  border-color: #E98563;
+}
+
+.d .raid-members-list .bonuses .raid-bonus.enemy.transparent {
+  background-color: #EEBBAB;
+  border-color: #EEBBAB;
+}
+
+.d .raid-members-list .bonuses .raid-bonus.colourless {
+  background-color: transparent;
+  border-color: #BBBBBB;
+}
+
+.d .raid-members-list .bonuses .raid-bonus-icon {
+    margin-right: 5px;
+}
+
+.d .raid-members-list .bonuses .raid-bonus-icon:last-child {
+    margin-right: 0;
+}
+
+.d .raid-members-list .time {
+    color: #999;
+	color: var(--default-gray-9-color);
+    width: 30px;
+    text-align: right;
+}
+
+.d .raid-members-list .link {
+    border-right: 0;
+}
+
+.d .raid-members-list .link a {
+    color: #0092D8;
+    text-decoration: none;
+    font-weight: normal;
+}
+
+.d .raid-members-list .link a:hover {
+    color: #999;
+	color: var(--default-gray-9-color);
+}
+
+.d .raid-members-list .link a.disabled,
+.d .raid-members-list .link a.disabled:hover {
+    color: #CCC;
+    cursor: default;
+}
+
+.d .raid-members-list .raid-attacks-title {
+    display: block;
+    padding: 10px;
+}
+
+.d .raid-members-list .player-progress {
+    height: 3px;
+    margin-top: 2px;
+    background: rgb(255,122,77);
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJod…EiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-linear-gradient(top, rgba(255,122,77,1) 0%, rgba(217,54,0,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(255,122,77,1) 0%,rgba(217,54,0,1) 100%);
+    background: linear-gradient(to bottom, rgba(255,122,77,1) 0%,rgba(217,54,0,1) 100%);
+}
+
+.d .raid-members-list .player-progress .player-progress-line {
+    height: 100%;
+    background: rgb(163,217,0);
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJod…EiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-linear-gradient(top, rgba(163,217,0,1) 0%, rgba(105,140,0,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(163,217,0,1) 0%,rgba(105,140,0,1) 100%);
+    background: linear-gradient(to bottom, rgba(163,217,0,1) 0%,rgba(105,140,0,1) 100%);
+}
+
+@media screen and (max-width: 784px) {
+    .r .raid-box .raid-box-general-info {
+      min-width: 193px;
+    }
+
+    .r .raid-box .raid-box-general-info.left-progress-box {
+      background-position: 130px 2px;
+    }
+
+    .r .raid-box .raid-box-general-info.left-box {
+      background-position-x: 130px;
+    }
+
+    .r .raid-members-list .message-block {
+      width: 360px;
+      text-align: center;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .r .raid-title .left-icon-link > span,
+    .r .raid-title .right-icon-link > span {
+      display: none;
+    }
+
+    .r .raid-members-list > li {
+        flex-wrap: wrap;
+    }
+
+    .r .raid-members-list .attack-number,
+    .r .raid-members-list .player,
+    .r .raid-members-list .respect,
+    .r .raid-members-list .time,
+    .r .raid-members-list .link {
+        order: 1;
+    }
+
+    .r .raid-members-list .right-player {
+        border-right: 0;
+    }
+
+    .r .raid-members-list .time {
+        width: 35px;
+    }
+
+    .r .raid-members-list .respect {
+        width: 109px;
+        padding-right: 10px;
+        text-align: right;
+    }
+
+    .r .raid-members-list .player .user-faction {
+        margin-right: 1px;
+    }
+
+    .r .raid-members-list .player {
+        height: auto;
+        min-height: 34px;
+        width: 170px;
+        padding: 0 0 0 5px;
+    }
+
+    .r .raid-members-list .left-player {
+        border-left: 0;
+        order: 0;
+    }
+
+    .r .raid-members-list .arrow {
+        order: 1;
+    }
+
+    .r .raid-members-list .right-player {
+        border-left: 0;
+        order: 2;
+    }
+
+    .r .raid-members-list .attack-number {
+        order: 3;
+    }
+
+    .r .raid-members-list .respect {
+      width: 70px;
+        order: 4;
+    }
+
+    .r .raid-members-list .bonuses {
+        order: 5;
+    }
+
+    .r .raid-members-list .time {
+        order: 6;
+        padding: 0 5px;
+      width: 44px;
+    }
+
+    .r .raid-members-list .link {
+        order: 7;
+    }
+
+    .r .raid-members-list .respect,
+    .r .raid-members-list .time,
+    .r .raid-members-list .link,
+    .r .raid-members-list .attack-number {
+        border: 0;
+    }
+
+    .r .raid-members-list .attack-number {
+        min-width: 44px;
+    }
+
+    .r .raid-box .raid-box-stats-list:before {
+        left: 0px;
+    }
+
+    .r .raid-box .raid-box-stats-list:after {
+        left: 0px;
+    }
+
+    .r .raid-box .raid-box-stats-list > li i {
+        margin-right: 8px;
+    }
+
+    .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .status,
+    .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .status {
+        display: block;
+        width: 46px;
+    }
+
+    .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .points,
+    .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .points {
+        display: block;
+        width: 46px;
+    }
+
+    .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .level,
+    .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .level {
+        width: 28px;
+    }
+
+    .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .attack,
+    .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .attack {
+        width: 24px;
+    }
+}
+
+@media screen and (max-width: 386px) {
+    .r .raid-box .raid-box-general-info {
+      min-width: 160px;
+    }
+
+    .r .raid-box .raid-box-general-info.left-progress-box {
+      background-position: 97px 2px;
+    }
+
+    .r .raid-box .raid-box-general-info.left-box {
+      background-position-x: 97px;
+    }
+
+    .r .raid-members-list .message-block {
+      width: 290px;
+      text-align: center;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .r .raid-members-list .attack-number {
+        min-width: 38px;
+    }
+
+    .r .raid-members-list .player {
+        width: 151px;
+        padding-left: 4px;
+    }
+
+    .r .raid-members-list .player .tags {
+        margin-left: 0;
+    }
+
+    .r .raid-members-list .respect {
+      width: 65px;
+      padding: 0 5px;
+    }
+
+  .r .raid-members-list .arrow {
+    width: 9px;
+  }
+
+  .r .raid-members-list .bonuses {
+      width: 116px;
+  }
+
+  .r .raid-members-list .bonuses .raid-bonus-icon {
+    margin-right: 2px;
+  }
+
+  .r .raid-members-list .raid-arrow-icon {
+    display: inline-block;
+    width: 7px;
+      height: 26px;
+    background: url(/images/v2/faction/raid/arrows_mobile.png) 0 0 no-repeat;
+  }
+
+  .r .raid-members-list .raid-arrow-icon.enemy {
+    background-position: 0 -26px;
+  }
+
+  .r .raid-members-list .time {
+      width: 27px;
+      padding: 0;
+  }
+
+  .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .members,
+  .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .members {
+      width: 160px;
+  }
+
+  .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .points,
+  .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .points {
+      display: none;
+  }
+
+  /*.r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .status,
+  .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .status {
+      display: block;
+      width: 40px;
+  }*/
+
+  .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .level,
+  .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .level {
+      width: 28px;
+  }
+
+  .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .attack,
+  .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-cont .title .attack {
+      width: 24px;
+  }
+
+  .r .f-war-list.war-new .raid-members-list .faction-war .tab-menu-cont .members-list .member {
+      width: 160px;
+  }
+}

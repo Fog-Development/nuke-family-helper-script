@@ -1,0 +1,20 @@
+:root {
+    --faction-tabs-icon-stop-color-1: #aaa;
+    --faction-tabs-icon-stop-color-2: #ddd;
+    --faction-tabs-icon-active-stop-color-1: #666;
+    --faction-tabs-icon-active-stop-color-2: #bbb;
+    --faction-tabs-icon-disabled-stop-color-1: #ddd;
+    --faction-tabs-icon-disabled-stop-color-2: #ddd;
+
+    --faction-tabs-disabled-color: #999;
+
+    --faction-tab-title-bg: #fafafa;
+    --faction-tab-title-text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+
+    --faction-info-members-linear-gradient: linear-gradient(0deg, #e0e0e0, #fff);
+
+    --faction-crimes-blackmailing-text-shadow: 0 1px 0 rgba(255, 255, 255, 1);
+    --faction-crimes-blackmailing-success-title-text-shadow: 0 0 5px rgba(163, 217, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 1);
+    --faction-crimes-blackmailing-default-title-text-shadow: 0 0 5px rgba(217, 109, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 1);
+    --faction-crimes-blackmailing-fail-title-text-shadow: 0 0 5px rgba(255, 64, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 1);
+}

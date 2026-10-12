@@ -1,0 +1,1242 @@
+.d .skill-tree .title,
+.d .skill-tree .core {
+    font-family: "Fjalla One", "Arial", serif;
+}
+
+.d .skill-tree .title {
+    border-bottom: 1px solid #111;
+    padding: 0 10px;
+    height: 34px;
+    line-height: 34px;
+    font-weight: normal;
+}
+
+.d .skill-tree .title .branch {
+	display: none;
+	text-transform: capitalize;
+}
+
+.d .skill-tree .title .branch.active {
+	display: inline;
+}
+
+.d .skill-tree .body-wrap {
+    position: relative;
+}
+
+.d .skill-tree .body {
+    padding: 24px 0 20px 0;
+    background-color: #333;
+    background-image: linear-gradient(180deg, #85B20000 0%, #85B20012 100%);
+}
+
+.d .skill-tree.war-mode .body {
+    background-image: url(/images/v2/faction/skill_tree/bg_war_976.svg), linear-gradient(180deg, #FF5C2600 0%, #FF5C2612 100%);
+    background-repeat: no-repeat;
+}
+
+.d .skill-tree .core .link {
+    font-size:13px;
+    color: #00A9F8;
+    text-shadow:1px 1px 2px rgba(0, 0, 0, 0.65);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.d .skill-tree .core .confirm {
+    font-size: 12px;
+    line-height: 21px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.65);
+    text-shadow: var(--tutorial-title-shadow);
+    margin-top: 20px;
+    margin-bottom: -20px;
+    z-index: 3;
+    min-height: 155px;
+}
+
+.d .skill-tree .core .confirm .delimiter {
+    position: relative;
+    height: 8px;
+    background-color: #1F1F1F;
+}
+
+.d .skill-tree .core .confirm .delimiter .head-before,
+.d .skill-tree .core .confirm .delimiter .head-after {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 0;
+}
+
+.d .skill-tree .core .confirm .delimiter .head-before {
+    top: -2px;
+    border-top: 1px solid #111;
+    border-bottom: 1px solid #363636;
+}
+
+.d .skill-tree .core .confirm .delimiter .head-after {
+    bottom: -2px;
+    border-top: 1px solid #111;
+    border-bottom: 1px solid #434343;
+}
+
+.d .skill-tree .core  .name {
+    color: #FFF;
+}
+
+.d .skill-tree .core .confirm .unlocked {
+    color: #CDCDBF;
+}
+
+.d .skill-tree .core .confirm .required {
+    color: #FFCEBF;
+}
+
+.d .skill-tree .core .confirm .warning-message,
+.d .skill-tree .core .confirm .completed-message {
+    line-height: 145px;
+}
+
+.d .skill-tree .core .confirm .completed,
+.d .skill-tree .core .confirm .completed-message {
+    color: #DFFFBF;
+}
+
+.d .skill-tree .core .confirm .unset-time {
+    display: none;
+}
+
+.d .skill-tree .core .confirm.owned.blocked .unset-time {
+    display: block;
+    float: none;
+    margin-top: 5px;
+}
+
+.d .skill-tree .core .confirm.owned.blocked.branch-options .unset-time {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.d .skill-tree .core .confirm.owned.blocked.branch-options.leader .unset-time {
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+.d .skill-tree .core .confirm .unset-time .time {
+    display: inline-block;
+}
+
+.d .skill-tree .core .confirm .unset-time .info {
+    margin-left: 5px;
+    min-width: 115px;
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.d .skill-tree .core .confirm .desc {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 20px 0 20px 20px;
+}
+
+.d .skill-tree .core .confirm .buttons-wrap {
+    width: 320px;
+    text-align: right;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.d .skill-tree .core .confirm.branch-options .buttons-wrap {
+    width: 275px;
+}
+
+.d .skill-tree .core .confirm .buttons {
+    margin-top: 20px;
+}
+
+.d .skill-tree .core .popup {
+    position: absolute;
+    top: 0;
+    display: inline-block;
+    margin-top: 11px;
+    padding: 0 10px 10px 10px;
+    font-size: 13px;
+    line-height: 19px;
+    color: #ACAC9D;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.65);
+    text-shadow: var(--tutorial-title-shadow);
+    border-radius: 0 0 5px 5px;
+    z-index: 3;
+}
+
+.d .skill-tree .core .popup.branch {
+    padding: 10px;
+}
+
+.d .skill-tree .core .confirm .ajax-preloader {
+    margin-top: 45px;
+}
+
+.d .skill-tree .core .popup .circle-box {
+    display: inline-block;
+}
+
+.d .skill-tree .core .popup .head {
+    display: block;
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    top: -11px;
+    bottom: 100%;
+    border-radius: 5px 5px 0 0;
+}
+
+.d .skill-tree .core .popup .head .head-before,
+.d .skill-tree .core .popup .head .head-after {
+    display: block;
+    position: absolute;
+    top: 0;
+    height: 10px;
+    border-top: 1px solid transparent;
+}
+
+.d .skill-tree .core .popup .head .head-before {
+    left: 0;
+    margin-right: 9px;
+    border-left: 1px solid transparent;
+    border-top-left-radius: 5px;
+}
+
+.d .skill-tree .core .popup .head .head-after {
+    right: 0;
+    margin-left: 9px;
+    border-right: 1px solid transparent;
+    border-top-right-radius: 5px;
+}
+
+.d .skill-tree .core .popup-arrow {
+    display: block;
+    overflow: hidden;
+    position: absolute;
+    height: 11px;
+    width: 20px;
+    z-index: 10;
+}
+
+.d .skill-tree .core .popup-arrow:before {
+    content: "";
+    display: block;
+    height: 14px;
+    width: 14px;
+    transform: rotate(45deg);
+    margin-top: 4px;
+    margin-left: 2px;
+    border: 1px solid transparent;
+    z-index: 10;
+}
+
+.d .skill-tree .core .popup-arrow.d-hide {
+    display: none;
+}
+
+.d .skill-tree .core .popup .name {
+    color: #FFF;
+}
+
+.d .skill-tree .core .popup {
+    color: #CCCCBF;
+    font-size: 12px;
+    border: 1px solid transparent;
+    border-top: 0;
+    margin-right: 0;
+}
+
+.d .skill-tree .core .popup,
+.d .skill-tree .core .popup-arrow:before {
+    background-color: rgba(34, 34, 34, 1);
+}
+
+.d .skill-tree .core .popup,
+.d .skill-tree .core .popup-arrow:before,
+.d .skill-tree .core .popup .head .head-before,
+.d .skill-tree .core .popup .head .head-after {
+    border-color: rgba(0, 178, 178, 0.5);
+}
+
+.d .skill-tree.war-mode .core .popup.h,
+.d .skill-tree.war-mode .core .popup-arrow.h:before,
+.d .skill-tree.war-mode .core .popup.h .head .head-before,
+.d .skill-tree.war-mode .core .popup.h .head .head-after {
+    border-color: rgba(255, 64, 0, 0.4);
+}
+
+.d .skill-tree .core .popup.branch .name {
+    color: #00B2B2;
+    font-size: 14px;
+}
+
+.d .skill-tree .core .popup.branch .name:first-letter {
+    text-transform: capitalize;
+}
+
+.d .skill-tree .core .popup .content {
+    display: inline-block;
+}
+
+.d .skill-tree .core .popup .content .circle-box {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.d .skill-tree .core .popup .content .circle-box:first-child {
+    margin-left: 0;
+}
+
+.d .skill-tree .core .popup.locked,
+.d .skill-tree .core .popup.unset,
+.d .skill-tree .core .popup.in-progress,
+.d .skill-tree .core .popup.no-respect,
+.d .skill-tree .core .popup.available,
+.d .skill-tree .core .popup.owned,
+.d .skill-tree .core .popup-arrow.locked:before,
+.d .skill-tree .core .popup-arrow.unset:before,
+.d .skill-tree .core .popup-arrow.in-progress:before,
+.d .skill-tree .core .popup-arrow.no-respect:before,
+.d .skill-tree .core .popup-arrow.available:before,
+.d .skill-tree .core .popup-arrow.owned:before,
+.d .skill-tree .core .popup .head {
+    background-color: rgba(34, 34, 34, 1);
+}
+
+.d .skill-tree .core .popup.locked,
+.d .skill-tree .core .popup.unset,
+.d .skill-tree .core .popup.in-progress,
+.d .skill-tree .core .popup.no-respect,
+.d .skill-tree .core .popup.available,
+.d .skill-tree .core .popup.owned {
+    border-width: 0 1px 1px 1px;
+    border-style: solid;
+}
+
+.d .skill-tree .core .popup.locked,
+.d .skill-tree .core .popup-arrow.locked:before,
+.d .skill-tree .core .popup.locked .head .head-before,
+.d .skill-tree .core .popup.locked .head .head-after {
+    border-color: rgba(155, 155, 140, 0.4);
+}
+
+.d .skill-tree .core .popup.in-progress,
+.d .skill-tree .core .popup-arrow.in-progress:before,
+.d .skill-tree .core .popup.in-progress .head .head-before,
+.d .skill-tree .core .popup.in-progress .head .head-after {
+    border-color: rgba(217, 163, 0, 0.4);
+}
+
+.d .skill-tree .core .popup.no-respect,
+.d .skill-tree .core .popup.available,
+.d .skill-tree .core .popup-arrow.no-respect:before,
+.d .skill-tree .core .popup-arrow.available:before,
+.d .skill-tree .core .popup.no-respect .head .head-before,
+.d .skill-tree .core .popup.no-respect .head .head-after,
+.d .skill-tree .core .popup.available .head .head-before,
+.d .skill-tree .core .popup.available .head .head-after {
+    border-color: rgba(0, 178, 178, 0.4);
+}
+
+.d .skill-tree .core .popup.owned,
+.d .skill-tree .core .popup-arrow.owned:before,
+.d .skill-tree .core .popup.owned .head .head-before,
+.d .skill-tree .core .popup.owned .head .head-after,
+.d .skill-tree .core .popup.h,
+.d .skill-tree .core .popup-arrow.h:before,
+.d .skill-tree .core .popup.h .head .head-before,
+.d .skill-tree .core .popup.h .head .head-after {
+    border-color: rgba(133, 178, 0, 0.4);
+}
+
+.d .skill-tree.war-mode .core .popup.owned,
+.d .skill-tree.war-mode .core .popup-arrow.owned:before,
+.d .skill-tree.war-mode .core .popup.owned .head .head-before,
+.d .skill-tree.war-mode .core .popup.owned .head .head-after,
+.d .skill-tree.war-mode .core .popup.h,
+.d .skill-tree.war-mode .core .popup-arrow.h:before,
+.d .skill-tree.war-mode .core .popup.h .head .head-before,
+.d .skill-tree.war-mode .core .popup.h .head .head-after {
+    border-color: rgba(255, 64, 0, 0.4);
+}
+
+.d .skill-tree .core .popup.owned.blocked,
+.d .skill-tree .core .popup-arrow.owned.blocked:before,
+.d .skill-tree .core .popup.owned.blocked .head .head-before,
+.d .skill-tree .core .popup.owned.blocked .head .head-after {
+    border-color: rgba(95, 61, 196, 0.4);
+}
+
+.d .skill-tree .core .popup .info,
+.d .skill-tree .core #core .popup .info {
+    margin: 0 auto;
+}
+
+.d .skill-tree .core .confirm .text {
+    display: inline-block;
+    vertical-align: middle;
+    width: 400px;
+    margin-left: 5px;
+}
+
+.d .skill-tree .core #core .branch > :first-child {
+    margin-left: 0;
+}
+
+.d .skill-tree .core #popup-branch-change .btn {
+    margin-top: 10px;
+}
+
+.d .skill-tree .contributions-wrap {
+    text-shadow: none;
+}
+
+.d .skill-tree .contributors-links .show-all,
+.d .skill-tree .contributors-links .show-less {
+    display: none;
+}
+
+.d .skill-tree .contributors-links .show-all.active,
+.d .skill-tree .contributors-links .show-less.active {
+    display: inline;
+}
+
+.d .skill-tree .contributors-links .show-all .link,
+.d .skill-tree .contributors-links .show-less .link {
+    font-size: 12px;
+    margin-left: 5px;
+    color: #00ACAC;
+    cursor: pointer;
+}
+
+.d .skill-tree .contributions-wrap .contributions-flexslider {
+    border-top: 1px solid #000;
+    margin-bottom: 10px;
+}
+
+.d .skill-tree .contributions-wrap .contributions-flexslider,
+.d .skill-tree .contributors-links .show-less {
+    display: none;
+}
+
+.d .skill-tree .contributions-wrap .contributions-flexslider .flexslides {
+    padding: 10px 0;
+}
+
+.d .skill-tree .contributions-wrap .contributions-flexslider::before {
+    content: '';
+    display: block;
+    border-top: 1px solid #434343;
+    /*padding-top: 10px;*/
+}
+
+.d .skill-tree .contributions-list > li .numb,
+.d .skill-tree .contributions-list > li .player,
+.d .skill-tree .contributions-list > li .contribution {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.d .skill-tree .contributions-list > li.ex-member .numb,
+.d .skill-tree .contributions-list > li.ex-member .player a,
+.d .skill-tree .contributions-list > li.ex-member .contribution {
+    color: #686859;
+}
+
+.d .skill-tree .contributions-list > li.mine .numb,
+.d .skill-tree .contributions-list > li.mine .contribution {
+    color: #A9CEE1;
+}
+
+.d .skill-tree .contributions-list > li.mine .player a {
+    color: #5BA4C7;
+}
+
+.d .skill-tree .contributions-list > li .numb {
+    width: 20px;
+    text-align: right;
+}
+
+.d .skill-tree .contributions-list > li .player {
+    margin-left: 5px;
+}
+
+.d .skill-tree .contributions-list > li .player a {
+    color: #99998C;
+    text-decoration: none;
+}
+
+.d .skill-tree .contributions-list > li {
+    float: left;
+    margin-left: 24px;
+    width: 225px;
+    line-height: 17px;
+}
+
+.d .skill-tree .body-wrap .loader {
+    display: none;
+}
+
+.d .skill-tree .body-wrap .loader.waiting {
+    display: block;
+    position: absolute;
+    top: -35px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #000;
+    opacity: .5;
+    width: 100%;
+    height: calc(100% + 34px);
+    border-radius: 5px;
+    z-index: 99999;
+}
+
+.d .skill-tree .body-wrap .loader.waiting .ajax-preloader {
+    top: 50%;
+    margin-top: -15px;
+}
+
+/* for release*/
+
+.d .faction-controls-wrap .option-tag-wrap {
+    height: 588px;
+}
+
+.d .skill-tree .circle-box.upgrade-hidden,
+.d .skill-tree .line.upgrade-hidden {
+    display: none;
+}
+
+.d .skill-tree .upgrade-disabled,
+.d .skill-tree .line.upgrade-disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.d .skill-tree .upgrade-disabled.line::before,
+.d .skill-tree .upgrade-disabled.line::after,
+.d .skill-tree .upgrade-disabled .line::before,
+.d .skill-tree .upgrade-disabled .line::after {
+    opacity: 0.4;
+}
+
+.d .skill-tree #popup-branch {
+    /*height: 137px;*/
+}
+
+.d .skill-tree #popup-branch .branch-description,
+.d .skill-tree #popup-branch .branch-subtitle {
+    height: 25px;
+    display: none;
+}
+
+.d .skill-tree #popup-branch .branch-description.active,
+.d .skill-tree #popup-branch .branch-subtitle.active {
+    display: block;
+}
+
+.d .skill-tree #popup-branch .branch-description {
+    width: 500px;
+    margin: 0 auto;
+}
+
+.d .skill-tree .confirm .challenge,
+.d .skill-tree .confirm .challenge-progress {
+    display: inline-block;
+}
+
+.d .skill-tree .branch-factor {
+    position: absolute;
+    display: block;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    color: #A4AB90;
+    text-decoration: none;
+    left: 0;
+    right: 0;
+    font-weight: 400;
+    font-family: Imagine Font;
+    font-size: 8px;
+    z-index: 2;
+}
+
+.d .skill-tree .branch-factor .factor {
+    background-color: #2e2e2e;
+}
+
+.d .skill-tree a.active .branch-factor .factor {
+    border: 1px solid #A4AB90;
+    color: #F2FFD1;
+    padding: 2px 1px 1px 2px;
+    border-radius: 3px;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.d .skill-tree .branch-factor .x-factor {
+    font-size: 6px;
+}
+
+.d .skill-tree .core .confirm .confirm-wrap {
+    display: none;
+    color: #CDCDBF;
+    line-height: 145px;
+    padding: 0 20px;
+}
+
+.d .skill-tree .core .confirm .confirm-wrap .yes,
+.d .skill-tree .core .confirm .confirm-wrap .no,
+.d .skill-tree .core .branch-options .options-confirm-wrap .yes,
+.d .skill-tree .core .branch-options .options-confirm-wrap .no {
+    color: #00a9f8;
+    padding-left: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.d .skill-tree .core .confirm .confirm-wrap .yes.disabled,
+.d .skill-tree .core .confirm .confirm-wrap .no.disabled
+.d .skill-tree .core .branch-options .options-confirm-wrap .yes.disabled,
+.d .skill-tree .core .branch-options .options-confirm-wrap .no.disabled {
+    color: #666;
+    cursor: default;
+}
+
+.d .skill-tree .core .branch-options .options-confirm-wrap,
+.d .skill-tree .core .branch-options .options-success-wrap {
+    display: none;
+    color: #CDCDBF;
+    line-height: 18px;
+}
+
+.d .skill-tree .core .branch-options .description {
+    color: #CCCCBF;
+}
+
+.d .skill-tree .core .branch-options .description strong {
+    color: #FFF;
+    font-weight: 100;
+}
+
+.d .skill-tree .core .branch-options {
+    min-height: 90px;
+}
+
+.d .skill-tree .core .confirm {
+    background-color: #2E2E2E;
+}
+
+.d .skill-tree .core .branch-options .desc {
+    color: #FFF;
+    width: 470px;
+}
+
+/* WAI SUPPORT: BEGIN */
+
+.d .skill-tree .upg button.wai-upgrade-btn,
+.d .skill-tree .branch-empty .circle-box button.wai-upgrade-btn,
+.d .skill-tree #popup-branch button.wai-upgrade-btn {
+    display: block;
+    height: 26px;
+    width: 26px;
+    border-radius: 14px;
+    border: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: transparent;
+    background-image: none;
+    text-decoration: none;
+    outline: none;
+    overflow: visible;
+    cursor: pointer;
+}
+
+.d .skill-tree .upg button.wai-upgrade-btn:disabled,
+.d .skill-tree .branch-empty .circle-box button.wai-upgrade-btn:disabled,
+.d .skill-tree #popup-branch button.wai-upgrade-btn:disabled {
+    cursor: default;
+}
+
+.d .skill-tree #popup-branch button.wai-upgrade-btn {
+    position: relative;
+    height: 1px;
+    width: 1px;
+    text-indent: -10000px;
+    overflow: hidden;
+}
+
+.d .skill-tree .upg.active button.wai-upgrade-btn,
+.d .skill-tree .branch-empty .circle-box.active button.wai-upgrade-btn {
+    top: 2px;
+    left: 2px;
+}
+
+/* WAI SUPPORT: END */
+
+.d .skill-tree #stu-confirmation {
+    height: 0;
+}
+
+.d .ui-tooltip.skill-tree {
+    will-change: contents;
+}
+
+.d .ui-tooltip.skill-tree .core .popup {
+    white-space: nowrap;
+    margin: 0;
+    padding: 10px;
+    border-radius: 5px;
+    border-width: 1px;
+    border-style: solid;
+    z-index: 10;
+}
+
+.d .ui-tooltip.skill-tree .core .popup-arrow {
+    top: -11px;
+    z-index: 10;
+}
+
+.d .skill-tree .torn-btn.optimize {
+    background: transparent url(/images/v2/faction/skill_tree/optimize_icon.svg) left top no-repeat;
+    height: 34px;
+    width: 34px;
+    border: none;
+    outline: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    left: 10px;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.d .skill-tree .torn-btn.optimize:focus {
+    border: none;
+}
+
+.d .skill-tree .torn-btn.optimize.disabled {
+    background-position: right top;
+    cursor: default;
+}
+
+.d .optimize-tooltip {
+    font-family: Arial, sans-serif;
+    background-color: #444;
+    box-shadow: 0 0 2px #00000073;
+    color: #FFF;
+    z-index: 999;
+    width: 300px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.d .optimize-tooltip .tooltip-name {
+    padding: 11px;
+}
+
+.d .optimize-tooltip .tooltip-arrow {
+    border-color: transparent transparent #444;
+    border-width: 0 7px 7px;
+    top: -7px;
+    left: 50%;
+    overflow: hidden;
+    position: absolute;
+    border-style: solid;
+    width: 0;
+    height: 0;
+    background: transparent;
+    transform: translateX(-50%);
+    bottom: -7px;
+    margin: 0;
+    pointer-events: none;
+}
+
+.d .skill-tree #core .fix-784-5 {
+    margin-top: 0;
+}
+
+.d .skill-tree #core .fix-784-1 > div {
+    margin-top: 0;
+}
+
+.d .skill-tree #core .fix-784-6 {
+    margin-top: 108px;
+}
+
+.d .skill-tree #core .fix-784-9 {
+    margin-top: 12px;
+}
+
+.d .skill-tree #core .fix-784-7 {
+    height: 84px;
+}
+
+.d .skill-tree #core .fix-784-10 {
+    height: 108px;
+}
+
+
+@media screen and (max-width: 784px) {
+    .r .skill-tree .body {
+        overflow: hidden;
+        padding: 0 0 20px 10px;
+    }
+
+    .r .skill-tree .core {
+        -webkit-transition: margin-left 500ms ease-in-out;
+        -moz-transition: margin-left 500ms ease-in-out;
+        -ms-transition: margin-left 500ms ease-in-out;
+        -o-transition: margin-left 500ms ease-in-out;
+        transition: margin-left 500ms ease-in-out;
+    }
+
+    .r .skill-tree .core .popup [class*="sts-"] {
+        display: inline-block;
+    }
+
+    .r .skill-tree .core .confirm,
+    .r .skill-tree .core .popup {
+        padding: 0 20px 10px 20px;
+        width: 330px;
+    }
+
+    .r .skill-tree .core .confirm {
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: inline-block;
+        font-size:13px;
+        line-height:19px;
+        color: #ACAC9D;
+        text-align: left;
+        margin-bottom: 55px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.65);
+        text-shadow: var(--tutorial-title-shadow);
+        border-radius: 0 0 5px 5px;
+        min-height: auto;
+    }
+
+    .r .skill-tree .core .confirm .delimiter {
+        display: block;
+        height: auto;
+        position: absolute;
+        left: -1px;
+        right: -1px;
+        top: -11px;
+        bottom: 100%;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .r .skill-tree .core .confirm .delimiter .head-before,
+    .r .skill-tree .core .confirm .delimiter .head-after {
+        display: block;
+        position: absolute;
+        top: 0;
+        height: 10px;
+        border-top: 1px solid transparent;
+        border-bottom: none;
+    }
+
+    .r .skill-tree .core .confirm .delimiter .head-before {
+        left: 0;
+        right: auto;
+        margin-right: 9px;
+        border-left: 1px solid transparent;
+        border-top-left-radius: 5px;
+    }
+
+    .r .skill-tree .core .confirm .delimiter .head-after {
+        right: 0;
+        left: auto;
+        margin-left: 9px;
+        border-right: 1px solid transparent;
+        border-top-right-radius: 5px;
+    }
+
+    .r .skill-tree .core .confirm .name {
+        color: #FFF;
+    }
+
+    .r .skill-tree .core .confirm {
+        color: #CCCCBF;
+        font-size: 12px;
+        border: 1px solid transparent;
+        border-top: none;
+    }
+
+    .r .skill-tree .core .confirm,
+    .r .skill-tree .core .confirm .delimiter .head-before,
+    .r .skill-tree .core .confirm .delimiter .head-after {
+        border-color: rgba(0, 178, 178, 0.5);
+    }
+
+    .r .skill-tree .core .confirm .name {
+        font-size: 14px;
+    }
+
+    .r .skill-tree .core .confirm,
+    .r .skill-tree .core .confirm.locked,
+    .r .skill-tree .core .confirm.unset,
+    .r .skill-tree .core .confirm.in-progress,
+    .r .skill-tree .core .confirm.no-respect,
+    .r .skill-tree .core .confirm.available,
+    .r .skill-tree .core .confirm.owned,
+    .r .skill-tree .core .confirm .delimiter {
+        background-color: rgba(34, 34, 34, 1);
+    }
+
+    .r .skill-tree .core .confirm.locked,
+    .r .skill-tree .core .confirm.unset,
+    .r .skill-tree .core .confirm.in-progress,
+    .r .skill-tree .core .confirm.no-respect,
+    .r .skill-tree .core .confirm.available,
+    .r .skill-tree .core .confirm.owned {
+        border-width: 0 1px 1px 1px;
+        border-style: solid;
+    }
+
+    .r .skill-tree .core .confirm.locked,
+    .r .skill-tree .core .confirm.locked .delimiter .head-before,
+    .r .skill-tree .core .confirm.locked .delimiter .head-after,
+    .r .skill-tree .core .confirm.locked .contributions-flexslider::before {
+        border-color: rgba(155, 155, 140, 0.4);
+    }
+
+    .r .skill-tree .core .confirm.in-progress,
+    .r .skill-tree .core .confirm.in-progress .delimiter .head-before,
+    .r .skill-tree .core .confirm.in-progress .delimiter .head-after,
+    .r .skill-tree .core .confirm.in-progress .contributions-flexslider::before {
+        border-color: rgba(217, 163, 0, 0.4);
+    }
+
+    .r .skill-tree .core .confirm.no-respect,
+    .r .skill-tree .core .confirm.available,
+    .r .skill-tree .core .confirm.no-respect .delimiter .head-before,
+    .r .skill-tree .core .confirm.no-respect .delimiter .head-after,
+    .r .skill-tree .core .confirm.available .delimiter .head-before,
+    .r .skill-tree .core .confirm.available .delimiter .head-after,
+    .r .skill-tree .core .confirm.no-respect .contributions-flexslider::before,
+    .r .skill-tree .core .confirm.available .contributions-flexslider::before {
+        border-color: rgba(0, 178, 178, 0.4);
+    }
+
+    .r .skill-tree .core .confirm.owned,
+    .r .skill-tree .core .confirm.owned .delimiter .head-before,
+    .r .skill-tree .core .confirm.owned .delimiter .head-after,
+    .r .skill-tree .core .confirm.owned .contributions-flexslider::before {
+        border-color: rgba(133, 178, 0, 0.4);
+    }
+
+    .r .skill-tree.war-mode .core .confirm.owned,
+    .r .skill-tree.war-mode .core .confirm.owned .delimiter .head-before,
+    .r .skill-tree.war-mode .core .confirm.owned .delimiter .head-after,
+    .r .skill-tree.war-mode .core .confirm.owned .contributions-flexslider::before {
+        border-color: rgba(255, 64, 0, 0.4);
+    }
+
+    .r .skill-tree .core .confirm.owned.blocked,
+    .r .skill-tree .core .confirm.owned.blocked .delimiter .head-before,
+    .r .skill-tree .core .confirm.owned.blocked .delimiter .head-after,
+    .r .skill-tree .core .confirm.owned.blocked .contributions-flexslider::before {
+        border-color: rgba(95, 61, 196, 0.4);
+    }
+
+    .r .skill-tree .core .confirm .desc {
+        float: none;
+        margin: 0;
+    }
+
+    .r .skill-tree .core .confirm .desc > div {
+        margin-top: 10px;
+    }
+
+    .r .skill-tree .core .confirm .buttons {
+        float: none;
+        margin: 10px 0;
+    }
+
+    .r .skill-tree .core .confirm .text {
+        width: 305px;
+    }
+
+    .r .skill-tree .core .popup.centered,
+    .r .skill-tree .core .confirm {
+        left: 0;
+        right: auto;
+    }
+
+    .r .skill-tree .core #core .branch > :first-child {
+        margin-top: 0;
+    }
+
+    .r .skill-tree .core .popup-arrow.d-hide {
+        display: block;
+    }
+
+    .skill-tree .flexslides > li {
+        margin: 0;
+    }
+
+    .r .skill-tree .flex-direction-nav .flex-next,
+    .r .skill-tree .flex-direction-nav .flex-prev {
+        margin-top: -10px;
+    }
+
+    .r .skill-tree .flex-direction-nav .flex-next.flex-disabled,
+    .r .skill-tree .flex-direction-nav .flex-next.flex-disabled:hover {
+        background-position: 100% -52px;
+    }
+
+    .r .skill-tree .flex-direction-nav .flex-prev.flex-disabled,
+    .r .skill-tree .flex-direction-nav .flex-prev.flex-disabled:hover {
+        background-position: 0 -52px;
+    }
+
+    .r .skill-tree .flex-direction-nav .flex-prev {
+        left: -15px;
+    }
+
+    .r .skill-tree .flex-direction-nav .flex-next {
+        right: -15px;
+    }
+
+    .r .skill-tree .contributions-wrap {
+        width: 300px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .r .skill-tree .contributions-wrap .contributions-flexslider::before {
+        margin-left: -35px;
+        margin-right: -35px;
+        padding-top: 10px;
+    }
+
+    .r .skill-tree .contributions-wrap .contributions-flexslider {
+        border: 0;
+    }
+
+    .r .skill-tree .contributions-list {
+        margin: 0 auto;
+    }
+
+    .r .skill-tree .contributions-list > li {
+        margin-left: 74px;
+    }
+
+    .r .skill-tree .core .confirm .unset-time {
+        margin-right: 0;
+        text-align: left;
+    }
+
+    .r .skill-tree .core .confirm .buttons-wrap {
+        width: 330px;
+    }
+
+    .r .skill-tree .core .confirm .warning-message {
+        line-height: normal;
+    }
+
+    .r .skill-tree #popup-branch .branch-description {
+        width: 330px;
+    }
+
+    .r .skill-tree #popup-branch .branch-description,
+    .r .skill-tree #popup-branch .branch-subtitle {
+        height: 60px;
+    }
+
+    .r .skill-tree .branch-line {
+        z-index: auto;
+    }
+
+    .r .skill-tree .branch-factor {
+        bottom: 3px;
+    }
+
+    .r .skill-tree .branch.mh0.mv0 {
+        margin-left: 4px;
+    }
+
+    .r .skill-tree .line.lv5.m-lh18 {
+        width: 144px;
+    }
+
+    .r .skill-tree .core .confirm .confirm-wrap {
+        line-height: 20px;
+        text-align: center;
+    }
+
+    .r .skill-tree .core .confirm .confirm-wrap .confirm-links,
+    .r .skill-tree .core .branch-options .options-confirm-wrap .confirm-links {
+        display: block;
+        text-align: center;
+        margin-left: -30px;
+    }
+
+    .r .skill-tree .core .branch-options .desc {
+        width: auto;
+    }
+
+    .r .skill-tree.war-mode .body {
+        background-image: url(/images/v2/faction/skill_tree/bg_war_578.svg), linear-gradient(180deg, #FF5C2600 0%, #FF5C2612 100%);
+    }
+
+    .r .skill-tree .core .popup .content .circle-box {
+        margin-top: 0;
+    }
+
+    .r .skill-tree .core .popup .content {
+        margin-top: 10px;
+    }
+
+    .r .skill-tree #core .fix-784-1 {
+        margin-left: 28px;
+    }
+
+    .r .skill-tree #core .fix-784-2 {
+        width: 12px;
+    }
+
+    .r .skill-tree #core .fix-784-3 {
+        width: 6px;
+    }
+
+    .r .skill-tree #core .fix-784-4 {
+        margin-left: 5px;
+    }
+
+    .r .skill-tree #core .fix-784-5 {
+        margin-left: 52px;
+    }
+
+    .r .skill-tree #core .fix-784-6 {
+        margin-left: 161px;
+        margin-top: 0;
+    }
+
+    .r .skill-tree #core .fix-784-7 {
+        width: 84px;
+        height: 1px;
+    }
+
+    .r .skill-tree #core .fix-784-8 {
+        height: 22px;
+    }
+
+    .r .skill-tree #core .fix-784-9 {
+        margin-top: -22px;
+        margin-left: 12px;
+    }
+
+    .r .skill-tree #core .fix-784-10 {
+        width: 106px;
+        height: 1px;
+    }
+}
+
+@media screen and (max-width: 386px) {
+    .r .skill-tree .core .confirm,
+    .r .skill-tree .core .popup {
+        width: 278px;
+    }
+
+    .r .skill-tree .core .popup.centered {
+        min-height: 297px;
+    }
+
+    .r .skill-tree .core #core .branch {
+        padding-left: 5px;
+    }
+
+    .r .skill-tree .core .confirm .text {
+        width: 245px;
+    }
+
+    .r .skill-tree .contributions-wrap {
+        width: 256px;
+    }
+
+    .r .skill-tree .contributions-wrap .contributions-flexslider::before {
+        margin-left: -32px;
+        margin-right: -32px;
+    }
+
+    .r .skill-tree .core .confirm .buttons-wrap {
+        width: 278px;
+    }
+
+    .r .skill-tree #popup-branch .branch-description,
+    .r .skill-tree #popup-branch .branch-subtitle {
+        height: 80px;
+    }
+
+    .r .skill-tree #popup-branch .branch-description {
+        width: 278px;
+    }
+
+    .r .skill-tree .line.lv5.m-lh18 {
+        width: 114px;
+    }
+
+    .r .skill-tree .branch.mh0.mv0 {
+        margin-left: 1px;
+    }
+
+    .r .skill-tree.war-mode .body {
+        background-image: url(/images/v2/faction/skill_tree/bg_war_320.svg), linear-gradient(180deg, #FF5C2600 0%, #FF5C2612 100%);
+    }
+
+    .r .skill-tree .contributions-list > li {
+        margin-left: 64px;
+        width: 190px;
+    }
+
+    .r .skill-tree .body {
+        padding-left: 0;
+    }
+
+    .r .skill-tree #core .fix-784-1 {
+        margin-left: -13px;
+    }
+
+    .r .skill-tree #core .fix-784-5 {
+        margin-left: 28px;
+    }
+
+    .r .skill-tree #core .fix-784-6 {
+        margin-left: 136px;
+    }
+
+    .r .skill-tree #core .fix-784-10 {
+        width: 105px;
+    }
+
+    .r .skill-tree #core .fix-386-1 {
+        margin-left: 0;
+    }
+
+    .r .skill-tree #core .fix-784-1 > div {
+        margin-left: 41px;
+    }
+
+    .r .skill-tree .body {
+        padding-bottom: 10px;
+    }
+}

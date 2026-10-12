@@ -31,7 +31,7 @@ Before releasing: run through `TESTING.md`, bump `version` in `package.json`, `n
 
 ## Automated UI tests
 
-`npm test` runs Playwright (headless Chromium) against sanitized captures of real Torn pages (profile, faction tabs, hospital) styled with Torn's real CSS, in both light and dark mode, with `GM_*` and the nuke.family API stubbed. Setup once: `npx playwright install chromium` and `npm run fixtures:css`. Screenshots land in `test/screenshots/` (gitignored); read them to check how new UI looks. When adding or changing UI, add/extend a test in `test/features/`, loop over `THEMES`, and add any new API route to `test/fixtures/api/default.json`. Never commit raw captures: new pages go through `npm run fixtures:sanitize` (see `test/README.md`). Fixtures are snapshots, so this does not replace the real-site pass in `TESTING.md`.
+`npm test` runs Playwright (headless Chromium) against sanitized captures of real Torn pages (profile, faction tabs, hospital) styled with Torn's real CSS, in both light and dark mode, with `GM_*` and the nuke.family API stubbed. Setup once: `npx playwright install chromium`. Torn's CSS is committed in `test/fixtures/torn-css/`; `npm run fixtures:css` fetches stylesheets newly referenced by a fixture, `npm run fixtures:css:refresh` re-downloads everything on request. Screenshots land in `test/screenshots/` (gitignored); read them to check how new UI looks. When adding or changing UI, add/extend a test in `test/features/`, loop over `THEMES`, and add any new API route to `test/fixtures/api/default.json`. Never commit raw captures: new pages go through `npm run fixtures:sanitize` (see `test/README.md`). Fixtures are snapshots, so this does not replace the real-site pass in `TESTING.md`.
 
 ## Code Architecture
 

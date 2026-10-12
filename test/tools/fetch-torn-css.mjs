@@ -1,13 +1,19 @@
-// Downloads the Torn stylesheets referenced by the page fixtures into
-// test/fixtures/torn-css/ (gitignored: it is Torn's own CSS, so it is fetched
-// rather than committed). The harness serves these files when a fixture asks
-// for them, so fixtures render with Torn's real styling, light and dark.
+// Maintains test/fixtures/torn-css/: Torn's own stylesheets as referenced by the
+// page fixtures. These ARE committed, so tests never touch the network and keep
+// working even after Torn retires an old build's files. The harness serves them
+// when a fixture asks for them, so pages render with Torn's real styling, light
+// and dark.
 //
-//   npm run fixtures:css
+//   npm run fixtures:css            download any referenced stylesheet that is
+//                                   missing, and delete ones no fixture uses
+//                                   (run after adding or re-capturing a fixture)
+//   npm run fixtures:css:refresh    re-download everything (run when you want the
+//                                   CSS to reflect Torn's current styling; review
+//                                   the git diff afterwards)
 //
-// Files are content-hashed (/builds/...) or versioned (?v=...), so an existing
-// download never needs refreshing; re-run after capturing new fixtures.
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+// Most files are content-hashed (/builds/...) or versioned (?v=...), so an
+// existing download rarely changes; --refresh also catches in-place edits.
+import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 
@@ -25,7 +31,8 @@ for (const file of readdirSync(PAGES).filter((f) => f.endsWith(".html"))) {
   }
 }
 
-const todo = [...hrefs].filter((h) => !existsSync(join(OUT, cssFileName(h))));
+const refresh = process.argv.includes("--refresh");
+const todo = [...hrefs].filter((h) => refresh || !existsSync(join(OUT, cssFileName(h))));
 console.log(`${hrefs.size} stylesheets referenced, ${todo.length} to download`);
 
 let failed = 0;
@@ -47,5 +54,16 @@ await Promise.all(
     }
   }),
 );
+// Drop files no fixture references any more (only when everything needed is
+// present, so a failed download never deletes a working file).
+if (!failed) {
+  const wanted = new Set([...hrefs].map(cssFileName));
+  for (const file of readdirSync(OUT)) {
+    if (!wanted.has(file)) {
+      unlinkSync(join(OUT, file));
+      console.log(`removed unreferenced ${decodeURIComponent(file)}`);
+    }
+  }
+}
 console.log(failed ? `${failed} failed` : "done");
 process.exit(failed ? 1 : 0);

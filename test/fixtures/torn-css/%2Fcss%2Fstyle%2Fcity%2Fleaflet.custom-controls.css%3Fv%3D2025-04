@@ -1,0 +1,314 @@
+
+.d .leaflet-control-btn-full-screen {
+	background-image: url("/images/v2/city/citymap/controls_widget/desktop_full screen_bg.png");
+	background-repeat: no-repeat;
+	background-position: 6px 0;
+    height: 34px;
+    width: 40px;
+    z-index: 1000000;
+}
+
+.d .leaflet-control-custom {
+	background-image: url("/images/v2/city/citymap/controls_widget/desktop_widget_bg.png");
+	background-repeat: no-repeat;
+    height: 238px;
+    width: 46px;
+    z-index: 1000000;
+}
+
+.d .leaflet-control-custom-button {
+	cursor: pointer;
+    position: absolute;
+}
+
+.d .leaflet-control-custom-button.disable {
+	cursor: default;
+}
+
+.d .leaflet-control-custom-button.full-map {
+	height: 16px;
+    width: 16px;
+    left: 15px;
+    top: 9px;
+	background-image: url('/images/v2/city/citymap/controls_widget/full_screen.svg');
+}
+
+.d .leaflet-control-custom-button.full-map.full {
+	background-position: -16px 0;
+}
+
+.d .leaflet-control-custom-button.zoom {
+	height: 16px;
+    width: 16px;
+    left: 15px;
+	background-image: url('/images/v2/city/citymap/controls_widget/zoom.svg');
+}
+/* begin zoom in */
+.d .leaflet-control-custom-button.zoom.in {
+    top: 72px;
+}
+.d .leaflet-control-custom-button.enable.zoom.in {
+	background-position: -16px 0;
+}
+.d .leaflet-control-custom-button.disable.zoom.in {
+	background-position: 0 -16px;
+}
+/* end zoom in */
+
+/* begin zoom out */
+.d .leaflet-control-custom-button.zoom.out {
+    top: 100px;
+}
+.d .leaflet-control-custom-button.enable.zoom.out {
+	background-position: -16px -16px;
+}
+.d .leaflet-control-custom-button.disable.zoom.out {
+	background-position: 0 0;
+}
+/* end zoom out */
+
+
+.d .leaflet-control-custom-button.pan {
+	background-image: url('/images/v2/city/citymap/controls_widget/arrows_sprite.png');
+	height: 20px;
+    width: 20px;
+}
+/* begin pan up */
+.d .leaflet-control-custom-button.pan.up {
+    left: 13px;
+    top: 116px;
+}
+.d .leaflet-control-custom-button.enable.pan.up {
+	background-position: -60px -40px;
+}
+.d .leaflet-control-custom-button.disable.pan.up {
+	background-position: -60px -20px;
+}
+.d .leaflet-control-custom-button.enable.pan.up:hover {
+	background-position: -60px 0;
+}
+/* end pan up */
+
+/* begin pan left */
+.d .leaflet-control-custom-button.pan.pan-left {
+    left: 1px;
+    top: 130px;
+}
+.d .leaflet-control-custom-button.enable.pan.pan-left {
+	background-position: -40px -40px;
+}
+.d .leaflet-control-custom-button.disable.pan-left {
+	background-position: -40px -20px;
+}
+.d .leaflet-control-custom-button.enable.pan.pan-left:hover {
+	background-position: -40px 0;
+}
+/* end pan left */
+
+/* begin pan right */
+.d .leaflet-control-custom-button.pan.pan-right {
+    left: 25px;
+    top: 130px;
+}
+.d .leaflet-control-custom-button.enable.pan.pan-right {
+	background-position: 0 -40px;
+}
+.d .leaflet-control-custom-button.disable.pan-right {
+	background-position: 0 -20px;
+}
+.d .leaflet-control-custom-button.enable.pan.pan-right:hover {
+	background-position: 0 0;
+}
+/* end pan right */
+
+/* begin pan down */
+.d .leaflet-control-custom-button.pan.down {
+    left: 13px;
+    top: 143px;
+}
+.d .leaflet-control-custom-button.enable.pan.down {
+	background-position: -20px -40px;
+}
+.d .leaflet-control-custom-button.disable.pan.down {
+	background-position: -20px -20px;
+}
+.d .leaflet-control-custom-button.enable.pan.down:hover {
+	background-position: -20px 0;
+}
+/* end pan down */
+
+.d .leaflet-control-custom-button.link-control-btn {
+	top: 48px;
+}
+
+.d .leaflet-control-custom-button.link-control-btn.link-control-btn-pressed {
+	cursor: default;
+}
+
+.d .leaflet-control-custom-button.terr {
+	background-image: url('/images/v2/city/citymap/controls_widget/territory_icons_default_selected_hover.png');
+	height: 28px;
+    width: 28px;
+    left: 9px;
+}
+/* begin own faction */
+.d .leaflet-control-custom-button.terr.own-faction {
+    top: 156px;
+}
+.d .leaflet-control-custom-button.selected.terr.own-faction {
+	background-position: -28px 0;
+}
+.d .leaflet-control-custom-button.unselected.terr.own-faction {
+	background-position: 0 0;
+}
+.d .leaflet-control-custom-button.terr.own-faction:not(.disable):hover {
+	background-position: -56px 0;
+}
+/* end own faction */
+
+/* begin sector */
+.d .leaflet-control-custom-button.terr.sector {
+    top: 184px;
+}
+.d .leaflet-control-custom-button.selected.terr.sector {
+	background-position: -28px -28px;
+}
+.d .leaflet-control-custom-button.unselected.terr.sector {
+	background-position: 0 -28px;
+}
+.d .leaflet-control-custom-button.terr.sector:not(.disable):hover {
+	background-position: -56px -28px;
+}
+/* end sector */
+
+/* begin density */
+.d .leaflet-control-custom-button.terr.density {
+    top: 212px;
+}
+.d .leaflet-control-custom-button.selected.terr.density {
+	background-position: -28px -56px;
+}
+.d .leaflet-control-custom-button.unselected.terr.density {
+	background-position: 0 -56px;
+}
+.d .leaflet-control-custom-button.terr.density:not(.disable):hover {
+	background-position: -56px -56px;
+}
+/* end density */
+
+/* begin size */
+.d .leaflet-control-custom-button.terr.size {
+    top: 240px;
+}
+.d .leaflet-control-custom-button.selected.terr.size {
+	background-position: -28px -84px;
+}
+.d .leaflet-control-custom-button.unselected.terr.size {
+	background-position: 0 -84px;
+}
+.d .leaflet-control-custom-button.terr.size:not(.disable):hover {
+	background-position: -56px -84px;
+}
+/* end size */
+
+/*.d path.shape:hover {
+	opacity: 0.7;
+}*/
+
+.leaflet-bottom.leaflet-right{
+    display: none;
+}
+
+.leaflet-right .leaflet-control {
+  margin-right: 7px;
+}
+
+.full-map .leaflet-right .leaflet-control {
+  margin-right: 36px;
+}
+
+.leaflet-top .leaflet-control {
+  margin-top: 7px;
+}
+
+.full-map .leaflet-top .leaflet-control {
+  margin-top: 22px;
+}
+
+@media screen and (max-width: 784px) {
+
+	.r #map {
+		width: 384px;
+	}
+
+	.r .leaflet-control-custom {
+		background-image: url("/images/v2/city/citymap/controls_widget/touchscreen_widget_bg.png");
+		background-repeat: no-repeat;
+	    height: 238px;
+	    width: 36px;
+	    margin-top: 6px;
+	}
+
+	.r .leaflet-control-btn-full-screen {
+		background-image: url("/images/v2/city/citymap/controls_widget/touchscreen_full screen_bg.png");
+		background-position: 0 0;
+		height: 38px;
+	}
+
+	.r .leaflet-control-custom-button.full-map {
+	    left: 11px;
+	    top: 11px;
+	}
+
+	.r .leaflet-control-custom .pan {
+		display: none;
+	}
+
+	.r .leaflet-control-custom-button.link-control-btn {
+		top: 58px;
+	}
+
+	.r .leaflet-control-custom-button.zoom {
+		left: 12px;
+	}
+	.r .leaflet-control-custom-button.zoom.in {
+		top: 88px;
+	}
+	.r .leaflet-control-custom-button.zoom.out {
+		top: 120px;
+	}
+
+	.r .leaflet-control-custom-button.terr {
+		left: 6px;
+	}
+
+	.r .leaflet-control-custom-button.terr.own-faction {
+		top: 146px;
+	}
+
+	.r .leaflet-control-custom-button.terr.sector {
+		top: 177px;
+	}
+
+	.r .leaflet-control-custom-button.terr.density {
+		top: 208px;
+	}
+
+	.r .leaflet-control-custom-button.terr.size {
+	    top: 242px;
+	}
+
+	.r .link-control-btn {
+		left: 12px;
+	}
+
+
+}
+
+@media screen and (max-width: 386px) {
+
+	.r #map {
+		width: 318px;
+	}
+
+}

@@ -1,0 +1,317 @@
+.d .chart-main-wrap {
+    line-height: 12px;
+}
+
+.d .chart-main-wrap .tabs-wrap .graphs-stock-wrap .chart-wrap {
+    font-size: 12px;
+}
+
+.d .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li {
+    top: 0;
+    left: 0;
+    position: relative;
+    margin-right: 20px;
+    font-weight: bold;
+    color: #888;
+    color: var(--default-gray-8-color);
+    float: left;
+}
+
+.d .chart-main-wrap.cont-black {
+    border-bottom: none;
+}
+
+.d .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li,
+.d .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .flot-x-axis,
+.d .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .flot-y-axis {
+    text-shadow: none;
+    color: #CCC;
+}
+
+.d .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li.clear {
+    width: 0;
+    height: 0;
+    line-height: 0;
+    float: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0;
+    border: 0;
+}
+
+.d .chart-main-wrap .d-hide {
+    display: none;
+}
+
+.d .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li .t-delimiter,
+.d .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li .b-delimiter {
+    height: 15px;
+    width: 2px;
+    position: absolute;
+    left: auto;
+    right: -2px;
+}
+
+.d .chart-main-wrap .stock-list .item {
+    display: block;
+    margin: 0;
+    text-shadow: 0 1px 0 #FFF;
+    text-shadow: var(--title-text-shadow);
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--items-cont-description-border-bottom-color);
+}
+
+.d .chart-main-wrap .stock-list .item.last {
+    border-bottom: 0;
+}
+
+.d .chart-main-wrap .stock-list .item .acc-body {
+    border-top: 1px solid #CCC;
+	border-top-color: var(--items-cont-description-border-top-color);
+    background-color: #FFF;
+    background-color: var(--items-cont-description-bg-active-color);
+    border-radius: 0 0 5px 5px;
+}
+
+.d .chart-main-wrap.cont-black .stock-list .item .acc-body {
+    background-color: #202020;
+    border-top: 1px solid #000;
+}
+
+.d .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap {
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--items-cont-description-border-bottom-color);
+    padding: 10px;
+}
+
+.d .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap {
+    border-top: 1px solid #3E3E3E;
+    border-bottom: 1px solid #000;
+}
+
+.d .chart-main-wrap.cont-black .chart-placeholder.m-top5 {
+    margin-top: 0;
+    padding-top: 5px;
+}
+
+.d .chart-main-wrap.cont-black .chart-placeholder {
+    border-top: 1px solid #3E3E3E;
+}
+
+.d .chart-main-wrap .chart-placeholder,
+.d .chart-main-wrap .chart-wrap .chart-message {
+    height: 140px;
+    width: 100%;
+}
+
+.d .chart-main-wrap .chart-placeholder.chart-disabled {
+	display: none;
+}
+
+.d .chart-main-wrap .chart-wrap .chart-message {
+	padding: 10px;
+	text-align: center;
+	line-height: 140px;
+}
+
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child,
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li,
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li {
+	border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--items-cont-description-border-bottom-color);
+}
+
+.d .sortable-box  .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap {
+	padding: 0;
+}
+
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li {
+	margin-right: 0;
+	padding: 10px;
+	display: block;
+	width: 108px;
+	border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+	float: left;
+}
+
+.d .sortable-box .chart-main-wrap .d-hide {
+	display: block;
+}
+
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li,
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li.last {
+	border-right: 0;
+}
+
+.d .sortable-box .chart-main-wrap .d-hide.t-hide {
+	display: none;
+}
+
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li.clear {
+	width: 0;
+	height: 0;
+	line-height: 0;
+	float: none;
+	margin: 0;
+	padding: 0;
+	font-size: 0;
+	border: 0;
+}
+
+
+.d .sortable-box .period-wrap li:before {
+    background: linear-gradient(0deg, #CCCCCC00 0%, #CCCCCC 50%, #CCCCCC00 100%);
+    content: '';
+    height: 31px;
+    width: 1px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.d.dark-mode .sortable-box .period-wrap li:before {
+    background: linear-gradient(0deg, #3a3a3a00 0%, #3a3a3a 50%, #3a3a3a00 100%);
+}
+
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li .t-delimiter,
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li .b-delimiter,
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child:before,
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:last-child:before,
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:nth-child(4):before {
+    display: none;
+}
+
+.d .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li {
+    border-right-color: transparent;
+}
+
+@media screen and (max-width: 784px) {
+    .r .chart-main-wrap .d-hide {
+        display: block;
+    }
+
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child,
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li,
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li {
+        border-bottom: 1px solid #CCC;
+	    border-bottom-color: var(--items-cont-description-border-bottom-color);
+    }
+
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li .t-delimiter,
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li .b-delimiter,
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li.last .t-delimiter,
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li.last .b-delimiter {
+        display: none;
+    }
+
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li {
+        margin-right: 0;
+        padding: 10px;
+        display: block;
+        width: 107px;
+        border-right: 1px solid #CCC;
+	    border-right-color: var(--items-cont-description-border-right-color);
+    }
+
+    .r .logged-out .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li {
+        width: 172px;
+    }
+
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li,
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li.last {
+        border-right: 0;
+    }
+
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap {
+        padding: 0;
+    }
+
+    .r .chart-main-wrap.cont-black .stock-list .item .acc-body {
+        border-top: none;
+    }
+
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li {
+        padding-right: 9px;
+    }
+
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child,
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li,
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li {
+        border-bottom: 1px solid #000;
+    }
+
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li + li,
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li + li + li,
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li.last {
+        border-top: 1px solid #3E3E3E;
+    }
+
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child,
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li,
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li + li,
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li + li + li {
+        border-right: 1px solid #000;
+    }
+
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li,
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li,
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child + li + li + li + li,
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li.last {
+        border-left: 1px solid #3E3E3E;
+    }
+
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li .t-delimiter,
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li .b-delimiter {
+        display: none;
+    }
+
+    .r .period-wrap li:before {
+        background: linear-gradient(0deg, #CCCCCC00 0%, #CCCCCC 50%, #CCCCCC00 100%);
+        content: '';
+        height: 31px;
+        width: 1px;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    .r.dark-mode .period-wrap li:before {
+        background: linear-gradient(0deg, #3a3a3a00 0%, #3a3a3a 50%, #3a3a3a00 100%);
+    }
+
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li .t-delimiter,
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li .b-delimiter,
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:first-child:before,
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:last-child:before,
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li:nth-child(4):before {
+        display: none;
+    }
+
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li {
+        border-right-color: transparent;
+    }
+
+}
+
+@media screen and (max-width: 386px) {
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li {
+        padding: 10px 0 10px 5px;
+    }
+
+    .r .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li,
+    .r .logged-out .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li {
+        width: 101px;
+    }
+
+    .r .chart-main-wrap.cont-black .tabs-wrap .graphs-stock-wrap .period-wrap > li {
+        padding-right: 0;
+        padding-left: 4px;
+    }
+
+    .r .sortable-box .chart-main-wrap .tabs-wrap .graphs-stock-wrap .period-wrap > li {
+		padding: 10px 0 10px 5px;
+		width: 101px;
+
+    }
+}

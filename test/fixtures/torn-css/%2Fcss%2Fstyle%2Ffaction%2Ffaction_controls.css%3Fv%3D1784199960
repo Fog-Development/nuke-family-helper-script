@@ -1,0 +1,1023 @@
+.d .faction-controls-wrap .controls-drop-list,
+.d .faction-controls-wrap .big-delimiter-wrap,
+.d .faction-controls-wrap .member-list-wrap .flex-control-nav {
+    display: none;
+}
+
+.d .faction-controls-wrap {
+    width: 100%;
+    display: flex;
+    margin-top: 10px;
+    line-height: 16px;
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+    border-radius: 5px;
+}
+
+.d .faction-controls-wrap .control-tabs {
+    overflow: hidden;
+    width: 151px;
+    border-right: 1px solid #ddd;
+    border-right-color: var(--panel-divider-outer-side-color);
+    border-bottom: 1px solid #fff;
+    border-bottom-color: var(--default-panel-divider-inner-side-color);
+    border-radius: 5px 0 0 5px;
+}
+
+.d .faction-controls-wrap .control-tabs>li.white-grad,
+.d .faction-controls-wrap .control-tabs>li a {
+    display: block;
+    padding: 10px;
+    height: 15px;
+    line-height: 15px;
+    width: 131px;
+}
+
+.d .faction-controls-wrap .control-tabs>li.white-grad {
+    height: 16px;
+}
+
+.d .faction-controls-wrap .control-tabs>li:first-child.white-grad {
+    border-top: none;
+    border-bottom: none;
+}
+
+
+.d .faction-controls-wrap .control-tabs>li .ui-tabs-anchor .counter-badge {
+    position: absolute;
+    right: 10px;
+    color: var(--default-blue-color-new);
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.d .faction-controls-wrap .control-tabs>li a {
+    border-top: 1px solid #FFF;
+    border-top-color: var(--default-panel-divider-inner-side-color);
+    color: #333;
+    color: var(--default-color);
+}
+
+.d .faction-controls-wrap .control-tabs>li a:hover,
+.d .faction-controls-wrap .control-tabs>li.ui-tabs-active a {
+    background-color: #FFF;
+    background-color: var(--default-bg-panel-active-color);
+}
+
+.d .faction-controls-wrap .control-tabs>li {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px solid #DDD;
+    border-bottom-color: var(--panel-divider-outer-side-color);
+}
+
+.d .faction-controls-wrap .control-tabs>li.ui-state-disabled a:hover,
+.d .faction-controls-wrap .control-tabs>li.ui-state-disabled a {
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+    color: #999;
+    color: var(--faction-tabs-disabled-color);
+    cursor: default;
+}
+
+.d .faction-controls-wrap .control-tab-section {
+    float: left;
+    min-height: 152px;
+    width: 632px;
+    box-shadow: 1px 0 0 #fff inset;
+    box-shadow: 1px 0 0 var(--default-panel-divider-inner-side-color) inset;
+}
+
+.d .faction-controls-wrap .control-tab-section.application {
+    padding: 0;
+    width: 633px;
+}
+
+.d .faction-controls-wrap .control-tab-section.announcement,
+.d .faction-controls-wrap .control-tab-section.headlines {
+    padding: 0 0 15px 0;
+    width: 632px;
+}
+
+.d .faction-controls-wrap .control-tab-section#option-members-root {
+    border-radius: 0 5px 5px 0;
+    border-bottom: 1px solid #fff;
+    border-bottom-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-controls-wrap .control-tab-section.react-root {
+    padding: 0;
+    width: 633px;
+}
+
+.d .faction-controls-wrap .control-tab-section.give {
+    padding: 0 0 15px 0;
+    width: 632px;
+}
+
+.d .faction-controls-wrap .letter-wrap {
+    border-top: 0 solid transparent;
+}
+
+.d .faction-controls-wrap .tab-title {
+    background-color: var(--faction-tab-title-bg);
+    text-shadow: var(--faction-tab-title-text-shadow);
+}
+
+.d .faction-controls-wrap .desc {
+    border-bottom: 1px solid #CCC;
+    border-bottom-color: var(--default-panel-divider-outer-side-color);
+    color: var(--default-full-text-color);
+}
+
+.d .faction-controls-wrap .desc-wrap {
+    margin: 10px;
+    border-bottom: 1px solid #FFF;
+    border-bottom-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-controls-wrap .desc {
+    padding-bottom: 10px;
+}
+
+.d .faction-controls-wrap .point-wrap .inputs-wrap .count,
+.d .faction-controls-wrap .letter-wrap .title,
+.d .faction-controls-wrap .payment-wrap .payment-cont .count,
+.d .faction-controls-wrap .option-name-wrap .new-faction-name,
+.d .faction-controls-wrap .option-tag-wrap .new-tag-name {
+    padding: 8px 5px;
+    border-radius: 5px;
+}
+
+.d .faction-controls-wrap .option-name-wrap .new-faction-name.error {
+    background: linear-gradient(0deg, #E54C1930 0%, #E54C1930 100%), linear-gradient(0deg, #fff 0%, #fff 100%);
+    background: linear-gradient(0deg, #E54C1930 0%, #E54C1930 100%), var(--input-background-color);
+}
+
+.d .faction-controls-wrap .payment-wrap .payment-cont .count {
+    border-radius: 0 5px 5px 0;
+}
+
+.d .faction-controls-wrap .letter-wrap .title {
+    margin-top: 10px;
+}
+
+.d .faction-controls-wrap .btn-wrap {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.d .faction-controls-wrap .letter-wrap .title {
+    width: 354px;
+    margin-bottom: 10px;
+}
+
+.d .faction-controls-wrap .letter-wrap .newsletter-filter-options {
+    margin-top: 10px;
+    width: 212px;
+}
+
+.d .faction-controls-wrap .letter-wrap .icon-options {
+    margin-top: 5px;
+}
+
+.d .faction-controls-wrap .member-list #iconTray,
+.d .faction-controls-wrap .member-list .user.name,
+.d .faction-controls-wrap .member-list .user.name img {
+    vertical-align: middle;
+}
+
+.d .faction-controls-wrap .member-list #iconTray {
+    display: inline-block;
+    margin-bottom: 2px;
+}
+
+.d .faction-controls-wrap .member-list #iconTray>li {
+    margin-bottom: -4px;
+    margin-top: 6px;
+}
+
+.d .faction-controls-wrap .member-list .user.name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100px;
+}
+
+.d .faction-controls-wrap .member-list,
+.d .faction-controls-wrap .member-list>li {
+    float: left;
+}
+
+.d .faction-controls-wrap .member-list-wrap {
+    padding-top: 10px;
+    overflow: hidden;
+}
+
+.d .faction-controls-wrap .member-list>li {
+    padding: 5px 10px;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+    width: 135px;
+}
+
+.d .faction-controls-wrap .member-list>li.clear {
+    padding: 0;
+    border: none;
+}
+
+.d .faction-controls-wrap .member-list>li input.check {
+    display: none;
+}
+
+.d .faction-controls-wrap .member-list.first>li:first-child,
+.d .faction-controls-wrap .member-list.first>li:first-child+li,
+.d .faction-controls-wrap .member-list.first>li:first-child+li+li {
+    border-right: 1px solid #CCC;
+    border-right-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .faction-controls-wrap .member-list.first>li:first-child+li,
+.d .faction-controls-wrap .member-list.first>li:first-child+li+li,
+.d .faction-controls-wrap .member-list.first>li:first-child+li+li+li {
+    border-left: 1px solid #FFF;
+    border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-controls-wrap .member-list.first>li:first-child,
+.d .faction-controls-wrap .member-list.first>li:first-child+li,
+.d .faction-controls-wrap .member-list.first>li:first-child+li+li,
+.d .faction-controls-wrap .member-list.first>li:first-child+li+li+li {
+    margin-bottom: -5000px;
+    padding-bottom: 5005px;
+}
+
+.d .faction-controls-wrap .choice-container {
+    display: inline-block;
+    width: 14px;
+}
+
+.d .faction-controls-wrap .announcement .choice-container,
+.d .faction-controls-wrap .headlines .choice-container {
+    width: auto;
+}
+
+.d .faction-controls-wrap .prettycheckbox {
+    width: 14px;
+}
+
+.d .faction-controls-wrap .prettycheckbox label {
+    display: none;
+}
+
+.d .faction-controls-wrap .payment-wrap {
+    margin: 10px;
+    border-top: 1px solid #CCC;
+    border-top-color: var(--default-panel-divider-outer-side-color);
+    border-bottom: 0;
+}
+
+.d .faction-controls-wrap .payment-wrap .payment-cont {
+    padding-top: 10px;
+    border-top: 1px solid #FFF;
+    border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-controls-wrap .payment-wrap .payment-cont .count,
+.d .faction-controls-wrap .payment-wrap .payment-cont .btn-wrap {
+    margin-right: 10px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.d .faction-controls-wrap .t-delimiter {
+    height: 30px;
+    width: 4px;
+    position: absolute;
+    left: -3px;
+}
+
+.d .faction-controls-wrap .upgrade {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 5px;
+}
+
+.d .faction-controls-wrap .upgrade .select-wrap {
+    font-weight: bold;
+}
+
+.d .faction-controls-wrap .upgrade .select-wrap .t-green .ui-selectmenu-status,
+.d .faction-controls-wrap .upgrade .select-wrap .ui-selectmenu-menu li.t-green a {
+    color: #678C00;
+}
+
+.d .faction-controls-wrap .upgrade .select-wrap .ui-selectmenu-menu li a,
+.d .faction-controls-wrap .upgrade .select-wrap .ui-selectmenu-item-focus {
+    height: 29px;
+    line-height: 29px;
+    width: 168px;
+}
+
+.d .faction-controls-wrap .upgrade .select-wrap .select-list .ui-selectmenu-menu li {
+    width: 150px;
+}
+
+.d .faction-controls-wrap .upgrade .select-list {
+    width: 168px;
+}
+
+.d .faction-controls-wrap .upgrade .select-list .viewport {
+    width: 176px;
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap {
+    border-top: 1px solid #FFF;
+    border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .ability-list {
+    border-top: 1px solid #CCC;
+    border-top-color: var(--default-panel-divider-outer-side-color);
+    border-bottom: 1px solid #FFF;
+    border-bottom-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .ability-list>li {
+    border-top: 1px solid #FFF;
+    border-top-color: var(--default-panel-divider-inner-side-color);
+    border-bottom: 1px solid #CCC;
+    border-bottom-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .name,
+.d .faction-controls-wrap .option-upgrades-wrap .lvl {
+    font-weight: bold;
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .name,
+.d .faction-controls-wrap .option-upgrades-wrap .lvl,
+.d .faction-controls-wrap .option-upgrades-wrap .info,
+.d .faction-controls-wrap .option-upgrades-wrap .upgrade-desc {
+    float: left;
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .upgrade-act {
+    float: right;
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .name,
+.d .faction-controls-wrap .option-upgrades-wrap .lvl,
+.d .faction-controls-wrap .option-upgrades-wrap .info,
+.d .faction-controls-wrap .option-upgrades-wrap .upgrade-act {
+    height: 32px;
+    line-height: 32px;
+    margin-top: -1px;
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .name,
+.d .faction-controls-wrap .option-upgrades-wrap .lvl,
+.d .faction-controls-wrap .option-upgrades-wrap .info {
+    border-right: 1px solid #CCC;
+    border-right-color: var(--default-panel-divider-outer-side-color);
+}
+
+
+.d .faction-controls-wrap .option-upgrades-wrap .lvl,
+.d .faction-controls-wrap .option-upgrades-wrap .info,
+.d .faction-controls-wrap .option-upgrades-wrap .upgrade-act {
+    border-left: 1px solid #FFF;
+    border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .name {
+    width: 73px;
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .lvl,
+.d .faction-controls-wrap .option-upgrades-wrap .upgrade-act {
+    text-align: center;
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .lvl {
+    width: 32px;
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .info {
+    padding-left: 10px;
+    width: 421px;
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .upgrade-act {
+    width: 70px;
+    cursor: pointer;
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .upgrade-desc {
+    display: none;
+    padding-bottom: 10px;
+    width: 612px;
+    border-top: 1px solid #CCC;
+    border-top-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .active .upgrade-desc {
+    display: block;
+}
+
+.d .faction-controls-wrap .option-upgrades-wrap .upgrade-desc .msg,
+.d .faction-controls-wrap .option-oc2-wrap,
+.d .faction-controls-wrap .option-announcement-wrap,
+.d .faction-controls-wrap .option-description-wrap,
+.d .faction-controls-wrap .option-name-wrap,
+.d .faction-controls-wrap .option-image-wrap {
+    padding: 10px;
+    border-top: 1px solid #FFF;
+    border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-controls-wrap .option-description-wrap {
+    height: 530px;
+}
+
+.d .faction-controls-wrap .option-description-wrap .tiny-area {
+    height: 100%;
+}
+
+.d .faction-controls-wrap .option-leader-wrap {
+    border-top: 1px solid #FFF;
+    border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-controls-wrap .confirmation {
+    display: none;
+    padding: 5px 0;
+}
+
+.d .faction-controls-wrap .confirmation .confirm-buttons-wrap {
+    display: inline-block;
+}
+
+.d .faction-controls-wrap .confirmation .yes,
+.d .faction-controls-wrap .confirmation .no {
+    border: none;
+    background: none;
+    font-size: 12px;
+}
+
+.d .faction-controls-wrap .option-name-wrap .new-faction-name {
+    width: 175px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.d .faction-controls-wrap .option-tag-wrap {
+    height: 624px;
+    width: 315px;
+}
+
+.d .faction-controls-wrap .option-tag-wrap .info {
+    border-bottom: 1px solid #CCC;
+    border-bottom-color: var(--default-panel-divider-outer-side-color);
+    padding: 10px;
+    color: var(--default-full-text-color);
+}
+
+.d .faction-controls-wrap .option-tag-wrap.left {
+    border-right: 1px solid #CCC;
+    border-right-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .faction-controls-wrap .option-tag-wrap.right {
+    border-left: 1px solid #FFF;
+    border-left-color: var(--default-panel-divider-inner-side-color);
+    box-sizing: border-box;
+}
+
+.d .faction-controls-wrap .option-tag-wrap .image-upload-wrap {
+    position: relative;
+    border-top: 1px solid #FFF;
+    border-top-color: var(--default-panel-divider-inner-side-color);
+    padding: 10px;
+}
+
+.d .faction-controls-wrap .option-tag-wrap .image-upload-wrap .l-delimiter,
+.d .faction-controls-wrap .option-tag-wrap .image-upload-wrap .r-delimiter {
+    position: absolute;
+    top: -3px;
+    height: 4px;
+    width: 100px;
+}
+
+.d .faction-controls-wrap .option-tag-wrap.left .image-upload-wrap .btn-wrap,
+.d .faction-controls-wrap .option-image-wrap .btn-wrap {
+    width: 110px;
+}
+
+.d .faction-controls-wrap .upload-image .torn-btn {
+    min-width: 87px;
+}
+
+.d .faction-controls-wrap #option-image .image-upload-wrap .btn-wrap,
+.d .faction-controls-wrap #option-image .option-image-wrap .btn-wrap {
+    width: 125px;
+}
+
+.d .faction-controls-wrap .upload-image .btn {
+    position: relative;
+    padding-left: 0;
+}
+
+.d .faction-controls-wrap .upload-image .btn>div,
+.d .faction-controls-wrap .upload-image .btn .btn-name {
+    position: absolute;
+    left: -10px;
+    top: -20px;
+}
+
+.d .faction-controls-wrap .upload-image .btn .btn-name {
+    margin-left: 10px;
+}
+
+.d .faction-controls-wrap .option-image-wrap .info {
+    border-bottom: 1px solid #CCC;
+    border-bottom-color: var(--default-panel-divider-outer-side-color);
+    color: var(--default-full-text-color);
+}
+
+.d .faction-controls-wrap .option-image-wrap .image-upload-wrap,
+.d .faction-controls-wrap .option-delete-wrap {
+    border-top: 1px solid #FFF;
+    border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-controls-wrap .option-delete-wrap {
+    padding: 10px;
+}
+
+.d .faction-controls-wrap .show-tiny-panels {
+    margin-top: 10px;
+}
+
+.d .faction-controls-wrap .option-tag-wrap .new-tag-name {
+    width: 28px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.d .faction-controls-wrap .option-colour-wrap .colour-wrap {
+    padding: 10px 0;
+    border-top: 1px solid #FFF;
+    border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-controls-wrap .text-input {
+    line-height: 14px;
+    height: 34px;
+    margin-right: 8px;
+    border: 1px solid #CCC;
+    border-color: var(--default-panel-divider-outer-side-color);
+    border-radius: 5px;
+    text-align: left;
+    background-color: #FFF;
+    background: var(--input-background-color);
+    color: var(--input-color);
+    padding: 5px;
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.d .faction-controls-wrap .text-input.error {
+    background: linear-gradient(0deg, #E54C1930 0%, #E54C1930 100%), linear-gradient(0deg, #fff 0%, #fff 100%);
+    background: linear-gradient(0deg, #E54C1930 0%, #E54C1930 100%), var(--input-background-color);
+}
+
+.d .faction-controls-wrap .bottom-group {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 10px;
+    color: var(--default-full-text-color);
+}
+
+.d .faction-controls-wrap .bottom-group .announcement-hint {
+    margin-right: auto;
+}
+
+.d .faction-controls-wrap .bottom-group .torn-btn:last-child {
+    margin-left: 7px;
+}
+
+.d #faction-announcement-content,
+.d #faction-headlines-content {
+    height: 200px;
+    padding: 0 10px;
+}
+
+@media screen and (max-width: 784px) {
+    .r .faction-controls-wrap {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .r .faction-controls-wrap .control-tab-section {
+        box-shadow: none;
+        width: 386px;
+    }
+
+    .r .faction-controls-wrap .control-tab-section.application {
+        width: 100%;
+    }
+
+    .r .faction-controls-wrap .control-tab-section#option-members-root {
+        border-radius: 0;
+        border-bottom: none;
+    }
+
+    .r .faction-controls-wrap .control-tab-section.react-root {
+        width: 100%;
+    }
+
+    .r .faction-controls-wrap .control-tabs {
+        display: none;
+    }
+
+    .r .faction-controls-wrap .t-m-left10 {
+        margin-left: 10px;
+    }
+
+    .r .faction-controls-wrap .t-m-left10.btn-wrap {
+        margin-left: 15px;
+    }
+
+    .r .faction-controls-wrap .controls-drop-list {
+        display: block;
+        padding: 10px 8px;
+    }
+
+    .r .faction-controls-wrap .controls-drop-list .counter-badge {
+        display: inline;
+        margin-left: 15px;
+        color: var(--default-blue-color-new);
+        font-weight: 700;
+    }
+
+    .r .faction-controls-wrap .control-tab-section,
+    .r .faction-controls-wrap .control-tab-section.give,
+    .r .faction-controls-wrap .control-tab-section.announcement,
+    .r .faction-controls-wrap .control-tab-section.headlines {
+        width: 386px;
+    }
+
+    #body.r .faction-controls-wrap .ac-search {
+        padding: 9px 5px;
+    }
+
+    .r .faction-controls-wrap .point-wrap .inputs-wrap .count,
+    .r .faction-controls-wrap .letter-wrap .title,
+    .r .faction-controls-wrap .payment-wrap .payment-cont .count,
+    .r .faction-controls-wrap .option-name-wrap .new-faction-name,
+    .r .faction-controls-wrap .option-tag-wrap .new-tag-name {
+        padding: 8px 5px;
+    }
+
+    .r .faction-controls-wrap .payment-wrap .payment-cont .count {
+        padding: 9px 10px;
+        width: 123px;
+    }
+
+    .r .faction-controls-wrap .letter-wrap {
+        width: 366px;
+        margin: 0 10px;
+        padding: 10px 0;
+    }
+
+    .r .faction-controls-wrap .letter-wrap .newsletter-filter-options {
+        margin-top: 0;
+        width: 336px;
+    }
+
+    .r .faction-controls-wrap .letter-wrap .icon-options {
+        margin-top: 10px;
+    }
+
+    .r .faction-controls-wrap .control-tab-section {
+        padding: 0;
+    }
+
+    .r .faction-controls-wrap .big-delimiter {
+        height: 10px;
+        background-color: #FFF;
+        background-color: var(--default-bg-panel-active-color);
+        border-top: 1px solid #CCC;
+        border-top-color: var(--default-panel-divider-outer-side-color);
+        border-bottom: 0 solid transparent;
+    }
+
+    .r .faction-controls-wrap .big-delimiter-wrap {
+        display: block;
+        /*border-bottom: 1px solid #FFF;
+	border-bottom-color: var(--default-panel-divider-inner-side-color);*/
+        border-bottom: 0 solid transparent;
+    }
+
+    .r .faction-controls-wrap .desc-wrap {
+        margin: 0 10px;
+    }
+
+    .r .faction-controls-wrap .member-list-wrap {
+        padding-top: 0;
+        margin: 0 10px;
+        width: 366px;
+    }
+
+    .r .faction-controls-wrap .member-list-wrap .member-list-slider-wrap {
+        position: relative;
+        left: -10px;
+        width: 386px;
+    }
+
+    .r .faction-controls-wrap .member-list-wrap .member-list-slider-wrap.disable .flex-control-nav {
+        display: none;
+    }
+
+    .r .faction-controls-wrap .member-list-wrap .flex-control-nav {
+        display: block;
+        position: static;
+        width: auto;
+        margin: 0 10px;
+        padding: 15px 0 5px 0;
+        border-top: 1px solid #FFF;
+        border-top-color: var(--default-panel-divider-inner-side-color);
+        border-bottom: 1px solid #CCC;
+        border-bottom-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .faction-controls-wrap .payment-wrap {
+        margin-top: 0;
+        border-top: 0;
+    }
+
+    .r .faction-controls-wrap .member-list {
+        width: 180px;
+    }
+
+    .r .faction-controls-wrap .member-list-slider-wrap.one-group .member-list {
+        width: 386px;
+    }
+
+    .r .faction-controls-wrap .member-list-slider-wrap.one-group .member-list>li.empty {
+        display: none;
+    }
+
+    .r .faction-controls-wrap .member-list>li,
+    .r .faction-controls-wrap .member-list.first>li:first-child,
+    .r .faction-controls-wrap .member-list.first>li:first-child+li,
+    .r .faction-controls-wrap .member-list.first>li:first-child+li+li,
+    .r .faction-controls-wrap .member-list.first>li:first-child+li+li+li {
+        float: none;
+        margin-bottom: 0;
+        padding: 5px 26px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #FFF #CCC #CCC #FFF;
+        border-color: var(--default-panel-divider-inner-side-color) var(--default-panel-divider-outer-side-color) var(--default-panel-divider-outer-side-color) var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .faction-controls-wrap .member-list.first>li.clear {
+        padding: 0;
+    }
+
+    .r #option-upgrades .desc {
+        border-bottom: none;
+    }
+
+    .r .faction-controls-wrap .option-upgrades-wrap .name {
+        margin-left: 10px;
+    }
+
+    .r .faction-controls-wrap .option-upgrades-wrap .upgrade-act {
+        width: 257px;
+        margin-right: 10px;
+        text-align: right;
+    }
+
+    .r .faction-controls-wrap .option-upgrades-wrap .name,
+    .r .faction-controls-wrap .option-upgrades-wrap .lvl,
+    .r .faction-controls-wrap .option-upgrades-wrap .upgrade-act {
+        border-bottom: 1px solid #CCC;
+        border-bottom-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .faction-controls-wrap .option-upgrades-wrap .info {
+        padding: 8px 0;
+        margin: 0 10px;
+        width: 366px;
+        line-height: 16px;
+        height: auto;
+        border-top: 1px solid #FFF;
+        border-top-color: var(--default-panel-divider-inner-side-color);
+        border-left: none;
+        border-right: none;
+    }
+
+    .r .faction-controls-wrap .option-upgrades-wrap .upgrade-desc {
+        padding: 0 10px 10px 10px;
+        width: 366px;
+    }
+
+    .r .faction-controls-wrap .option-upgrades-wrap .ability-list>li.active {
+        background-color: #FFF;
+        background-color: var(--default-bg-panel-active-color);
+    }
+
+    .r .faction-controls-wrap .option-upgrades-wrap {
+        padding-bottom: 10px;
+        border-top: none;
+    }
+
+    .r .faction-controls-wrap .option-upgrades-wrap .upgrades-info {
+        margin: 0 10px;
+        padding-top: 10px;
+        border-top: 1px solid #FFF;
+        border-top-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .faction-controls-wrap .option-tag-wrap.left,
+    .r .faction-controls-wrap .option-tag-wrap.right {
+        width: 386px;
+        height: auto;
+        border-left: none;
+        border-right: none;
+    }
+
+    .r .faction-controls-wrap .option-tag-wrap.left {
+        padding-right: 0;
+        border-top: 1px solid #FFF;
+        border-top-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .faction-controls-wrap .option-tag-wrap.right {
+        float: left;
+        border-bottom: 1px solid #CCC;
+        border-bottom-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .faction-controls-wrap .option-leader-wrap,
+    .r .faction-controls-wrap .option-oc2-wrap,
+    .r .faction-controls-wrap .option-announcement-wrap,
+    .r .faction-controls-wrap .option-description-wrap,
+    .r .faction-controls-wrap .option-name-wrap,
+    .r .faction-controls-wrap .option-image-wrap,
+    .r .faction-controls-wrap .option-delete-wrap {
+        padding-bottom: 10px;
+    }
+
+    .r .faction-controls-wrap .option-image-wrap {
+        padding-top: 10px;
+    }
+
+    #body.r .controls-drop-list .select-wrap .select-list .ui-selectmenu-menu li.ui-state-disabled a {
+        color: #999;
+        color: var(--faction-tabs-disabled-color);
+    }
+
+    .r .faction-controls-wrap .member-list>li.empty {
+        height: 29px;
+    }
+
+    .r .faction-controls-wrap .show-tiny-panels {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .r .faction-controls-wrap .control-tab-section {
+        min-height: 36px;
+    }
+
+    .r .faction-controls-wrap .member-list .user.name {
+        width: 296px;
+    }
+
+    .r .faction-controls-wrap .member-list>li {
+        width: auto;
+    }
+
+    .r .faction-controls-wrap .option-colour-wrap .colour-wrap {
+        margin: 0 10px;
+    }
+
+    .r .faction-controls-wrap .bottom-group {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    .r .faction-controls-wrap .bottom-group .announcement-hint {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .r .faction-controls-wrap .confirmation {
+        padding: 5px 10px;
+        text-align: center;
+    }
+
+    .r .faction-controls-wrap .confirmation .confirm-buttons-wrap {
+        display: block;
+    }
+
+    .r .faction-controls-wrap .btn-wrap.submit {
+        margin-top: 20px;
+        margin-bottom: 0;
+    }
+
+    .r #faction-announcement-content {
+        height: 50vh;
+    }
+}
+
+@media screen and (max-width: 386px) {
+
+    .r .faction-controls-wrap .control-tab-section,
+    .r .faction-controls-wrap .control-tab-section.announcement,
+    .r .faction-controls-wrap .control-tab-section.headlines {
+        width: 320px;
+    }
+
+    .r .faction-controls-wrap .control-tab-section.give,
+    .r .faction-controls-wrap .control-tab-section.give .money-wrap,
+    .r .faction-controls-wrap .control-tab-section.give .point-wrap {
+        width: 320px;
+    }
+
+    .r .faction-controls-wrap .letter-wrap {
+        width: 300px;
+    }
+
+    .r .faction-controls-wrap .letter-wrap .newsletter-filter-options {
+        width: 272px;
+    }
+
+    .r .faction-controls-wrap .letter-wrap .title {
+        width: 288px;
+    }
+
+    .r .faction-controls-wrap .member-list-wrap {
+        width: 300px;
+    }
+
+    .r .faction-controls-wrap .member-list-wrap .member-list-slider-wrap {
+        width: 320px;
+    }
+
+    .r .faction-controls-wrap .member-list {
+        width: 160px;
+    }
+
+    .r .faction-controls-wrap .member-list>li,
+    .r .faction-controls-wrap .member-list.first>li:first-child,
+    .r .faction-controls-wrap .member-list.first>li:first-child+li,
+    .r .faction-controls-wrap .member-list.first>li:first-child+li+li,
+    .r .faction-controls-wrap .member-list.first>li:first-child+li+li+li {
+        padding: 5px 10px;
+    }
+
+    .r .faction-controls-wrap .option-upgrades-wrap .upgrade-act {
+        width: 191px;
+    }
+
+    .r .faction-controls-wrap .option-upgrades-wrap .info,
+    .r .faction-controls-wrap .option-upgrades-wrap .upgrade-desc {
+        width: 300px;
+    }
+
+    .r .faction-controls-wrap .upgrade {
+        margin: 10px 0 0 0;
+    }
+
+    .r .faction-controls-wrap .option-tag-wrap.left,
+    .r .faction-controls-wrap .option-tag-wrap.right {
+        width: 320px;
+    }
+
+    .r .faction-controls-wrap .ac-search {
+        width: 195px;
+    }
+
+    .r .faction-controls-wrap .member-list-slider-wrap.one-group .member-list {
+        width: 320px;
+    }
+
+    .r .faction-controls-wrap .member-list .user.name {
+        width: 261px;
+    }
+
+    .r .faction-controls-wrap .upgrade {
+        display: block;
+        margin-top: 10px;
+        margin-left: 0;
+    }
+}

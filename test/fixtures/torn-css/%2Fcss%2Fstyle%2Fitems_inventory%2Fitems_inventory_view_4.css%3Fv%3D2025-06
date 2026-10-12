@@ -1,0 +1,167 @@
+/* Dump, Faction. Items (parcel) pages */
+
+.d .items-wrap.view-4 .actions-main-wrap .actions-wrap,
+.d .items-wrap.view-4 .actions-main-wrap .amount-main-wrap .actions-wrap,
+.d .items-wrap.view-4 .items-cont > li.actions-active .show-item-info,
+.d .items-wrap.view-4 .items-cont > li.item-active.info-active .info-link,
+.d .items-wrap.view-4 .items-cont > li.disabled .amount-main-wrap .amount,
+.d .items-wrap.view-4 .actions-main-wrap .amount-main-wrap .price,
+.d .items-wrap.view-4 .items-cont > li.disabled .amount-main-wrap .price,
+.d .items-wrap.view-4 .actions-main-wrap .info-main-wrap .info-wrap {
+    display: none;
+}
+
+.d .items-wrap.view-4 .items-cont > li .bonuses-wrap,
+.d .items-wrap.view-4 .actions-main-wrap .amount-main-wrap .amount,
+.d .items-wrap.view-4 .items-cont > li.actions-active .bonuses-wrap,
+.d .items-wrap.view-4 .items-cont > li.info-active .show-item-info {
+    display: block;
+}
+
+.d .items-wrap.view-4 .items-cont > li.info-active .show-item-info {
+    border-top: 1px solid var(--default-panel-divider-outer-side-color);
+    width: 100%;
+}
+
+.d .items-wrap.view-4 .items-cont > li .title-wrap {
+    width: 470px;
+}
+
+.d .items-wrap.view-4 .items-cont > li .actions-main-wrap {
+    width: 313px;
+}
+
+.d .items-wrap.view-4 .items-cont > li.no-mods .bonuses-wrap {
+    display: none;
+}
+
+.d .items-wrap.view-4 .items-cont > li.no-mods .actions-main-wrap {
+	width: 87px;
+}
+
+.d .items-wrap.view-4 .items-cont > li.no-mods .title-wrap {
+    width: 696px;
+}
+
+.d .items-wrap.view-4 .actions-main-wrap .amount-main-wrap {
+    float: right;
+    text-align: center;
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .items-wrap.view-4 .bonuses-wrap > li {
+    width: 56px;
+}
+
+.d .items-wrap.view-4 .actions-main-wrap .amount-main-wrap .amount {
+    width: 66px;
+    padding: 0 10px;
+}
+
+.d .items-wrap.view-4 .actions-main-wrap .amount input[type=text] {
+    line-height: 14px;
+    padding: 5px;
+    text-align: center;
+}
+
+.d .items-wrap.view-4 .actions-main-wrap .amount input[type=text] {
+    width: 54px;
+    border: 1px solid;
+    border-color: #ccc;
+    border-color: var(--input-border-color);
+    font-family: Arial, serif;
+    border-radius: 5px;
+    color: #000;
+    color: var(--input-color);
+    background-color: #fff;
+    background: var(--input-background-color);
+    padding: 5px;
+    vertical-align: middle;
+}
+
+.d .items-wrap.view-4 .items-cont > li .name-wrap {
+    width: 385px;
+}
+
+.d .items-wrap.view-4 .items-cont > li.disabled .amount-main-wrap .used {
+    display: block;
+    width: 86px;
+}
+
+@media screen and (max-width: 784px) {
+
+    .r .items-wrap.view-4 .actions-main-wrap .amount-main-wrap {
+        float: left;
+    }
+
+    .r .items-wrap.view-4 .items-cont > li .actions-main-wrap {
+        display: inline;
+        float: none;
+    }
+
+    .r .items-wrap.view-4 .items-cont > li .title-wrap,
+    .r .items-wrap.view-4 .items-cont > li.no-mods .title-wrap {
+        width: 299px;
+    }
+
+    .r .items-wrap.view-4 .title-wrap .name-wrap {
+        border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .items-wrap.view-4 .items-cont > li .name-wrap {
+        width: 213px;
+        overflow: hidden;
+        white-space: nowrap;
+        display: flex;
+    }
+
+    .r .items-wrap.view-4 .bonuses-wrap > li {
+        width: 96px;
+        border-top: 1px solid #CCC;
+        border-top-color: var(--items-cont-description-border-top-color);
+    }
+
+    .r .items-wrap.view-4 .items-cont > li .info-main-wrap .bonuses-wrap {
+        display: none;
+        border-top: transparent;
+    }
+
+    .r .items-wrap.view-4 .items-cont > li.actions-active .bonuses-wrap {
+        display: block;
+    }
+}
+
+@media screen and (max-width: 386px) {
+
+    .r .items-wrap.view-4 .items-cont > li .title-wrap,
+    .r .items-wrap.view-4 .items-cont > li.no-mods .title-wrap {
+        width: 246px;
+    }
+
+    .r .items-wrap.view-4 .items-cont > li .name-wrap {
+        width: 160px;
+    }
+
+    .r .items-wrap.view-4 .bonuses-wrap > li {
+        width: 80px;
+    }
+
+    /*VMcss add  22.11.2021*/
+    .d .items-wrap.view-4 .actions-main-wrap .amount input[type=text] {
+        width: 30px;
+    }
+
+    .d .items-wrap.view-4 .items-cont > li.disabled .amount-main-wrap .used{
+        width: 63px;
+        padding: 0 5px;
+    }
+    .d .items-wrap.view-4 .actions-main-wrap .amount-main-wrap .amount {
+        width: 52px;
+        padding: 0 10px;
+    }
+    .d .items-wrap.view-4 .items-cont > li.no-mods .actions-main-wrap{
+        width: 50px;
+    }
+}

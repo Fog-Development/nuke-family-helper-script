@@ -1,0 +1,804 @@
+.d .faction-crimes-wrap .crimes-cont.cont-gray {
+    top: 0;
+    left: 0;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    border-bottom: 0;
+}
+
+.d .faction-crimes-wrap .title-white {
+    color: #666;
+    color: var(--title-white-color);
+    font-weight: 600;
+    text-shadow: 1px 1px 5px #FFF;
+    text-shadow: var(--title-white-text-shadow);
+    font-size: 12px;
+    letter-spacing: 0;
+    box-shadow: none;
+}
+
+.d .faction-crimes-wrap .crimes-list {
+    border-bottom: 0 solid transparent;
+}
+
+.d .faction-crimes-wrap .title > li {
+    float: left;
+}
+
+.d .faction-crimes-wrap .title > li,
+.d .faction-crimes-wrap .crimes-list .item > li {
+    padding: 0 10px;
+    border-left: 1px solid #CCC;
+	border-left-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .faction-crimes-wrap .title > li {
+    border-left: 1px solid transparent;
+}
+
+.d .faction-crimes-wrap .plan-error {
+    display: none;
+}
+
+.d .faction-crimes-wrap .crimes-list .item > li,
+.d .faction-crimes-wrap .details-list .item > li {
+    padding-bottom: 10px;
+    padding-top: 10px;
+    line-height: 14px;
+    font-size: 12px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.d .faction-crimes-wrap .crimes-list .item {
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    font-size: 0;
+    overflow: hidden;
+}
+
+.d .faction-crimes-wrap .crimes-list .item-wrap:first-child:not(.active) .item{
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .faction-crimes-wrap .crimes-list .item-wrap.active:first-child > .item{
+    border-top: 0;
+}
+
+.d .faction-crimes-wrap .crimes-list > li.item-wrap:not(.active) > ul.item:not(.plan-row),
+.d .faction-crimes-wrap .crimes-list > li.item-wrap:not(.active) > ul.item.plan-row,
+.d .faction-crimes-wrap .details-list > li > ul.title,
+.d .faction-crimes-wrap .details-list > li:not(:last-child) > ul.item,
+.d .faction-crimes-wrap.no-crimes .crimes-list .item {
+    border-bottom: 0;
+}
+
+.d .faction-crimes-wrap .title > li.plan-crimes {
+    padding-left: 0;
+    border-left: 0;
+}
+
+.d .faction-crimes-wrap.no-crimes .crimes-list .item > li.plan-crimes {
+    width: 400px;
+    font-weight: normal;
+}
+
+.d .faction-crimes-wrap .title > li.plan-crimes,
+.d .faction-crimes-wrap .crimes-list .item > li.plan-crimes {
+    width: 279px;
+}
+
+.d .faction-crimes-wrap .title > li.plan-crimes,
+.d .faction-crimes-wrap .begin-wrap .title > li.time {
+	white-space: nowrap;
+}
+
+.d .faction-crimes-wrap .title > li.status,
+.d .faction-crimes-wrap .crimes-list .item > li.status {
+    text-align: right;
+    width: 99px;
+}
+
+.d .faction-crimes-wrap .title > li.team,
+.d .faction-crimes-wrap .crimes-list .item > li.team {
+    width: 275px;
+}
+
+.d .faction-crimes-wrap .title > li.details,
+.d .faction-crimes-wrap .crimes-list .item > li.details {
+    width: 47px;
+    text-align: center;
+}
+
+.d .faction-crimes-wrap.no-crimes .title > li.status,
+.d .faction-crimes-wrap.no-crimes .title > li.details,
+.d .faction-crimes-wrap.no-crimes .title > li.team,
+.d .faction-crimes-wrap.no-crimes .crimes-list .item > li.status,
+.d .faction-crimes-wrap.no-crimes .crimes-list .item > li.details,
+.d .faction-crimes-wrap.no-crimes .crimes-list .item > li.team {
+    display: none;
+}
+
+.d .faction-crimes-wrap .title > li.clear,
+.d .faction-crimes-wrap .crimes-list .item > li.clear,
+.d .faction-crimes-wrap .details-list .title > li.clear,
+.d .faction-crimes-wrap .details-list .item > li.clear,
+.d .faction-crimes-wrap .begin-wrap .plans-list .item > li.clear,
+.d .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title > li.clear {
+    padding: 0;
+    margin: 0;
+    font-size: 0;
+    height: 0;
+    border: 0;
+    width: 0;
+    line-height: 0;
+    float: none;
+}
+
+.d .faction-crimes-wrap .crimes-list .item > li.plan-crimes {
+    border-left: 0;
+    font-weight: bold;
+}
+
+.d .faction-crimes-wrap .crimes-cont .plan-wrap {
+    padding: 10px;
+}
+
+.d .faction-crimes-wrap .crimes-cont .plan-wrap .btn-wrap .btn,
+.d .faction-crimes-wrap .crimes-cont .initiate-wrap .btn-wrap .btn,
+.d .faction-crimes-wrap .crimes-cont .begin-plan-wrap .btn-wrap .btn {
+    cursor: pointer;
+}
+
+.d .faction-crimes-wrap.no-crimes .crimes-cont .plan-wrap .btn-wrap.begin,
+.d .faction-crimes-wrap.no-crimes .crimes-cont .begin-plan-wrap .btn-wrap.begin-plan {
+    display: inline-block;
+}
+
+.d .faction-crimes-wrap.no-crimes .crimes-cont .plan-wrap .btn-wrap.new-crime,
+.d .faction-crimes-wrap .crimes-cont .plan-wrap .btn-wrap.begin {
+    display: none;
+}
+
+.d .faction-crimes-wrap .crimes-list .item-wrap .details-wrap,
+.d .faction-crimes-wrap .begin-wrap .crimes-list .item-wrap .plans-wrap {
+    display: none;
+}
+
+.d .faction-crimes-wrap .crimes-list .item-wrap .initiate-wrap {
+    padding: 0 10px 10px 10px;
+}
+
+.d .faction-crimes-wrap .crimes-list .item-wrap .initiate-wrap .cancel a {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.d .faction-crimes-wrap .crimes-list .item-wrap .details-list {
+    padding: 0 0 10px;
+}
+
+.d .faction-crimes-wrap .crimes-list > li.item-wrap.last .details-list {
+    border-bottom: 0;
+}
+
+.d .faction-crimes-wrap .crimes-list .item-wrap.active,
+.d .faction-crimes-wrap .crimes-list .item-wrap.active .details-wrap,
+.d .faction-crimes-wrap .begin-wrap .crimes-list .item-wrap.active,
+.d .faction-crimes-wrap .begin-wrap .crimes-list .item-wrap.active .plans-wrap {
+    background-color: #FFF;
+    background-color: var(--default-bg-panel-active-color);
+    display: block;
+}
+
+.d .faction-crimes-wrap .details-list .title > li {
+    top: 0;
+    left: 0;
+    position: relative;
+}
+
+.d .faction-crimes-wrap .details-list .t-delimiter,
+.d .faction-crimes-wrap .plans-list .t-delimiter{
+    height: 32px;
+    width: 2px;
+    position: absolute;
+    top: 0;
+    left: -1px;
+}
+
+.d .faction-crimes-wrap .details-list .title > li,
+.d .faction-crimes-wrap .details-list .item > li {
+    border-left: 1px solid #CCC;
+	border-left-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .faction-crimes-wrap .details-list .title > li.member,
+.d .faction-crimes-wrap .details-list .item > li.member {
+    border-left: 0;
+    width: 399px;
+}
+
+.d .faction-crimes-wrap .details-list .title > li.level,
+.d .faction-crimes-wrap .details-list .item > li.level {
+    width: 275px;
+    text-align: right;
+}
+
+.d .faction-crimes-wrap .details-list .title > li.stat,
+.d .faction-crimes-wrap .details-list .item > li.stat {
+
+    width: 47px;
+    text-align: center;
+}
+
+.d .faction-crimes-wrap .details-list .item > li {
+    line-height: 12px;
+}
+
+.d .faction-crimes-wrap .details-list .title > li {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-weight: bold;
+}
+
+.d .faction-crimes-wrap .mailing-wrap .title {
+    text-transform: uppercase;
+    font-size:24px;
+    line-height: 24px;
+    font-weight:bold;
+    padding: 10px 10px 5px 10px;
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .faction-crimes-wrap .mailing-wrap.success .title {
+    text-shadow: 0 0 5px rgba(163, 217, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 1);
+    text-shadow: var(--faction-crimes-blackmailing-success-title-text-shadow);
+    color:#85B200;
+}
+
+.d .faction-crimes-wrap .mailing-wrap.default .title {
+    text-shadow: 0 0 5px rgba(217, 109, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 1);
+    text-shadow: var(--faction-crimes-blackmailing-default-title-text-shadow);
+    color: #B25900;
+}
+
+.d .faction-crimes-wrap .mailing-wrap.fail .title {
+    text-shadow: 0 0 5px rgba(255, 64, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 1);
+    text-shadow: var(--faction-crimes-blackmailing-fail-title-text-shadow);
+    color:#D93600;
+}
+
+.d .faction-crimes-wrap .mailing-wrap .title .status-icon {
+    width: 26px;
+    height: 31px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -5px;
+    background: url(/images/v2/faction/crimes/success_failure.png) 0 0 no-repeat;
+}
+
+.d .faction-crimes-wrap .mailing-wrap.success .title .status-icon {
+    background-position: 0 -31px;
+}
+
+.d .faction-crimes-wrap .mailing-wrap.fail .title .status-icon {
+    background-position: 0 0;
+}
+
+.d .faction-crimes-wrap .mailing-wrap.default .title .status-icon {
+    background-position: 0 -62px;
+}
+
+.d .faction-crimes-wrap .mailing-wrap .info {
+    padding: 10px;
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+}
+.d .faction-crimes-wrap .mailing-wrap .plan-again {
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    padding: 10px;
+}
+
+.d .faction-crimes-wrap .mailing-wrap .plan-again .again-btn {
+    max-width: 120px;
+    display: inline-block;
+}
+
+.d .faction-crimes-wrap .mailing-wrap .plan-again .again-btn .btn {
+    padding: 0 15px 0 10px;
+    cursor: pointer;
+}
+
+.d .faction-crimes-wrap .mailing-wrap .info .list {
+    padding-left: 15px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 1);
+    text-shadow: var(--faction-crimes-blackmailing-text-shadow);
+    list-style-type: decimal;
+}
+
+.d .faction-crimes-wrap .mailing-wrap .info .list > li {
+    line-height: 16px;
+}
+
+.d .faction-crimes-wrap .mailing-wrap .info .make-wrap {
+    padding-top: 10px;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 1);
+    text-shadow: var(--faction-crimes-blackmailing-text-shadow);
+}
+
+.d .faction-crimes-wrap .mailing-wrap.success .info .make-wrap {
+    color: #678C00;
+}
+
+.d .faction-crimes-wrap .mailing-wrap.fail .info .make-wrap {
+    color: #D93600;
+}
+
+.d .faction-crimes-wrap .mailing-wrap.default .info .make-wrap {
+    color: #B25900;
+}
+
+.d .faction-crimes-wrap .mailing-wrap .info .make-wrap p {
+    line-height: 16px;
+}
+
+.d .faction-crimes-wrap span.d-hide,
+.d .faction-crimes-wrap div.d-hide {
+    display: none;
+}
+
+.d .faction-crimes-wrap span.t-hide {
+    display: inline;
+}
+
+.d .faction-crimes-wrap div.t-hide {
+    display: block;
+}
+
+.d .faction-crimes-wrap .begin-wrap .crimes-list {
+    border-bottom: 0;
+}
+
+.d .faction-crimes-wrap .begin-wrap .title > li,
+.d .faction-crimes-wrap .begin-wrap .crimes-list .item > li {
+    text-align: right;
+}
+
+.d .faction-crimes-wrap .begin-wrap .title > li.plan-crimes,
+.d .faction-crimes-wrap .begin-wrap .crimes-list .item > li.plan-crimes {
+    width: 280px;
+    text-align: left;
+}
+
+.d .faction-crimes-wrap .begin-wrap .title > li.people,
+.d .faction-crimes-wrap .begin-wrap .crimes-list .item > li.people {
+    width: 40px;
+}
+
+.d .faction-crimes-wrap .begin-wrap .title > li.time,
+.d .faction-crimes-wrap .begin-wrap .crimes-list .item > li.time {
+    width: 38px;
+}
+
+.d .faction-crimes-wrap .begin-wrap .title > li.r-gains,
+.d .faction-crimes-wrap .begin-wrap .crimes-list .item > li.r-gains {
+    width: 89px;
+}
+
+.d .faction-crimes-wrap .begin-wrap .title > li.c-gains,
+.d .faction-crimes-wrap .begin-wrap .crimes-list .item > li.c-gains {
+    width: 164px;
+}
+
+.d .faction-crimes-wrap .begin-wrap .title > li.act,
+.d .faction-crimes-wrap .begin-wrap .crimes-list .item > li.act {
+    width: 46px;
+    float: right;
+    text-align: center;
+}
+
+.d .faction-crimes-wrap .begin-wrap .plans-wrap .plans-list .item {
+	border-top: 0;
+}
+
+.d .faction-crimes-wrap .begin-wrap .plans-list .item > li {
+	margin: 0;
+	padding: 0 10px;
+	line-height: 30px;
+	height: 30px;
+	border-left-width: 1px;
+    position: relative;
+}
+
+.d .faction-crimes-wrap .begin-wrap .plans-list .item > li:first-child {
+	border-left-width: 0;
+}
+
+.d .faction-crimes-wrap .plans-list .item > li.member {
+	text-align: left;
+}
+
+.d .faction-crimes-wrap .begin-wrap .plans-wrap .scrollbar-wrap {
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .faction-crimes-wrap .begin-wrap .plans-wrap .begin-plan-wrap {
+	padding: 10px;
+}
+
+.d .faction-crimes-wrap .begin-wrap .crimes-list > li.item-wrap.last .begin-plan-wrap,
+.d .faction-crimes-wrap .begin-wrap .crimes-list > li.item-wrap.last .item.plan-row {
+	border-bottom: 0;
+}
+
+.d .faction-crimes-wrap .begin-wrap .crimes-list > li.item-wrap.active.last .item.plan-row {
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .faction-crimes-wrap .begin-wrap .plans-wrap .info-wrap {
+	line-height: 16px;
+	border-bottom: 0;
+	padding: 10px;
+}
+
+.d .faction-crimes-wrap .begin-wrap .plans-list .item > li.member {
+	width: 280px;
+}
+
+.d .faction-crimes-wrap .begin-wrap .plans-list .item > li.level {
+	width: 99px;
+}
+
+.d .faction-crimes-wrap .begin-wrap .plans-list .item > li.stat {
+	width: 90px;
+}
+
+.d .faction-crimes-wrap .begin-wrap .plans-list .item > li.offences {
+	width: 164px;
+}
+
+.d .faction-crimes-wrap .plan-list-scrollbar .scrollbar.disable + .viewport .plans-list .item > li.offences {
+	width: 164px;
+}
+
+.d .faction-crimes-wrap .begin-wrap .plans-list .item > li.act {
+	width: 45px;
+}
+
+.d .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title,
+.d .faction-crimes-wrap .begin-wrap .plans-list .item > li .checkbox input {
+	display: block;
+}
+
+.d .faction-crimes-wrap .begin-wrap .crimes-list .last .item > li {
+	border-bottom: 0;
+}
+
+.d .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .viewport {
+    overflow: hidden;
+}
+
+.d .faction-crimes-wrap .begin-wrap .title > li {
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 784px) {
+    .r .faction-crimes-wrap .crimes-cont .plan-wrap .btn-wrap,
+    .r .faction-crimes-wrap .crimes-cont .initiate-wrap .btn-wrap,
+    .r .faction-crimes-wrap .crimes-cont .begin-plan-wrap .btn-wrap {
+        display: inline-block;
+    }
+
+    .r .faction-crimes-wrap.no-crimes .title > li.team,
+    .r .faction-crimes-wrap.no-crimes .crimes-list .item > li.team {
+        display: none;
+    }
+
+    .r .faction-crimes-wrap.no-crimes .title > li.plan-crimes,
+    .r .faction-crimes-wrap.no-crimes .crimes-list .item > li.plan-crimes {
+        width: 366px;
+    }
+
+    .r .faction-crimes-wrap .title > li.team,
+    .r .faction-crimes-wrap .crimes-list .item > li.team {
+        display: none;
+    }
+
+    .r .faction-crimes-wrap .title > li.status {
+        width: 42px;
+    }
+
+    .r .faction-crimes-wrap .title > li.details,
+    .r .faction-crimes-wrap .crimes-list .item > li.details {
+        width: 52px;
+    }
+
+    .r .faction-crimes-wrap .crimes-list .item > li.status {
+        width: 52px;
+    }
+
+    .r .faction-crimes-wrap .crimes-list .item > li.status .br {
+        display: block;
+    }
+
+    .r .faction-crimes-wrap .title > li.plan-crimes,
+    .r .faction-crimes-wrap .crimes-list .item > li.plan-crimes {
+        width: 229px;
+    }
+
+    .r .faction-crimes-wrap .crimes-list .item > li.status {
+        font-size: 11px;
+        text-align: center;
+        line-height: 11px;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .r .faction-crimes-wrap .crimes-list .item > li.status .ready {
+        font-size: 12px;
+    }
+
+    .r .faction-crimes-wrap .details-list .title > li.stat,
+    .r .faction-crimes-wrap .details-list .item > li.stat {
+        padding-right: 10px;
+        width: 52px;
+    }
+
+    .r .faction-crimes-wrap .details-list .title > li.level,
+    .r .faction-crimes-wrap .details-list .item > li.level {
+        text-align: center;
+        width: 42px;
+    }
+
+    .r .faction-crimes-wrap .details-list .title > li.member,
+    .r .faction-crimes-wrap .details-list .item > li.member {
+        width: 229px;
+    }
+
+    .r .faction-crimes-wrap span.t-hide,
+    .r .faction-crimes-wrap span.d-hide {
+        display: none;
+    }
+
+    .r .faction-crimes-wrap span.d-hide {
+        display: inline;
+    }
+
+    .r .faction-crimes-wrap div.d-hide {
+        display: block;
+    }
+
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item {
+		border-bottom: 0;
+	}
+
+    .r .faction-crimes-wrap .begin-wrap .crimes-list .item > li {
+        padding: 10px;
+        border-bottom: 0;
+        margin: 0;
+    }
+
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .plans-wrap .item > li {
+		padding: 10px;
+		border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+		margin: 0;
+	}
+
+    .r .faction-crimes-wrap .crimes-list > li.item-wrap:not(.active) > ul.item:not(.plan-row),
+    .r .faction-crimes-wrap .crimes-list > li.item-wrap:not(.active) > ul.item.plan-row,
+    .r .faction-crimes-wrap .details-list > li > ul.title,
+    .r .faction-crimes-wrap .details-list > li:not(:last-child) > ul.item,
+    .r .faction-crimes-wrap.no-crimes .crimes-list .item {
+        border-bottom: 0;
+    }
+
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item > li.clear {
+		padding: 0;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .title > li.act {
+		float: left;
+        width: 30px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item > li.act {
+		float: none;
+        width: 32px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .title > li.time,
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item > li.time {
+		width: 34px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .title > li.people,
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item > li.people {
+		width: 46px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .title > li.plan-crimes,
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item > li.plan-crimes {
+		width: 190px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .title > li.r-gains,
+	.r .faction-crimes-wrap .begin-wrap .title > li.c-gains {
+		display: none;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item > li.people,
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item > li.time {
+		font-weight: bold;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item-wrap .item > li.r-gains,
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item-wrap .item > li.c-gains {
+		width: 366px;
+		border-left: 0;
+		text-align: left;
+		border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+		padding-left: 10px;
+		padding-right: 10px;
+		margin-left: 0;
+		margin-right: 0;
+		display: none;
+	}
+
+    .r .faction-crimes-wrap .begin-wrap .crimes-list .item-wrap .item > li.r-gains {
+        border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    }
+
+	.r .faction-crimes-wrap .begin-wrap .item-wrap.active .item > li.r-gains,
+	.r .faction-crimes-wrap .begin-wrap .item-wrap.active .item > li.c-gains {
+		display: block;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .viewport {
+		overflow: visible;
+		border: 0;
+		height: auto;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .overview {
+		position: static;
+        padding: 0;
+	}
+
+	.r .faction-crimes-wrap .plan-list-scrollbar .scrollbar.disable + .viewport .plans-list .item > li.offences {
+		width: 126px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plans-list .item > li {
+		line-height: 14px;
+		height: 14px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plans-list .item > li.stat {
+		display: none;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title {
+		display: block;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title > li {
+		top: 0;
+		left: 0;
+		position: relative;
+		text-align: left;
+		border-left-width: 1px;
+		border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+		padding: 10px;
+		line-height: 14px;
+		height: 14px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title > li .t-delimiter {
+		height: 30px;
+		width: 6px;
+		position: absolute;
+		left: -4px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title > li:first-child .t-delimiter {
+		display: none;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title > li:first-child {
+		border-left: 0;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plans-list .item > li.member,
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title > li.member {
+		width: 119px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plans-list .item > li.level,
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title > li.level {
+		text-align: center;
+		width: 25px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plans-list .item > li.offences,
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title > li.offences {
+		width: 126px;
+        text-align: right;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plans-list .item > li.act,
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title > li.act {
+		width: 37px;
+		padding-right: 5px;
+        text-align: center;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .plans-wrap .info-wrap {
+		padding-left: 10px;
+		padding-right: 10px;
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .flex-control-nav {
+		position: static;
+		padding: 15px 0 10px 0;
+		border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+	}
+
+    .r .faction-crimes-wrap .begin-wrap .crimes-list > li.item-wrap.active.last .item.plan-row {
+        border-bottom: 0;
+    }
+}
+
+
+@media screen and (max-width: 386px) {
+    .r .faction-crimes-wrap.no-crimes .title > li.plan-crimes,
+    .r .faction-crimes-wrap.no-crimes .crimes-list .item > li.plan-crimes {
+        width: 300px;
+    }
+
+    .r .faction-crimes-wrap .title > li.plan-crimes,
+    .r .faction-crimes-wrap .crimes-list .item > li.plan-crimes {
+        width: 163px;
+    }
+
+    .r .faction-crimes-wrap .details-list .title > li.member,
+    .r .faction-crimes-wrap .details-list .item > li.member {
+        width: 163px;
+    }
+
+	.r .faction-crimes-wrap .begin-wrap .title > li.plan-crimes,
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item > li.plan-crimes {
+		width: 124px;
+	}
+
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item-wrap .item > li.r-gains,
+	.r .faction-crimes-wrap .begin-wrap .crimes-list .item-wrap .item > li.c-gains {
+		width: 300px;
+	}
+
+    .r .faction-crimes-wrap .begin-wrap .plans-list .item > li.offences,
+    .r .faction-crimes-wrap .plan-list-scrollbar .scrollbar.disable + .viewport .plans-list .item > li.offences,
+	.r .faction-crimes-wrap .begin-wrap .plan-list-scrollbar .title > li.offences {
+		width: 60px;
+	}
+
+}

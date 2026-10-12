@@ -1,0 +1,2435 @@
+.d .skill-tree .circle-box [class*="stu-"][class*="-icon"] {
+    margin: 2px;
+    background-color: #333;
+    border-radius: 20px;
+    box-shadow: inset 0 0 2px #000;
+}
+
+.d .skill-tree .circle-box {
+    height: 24px;
+    width: 24px;
+    border-radius: 24px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.65);
+    cursor: pointer;
+}
+
+.d .skill-tree .upgrade-disabled .circle-box {
+    cursor: default;
+}
+
+.d .skill-tree .circle-box.active {
+    margin: -3px;
+    height: 30px;
+    width: 30px;
+}
+
+.d .skill-tree .snake-top .circle-box,
+.d .skill-tree .snake-bottom .circle-box {
+    display: inline-block;
+}
+
+.d .skill-tree .circle-box.active [class*="stu-"][class*="-icon"] {
+    margin: 5px;
+}
+
+.d .skill-tree .stu-progress.circle-box {
+    position: relative;
+    z-index: 0;
+}
+
+.d .skill-tree .stu-locked.circle-box,
+.d .skill-tree .stu-owned.blocked.circle-box,
+.d .skill-tree .stu-in-progress.circle-box,
+.d .skill-tree .stu-no-respect.circle-box,
+.d .skill-tree .stu-available.circle-box,
+.d .skill-tree .stu-owned.circle-box {
+    position: relative;
+    z-index: 2;
+}
+
+.d .skill-tree .stu-locked.circle-box,
+.d .skill-tree .stu-in-progress.circle-box:before,
+.d .skill-tree .stu-in-progress.circle-box:after {
+    background-image: linear-gradient(180deg, #777777 0%, #444444 100%);
+}
+
+.d .skill-tree.war-mode .stu-owned.circle-box {
+    background-image: linear-gradient(rgb(255, 92, 38) 0%, rgb(178, 45, 0) 100%);
+}
+
+.d .skill-tree .stu-in-progress.circle-box {
+    background-image: linear-gradient(rgb(217, 163, 0) 0%, rgb(140, 105, 0) 100%);
+}
+
+.d .skill-tree .stu-no-respect.circle-box {
+    background-image: linear-gradient(rgb(23, 132, 132) 0%, rgb(23, 77, 77) 100%);
+}
+
+.d .skill-tree .stu-available.circle-box {
+    background-image: linear-gradient(180deg, #00D9D9 0%, #006666 100%);
+}
+
+.d .skill-tree .stu-owned.circle-box {
+    background-image: linear-gradient(rgb(133, 178, 0) 0%, rgb(76, 102, 0) 100%);
+}
+
+.d .skill-tree .stu-owned.blocked.circle-box {
+    background-image: linear-gradient(180deg, #B197FC 0%, #5F3DC4 100%);
+}
+
+.d .skill-tree .stu-locked.active.circle-box [class*="-icon"]:after,
+.d .skill-tree .stu-owned.blocked.active.circle-box [class*="-icon"]:after,
+.d .skill-tree .stu-in-progress.active.circle-box [class*="-icon"]:after,
+.d .skill-tree .stu-no-respect.active.circle-box [class*="-icon"]:after,
+.d .skill-tree .stu-available.active.circle-box [class*="-icon"]:after,
+.d .skill-tree .stu-owned.active.circle-box [class*="-icon"]:after {
+    content: "";
+    display: block;
+    height: 48px;
+    width: 48px;
+    position: absolute;
+    top: -9px;
+    left: -9px;
+    background: url(/images/v2/faction/skill_tree/selected_icon.svg) left top no-repeat;
+    border-radius: 48px;
+}
+
+.d .skill-tree .stu-owned.blocked.active.circle-box [class*="-icon"]:after,
+.d .skill-tree.war-mode .stu-owned.blocked.active.circle-box [class*="-icon"]:after {
+    background-position: 0 0;
+}
+
+.d .skill-tree .stu-in-progress.active.circle-box [class*="-icon"]:after {
+    background-position: -58px 0;
+}
+
+.d .skill-tree .stu-owned.active.circle-box [class*="-icon"]:after {
+    background-position: -116px 0;
+}
+
+.d .skill-tree .stu-no-respect.active.circle-box [class*="-icon"]:after,
+.d .skill-tree .stu-available.active.circle-box [class*="-icon"]:after {
+    background-position: -174px 0;
+}
+
+.d .skill-tree .stu-locked.active.circle-box [class*="-icon"]:after {
+    background-position: -232px 0;
+}
+
+.d .skill-tree.war-mode .stu-owned.active.circle-box [class*="-icon"]:after {
+    background-position: -290px 0;
+}
+
+.d .skill-tree .stu-in-progress.circle-box:before,
+.d .skill-tree .stu-in-progress.circle-box:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: #2E2E2E;
+}
+
+.d .skill-tree .stu-in-progress.circle-box:before {
+    border-radius: 24px 0 0 24px;
+    left: 0;
+    right: 50%;
+    transform: rotate(0deg);
+    transform-origin: center right;
+    z-index: -3;
+}
+
+.d .skill-tree .stu-in-progress.circle-box:after {
+    border-radius: 0 24px 24px 0;
+    left: 50%;
+    right: 0;
+    transform: rotate(0deg);
+    transform-origin: center left;
+    z-index: -2;
+}
+
+.d .skill-tree .stu-in-progress.pr0.circle-box:before,
+.d .skill-tree .stu-in-progress.pr50.circle-box:after {
+    transform: rotate(0deg);
+}
+
+.d .skill-tree .stu-in-progress.pr1.circle-box:before,
+.d .skill-tree .stu-in-progress.pr51.circle-box:after {
+    transform: rotate(4deg);
+}
+
+.d .skill-tree .stu-in-progress.pr2.circle-box:before,
+.d .skill-tree .stu-in-progress.pr52.circle-box:after {
+    transform: rotate(7deg);
+}
+
+.d .skill-tree .stu-in-progress.pr3.circle-box:before,
+.d .skill-tree .stu-in-progress.pr53.circle-box:after {
+    transform: rotate(11deg);
+}
+
+.d .skill-tree .stu-in-progress.pr4.circle-box:before,
+.d .skill-tree .stu-in-progress.pr54.circle-box:after {
+    transform: rotate(14deg);
+}
+
+.d .skill-tree .stu-in-progress.pr5.circle-box:before,
+.d .skill-tree .stu-in-progress.pr55.circle-box:after {
+    transform: rotate(18deg);
+}
+
+.d .skill-tree .stu-in-progress.pr6.circle-box:before,
+.d .skill-tree .stu-in-progress.pr56.circle-box:after {
+    transform: rotate(22deg);
+}
+
+.d .skill-tree .stu-in-progress.pr7.circle-box:before,
+.d .skill-tree .stu-in-progress.pr57.circle-box:after {
+    transform: rotate(25deg);
+}
+
+.d .skill-tree .stu-in-progress.pr8.circle-box:before,
+.d .skill-tree .stu-in-progress.pr58.circle-box:after {
+    transform: rotate(29deg);
+}
+
+.d .skill-tree .stu-in-progress.pr9.circle-box:before,
+.d .skill-tree .stu-in-progress.pr59.circle-box:after {
+    transform: rotate(32deg);
+}
+
+.d .skill-tree .stu-in-progress.pr10.circle-box:before,
+.d .skill-tree .stu-in-progress.pr60.circle-box:after {
+    transform: rotate(36deg);
+}
+
+.d .skill-tree .stu-in-progress.pr11.circle-box:before,
+.d .skill-tree .stu-in-progress.pr61.circle-box:after {
+    transform: rotate(40deg);
+}
+
+.d .skill-tree .stu-in-progress.pr12.circle-box:before,
+.d .skill-tree .stu-in-progress.pr62.circle-box:after {
+    transform: rotate(43deg);
+}
+
+.d .skill-tree .stu-in-progress.pr13.circle-box:before,
+.d .skill-tree .stu-in-progress.pr63.circle-box:after {
+    transform: rotate(47deg);
+}
+
+.d .skill-tree .stu-in-progress.pr14.circle-box:before,
+.d .skill-tree .stu-in-progress.pr64.circle-box:after {
+    transform: rotate(50deg);
+}
+
+.d .skill-tree .stu-in-progress.pr15.circle-box:before,
+.d .skill-tree .stu-in-progress.pr65.circle-box:after {
+    transform: rotate(54deg);
+}
+
+.d .skill-tree .stu-in-progress.pr16.circle-box:before,
+.d .skill-tree .stu-in-progress.pr66.circle-box:after {
+    transform: rotate(58deg);
+}
+
+.d .skill-tree .stu-in-progress.pr17.circle-box:before,
+.d .skill-tree .stu-in-progress.pr67.circle-box:after {
+    transform: rotate(61deg);
+}
+
+.d .skill-tree .stu-in-progress.pr18.circle-box:before,
+.d .skill-tree .stu-in-progress.pr68.circle-box:after {
+    transform: rotate(65deg);
+}
+
+.d .skill-tree .stu-in-progress.pr19.circle-box:before,
+.d .skill-tree .stu-in-progress.pr69.circle-box:after {
+    transform: rotate(68deg);
+}
+
+.d .skill-tree .stu-in-progress.pr20.circle-box:before,
+.d .skill-tree .stu-in-progress.pr70.circle-box:after {
+    transform: rotate(72deg);
+}
+
+.d .skill-tree .stu-in-progress.pr21.circle-box:before,
+.d .skill-tree .stu-in-progress.pr71.circle-box:after {
+    transform: rotate(76deg);
+}
+
+.d .skill-tree .stu-in-progress.pr22.circle-box:before,
+.d .skill-tree .stu-in-progress.pr72.circle-box:after {
+    transform: rotate(79deg);
+}
+
+.d .skill-tree .stu-in-progress.pr23.circle-box:before,
+.d .skill-tree .stu-in-progress.pr73.circle-box:after {
+    transform: rotate(83deg);
+}
+
+.d .skill-tree .stu-in-progress.pr24.circle-box:before,
+.d .skill-tree .stu-in-progress.pr74.circle-box:after {
+    transform: rotate(86deg);
+}
+
+.d .skill-tree .stu-in-progress.pr25.circle-box:before,
+.d .skill-tree .stu-in-progress.pr75.circle-box:after {
+    transform: rotate(90deg);
+}
+
+.d .skill-tree .stu-in-progress.pr26.circle-box:before,
+.d .skill-tree .stu-in-progress.pr76.circle-box:after {
+    transform: rotate(94deg);
+}
+
+.d .skill-tree .stu-in-progress.pr27.circle-box:before,
+.d .skill-tree .stu-in-progress.pr77.circle-box:after {
+    transform: rotate(97deg);
+}
+
+.d .skill-tree .stu-in-progress.pr28.circle-box:before,
+.d .skill-tree .stu-in-progress.pr78.circle-box:after {
+    transform: rotate(101deg);
+}
+
+.d .skill-tree .stu-in-progress.pr29.circle-box:before,
+.d .skill-tree .stu-in-progress.pr79.circle-box:after {
+    transform: rotate(104deg);
+}
+
+.d .skill-tree .stu-in-progress.pr30.circle-box:before,
+.d .skill-tree .stu-in-progress.pr80.circle-box:after {
+    transform: rotate(108deg);
+}
+
+.d .skill-tree .stu-in-progress.pr31.circle-box:before,
+.d .skill-tree .stu-in-progress.pr81.circle-box:after {
+    transform: rotate(112deg);
+}
+
+.d .skill-tree .stu-in-progress.pr32.circle-box:before,
+.d .skill-tree .stu-in-progress.pr82.circle-box:after {
+    transform: rotate(115deg);
+}
+
+.d .skill-tree .stu-in-progress.pr33.circle-box:before,
+.d .skill-tree .stu-in-progress.pr83.circle-box:after {
+    transform: rotate(119deg);
+}
+
+.d .skill-tree .stu-in-progress.pr34.circle-box:before,
+.d .skill-tree .stu-in-progress.pr84.circle-box:after {
+    transform: rotate(122deg);
+}
+
+.d .skill-tree .stu-in-progress.pr35.circle-box:before,
+.d .skill-tree .stu-in-progress.pr85.circle-box:after {
+    transform: rotate(126deg);
+}
+
+.d .skill-tree .stu-in-progress.pr36.circle-box:before,
+.d .skill-tree .stu-in-progress.pr86.circle-box:after {
+    transform: rotate(130deg);
+}
+
+.d .skill-tree .stu-in-progress.pr37.circle-box:before,
+.d .skill-tree .stu-in-progress.pr87.circle-box:after {
+    transform: rotate(133deg);
+}
+
+.d .skill-tree .stu-in-progress.pr38.circle-box:before,
+.d .skill-tree .stu-in-progress.pr88.circle-box:after {
+    transform: rotate(137deg);
+}
+
+.d .skill-tree .stu-in-progress.pr39.circle-box:before,
+.d .skill-tree .stu-in-progress.pr89.circle-box:after {
+    transform: rotate(140deg);
+}
+
+.d .skill-tree .stu-in-progress.pr40.circle-box:before,
+.d .skill-tree .stu-in-progress.pr90.circle-box:after {
+    transform: rotate(144deg);
+}
+
+.d .skill-tree .stu-in-progress.pr41.circle-box:before,
+.d .skill-tree .stu-in-progress.pr91.circle-box:after {
+    transform: rotate(148deg);
+}
+
+.d .skill-tree .stu-in-progress.pr42.circle-box:before,
+.d .skill-tree .stu-in-progress.pr92.circle-box:after {
+    transform: rotate(151deg);
+}
+
+.d .skill-tree .stu-in-progress.pr43.circle-box:before,
+.d .skill-tree .stu-in-progress.pr93.circle-box:after {
+    transform: rotate(155deg);
+}
+
+.d .skill-tree .stu-in-progress.pr44.circle-box:before,
+.d .skill-tree .stu-in-progress.pr94.circle-box:after {
+    transform: rotate(158deg);
+}
+
+.d .skill-tree .stu-in-progress.pr45.circle-box:before,
+.d .skill-tree .stu-in-progress.pr95.circle-box:after {
+    transform: rotate(162deg);
+}
+
+.d .skill-tree .stu-in-progress.pr46.circle-box:before,
+.d .skill-tree .stu-in-progress.pr96.circle-box:after {
+    transform: rotate(166deg);
+}
+
+.d .skill-tree .stu-in-progress.pr47.circle-box:before,
+.d .skill-tree .stu-in-progress.pr97.circle-box:after {
+    transform: rotate(169deg);
+}
+
+.d .skill-tree .stu-in-progress.pr48.circle-box:before,
+.d .skill-tree .stu-in-progress.pr98.circle-box:after {
+    transform: rotate(173deg);
+}
+
+.d .skill-tree .stu-in-progress.pr49.circle-box:before,
+.d .skill-tree .stu-in-progress.pr99.circle-box:after {
+    transform: rotate(176deg);
+}
+
+.d .skill-tree .stu-in-progress.pr50.circle-box:before,
+.d .skill-tree .stu-in-progress.pr51.circle-box:before,
+.d .skill-tree .stu-in-progress.pr52.circle-box:before,
+.d .skill-tree .stu-in-progress.pr53.circle-box:before,
+.d .skill-tree .stu-in-progress.pr54.circle-box:before,
+.d .skill-tree .stu-in-progress.pr55.circle-box:before,
+.d .skill-tree .stu-in-progress.pr56.circle-box:before,
+.d .skill-tree .stu-in-progress.pr57.circle-box:before,
+.d .skill-tree .stu-in-progress.pr58.circle-box:before,
+.d .skill-tree .stu-in-progress.pr59.circle-box:before,
+.d .skill-tree .stu-in-progress.pr60.circle-box:before,
+.d .skill-tree .stu-in-progress.pr61.circle-box:before,
+.d .skill-tree .stu-in-progress.pr62.circle-box:before,
+.d .skill-tree .stu-in-progress.pr63.circle-box:before,
+.d .skill-tree .stu-in-progress.pr64.circle-box:before,
+.d .skill-tree .stu-in-progress.pr65.circle-box:before,
+.d .skill-tree .stu-in-progress.pr66.circle-box:before,
+.d .skill-tree .stu-in-progress.pr67.circle-box:before,
+.d .skill-tree .stu-in-progress.pr68.circle-box:before,
+.d .skill-tree .stu-in-progress.pr69.circle-box:before,
+.d .skill-tree .stu-in-progress.pr70.circle-box:before,
+.d .skill-tree .stu-in-progress.pr71.circle-box:before,
+.d .skill-tree .stu-in-progress.pr72.circle-box:before,
+.d .skill-tree .stu-in-progress.pr73.circle-box:before,
+.d .skill-tree .stu-in-progress.pr74.circle-box:before,
+.d .skill-tree .stu-in-progress.pr75.circle-box:before,
+.d .skill-tree .stu-in-progress.pr76.circle-box:before,
+.d .skill-tree .stu-in-progress.pr77.circle-box:before,
+.d .skill-tree .stu-in-progress.pr78.circle-box:before,
+.d .skill-tree .stu-in-progress.pr79.circle-box:before,
+.d .skill-tree .stu-in-progress.pr80.circle-box:before,
+.d .skill-tree .stu-in-progress.pr81.circle-box:before,
+.d .skill-tree .stu-in-progress.pr82.circle-box:before,
+.d .skill-tree .stu-in-progress.pr83.circle-box:before,
+.d .skill-tree .stu-in-progress.pr84.circle-box:before,
+.d .skill-tree .stu-in-progress.pr85.circle-box:before,
+.d .skill-tree .stu-in-progress.pr86.circle-box:before,
+.d .skill-tree .stu-in-progress.pr87.circle-box:before,
+.d .skill-tree .stu-in-progress.pr88.circle-box:before,
+.d .skill-tree .stu-in-progress.pr89.circle-box:before,
+.d .skill-tree .stu-in-progress.pr90.circle-box:before,
+.d .skill-tree .stu-in-progress.pr91.circle-box:before,
+.d .skill-tree .stu-in-progress.pr92.circle-box:before,
+.d .skill-tree .stu-in-progress.pr93.circle-box:before,
+.d .skill-tree .stu-in-progress.pr94.circle-box:before,
+.d .skill-tree .stu-in-progress.pr95.circle-box:before,
+.d .skill-tree .stu-in-progress.pr96.circle-box:before,
+.d .skill-tree .stu-in-progress.pr97.circle-box:before,
+.d .skill-tree .stu-in-progress.pr98.circle-box:before,
+.d .skill-tree .stu-in-progress.pr99.circle-box:before {
+    transform: rotate(0deg);
+    background-image: linear-gradient(rgb(217,163,0) 0%,rgb(140,105,0) 100%);
+    z-index: -1;
+}
+
+.d .skill-tree .stu-in-progress.pr100.circle-box:before,
+.d .skill-tree .stu-in-progress.pr100.circle-box:after {
+    display: none;
+}
+
+.d .skill-tree #popup-branch .circle-box.branch-upgrade {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.d .skill-tree .branch-upgrade {
+    cursor: pointer;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+.d .skill-tree .branch-upgrade.not-owned {
+    cursor: default;
+}
+
+.d .skill-tree .branch-line.branch-empty .circle-box {
+    cursor: pointer;
+}
+
+.skill-tree [class*="sts-"][class*="-icon"] {
+    display: inline-block;
+    vertical-align: middle;
+    height: 80px;
+    width: 80px;
+}
+
+.d .skill-tree .branch-icon {
+    height: 100%;
+    width: 100%;
+    display: block;
+    cursor: pointer;
+}
+
+.d .skill-tree .branch-icon:before,
+.d .skill-tree .branch-icon:after,
+.d .skill-tree #stu-confirmation .branch-upgrade:before,
+.d .skill-tree #stu-confirmation .branch-upgrade:hover:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.d .skill-tree .branch-icon:before,
+.d .skill-tree #stu-confirmation .branch-upgrade:before {
+    height: 80px;
+    width: 80px;
+    background-image: url(/images/v2/faction/skill_tree/tier_unlocks.svg);
+    background-repeat: no-repeat;
+    will-change: contents;
+    z-index: 1;
+}
+
+.d .skill-tree .core.active .branch-box.active .branch-icon:before,
+.d .skill-tree .core.active .branch-box .branch-icon:hover:before {
+    opacity: 1;
+}
+
+.d .skill-tree .core.active .branch-box .branch-icon:before {
+    opacity: 0.6;
+}
+
+.d .skill-tree .branch-box .branch-icon:hover:after,
+.d .skill-tree .branch-box.active .branch-icon:after,
+.d .skill-tree #stu-confirmation .branch-upgrade:hover:after {
+    height: 70px;
+    width: 70px;
+    top: 10px;
+    left: 5px;
+    background: radial-gradient(closest-side at 50% 50%, #A9E34B40 0%, #A9E34B00 100%) 0 0 no-repeat;
+    z-index: 0;
+}
+
+.d .skill-tree .branch-box.no-upgrades .branch-icon:hover:after,
+.d .skill-tree .branch-box.no-upgrades.active .branch-icon:after,
+.d .skill-tree.war-mode .branch-box.no-upgrades .branch-icon:hover:after,
+.d .skill-tree.war-mode .branch-box.no-upgrades.active .branch-icon:after {
+    background: radial-gradient(closest-side at 50% 50%, #3BC9DB33 0%, #3BC9DB00 100%) 0 0 no-repeat;
+}
+
+.d .skill-tree.war-mode .branch-box .branch-icon:hover:after,
+.d .skill-tree.war-mode .branch-box.active .branch-icon:after,
+.d .skill-tree.war-mode #stu-confirmation .branch-upgrade:hover:after {
+    background: radial-gradient(closest-side at 50% 50%, #FF5C2640 0%, #FF5C2600 100%) 0 0 no-repeat;
+}
+
+.d .skill-tree .sts-criminality-icon .branch-icon:before,
+.d .skill-tree #stu-confirmation .sts-criminality-icon:before {
+    background-position: -10px -8px;
+}
+
+.d .skill-tree.war-mode .sts-criminality-icon .branch-icon:before,
+.d .skill-tree.war-mode #stu-confirmation .sts-criminality-icon:before {
+    background-position: -10px -208px;
+}
+
+.d .skill-tree .sts-fortitude-icon .branch-icon:before,
+.d .skill-tree #stu-confirmation .sts-fortitude-icon:before {
+    background-position: -104px -8px;
+}
+
+.d .skill-tree.war-mode .sts-fortitude-icon .branch-icon:before,
+.d .skill-tree.war-mode #stu-confirmation .sts-fortitude-icon:before {
+    background-position: -104px -208px;
+}
+
+.d .skill-tree .sts-voracity-icon .branch-icon:before,
+.d .skill-tree #stu-confirmation .sts-voracity-icon:before {
+    background-position: -210px -8px;
+}
+
+.d .skill-tree.war-mode .sts-voracity-icon .branch-icon:before,
+.d .skill-tree.war-mode #stu-confirmation .sts-voracity-icon:before {
+    background-position: -210px -208px;
+}
+
+.d .skill-tree .sts-toleration-icon .branch-icon:before,
+.d .skill-tree #stu-confirmation .sts-toleration-icon:before {
+    background-position: -310px -8px;
+}
+
+
+.d .skill-tree.war-mode .sts-toleration-icon .branch-icon:before,
+.d .skill-tree.war-mode #stu-confirmation .sts-toleration-icon:before {
+    background-position: -310px -208px;
+}
+
+.d .skill-tree .sts-excursion-icon .branch-icon:before,
+.d .skill-tree #stu-confirmation .sts-excursion-icon:before {
+    background-position: -410px -8px;
+}
+
+.d .skill-tree.war-mode .sts-excursion-icon .branch-icon:before,
+.d .skill-tree.war-mode #stu-confirmation .sts-excursion-icon:before {
+    background-position: -410px -208px;
+}
+
+.d .skill-tree .sts-steadfast-icon .branch-icon:before,
+.d .skill-tree #stu-confirmation .sts-steadfast-icon:before {
+    background-position: -510px -8px;
+}
+
+.d .skill-tree.war-mode .sts-steadfast-icon .branch-icon:before,
+.d .skill-tree.war-mode #stu-confirmation .sts-steadfast-icon:before {
+    background-position: -510px -208px;
+}
+
+.d .skill-tree .sts-aggression-icon .branch-icon:before,
+.d .skill-tree #stu-confirmation .sts-aggression-icon:before {
+    background-position: -610px -8px;
+}
+
+.d .skill-tree.war-mode .sts-aggression-icon .branch-icon:before,
+.d .skill-tree.war-mode #stu-confirmation .sts-aggression-icon:before {
+    background-position: -610px -208px;
+}
+
+.d .skill-tree .sts-suppression-icon .branch-icon:before,
+.d .skill-tree #stu-confirmation .sts-suppression-icon:before {
+    background-position: -710px -8px;
+}
+
+.d .skill-tree.war-mode .sts-suppression-icon .branch-icon:before,
+.d .skill-tree.war-mode #stu-confirmation .sts-suppression-icon:before {
+    background-position: -710px -208px;
+}
+
+.d .skill-tree .owned.sts-criminality-icon .branch-icon:before {
+    background-position: -10px -108px;
+}
+
+.d .skill-tree .owned.sts-fortitude-icon .branch-icon:before {
+    background-position: -104px -108px;
+}
+
+.d .skill-tree .owned.sts-voracity-icon .branch-icon:before {
+    background-position: -210px -108px;
+}
+
+.d .skill-tree .owned.sts-toleration-icon .branch-icon:before {
+    background-position: -310px -108px;
+}
+
+.d .skill-tree .owned.sts-excursion-icon .branch-icon:before {
+    background-position: -410px -108px;
+}
+
+.d .skill-tree .owned.sts-steadfast-icon .branch-icon:before {
+    background-position: -510px -108px;
+}
+
+.d .skill-tree .owned.sts-aggression-icon .branch-icon:before {
+    background-position: -610px -108px;
+}
+
+.d .skill-tree .owned.sts-suppression-icon .branch-icon:before {
+    background-position: -710px -108px;
+}
+
+.d .skill-tree .no-upgrades.sts-criminality-icon .branch-icon:before {
+    background-position: -10px -308px;
+}
+
+.d .skill-tree .core.active .no-upgrades.sts-criminality-icon .branch-icon:before {
+    background-position: -10px -308px;
+}
+
+.d .skill-tree .no-upgrades.sts-fortitude-icon .branch-icon:before {
+    background-position: -104px -308px;
+}
+
+.d .skill-tree .no-upgrades.sts-voracity-icon .branch-icon:before {
+    background-position: -210px -308px;
+}
+
+.d .skill-tree .no-upgrades.sts-toleration-icon .branch-icon:before {
+    background-position: -310px -308px;
+}
+
+.d .skill-tree .no-upgrades.sts-excursion-icon .branch-icon:before {
+    background-position: -410px -308px;
+}
+
+.d .skill-tree .no-upgrades.sts-steadfast-icon .branch-icon:before {
+    background-position: -510px -308px;
+}
+
+.d .skill-tree .no-upgrades.sts-aggression-icon .branch-icon:before {
+    background-position: -610px -308px;
+}
+
+.d .skill-tree .no-upgrades.sts-suppression-icon .branch-icon:before {
+    background-position: -710px -308px;
+}
+
+.d .skill-tree #stu-confirmation .not-owned.sts-criminality-icon:before {
+    background-position: -10px -108px;
+}
+
+.d .skill-tree #stu-confirmation .not-owned.sts-fortitude-icon:before {
+    background-position: -104px -108px;
+}
+
+.d .skill-tree #stu-confirmation .not-owned.sts-voracity-icon:before {
+    background-position: -210px -108px;
+}
+
+.d .skill-tree #stu-confirmation .not-owned.sts-toleration-icon:before {
+    background-position: -310px -108px;
+}
+
+.d .skill-tree #stu-confirmation .not-owned.sts-excursion-icon:before {
+    background-position: -410px -108px;
+}
+
+.d .skill-tree #stu-confirmation .not-owned.sts-steadfast-icon:before {
+    background-position: -510px -108px;
+}
+
+.d .skill-tree #stu-confirmation .not-owned.sts-aggression-icon:before {
+    background-position: -610px -108px;
+}
+
+.d .skill-tree #stu-confirmation .not-owned.sts-suppression-icon:before {
+    background-position: -710px -108px;
+}
+
+.d .skill-tree #stu-confirmation .not-owned.branch-upgrade:after,
+.d .skill-tree.war-mode #stu-confirmation .not-owned.branch-upgrade:hover:after {
+    background: none;
+}
+
+/* Skill tree upgrade icons */
+.skill-tree [class*="stu-"][class*="-icon"] {
+    display: inline-block;
+    vertical-align: middle;
+    height: 20px;
+    width: 20px;
+    background: url(/images/v2/faction/skill_tree/upgrade_icons.svg) left top no-repeat;
+    will-change: contents;
+}
+
+.d .skill-tree .stu-locked .stu-weapon-armoury-icon {
+    background-position: -7px -7px;
+}
+
+.d .skill-tree .stu-locked .stu-armour-storage-icon {
+    background-position: -7px -41px;
+}
+
+.d .skill-tree .stu-locked .stu-temporary-icon {
+    background-position: -7px -75px;
+}
+
+.d .skill-tree .stu-locked .stu-medical-icon {
+    background-position: -7px -109px;
+}
+
+.d .skill-tree .stu-locked .stu-booster-icon {
+    background-position: -7px -143px;
+}
+
+.d .skill-tree .stu-locked .stu-drug-icon {
+    background-position: -7px -176px;
+}
+
+.d .skill-tree .stu-locked .stu-points-storage-icon {
+    background-position: -7px -211px;
+}
+
+.d .skill-tree .stu-locked .stu-laboratory-icon {
+    background-position: -7px -245px;
+}
+
+.d .skill-tree .stu-locked .stu-chain-icon {
+    background-position: -7px -278px;
+}
+
+.d .skill-tree .stu-locked .stu-capacity-icon {
+    background-position: -7px -313px;
+}
+
+.d .skill-tree .stu-locked .stu-territory-icon {
+    background-position: -7px -347px;
+}
+
+.d .skill-tree .stu-locked .stu-nerve-icon {
+    background-position: -7px -380px;
+}
+
+.d .skill-tree .stu-locked .stu-crime-bonus-icon {
+    background-position: -7px -414px;
+}
+
+.d .skill-tree .stu-locked .stu-jail-time-icon {
+    background-position: -7px -448px;
+}
+
+.d .skill-tree .stu-locked .stu-bust-nerve-icon {
+    background-position: -7px -482px;
+}
+
+.d .skill-tree .stu-locked .stu-bust-skill-icon {
+    background-position: -7px -517px;
+}
+
+.d .skill-tree .stu-locked .stu-bust-cost-icon {
+    background-position: -7px -551px;
+}
+
+.d .skill-tree .stu-locked .stu-medical-cooldown-icon {
+    background-position: -7px -585px;
+}
+
+.d .skill-tree .stu-locked .stu-revive-cost-icon {
+    background-position: -7px -619px;
+}
+
+.d .skill-tree .stu-locked .stu-hospital-time-icon {
+    background-position: -7px -653px;
+}
+
+.d .skill-tree .stu-locked .stu-life-regeneration-icon {
+    background-position: -7px -687px;
+}
+
+.d .skill-tree .stu-locked .stu-medical-effectiveness-icon {
+    background-position: -7px -721px;
+}
+
+.d .skill-tree .stu-locked .stu-candy-effect-icon {
+    background-position: -7px -754px;
+}
+
+.d .skill-tree .stu-locked .stu-energy-drink-effect-icon {
+    background-position: -7px -789px;
+}
+
+.d .skill-tree .stu-locked .stu-booster-colldown-icon {
+    background-position: -7px -823px;
+}
+
+.d .skill-tree .stu-locked .stu-alcohol-effect-icon {
+    background-position: -7px -857px;
+}
+
+.d .skill-tree .stu-locked .stu-overdose-rate-icon {
+    background-position: -7px -891px;
+}
+
+.d .skill-tree .stu-locked .stu-drug-addiction-icon {
+    background-position: -7px -924px;
+}
+
+.d .skill-tree .stu-locked .stu-side-effects-icon {
+    background-position: -7px -959px;
+}
+
+.d .skill-tree .stu-locked .stu-clean-training-icon {
+    background-position: -7px -993px;
+}
+
+.d .skill-tree .stu-locked .stu-hunting-icon {
+    background-position: -7px -1027px;
+}
+
+.d .skill-tree .stu-locked .stu-cayman-banking-icon {
+    background-position: -7px -1060px;
+}
+
+.d .skill-tree .stu-locked .stu-travel-items-icon {
+    background-position: -7px -1094px;
+}
+
+.d .skill-tree .stu-locked .stu-travel-cost-icon {
+    background-position: -7px -1128px;
+}
+
+.d .skill-tree .stu-locked .stu-rehab-cost-icon {
+    background-position: -7px -1163px;
+}
+
+.d .skill-tree .stu-locked .stu-strength-training-icon {
+    background-position: -7px -1197px;
+}
+
+.d .skill-tree .stu-locked .stu-speed-training-icon {
+    background-position: -7px -1231px;
+}
+
+.d .skill-tree .stu-locked .stu-defence-training-icon {
+    background-position: -7px -1265px;
+}
+
+.d .skill-tree .stu-locked .stu-dexterity-training-icon {
+    background-position: -7px -1299px;
+}
+
+.d .skill-tree .stu-locked .stu-hospitalization-icon {
+    background-position: -7px -1333px;
+}
+
+.d .skill-tree .stu-locked .stu-damage-icon {
+    background-position: -7px -1367px;
+}
+
+.d .skill-tree .stu-locked .stu-strength-icon {
+    background-position: -7px -1400px;
+}
+
+.d .skill-tree .stu-locked .stu-speed-icon {
+    background-position: -7px -1435px;
+}
+
+.d .skill-tree .stu-locked .stu-accuracy-icon {
+    background-position: -7px -1469px;
+}
+
+.d .skill-tree .stu-locked .stu-maximum-life-icon {
+    background-position: -7px -1502px;
+}
+
+.d .skill-tree .stu-locked .stu-defence-icon {
+    background-position: -7px -1536px;
+}
+
+.d .skill-tree .stu-locked .stu-dexterity-icon {
+    background-position: -7px -1571px;
+}
+
+.d .skill-tree .stu-locked .stu-escape-icon {
+    background-position: -7px -1605px;
+}
+
+.d .skill-tree .stu-locked .stu-organized-crime-icon {
+    background-position: -7px -1911px;
+}
+
+.d .skill-tree .stu-locked .stu-consumables-armoury-icon {
+    background-position: -7px -1944px;
+}
+
+.d .skill-tree .stu-locked .stu-utilities-armoury-icon {
+    background-position: -7px -1979px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-weapon-armoury-icon {
+    background-position: -41px -7px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-armour-storage-icon {
+    background-position: -41px -41px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-temporary-icon {
+    background-position: -41px -75px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-medical-icon {
+    background-position: -41px -109px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-booster-icon {
+    background-position: -41px -143px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-drug-icon {
+    background-position: -41px -176px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-points-storage-icon {
+    background-position: -41px -211px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-laboratory-icon {
+    background-position: -41px -245px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-chain-icon {
+    background-position: -41px -278px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-capacity-icon {
+    background-position: -41px -313px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-territory-icon {
+    background-position: -41px -347px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-nerve-icon {
+    background-position: -41px -380px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-crime-bonus-icon {
+    background-position: -41px -414px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-jail-time-icon {
+    background-position: -41px -448px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-bust-nerve-icon {
+    background-position: -41px -482px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-bust-skill-icon {
+    background-position: -41px -517px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-bust-cost-icon {
+    background-position: -41px -551px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-medical-cooldown-icon {
+    background-position: -41px -585px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-revive-cost-icon {
+    background-position: -41px -619px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-hospital-time-icon {
+    background-position: -41px -653px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-life-regeneration-icon {
+    background-position: -41px -687px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-medical-effectiveness-icon {
+    background-position: -41px -721px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-candy-effect-icon {
+    background-position: -41px -754px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-energy-drink-effect-icon {
+    background-position: -41px -789px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-booster-colldown-icon {
+    background-position: -41px -823px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-alcohol-effect-icon {
+    background-position: -41px -857px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-overdose-rate-icon {
+    background-position: -41px -891px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-drug-addiction-icon {
+    background-position: -41px -924px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-side-effects-icon {
+    background-position: -41px -959px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-clean-training-icon {
+    background-position: -41px -993px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-hunting-icon {
+    background-position: -41px -1027px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-cayman-banking-icon {
+    background-position: -41px -1060px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-travel-items-icon {
+    background-position: -41px -1094px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-travel-cost-icon {
+    background-position: -41px -1128px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-rehab-cost-icon {
+    background-position: -41px -1163px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-strength-training-icon {
+    background-position: -41px -1197px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-speed-training-icon {
+    background-position: -41px -1231px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-defence-training-icon {
+    background-position: -41px -1265px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-dexterity-training-icon {
+    background-position: -41px -1299px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-hospitalization-icon {
+    background-position: -41px -1333px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-damage-icon {
+    background-position: -41px -1367px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-strength-icon {
+    background-position: -41px -1400px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-speed-icon {
+    background-position: -41px -1435px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-accuracy-icon {
+    background-position: -41px -1469px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-maximum-life-icon {
+    background-position: -41px -1502px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-defence-icon {
+    background-position: -41px -1536px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-dexterity-icon {
+    background-position: -41px -1571px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-escape-icon {
+    background-position: -41px -1605px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-organized-crime-icon {
+    background-position: -41px -1911px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-consumables-armoury-icon {
+    background-position: -41px -1944px;
+}
+
+.d .skill-tree .stu-owned.blocked .stu-utilities-armoury-icon {
+    background-position: -41px -1979px;
+}
+
+.d .skill-tree .stu-in-progress .stu-weapon-armoury-icon {
+    background-position: -75px -7px;
+}
+
+.d .skill-tree .stu-in-progress .stu-armour-storage-icon {
+    background-position: -75px -41px;
+}
+
+.d .skill-tree .stu-in-progress .stu-temporary-icon {
+    background-position: -75px -75px;
+}
+
+.d .skill-tree .stu-in-progress .stu-medical-icon {
+    background-position: -75px -109px;
+}
+
+.d .skill-tree .stu-in-progress .stu-booster-icon {
+    background-position: -75px -143px;
+}
+
+.d .skill-tree .stu-in-progress .stu-drug-icon {
+    background-position: -75px -176px;
+}
+
+.d .skill-tree .stu-in-progress .stu-points-storage-icon {
+    background-position: -75px -211px;
+}
+
+.d .skill-tree .stu-in-progress .stu-laboratory-icon {
+    background-position: -75px -245px;
+}
+
+.d .skill-tree .stu-in-progress .stu-chain-icon {
+    background-position: -75px -278px;
+}
+
+.d .skill-tree .stu-in-progress .stu-capacity-icon {
+    background-position: -75px -313px;
+}
+
+.d .skill-tree .stu-in-progress .stu-territory-icon {
+    background-position: -75px -347px;
+}
+
+.d .skill-tree .stu-in-progress .stu-nerve-icon {
+    background-position: -76px -380px;
+}
+
+.d .skill-tree .stu-in-progress .stu-crime-bonus-icon {
+    background-position: -75px -414px;
+}
+
+.d .skill-tree .stu-in-progress .stu-jail-time-icon {
+    background-position: -75px -448px;
+}
+
+.d .skill-tree .stu-in-progress .stu-bust-nerve-icon {
+    background-position: -75px -482px;
+}
+
+.d .skill-tree .stu-in-progress .stu-bust-skill-icon {
+    background-position: -75px -517px;
+}
+
+.d .skill-tree .stu-in-progress .stu-bust-cost-icon {
+    background-position: -75px -551px;
+}
+
+.d .skill-tree .stu-in-progress .stu-medical-cooldown-icon {
+    background-position: -75px -585px;
+}
+
+.d .skill-tree .stu-in-progress .stu-revive-cost-icon {
+    background-position: -75px -619px;
+}
+
+.d .skill-tree .stu-in-progress .stu-hospital-time-icon {
+    background-position: -75px -653px;
+}
+
+.d .skill-tree .stu-in-progress .stu-life-regeneration-icon {
+    background-position: -75px -687px;
+}
+
+.d .skill-tree .stu-in-progress .stu-medical-effectiveness-icon {
+    background-position: -75px -721px;
+}
+
+.d .skill-tree .stu-in-progress .stu-candy-effect-icon {
+    background-position: -75px -754px;
+}
+
+.d .skill-tree .stu-in-progress .stu-energy-drink-effect-icon {
+    background-position: -75px -789px;
+}
+
+.d .skill-tree .stu-in-progress .stu-booster-colldown-icon {
+    background-position: -75px -823px;
+}
+
+.d .skill-tree .stu-in-progress .stu-alcohol-effect-icon {
+    background-position: -75px -857px;
+}
+
+.d .skill-tree .stu-in-progress .stu-overdose-rate-icon {
+    background-position: -75px -891px;
+}
+
+.d .skill-tree .stu-in-progress .stu-drug-addiction-icon {
+    background-position: -75px -924px;
+}
+
+.d .skill-tree .stu-in-progress .stu-side-effects-icon {
+    background-position: -75px -959px;
+}
+
+.d .skill-tree .stu-in-progress .stu-clean-training-icon {
+    background-position: -75px -993px;
+}
+
+.d .skill-tree .stu-in-progress .stu-hunting-icon {
+    background-position: -75px -1027px;
+}
+
+.d .skill-tree .stu-in-progress .stu-cayman-banking-icon {
+    background-position: -75px -1060px;
+}
+
+.d .skill-tree .stu-in-progress .stu-travel-items-icon {
+    background-position: -75px -1094px;
+}
+
+.d .skill-tree .stu-in-progress .stu-travel-cost-icon {
+    background-position: -75px -1128px;
+}
+
+.d .skill-tree .stu-in-progress .stu-rehab-cost-icon {
+    background-position: -75px -1163px;
+}
+
+.d .skill-tree .stu-in-progress .stu-strength-training-icon {
+    background-position: -75px -1197px;
+}
+
+.d .skill-tree .stu-in-progress .stu-speed-training-icon {
+    background-position: -75px -1231px;
+}
+
+.d .skill-tree .stu-in-progress .stu-defence-training-icon {
+    background-position: -75px -1265px;
+}
+
+.d .skill-tree .stu-in-progress .stu-dexterity-training-icon {
+    background-position: -75px -1299px;
+}
+
+.d .skill-tree .stu-in-progress .stu-hospitalization-icon {
+    background-position: -75px -1333px;
+}
+
+.d .skill-tree .stu-in-progress .stu-damage-icon {
+    background-position: -75px -1367px;
+}
+
+.d .skill-tree .stu-in-progress .stu-strength-icon {
+    background-position: -75px -1400px;
+}
+
+.d .skill-tree .stu-in-progress .stu-speed-icon {
+    background-position: -75px -1435px;
+}
+
+.d .skill-tree .stu-in-progress .stu-accuracy-icon {
+    background-position: -75px -1469px;
+}
+
+.d .skill-tree .stu-in-progress .stu-maximum-life-icon {
+    background-position: -75px -1502px;
+}
+
+.d .skill-tree .stu-in-progress .stu-defence-icon {
+    background-position: -75px -1536px;
+}
+
+.d .skill-tree .stu-in-progress .stu-dexterity-icon {
+    background-position: -75px -1571px;
+}
+
+.d .skill-tree .stu-in-progress .stu-escape-icon {
+    background-position: -75px -1605px;
+}
+
+.d .skill-tree .stu-in-progress .stu-organized-crime-icon {
+    background-position: -75px -1911px;
+}
+
+.d .skill-tree .stu-in-progress .stu-consumables-armoury-icon {
+    background-position: -75px -1944px;
+}
+
+.d .skill-tree .stu-in-progress .stu-utilities-armoury-icon {
+    background-position: -75px -1979px;
+}
+
+.d .skill-tree .stu-no-respect .stu-weapon-armoury-icon {
+    background-position: -109px -7px;
+}
+
+.d .skill-tree .stu-no-respect .stu-armour-storage-icon {
+    background-position: -109px -41px;
+}
+
+.d .skill-tree .stu-no-respect .stu-temporary-icon {
+    background-position: -109px -75px;
+}
+
+.d .skill-tree .stu-no-respect .stu-medical-icon {
+    background-position: -109px -109px;
+}
+
+.d .skill-tree .stu-no-respect .stu-booster-icon {
+    background-position: -109px -143px;
+}
+
+.d .skill-tree .stu-no-respect .stu-drug-icon {
+    background-position: -109px -176px;
+}
+
+.d .skill-tree .stu-no-respect .stu-points-storage-icon {
+    background-position: -109px -211px;
+}
+
+.d .skill-tree .stu-no-respect .stu-laboratory-icon {
+    background-position: -109px -245px;
+}
+
+.d .skill-tree .stu-no-respect .stu-chain-icon {
+    background-position: -109px -278px;
+}
+
+.d .skill-tree .stu-no-respect .stu-capacity-icon {
+    background-position: -109px -313px;
+}
+
+.d .skill-tree .stu-no-respect .stu-territory-icon {
+    background-position: -109px -347px;
+}
+
+.d .skill-tree .stu-no-respect .stu-nerve-icon {
+    background-position: -109px -380px;
+}
+
+.d .skill-tree .stu-no-respect .stu-crime-bonus-icon {
+    background-position: -109px -414px;
+}
+
+.d .skill-tree .stu-no-respect .stu-jail-time-icon {
+    background-position: -109px -448px;
+}
+
+.d .skill-tree .stu-no-respect .stu-bust-nerve-icon {
+    background-position: -109px -482px;
+}
+
+.d .skill-tree .stu-no-respect .stu-bust-skill-icon {
+    background-position: -109px -517px;
+}
+
+.d .skill-tree .stu-no-respect .stu-bust-cost-icon {
+    background-position: -109px -551px;
+}
+
+.d .skill-tree .stu-no-respect .stu-medical-cooldown-icon {
+    background-position: -109px -585px;
+}
+
+.d .skill-tree .stu-no-respect .stu-revive-cost-icon {
+    background-position: -109px -619px;
+}
+
+.d .skill-tree .stu-no-respect .stu-hospital-time-icon {
+    background-position: -109px -653px;
+}
+
+.d .skill-tree .stu-no-respect .stu-life-regeneration-icon {
+    background-position: -109px -687px;
+}
+
+.d .skill-tree .stu-no-respect .stu-medical-effectiveness-icon {
+    background-position: -109px -721px;
+}
+
+.d .skill-tree .stu-no-respect .stu-candy-effect-icon {
+    background-position: -109px -754px;
+}
+
+.d .skill-tree .stu-no-respect .stu-energy-drink-effect-icon {
+    background-position: -109px -789px;
+}
+
+.d .skill-tree .stu-no-respect .stu-booster-colldown-icon {
+    background-position: -109px -823px;
+}
+
+.d .skill-tree .stu-no-respect .stu-alcohol-effect-icon {
+    background-position: -109px -857px;
+}
+
+.d .skill-tree .stu-no-respect .stu-overdose-rate-icon {
+    background-position: -109px -891px;
+}
+
+.d .skill-tree .stu-no-respect .stu-drug-addiction-icon {
+    background-position: -109px -924px;
+}
+
+.d .skill-tree .stu-no-respect .stu-side-effects-icon {
+    background-position: -109px -959px;
+}
+
+.d .skill-tree .stu-no-respect .stu-clean-training-icon {
+    background-position: -109px -993px;
+}
+
+.d .skill-tree .stu-no-respect .stu-hunting-icon {
+    background-position: -109px -1027px;
+}
+
+.d .skill-tree .stu-no-respect .stu-cayman-banking-icon {
+    background-position: -109px -1060px;
+}
+
+.d .skill-tree .stu-no-respect .stu-travel-items-icon {
+    background-position: -109px -1094px;
+}
+
+.d .skill-tree .stu-no-respect .stu-travel-cost-icon {
+    background-position: -109px -1128px;
+}
+
+.d .skill-tree .stu-no-respect .stu-rehab-cost-icon {
+    background-position: -109px -1163px;
+}
+
+.d .skill-tree .stu-no-respect .stu-strength-training-icon {
+    background-position: -109px -1197px;
+}
+
+.d .skill-tree .stu-no-respect .stu-speed-training-icon {
+    background-position: -109px -1231px;
+}
+
+.d .skill-tree .stu-no-respect .stu-defence-training-icon {
+    background-position: -109px -1265px;
+}
+
+.d .skill-tree .stu-no-respect .stu-dexterity-training-icon {
+    background-position: -109px -1299px;
+}
+
+.d .skill-tree .stu-no-respect .stu-hospitalization-icon {
+    background-position: -109px -1333px;
+}
+
+.d .skill-tree .stu-no-respect .stu-damage-icon {
+    background-position: -109px -1367px;
+}
+
+.d .skill-tree .stu-no-respect .stu-strength-icon {
+    background-position: -109px -1400px;
+}
+
+.d .skill-tree .stu-no-respect .stu-speed-icon {
+    background-position: -109px -1435px;
+}
+
+.d .skill-tree .stu-no-respect .stu-accuracy-icon {
+    background-position: -109px -1469px;
+}
+
+.d .skill-tree .stu-no-respect .stu-maximum-life-icon {
+    background-position: -109px -1502px;
+}
+
+.d .skill-tree .stu-no-respect .stu-defence-icon {
+    background-position: -109px -1536px;
+}
+
+.d .skill-tree .stu-no-respect .stu-dexterity-icon {
+    background-position: -109px -1571px;
+}
+
+.d .skill-tree .stu-no-respect .stu-escape-icon {
+    background-position: -109px -1605px;
+}
+
+.d .skill-tree .stu-no-respect .stu-organized-crime-icon {
+    background-position: -109px -1911px;
+}
+
+.d .skill-tree .stu-no-respect .stu-consumables-armoury-icon {
+    background-position: -109px -1944px;
+}
+
+.d .skill-tree .stu-no-respect .stu-utilities-armoury-icon {
+    background-position: -109px -1979px;
+}
+
+.d .skill-tree .stu-available .stu-weapon-armoury-icon {
+    background-position: -143px -7px;
+}
+
+.d .skill-tree .stu-available .stu-armour-storage-icon {
+    background-position: -143px -41px;
+}
+
+.d .skill-tree .stu-available .stu-temporary-icon {
+    background-position: -143px -75px;
+}
+
+.d .skill-tree .stu-available .stu-medical-icon {
+    background-position: -143px -109px;
+}
+
+.d .skill-tree .stu-available .stu-booster-icon {
+    background-position: -143px -143px;
+}
+
+.d .skill-tree .stu-available .stu-drug-icon {
+    background-position: -143px -176px;
+}
+
+.d .skill-tree .stu-available .stu-points-storage-icon {
+    background-position: -143px -211px;
+}
+
+.d .skill-tree .stu-available .stu-laboratory-icon {
+    background-position: -143px -245px;
+}
+
+.d .skill-tree .stu-available .stu-chain-icon {
+    background-position: -143px -278px;
+}
+
+.d .skill-tree .stu-available .stu-capacity-icon {
+    background-position: -143px -313px;
+}
+
+.d .skill-tree .stu-available .stu-territory-icon {
+    background-position: -143px -347px;
+}
+
+.d .skill-tree .stu-available .stu-nerve-icon {
+    background-position: -143px -380px;
+}
+
+.d .skill-tree .stu-available .stu-crime-bonus-icon {
+    background-position: -143px -414px;
+}
+
+.d .skill-tree .stu-available .stu-jail-time-icon {
+    background-position: -143px -448px;
+}
+
+.d .skill-tree .stu-available .stu-bust-nerve-icon {
+    background-position: -143px -482px;
+}
+
+.d .skill-tree .stu-available .stu-bust-skill-icon {
+    background-position: -143px -517px;
+}
+
+.d .skill-tree .stu-available .stu-bust-cost-icon {
+    background-position: -143px -551px;
+}
+
+.d .skill-tree .stu-available .stu-medical-cooldown-icon {
+    background-position: -143px -585px;
+}
+
+.d .skill-tree .stu-available .stu-revive-cost-icon {
+    background-position: -143px -619px;
+}
+
+.d .skill-tree .stu-available .stu-hospital-time-icon {
+    background-position: -143px -653px;
+}
+
+.d .skill-tree .stu-available .stu-life-regeneration-icon {
+    background-position: -143px -687px;
+}
+
+.d .skill-tree .stu-available .stu-medical-effectiveness-icon {
+    background-position: -143px -721px;
+}
+
+.d .skill-tree .stu-available .stu-candy-effect-icon {
+    background-position: -143px -754px;
+}
+
+.d .skill-tree .stu-available .stu-energy-drink-effect-icon {
+    background-position: -143px -789px;
+}
+
+.d .skill-tree .stu-available .stu-booster-colldown-icon {
+    background-position: -143px -823px;
+}
+
+.d .skill-tree .stu-available .stu-alcohol-effect-icon {
+    background-position: -143px -857px;
+}
+
+.d .skill-tree .stu-available .stu-overdose-rate-icon {
+    background-position: -143px -891px;
+}
+
+.d .skill-tree .stu-available .stu-drug-addiction-icon {
+    background-position: -143px -924px;
+}
+
+.d .skill-tree .stu-available .stu-side-effects-icon {
+    background-position: -143px -959px;
+}
+
+.d .skill-tree .stu-available .stu-clean-training-icon {
+    background-position: -143px -993px;
+}
+
+.d .skill-tree .stu-available .stu-hunting-icon {
+    background-position: -143px -1027px;
+}
+
+.d .skill-tree .stu-available .stu-cayman-banking-icon {
+    background-position: -143px -1060px;
+}
+
+.d .skill-tree .stu-available .stu-travel-items-icon {
+    background-position: -143px -1094px;
+}
+
+.d .skill-tree .stu-available .stu-travel-cost-icon {
+    background-position: -143px -1128px;
+}
+
+.d .skill-tree .stu-available .stu-rehab-cost-icon {
+    background-position: -143px -1163px;
+}
+
+.d .skill-tree .stu-available .stu-strength-training-icon {
+    background-position: -143px -1197px;
+}
+
+.d .skill-tree .stu-available .stu-speed-training-icon {
+    background-position: -143px -1231px;
+}
+
+.d .skill-tree .stu-available .stu-defence-training-icon {
+    background-position: -143px -1265px;
+}
+
+.d .skill-tree .stu-available .stu-dexterity-training-icon {
+    background-position: -143px -1299px;
+}
+
+.d .skill-tree .stu-available .stu-hospitalization-icon {
+    background-position: -143px -1333px;
+}
+
+.d .skill-tree .stu-available .stu-damage-icon {
+    background-position: -143px -1367px;
+}
+
+.d .skill-tree .stu-available .stu-strength-icon {
+    background-position: -143px -1400px;
+}
+
+.d .skill-tree .stu-available .stu-speed-icon {
+    background-position: -143px -1435px;
+}
+
+.d .skill-tree .stu-available .stu-accuracy-icon {
+    background-position: -143px -1469px;
+}
+
+.d .skill-tree .stu-available .stu-maximum-life-icon {
+    background-position: -143px -1502px;
+}
+
+.d .skill-tree .stu-available .stu-defence-icon {
+    background-position: -143px -1536px;
+}
+
+.d .skill-tree .stu-available .stu-dexterity-icon {
+    background-position: -143px -1571px;
+}
+
+.d .skill-tree .stu-available .stu-escape-icon {
+    background-position: -143px -1605px;
+}
+
+.d .skill-tree .stu-available .stu-organized-crime-icon {
+    background-position: -143px -1911px;
+}
+
+.d .skill-tree .stu-available .stu-consumables-armoury-icon {
+    background-position: -143px -1944px;
+}
+
+.d .skill-tree .stu-available .stu-utilities-armoury-icon {
+    background-position: -143px -1979px;
+}
+
+.d .skill-tree .stu-owned .stu-weapon-armoury-icon {
+    background-position: -177px -7px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-weapon-armoury-icon {
+    background-position: -211px -7px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-weapon-armoury-icon {
+    background-position: -41px -7px;
+}
+
+.d .skill-tree .stu-owned .stu-armour-storage-icon {
+    background-position: -177px -41px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-armour-storage-icon {
+    background-position: -210px -41px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-armour-storage-icon {
+    background-position: -41px -41px;
+}
+
+.d .skill-tree .stu-owned .stu-temporary-icon {
+    background-position: -177px -75px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-temporary-icon {
+    background-position: -211px -75px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-temporary-icon {
+    background-position: -41px -75px;
+}
+
+.d .skill-tree .stu-owned .stu-medical-icon {
+    background-position: -177px -109px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-medical-icon {
+    background-position: -211px -109px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-medical-icon {
+    background-position: -41px -109px;
+}
+
+.d .skill-tree .stu-owned .stu-booster-icon {
+    background-position: -177px -143px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-booster-icon {
+    background-position: -211px -143px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-booster-icon {
+    background-position: -41px -143px;
+}
+
+.d .skill-tree .stu-owned .stu-drug-icon {
+    background-position: -177px -176px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-drug-icon {
+    background-position: -211px -176px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-drug-icon {
+    background-position: -41px -176px;
+}
+
+.d .skill-tree .stu-owned .stu-points-storage-icon {
+    background-position: -177px -211px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-points-storage-icon {
+    background-position: -211px -211px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-points-storage-icon {
+    background-position: -41px -211px;
+}
+.d .skill-tree .stu-owned .stu-laboratory-icon {
+    background-position: -177px -245px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-laboratory-icon {
+    background-position: -211px -245px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-laboratory-icon {
+    background-position: -41px -245px;
+}
+
+.d .skill-tree .stu-owned .stu-chain-icon {
+    background-position: -177px -278px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-chain-icon {
+    background-position: -211px -278px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-chain-icon {
+    background-position: -41px -278px;
+}
+
+.d .skill-tree .stu-owned .stu-capacity-icon {
+    background-position: -177px -313px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-capacity-icon {
+    background-position: -211px -313px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-capacity-icon {
+    background-position: -41px -313px;
+}
+
+.d .skill-tree .stu-owned .stu-territory-icon {
+    background-position: -177px -347px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-territory-icon {
+    background-position: -211px -347px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-territory-icon {
+    background-position: -41px -347px;
+}
+
+.d .skill-tree .stu-owned .stu-nerve-icon {
+    background-position: -177px -380px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-nerve-icon {
+    background-position: -211px -380px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-nerve-icon {
+    background-position: -41px -380px;
+}
+
+.d .skill-tree .stu-owned .stu-crime-bonus-icon {
+    background-position: -177px -414px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-crime-bonus-icon {
+    background-position: -211px -414px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-crime-bonus-icon {
+    background-position: -41px -414px;
+}
+
+.d .skill-tree .stu-owned .stu-jail-time-icon {
+    background-position: -177px -448px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-jail-time-icon {
+    background-position: -211px -448px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-jail-time-icon {
+    background-position: -41px -448px;
+}
+
+.d .skill-tree .stu-owned .stu-bust-nerve-icon {
+    background-position: -177px -482px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-bust-nerve-icon {
+    background-position: -211px -482px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-bust-nerve-icon {
+    background-position: -41px -482px;
+}
+
+.d .skill-tree .stu-owned .stu-bust-skill-icon {
+    background-position: -177px -517px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-bust-skill-icon {
+    background-position: -211px -517px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-bust-skill-icon {
+    background-position: -41px -517px;
+}
+
+.d .skill-tree .stu-owned .stu-bust-cost-icon {
+    background-position: -177px -551px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-bust-cost-icon {
+    background-position: -211px -551px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-bust-cost-icon {
+    background-position: -41px -551px;
+}
+
+.d .skill-tree .stu-owned .stu-medical-cooldown-icon {
+    background-position: -177px -585px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-medical-cooldown-icon {
+    background-position: -211px -585px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-medical-cooldown-icon {
+    background-position: -41px -585px;
+}
+
+.d .skill-tree .stu-owned .stu-revive-cost-icon {
+    background-position: -177px -619px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-revive-cost-icon {
+    background-position: -211px -619px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-revive-cost-icon {
+    background-position: -41px -619px;
+}
+
+.d .skill-tree .stu-owned .stu-hospital-time-icon {
+    background-position: -177px -653px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-hospital-time-icon {
+    background-position: -211px -653px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-hospital-time-icon {
+    background-position: -41px -653px;
+}
+
+.d .skill-tree .stu-owned .stu-life-regeneration-icon {
+    background-position: -177px -687px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-life-regeneration-icon {
+    background-position: -211px -687px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-life-regeneration-icon {
+    background-position: -41px -687px;
+}
+
+.d .skill-tree .stu-owned .stu-medical-effectiveness-icon {
+    background-position: -177px -721px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-medical-effectiveness-icon {
+    background-position: -211px -721px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-medical-effectiveness-icon {
+    background-position: -41px -721px;
+}
+
+.d .skill-tree .stu-owned .stu-candy-effect-icon {
+    background-position: -177px -754px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-candy-effect-icon {
+    background-position: -211px -754px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-candy-effect-icon {
+    background-position: -41px -754px;
+}
+
+.d .skill-tree .stu-owned .stu-energy-drink-effect-icon {
+    background-position: -177px -789px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-energy-drink-effect-icon {
+    background-position: -211px -789px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-energy-drink-effect-icon {
+    background-position: -41px -789px;
+}
+
+.d .skill-tree .stu-owned .stu-booster-colldown-icon {
+    background-position: -177px -823px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-booster-colldown-icon {
+    background-position: -211px -823px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-booster-colldown-icon {
+    background-position: -41px -823px;
+}
+
+.d .skill-tree .stu-owned .stu-alcohol-effect-icon {
+    background-position: -177px -857px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-alcohol-effect-icon {
+    background-position: -211px -857px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-alcohol-effect-icon {
+    background-position: -41px -857px;
+}
+
+.d .skill-tree .stu-owned .stu-overdose-rate-icon {
+    background-position: -177px -891px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-overdose-rate-icon {
+    background-position: -211px -891px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-overdose-rate-icon {
+    background-position: -41px -891px;
+}
+
+.d .skill-tree .stu-owned .stu-drug-addiction-icon {
+    background-position: -177px -924px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-drug-addiction-icon {
+    background-position: -211px -924px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-drug-addiction-icon {
+    background-position: -41px -924px;
+}
+
+.d .skill-tree .stu-owned .stu-side-effects-icon {
+    background-position: -177px -959px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-side-effects-icon {
+    background-position: -211px -959px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-side-effects-icon {
+    background-position: -41px -959px;
+}
+
+.d .skill-tree .stu-owned .stu-clean-training-icon {
+    background-position: -177px -993px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-clean-training-icon {
+    background-position: -211px -993px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-clean-training-icon {
+    background-position: -41px -993px;
+}
+
+.d .skill-tree .stu-owned .stu-hunting-icon {
+    background-position: -177px -1027px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-hunting-icon {
+    background-position: -211px -1027px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-hunting-icon {
+    background-position: -41px -1027px;
+}
+
+.d .skill-tree .stu-owned .stu-cayman-banking-icon {
+    background-position: -177px -1060px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-cayman-banking-icon {
+    background-position: -211px -1060px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-cayman-banking-icon {
+    background-position: -41px -1060px;
+}
+
+.d .skill-tree .stu-owned .stu-travel-items-icon {
+    background-position: -177px -1094px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-travel-items-icon {
+    background-position: -211px -1094px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-travel-items-icon {
+    background-position: -41px -1094px;
+}
+
+.d .skill-tree .stu-owned .stu-travel-cost-icon {
+    background-position: -177px -1128px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-travel-cost-icon {
+    background-position: -211px -1128px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-travel-cost-icon {
+    background-position: -41px -1128px;
+}
+
+.d .skill-tree .stu-owned .stu-rehab-cost-icon {
+    background-position: -177px -1163px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-rehab-cost-icon {
+    background-position: -211px -1163px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-rehab-cost-icon {
+    background-position: -41px -1163px;
+}
+
+.d .skill-tree .stu-owned .stu-strength-training-icon {
+    background-position: -177px -1197px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-strength-training-icon {
+    background-position: -211px -1197px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-strength-training-icon {
+    background-position: -41px -1197px;
+}
+
+.d .skill-tree .stu-owned .stu-speed-training-icon {
+    background-position: -177px -1231px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-speed-training-icon {
+    background-position: -211px -1231px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-speed-training-icon {
+    background-position: -41px -1231px;
+}
+
+.d .skill-tree .stu-owned .stu-defence-training-icon {
+    background-position: -177px -1265px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-defence-training-icon {
+    background-position: -211px -1265px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-defence-training-icon {
+    background-position: -41px -1265px;
+}
+
+.d .skill-tree .stu-owned .stu-dexterity-training-icon {
+    background-position: -177px -1299px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-dexterity-training-icon {
+    background-position: -211px -1299px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-dexterity-training-icon {
+    background-position: -41px -1299px;
+}
+
+.d .skill-tree .stu-owned .stu-hospitalization-icon {
+    background-position: -177px -1333px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-hospitalization-icon {
+    background-position: -211px -1333px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-hospitalization-icon {
+    background-position: -41px -1333px;
+}
+
+.d .skill-tree .stu-owned .stu-damage-icon {
+    background-position: -177px -1367px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-damage-icon {
+    background-position: -211px -1367px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-damage-icon {
+    background-position: -41px -1367px;
+}
+
+.d .skill-tree .stu-owned .stu-strength-icon {
+    background-position: -177px -1400px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-strength-icon {
+    background-position: -211px -1400px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-strength-icon {
+    background-position: -41px -1400px;
+}
+
+.d .skill-tree .stu-owned .stu-speed-icon {
+    background-position: -177px -1435px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-speed-icon {
+    background-position: -211px -1435px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-speed-icon {
+    background-position: -41px -1435px;
+}
+
+.d .skill-tree .stu-owned .stu-accuracy-icon {
+    background-position: -177px -1469px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-accuracy-icon {
+    background-position: -211px -1469px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-accuracy-icon {
+    background-position: -41px -1469px;
+}
+
+.d .skill-tree .stu-owned .stu-maximum-life-icon {
+    background-position: -177px -1502px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-maximum-life-icon {
+    background-position: -211px -1502px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-maximum-life-icon {
+    background-position: -41px -1502px;
+}
+
+.d .skill-tree .stu-owned .stu-defence-icon {
+    background-position: -177px -1536px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-defence-icon {
+    background-position: -211px -1536px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-defence-icon {
+    background-position: -41px -1536px;
+}
+
+.d .skill-tree .stu-owned .stu-dexterity-icon {
+    background-position: -177px -1571px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-dexterity-icon {
+    background-position: -211px -1571px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-dexterity-icon {
+    background-position: -41px -1571px;
+}
+
+.d .skill-tree .stu-owned .stu-escape-icon {
+    background-position: -177px -1605px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-escape-icon {
+    background-position: -211px -1605px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-escape-icon {
+    background-position: -41px -1605px;
+}
+
+.d .skill-tree .stu-owned .stu-organized-crime-icon {
+    background-position: -177px -1911px;
+}
+
+.d .skill-tree .stu-owned .stu-consumables-armoury-icon {
+    background-position: -177px -1944px;
+}
+
+.d .skill-tree .stu-owned .stu-utilities-armoury-icon {
+    background-position: -177px -1979px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-organized-crime-icon {
+    background-position: -211px -1911px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-consumables-armoury-icon {
+    background-position: -211px -1944px;
+}
+
+.d .skill-tree.war-mode .stu-owned .stu-utilities-armoury-icon {
+    background-position: -211px -1979px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-organized-crime-icon {
+    background-position: -41px -1911px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-consumables-armoury-icon {
+    background-position: -41px -1944px;
+}
+
+.d .skill-tree.war-mode .stu-owned.blocked .stu-utilities-armoury-icon {
+    background-position: -41px -1979px;
+}
+
+.d .skill-tree .stu-attention-icon {
+    background-position: -143px -1639px;
+}
+
+.d .skill-tree .stu-locked-icon {
+    background-position: -143px -1673px;
+}
+
+.d .skill-tree .stu-anything-icon {
+    background-position: -143px -1707px;
+}
+
+.d .skill-tree .h:hover .stu-attention-icon  {
+    background-position: -177px -1639px;
+}
+
+.d .skill-tree .stu-attention-icon {
+    margin: 5px 0 0 60px;
+}
+
+.d .skill-tree .stu-hover:hover .stu-locked-icon,
+.d .skill-tree .stu-locked-icon.stu-hover:hover  {
+    background-position: -177px -1673px;
+}
+
+.d .skill-tree .stu-hover:hover .stu-anything-icon,
+.d .skill-tree .stu-anything-icon.stu-hover:hover {
+    background-position: -177px -1707px;
+}
+
+.d .skill-tree .stu-waiting-icon,
+.d .skill-tree .stu-unlocked-icon,
+.d .skill-tree .stu-completed-icon,
+.d .skill-tree .stu-required-icon,
+.d .skill-tree .stu-contributions-icon {
+    width: 12px;
+}
+
+.d .skill-tree .stu-waiting-icon {
+    background-position: -181px -1741px;
+}
+
+.d .skill-tree .stu-unlocked-icon {
+    background-position: -181px -1775px;
+}
+
+.d .skill-tree .stu-completed-icon {
+    background-position: -181px -1810px;
+}
+
+.d .skill-tree .stu-required-icon {
+    background-position: -181px -1844px;
+}
+
+.d .skill-tree .stu-empty-icon {
+    background-image: none;
+}
+
+.d .skill-tree .stu-contributions-icon {
+    background-position: -181px -1878px;
+}

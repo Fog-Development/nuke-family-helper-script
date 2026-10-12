@@ -1,0 +1,255 @@
+/* Bazaar, Item Market pages */
+
+.d .items-wrap.view-2 .actions-main-wrap .actions-wrap,
+.d .items-wrap.view-2 .actions-main-wrap .amount-main-wrap .actions-wrap,
+.d .items-wrap.view-2 .items-cont > li.actions-active .show-item-info,
+.d .items-wrap.view-2 .items-cont > li.item-active.info-active .info-link,
+.d .items-wrap.view-2 .items-cont > li.disabled .amount-main-wrap .amount,
+.d .items-wrap.view-2 .items-cont > li.disabled .amount-main-wrap .price {
+  display: none;
+}
+
+.d .items-wrap.view-2 .items-cont > li .bonuses-wrap,
+.d .items-wrap.view-2 .actions-main-wrap .amount-main-wrap .amount,
+.d .items-wrap.view-2 .actions-main-wrap .amount-main-wrap .price,
+.d .items-wrap.view-2 .actions-main-wrap .info-main-wrap .info-wrap,
+.d .items-wrap.view-2 .items-cont > li.actions-active .bonuses-wrap,
+.d .items-wrap.view-2 .items-cont > li.info-active .show-item-info {
+  display: block;
+}
+
+.d .items-wrap.view-2 .items-cont > li.info-active .show-item-info {
+  width: 100%;
+}
+
+.d .items-wrap.view-2 .actions-main-wrap .info-main-wrap .info-wrap {
+  border-bottom: none;
+  border-right: 1px solid #ccc;
+  border-right-color: var(--default-panel-divider-outer-side-color);
+  border-left: 1px solid #fff;
+  border-left-color: var(--default-panel-divider-inner-side-color);
+  width: 77px;
+  padding: 0 10px;
+}
+
+.d .items-wrap.view-2 .market-confirm .actions-main-wrap .info-main-wrap .info-wrap {
+  display: none;
+}
+
+.d .items-wrap.view-2 .items-cont > li.no-mods .bonuses-wrap {
+  display: none;
+}
+
+.d .items-wrap.view-2 .items-cont.market-confirm > li .bonuses-wrap {
+  border-right: 0;
+}
+
+.d .items-wrap.view-2 .items-cont > li.no-mods .info-main-wrap .info-wrap {
+  width: 303px;
+}
+
+.d .items-wrap.view-2 .items-cont.market-confirm > li.no-mods .info-main-wrap .info-wrap {
+  display: none;
+}
+
+.d .items-wrap.view-2 .items-cont > li .title-wrap {
+  width: 282px;
+}
+
+.d .items-wrap.view-2 .items-cont.market-confirm > li .title-wrap {
+  width: 444px;
+}
+
+.d .items-wrap.view-2 .items-cont.market-confirm > li.no-mods .title-wrap {
+  border-right-color: transparent;
+}
+
+.d .items-wrap.view-2 .items-cont > li .actions-main-wrap {
+  width: 500px;
+}
+
+.d .items-wrap.view-2 .items-cont.market-confirm > li .actions-main-wrap {
+  width: 339px;
+}
+
+.d .items-wrap.view-2 .actions-main-wrap .info-main-wrap {
+  width: 325px;
+}
+
+.d .items-wrap.view-2 .market-confirm .actions-main-wrap .info-main-wrap {
+  width: 226px;
+}
+
+.d .items-wrap.view-2 .actions-main-wrap .amount-main-wrap {
+  float: right;
+  text-align: center;
+  border-left: 1px solid #fff;
+  border-left-color: var(--default-panel-divider-inner-side-color);
+  width: 174px;
+}
+
+.d .items-wrap.view-2 .market-confirm .actions-main-wrap .amount-main-wrap {
+  width: 111px;
+}
+
+.d .items-wrap.view-2 .bonuses-wrap > li {
+  width: 56px;
+}
+
+.d .items-wrap.view-2 .actions-main-wrap .amount-main-wrap .amount {
+  width: 42px;
+  padding: 0 10px;
+  border-right: 1px solid #ccc;
+  border-right-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .items-wrap.view-2 .actions-main-wrap .amount-main-wrap .price {
+  width: 90px;
+  padding: 0 10px;
+  border-left: 1px solid #fff;
+  border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .items-wrap.view-2 .market-confirm .amount-main-wrap {
+  border-left-color: #ccc;
+  border-left-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .items-wrap.view-2 .actions-main-wrap .amount input[type='text'],
+.d .items-wrap.view-2 .actions-main-wrap .price input[type='text'] {
+  line-height: 14px;
+  padding: 4px 5px;
+  text-align: center;
+  border: 1px solid;
+  border-color: #ccc;
+  border-color: var(--input-border-color);
+  font-family: Arial, serif;
+  border-radius: 5px;
+  color: #000;
+  color: var(--input-color);
+  background-color: #fff;
+  background: var(--input-background-color);
+  vertical-align: middle;
+}
+
+.d .items-wrap.view-2 .actions-main-wrap .amount input[type='text'] {
+  width: 30px;
+}
+
+.d .items-wrap.view-2 .actions-main-wrap .price input[type='text'] {
+  width: 78px;
+}
+
+.d .items-wrap.view-2 .market-confirm .actions-main-wrap .price input[type='text']:disabled {
+  color: #444;
+  color: var(--default-gray-4-color);
+  background-color: transparent;
+}
+
+.d .items-wrap.view-2 .items-cont > li .name-wrap {
+  width: 197px;
+}
+
+.d .items-wrap.view-2 .items-cont.market-confirm > li .name-wrap {
+  width: 358px;
+}
+
+.d .items-wrap.view-2 .items-cont > li.disabled .amount-main-wrap .used {
+  display: block;
+}
+
+@media screen and (max-width: 784px) {
+  .r .items-wrap.view-2 .actions-main-wrap .amount-main-wrap {
+    float: left;
+  }
+
+  .r .items-wrap.view-2 .items-cont > li .actions-main-wrap {
+    display: inline;
+    float: none;
+  }
+
+  .r .items-wrap.view-2 .items-cont > li .title-wrap {
+    border-right: 1px solid #ccc;
+    border-right-color: var(--default-panel-divider-outer-side-color);
+    width: 210px;
+  }
+
+  .r .items-wrap.view-2 .actions-main-wrap .info-main-wrap {
+    width: 386px;
+  }
+
+  .r .items-wrap.view-2 .actions-main-wrap .info-main-wrap .info-wrap,
+  .r .items-wrap.view-2 .items-cont > li .info-main-wrap .bonuses-wrap {
+    display: none;
+  }
+
+  .r .items-wrap.view-2 .items-cont > li .info-main-wrap .bonuses-wrap {
+    border-top: transparent;
+  }
+
+  .r .items-wrap.view-2 .bonuses-wrap > li {
+    width: 96px;
+    border-top: 1px solid #CCC;
+    border-top-color: var(--items-cont-description-border-top-color);
+  }
+
+  .r .items-wrap.view-2 .items-cont.market-confirm > li .title-wrap {
+    width: 273px;
+    border-right-color: transparent;
+  }
+
+  .r .items-wrap.view-2 .items-cont > li .name-wrap {
+    width: 125px;
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+  }
+
+  .r .items-wrap.view-2 .items-cont.market-confirm > li .name-wrap {
+    width: 188px;
+  }
+
+  .r .items-wrap.view-2 .items-cont > li.actions-active .bonuses-wrap {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 386px) {
+  .r .items-wrap.view-2 .actions-main-wrap .amount-main-wrap .amount {
+    padding-right: 2px;
+    border-right: 0;
+  }
+
+  .r .items-wrap.view-2 .actions-main-wrap .amount-main-wrap .price {
+    padding-left: 2px;
+    border-left: 0;
+  }
+
+  .r .items-wrap.view-2 .market-confirm .actions-main-wrap .amount-main-wrap .price {
+    padding-left: 10px;
+  }
+
+  .r .items-wrap.view-2 .items-cont > li .name-wrap {
+    width: 77px;
+  }
+
+  .r .items-wrap.view-2 .bonuses-wrap > li {
+    width: 80px;
+  }
+
+  .r .items-wrap.view-2 .items-cont > li .title-wrap {
+    width: 162px;
+  }
+
+  .r .items-wrap.view-2 .items-cont.market-confirm > li .title-wrap {
+    width: 207px;
+  }
+
+  .r .items-wrap.view-2 .items-cont.market-confirm > li .name-wrap {
+    width: 122px;
+  }
+
+  .r .items-wrap.view-2 .actions-main-wrap .amount-main-wrap {
+    width: 156px;
+  }
+}

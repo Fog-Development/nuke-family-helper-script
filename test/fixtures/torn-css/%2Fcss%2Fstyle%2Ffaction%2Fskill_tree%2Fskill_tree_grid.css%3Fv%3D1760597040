@@ -1,0 +1,2607 @@
+body.d #faction-upgrades .skill-tree .branch-line:before,
+body.d #faction-upgrades .skill-tree .branch-line:after {
+    z-index: -1;
+}
+
+body.d #faction-upgrades .skill-tree .branch {
+    z-index: 2;
+}
+
+.d.d-mode .skill-tree .core .line,
+.d.d-mode .skill-tree .branch-line.l:before,
+.d.d-mode .skill-tree .branch-line.active.b:after {
+    position: relative;
+    background-color: #4A4A4A;
+    box-shadow: 0 0 3px #222;
+    z-index: 0;
+}
+
+.d.d-mode .skill-tree .branch-line.l:before,
+.d.d-mode .skill-tree .branch-line.active.b:after {
+    content: "";
+    display: block;
+}
+
+.d.d-mode .skill-tree .core .line[class*="line-color"],
+.d.d-mode .skill-tree .branch-line.l.line-color:before,
+.d.d-mode .skill-tree .branch-line.active.b.line-color:after {
+    background-color: rgba(133, 178, 0, 0.6);
+}
+
+.d.d-mode .skill-tree.war-mode .core .line[class*="line-color"],
+.d.d-mode .skill-tree.war-mode .branch-line.l.line-color:before,
+.d.d-mode .skill-tree.war-mode .branch-line.active.b.line-color:after {
+    background-color: rgba(255, 92, 38, 1);
+}
+
+.d.d-mode .skill-tree .core .line.lh,
+.d.d-mode .skill-tree .core .line.lh0,
+.d.d-mode .skill-tree .core .line.lh1,
+.d.d-mode .skill-tree .core .line.lh2,
+.d.d-mode .skill-tree .core .line.lh3,
+.d.d-mode .skill-tree .core .line.lh4,
+.d.d-mode .skill-tree .core .line.lh5,
+.d.d-mode .skill-tree .core .line.lh6,
+.d.d-mode .skill-tree .core .line.lh7,
+.d.d-mode .skill-tree .core .line.lh8,
+.d.d-mode .skill-tree .core .line.lh9,
+.d.d-mode .skill-tree .core .line.lh10,
+.d.d-mode .skill-tree .core .line.lh11,
+.d.d-mode .skill-tree .core .line.lh12,
+.d.d-mode .skill-tree .core .line.lh13,
+.d.d-mode .skill-tree .core .line.lh14,
+.d.d-mode .skill-tree .core .line.lh15,
+.d.d-mode .skill-tree .core .line.lh16,
+.d.d-mode .skill-tree .core .line.lh17,
+.d.d-mode .skill-tree .core .line.lh18,
+.d.d-mode .skill-tree .core .line.lh19,
+.d.d-mode .skill-tree .core .line.lh20,
+.d.d-mode .skill-tree .branch-line.l:before {
+    height: 1px;
+}
+
+.d.d-mode .skill-tree .core .line.lh,
+.d.d-mode .skill-tree .core .line.lh0,
+.d.d-mode .skill-tree .core .line.lh1,
+.d.d-mode .skill-tree .core .line.lh2,
+.d.d-mode .skill-tree .core .line.lh3,
+.d.d-mode .skill-tree .core .line.lh4,
+.d.d-mode .skill-tree .core .line.lh5,
+.d.d-mode .skill-tree .core .line.lh6,
+.d.d-mode .skill-tree .core .line.lh7,
+.d.d-mode .skill-tree .core .line.lh8,
+.d.d-mode .skill-tree .core .line.lh9,
+.d.d-mode .skill-tree .core .line.lh10,
+.d.d-mode .skill-tree .core .line.lh11,
+.d.d-mode .skill-tree .core .line.lh12,
+.d.d-mode .skill-tree .core .line.lh13,
+.d.d-mode .skill-tree .core .line.lh14,
+.d.d-mode .skill-tree .core .line.lh15,
+.d.d-mode .skill-tree .core .line.lh16,
+.d.d-mode .skill-tree .core .line.lh17,
+.d.d-mode .skill-tree .core .line.lh18,
+.d.d-mode .skill-tree .core .line.lh19,
+.d.d-mode .skill-tree .core .line.lh20 {
+    margin-top: 11px;
+    margin-bottom: 12px;
+}
+
+.d.d-mode .skill-tree .core .line.lv,
+.d.d-mode .skill-tree .core .line.lv0,
+.d.d-mode .skill-tree .core .line.lv0-12,
+.d.d-mode .skill-tree .core .line.lv1,
+.d.d-mode .skill-tree .core .line.lv1-12,
+.d.d-mode .skill-tree .core .line.lv2,
+.d.d-mode .skill-tree .core .line.lv2-12,
+.d.d-mode .skill-tree .core .line.lv3,
+.d.d-mode .skill-tree .core .line.lv3-12,
+.d.d-mode .skill-tree .core .line.lv4,
+.d.d-mode .skill-tree .core .line.lv4-12,
+.d.d-mode .skill-tree .core .line.lv5,
+.d.d-mode .skill-tree .core .line.lv5-12,
+.d.d-mode .skill-tree .core .line.lv6,
+.d.d-mode .skill-tree .core .line.lv6-12,
+.d.d-mode .skill-tree .core .line.lv7,
+.d.d-mode .skill-tree .core .line.lv7-12,
+.d.d-mode .skill-tree .core .line.lv8,
+.d.d-mode .skill-tree .core .line.lv8-12,
+.d.d-mode .skill-tree .core .line.lv9,
+.d.d-mode .skill-tree .core .line.lv9-12,
+.d.d-mode .skill-tree .core .line.lv10,
+.d.d-mode .skill-tree .core .line.lv10-12,
+.d.d-mode .skill-tree .core .line.lv11,
+.d.d-mode .skill-tree .core .line.lv11-12,
+.d.d-mode .skill-tree .core .line.lv12,
+.d.d-mode .skill-tree .core .line.lv12-12,
+.d.d-mode .skill-tree .core .line.lv13,
+.d.d-mode .skill-tree .core .line.lv13-12,
+.d.d-mode .skill-tree .core .line.lv14,
+.d.d-mode .skill-tree .core .line.lv14-12,
+.d.d-mode .skill-tree .core .line.lv15,
+.d.d-mode .skill-tree .core .line.lv15-12,
+.d.d-mode .skill-tree .core .line.lv16,
+.d.d-mode .skill-tree .core .line.lv16-12,
+.d.d-mode .skill-tree .core .line.lv17,
+.d.d-mode .skill-tree .core .line.lv17-12,
+.d.d-mode .skill-tree .core .line.lv18,
+.d.d-mode .skill-tree .core .line.lv18-12,
+.d.d-mode .skill-tree .core .line.lv19,
+.d.d-mode .skill-tree .core .line.lv19-12,
+.d.d-mode .skill-tree .core .line.lv20,
+.d.d-mode .skill-tree .core .line.lv20-12,
+.d.d-mode .skill-tree .branch-line.active.b:after {
+    width: 1px;
+}
+
+.d.d-mode .skill-tree .core .line.lv0,
+.d.d-mode .skill-tree .core .line.lv0-12,
+.d.d-mode .skill-tree .core .line.lv1,
+.d.d-mode .skill-tree .core .line.lv1-12,
+.d.d-mode .skill-tree .core .line.lv2,
+.d.d-mode .skill-tree .core .line.lv2-12,
+.d.d-mode .skill-tree .core .line.lv3,
+.d.d-mode .skill-tree .core .line.lv3-12,
+.d.d-mode .skill-tree .core .line.lv4,
+.d.d-mode .skill-tree .core .line.lv4-12,
+.d.d-mode .skill-tree .core .line.lv5,
+.d.d-mode .skill-tree .core .line.lv5-12,
+.d.d-mode .skill-tree .core .line.lv6,
+.d.d-mode .skill-tree .core .line.lv6-12,
+.d.d-mode .skill-tree .core .line.lv7,
+.d.d-mode .skill-tree .core .line.lv7-12,
+.d.d-mode .skill-tree .core .line.lv8,
+.d.d-mode .skill-tree .core .line.lv8-12,
+.d.d-mode .skill-tree .core .line.lv9,
+.d.d-mode .skill-tree .core .line.lv9-12,
+.d.d-mode .skill-tree .core .line.lv10,
+.d.d-mode .skill-tree .core .line.lv10-12,
+.d.d-mode .skill-tree .core .line.lv11,
+.d.d-mode .skill-tree .core .line.lv11-12,
+.d.d-mode .skill-tree .core .line.lv12,
+.d.d-mode .skill-tree .core .line.lv12-12,
+.d.d-mode .skill-tree .core .line.lv13,
+.d.d-mode .skill-tree .core .line.lv13-12,
+.d.d-mode .skill-tree .core .line.lv14,
+.d.d-mode .skill-tree .core .line.lv14-12,
+.d.d-mode .skill-tree .core .line.lv15,
+.d.d-mode .skill-tree .core .line.lv15-12,
+.d.d-mode .skill-tree .core .line.lv16,
+.d.d-mode .skill-tree .core .line.lv16-12,
+.d.d-mode .skill-tree .core .line.lv17,
+.d.d-mode .skill-tree .core .line.lv17-12,
+.d.d-mode .skill-tree .core .line.lv18,
+.d.d-mode .skill-tree .core .line.lv18-12,
+.d.d-mode .skill-tree .core .line.lv19,
+.d.d-mode .skill-tree .core .line.lv19-12,
+.d.d-mode .skill-tree .core .line.lv20,
+.d.d-mode .skill-tree .core .line.lv20-12 {
+    margin-left: 11px;
+    margin-right: 12px;
+}
+
+.d.d-mode .skill-tree .core .line.l:before,
+.d.d-mode .skill-tree .core .line.r:after,
+.d.d-mode .skill-tree .core .line.t:before,
+.d.d-mode .skill-tree .core .line.b:after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 3px;
+    width: 3px;
+    background-color: #4A4A4A;
+}
+
+.d.d-mode .skill-tree .core .line[class*="line-color"].l:before,
+.d.d-mode .skill-tree .core .line[class*="line-color"].r:after,
+.d.d-mode .skill-tree .core .line[class*="line-color"].t:before,
+.d.d-mode .skill-tree .core .line[class*="line-color"].b:after {
+    background-color: rgba(133, 178, 0, 0.6);
+}
+
+.d.d-mode .skill-tree.war-mode .core .line[class*="line-color"].l:before,
+.d.d-mode .skill-tree.war-mode .core .line[class*="line-color"].r:after,
+.d.d-mode .skill-tree.war-mode .core .line[class*="line-color"].t:before,
+.d.d-mode .skill-tree.war-mode .core .line[class*="line-color"].b:after {
+    background-color: rgba(255, 92, 38, 1);
+}
+
+.d.d-mode .skill-tree .core .line.l:before,
+.d.d-mode .skill-tree .core .line.r:after {
+    top: -1px;
+    transform: matrix(3,1,3,-1,0,0);
+}
+
+.d.d-mode .skill-tree .core .line.t:before,
+.d.d-mode .skill-tree .core .line.b:after {
+    left: -1px;
+    transform: matrix(1,3,1,-3,0,0);
+}
+
+.d.d-mode .skill-tree .core .line.l:before {
+    left: -3px;
+    box-shadow: -0.1px -0.1px 1px #222;
+}
+
+.d.d-mode .skill-tree .core .line.r:after {
+    right: -3px;
+    box-shadow: 0.1px 0.1px 1px #222;
+}
+
+.d.d-mode .skill-tree .core .line.t:before {
+    top: -3px;
+    box-shadow: -0.1px -0.1px 1px #222;
+}
+
+.d.d-mode .skill-tree .core .line.b:after {
+    bottom: -3px;
+    box-shadow: 0.1px 0.1px 1px #222;
+}
+
+.d.d-mode .skill-tree .core .line.red.l:before {
+    box-shadow: -0.1px -0.1px 1px #B22D00;
+}
+
+.d.d-mode .skill-tree .core .line.red.r:after {
+    box-shadow: 0.1px 0.1px 1px #B22D00;
+}
+
+.d.d-mode .skill-tree .core .line.red.t:before {
+    box-shadow: -0.1px -0.1px 1px #B22D00;
+}
+
+.d.d-mode .skill-tree .core .line.red.b:after {
+    box-shadow: 0.1px 0.1px 1px #B22D00;
+}
+
+.d.d-mode .skill-tree .core .snake-top > :nth-child(4n-1) {
+    margin-top: 24px;
+}
+
+.d.d-mode .skill-tree .core .snake-top > .active:nth-child(4n-1) {
+    margin-top: 21px;
+}
+
+.d.d-mode .skill-tree .core .snake-top > :nth-child(4n) {
+    transform: rotate(135deg);
+}
+
+.d.d-mode .skill-tree .core .snake-top > :nth-child(4n-2) {
+    transform: rotate(45deg);
+}
+
+.d.d-mode .skill-tree .core .snake-top > :nth-child(4n),
+.d.d-mode .skill-tree .core .snake-top > :nth-child(4n-2) {
+    margin: 24px -5px 0 -5px;
+}
+
+.d.d-mode .skill-tree .core .snake-bottom > :nth-child(4n-3) {
+    margin-top: 24px;
+}
+
+.d.d-mode .skill-tree .core .snake-bottom > .active:nth-child(4n-3) {
+    margin-top: 21px;
+}
+
+.d.d-mode .skill-tree .core .snake-bottom > :nth-child(4n-2) {
+    transform: rotate(135deg);
+}
+
+.d.d-mode .skill-tree .core .snake-bottom > :nth-child(4n) {
+    transform: rotate(45deg);
+}
+
+.d.d-mode .skill-tree .core .snake-bottom > :nth-child(4n),
+.d.d-mode .skill-tree .core .snake-bottom > :nth-child(4n-2) {
+    margin: 24px -5px 0 -5px;
+}
+
+/* Horizontal line */
+.d.d-mode .skill-tree .core .line.lh0 {width: 10px;}
+.d.d-mode .skill-tree .core .line.lh1 {width: 44px;}
+.d.d-mode .skill-tree .core .line.lh2 {width: 78px;}
+.d.d-mode .skill-tree .core .line.lh3 {width: 112px;}
+.d.d-mode .skill-tree .core .line.lh4 {width: 146px;}
+.d.d-mode .skill-tree .core .line.lh5 {width: 180px;}
+.d.d-mode .skill-tree .core .line.lh6 {width: 214px;}
+.d.d-mode .skill-tree .core .line.lh7 {width: 248px;}
+.d.d-mode .skill-tree .core .line.lh8 {width: 282px;}
+.d.d-mode .skill-tree .core .line.lh9 {width: 316px;}
+.d.d-mode .skill-tree .core .line.lh10 {width: 350px;}
+.d.d-mode .skill-tree .core .line.lh11 {width: 384px;}
+.d.d-mode .skill-tree .core .line.lh12 {width: 418px;}
+.d.d-mode .skill-tree .core .line.lh13 {width: 452px;}
+.d.d-mode .skill-tree .core .line.lh14 {width: 486px;}
+.d.d-mode .skill-tree .core .line.lh15 {width: 520px;}
+.d.d-mode .skill-tree .core .line.lh16 {width: 554px;}
+.d.d-mode .skill-tree .core .line.lh17 {width: 588px;}
+.d.d-mode .skill-tree .core .line.lh18 {width: 622px;}
+.d.d-mode .skill-tree .core .line.lh19 {width: 656px;}
+.d.d-mode .skill-tree .core .line.lh20 {width: 690px;}
+.d.d-mode .skill-tree .core .line.big.lh0 {width: 24px;}
+.d.d-mode .skill-tree .core .line.big.lh1 {width: 48px;}
+.d.d-mode .skill-tree .core .line.big.lh2 {width: 72px;}
+.d.d-mode .skill-tree .core .line.big.lh3 {width: 96px;}
+.d.d-mode .skill-tree .core .line.big.lh4 {width: 120px;}
+.d.d-mode .skill-tree .core .line.big.lh5 {width: 144px;}
+.d.d-mode .skill-tree .core .line.big.lh6 {width: 168px;}
+.d.d-mode .skill-tree .core .line.big.lh7 {width: 192px;}
+.d.d-mode .skill-tree .core .line.big.lh8 {width: 216px;}
+.d.d-mode .skill-tree .core .line.big.lh9 {width: 240px;}
+.d.d-mode .skill-tree .core .line.big.lh10 {width: 264px;}
+.d.d-mode .skill-tree .core .line.big.lh11 {width: 288px;}
+.d.d-mode .skill-tree .core .line.big.lh12 {width: 312px;}
+.d.d-mode .skill-tree .core .line.big.lh13 {width: 336px;}
+.d.d-mode .skill-tree .core .line.big.lh14 {width: 360px;}
+.d.d-mode .skill-tree .core .line.big.lh15 {width: 384px;}
+.d.d-mode .skill-tree .core .line.big.lh16 {width: 408px;}
+.d.d-mode .skill-tree .core .line.big.lh17 {width: 432px;}
+.d.d-mode .skill-tree .core .line.big.lh18 {width: 456px;}
+.d.d-mode .skill-tree .core .line.big.lh19 {width: 480px;}
+.d.d-mode .skill-tree .core .line.big.lh20 {width: 504px;}
+.d.d-mode .skill-tree .core .line.lv0 {height: 12px;}
+.d.d-mode .skill-tree .core .line.lv0-12 {height: 24px;}
+.d.d-mode .skill-tree .core .line.lv1 {height: 24px;}
+.d.d-mode .skill-tree .core .line.lv1-12 {height: 36px;}
+.d.d-mode .skill-tree .core .line.lv2 {height: 48px;}
+.d.d-mode .skill-tree .core .line.lv2-12 {height: 60px;}
+.d.d-mode .skill-tree .core .line.lv3 {height: 72px;}
+.d.d-mode .skill-tree .core .line.lv3-12 {height: 84px;}
+.d.d-mode .skill-tree .core .line.lv4 {height: 96px;}
+.d.d-mode .skill-tree .core .line.lv4-12 {height: 108px;}
+.d.d-mode .skill-tree .core .line.lv5 {height: 120px;}
+.d.d-mode .skill-tree .core .line.lv5-12 {height: 132px;}
+.d.d-mode .skill-tree .core .line.lv6 {height: 144px;}
+.d.d-mode .skill-tree .core .line.lv6-12 {height: 156px;}
+.d.d-mode .skill-tree .core .line.lv7 {height: 168px;}
+.d.d-mode .skill-tree .core .line.lv7-12 {height: 180px;}
+.d.d-mode .skill-tree .core .line.lv8 {height: 192px;}
+.d.d-mode .skill-tree .core .line.lv8-12 {height: 204px;}
+.d.d-mode .skill-tree .core .line.lv9 {height: 216px;}
+.d.d-mode .skill-tree .core .line.lv9-12 {height: 228px;}
+.d.d-mode .skill-tree .core .line.lv10 {height: 240px;}
+.d.d-mode .skill-tree .core .line.lv10-12 {height: 252px;}
+.d.d-mode .skill-tree .core .line.lv11 {height: 264px;}
+.d.d-mode .skill-tree .core .line.lv11-12 {height: 276px;}
+.d.d-mode .skill-tree .core .line.lv12 {height: 288px;}
+.d.d-mode .skill-tree .core .line.lv12-12 {height: 300px;}
+.d.d-mode .skill-tree .core .line.lv13 {height: 312px;}
+.d.d-mode .skill-tree .core .line.lv13-12 {height: 324px;}
+.d.d-mode .skill-tree .core .line.lv14 {height: 336px;}
+.d.d-mode .skill-tree .core .line.lv14-12 {height: 348px;}
+.d.d-mode .skill-tree .core .line.lv15 {height: 360px;}
+.d.d-mode .skill-tree .core .line.lv15-12 {height: 372px;}
+.d.d-mode .skill-tree .core .line.lv16 {height: 384px;}
+.d.d-mode .skill-tree .core .line.lv16-12 {height: 396px;}
+.d.d-mode .skill-tree .core .line.lv17 {height: 408px;}
+.d.d-mode .skill-tree .core .line.lv17-12 {height: 420px;}
+.d.d-mode .skill-tree .core .line.lv18 {height: 432px;}
+.d.d-mode .skill-tree .core .line.lv18-12 {height: 444px;}
+.d.d-mode .skill-tree .core .line.lv19 {height: 456px;}
+.d.d-mode .skill-tree .core .line.lv19-12 {height: 468px;}
+.d.d-mode .skill-tree .core .line.lv20 {height: 480px;}
+.d.d-mode .skill-tree .core .line.lv20-12 {height: 492px;}
+
+/* Horizontal margin */
+.d.d-mode .skill-tree .mh0 {margin-left: 12px;}
+.d.d-mode .skill-tree .mh1 {margin-left: 24px;}
+.d.d-mode .skill-tree .mh2 {margin-left: 34px;}
+.d.d-mode .skill-tree .mh3 {margin-left: 44px;}
+.d.d-mode .skill-tree .mh4 {margin-left: 48px;}
+.d.d-mode .skill-tree .mh5 {margin-left: 68px;}
+.d.d-mode .skill-tree .mh6 {margin-left: 72px;}
+.d.d-mode .skill-tree .mh7 {margin-left: 78px;}
+.d.d-mode .skill-tree .mh8 {margin-left: 96px;}
+.d.d-mode .skill-tree .mh9 {margin-left: 102px;}
+.d.d-mode .skill-tree .mh10 {margin-left: 112px;}
+.d.d-mode .skill-tree .mh11 {margin-left: 120px;}
+.d.d-mode .skill-tree .mh12 {margin-left: 136px;}
+.d.d-mode .skill-tree .mh13 {margin-left: 144px;}
+.d.d-mode .skill-tree .mh14 {margin-left: 146px;}
+.d.d-mode .skill-tree .mh15 {margin-left: 168px;}
+.d.d-mode .skill-tree .mh16 {margin-left: 170px;}
+.d.d-mode .skill-tree .mh17 {margin-left: 180px;}
+.d.d-mode .skill-tree .mh18 {margin-left: 192px;}
+.d.d-mode .skill-tree .mh19 {margin-left: 204px;}
+.d.d-mode .skill-tree .mh20 {margin-left: 214px;}
+.d.d-mode .skill-tree .mh21 {margin-left: 216px;}
+.d.d-mode .skill-tree .mh22 {margin-left: 238px;}
+.d.d-mode .skill-tree .mh23 {margin-left: 240px;}
+.d.d-mode .skill-tree .mh24 {margin-left: 248px;}
+.d.d-mode .skill-tree .mh25 {margin-left: 264px;}
+.d.d-mode .skill-tree .mh26 {margin-left: 272px;}
+.d.d-mode .skill-tree .mh27 {margin-left: 282px;}
+.d.d-mode .skill-tree .mh28 {margin-left: 288px;}
+.d.d-mode .skill-tree .mh29 {margin-left: 306px;}
+.d.d-mode .skill-tree .mh30 {margin-left: 312px;}
+.d.d-mode .skill-tree .mh31 {margin-left: 316px;}
+.d.d-mode .skill-tree .mh32 {margin-left: 336px;}
+.d.d-mode .skill-tree .mh33 {margin-left: 340px;}
+.d.d-mode .skill-tree .mh34 {margin-left: 350px;}
+.d.d-mode .skill-tree .mh35 {margin-left: 360px;}
+.d.d-mode .skill-tree .mh36 {margin-left: 374px;}
+.d.d-mode .skill-tree .mh37 {margin-left: 384px;}
+.d.d-mode .skill-tree .mh38 {margin-left: 408px;}
+.d.d-mode .skill-tree .mh39 {margin-left: 418px;}
+.d.d-mode .skill-tree .mh40 {margin-left: 432px;}
+.d.d-mode .skill-tree .mh41 {margin-left: 442px;}
+.d.d-mode .skill-tree .mh42 {margin-left: 452px;}
+.d.d-mode .skill-tree .mh43 {margin-left: 456px;}
+.d.d-mode .skill-tree .mh44 {margin-left: 476px;}
+.d.d-mode .skill-tree .mh45 {margin-left: 480px;}
+.d.d-mode .skill-tree .mh46 {margin-left: 486px;}
+.d.d-mode .skill-tree .mh47 {margin-left: 504px;}
+.d.d-mode .skill-tree .mh48 {margin-left: 510px;}
+.d.d-mode .skill-tree .mh49 {margin-left: 520px;}
+.d.d-mode .skill-tree .mh50 {margin-left: 544px;}
+.d.d-mode .skill-tree .mh51 {margin-left: 554px;}
+.d.d-mode .skill-tree .mh52 {margin-left: 578px;}
+.d.d-mode .skill-tree .mh53 {margin-left: 588px;}
+.d.d-mode .skill-tree .mh54 {margin-left: 612px;}
+.d.d-mode .skill-tree .mh55 {margin-left: 622px;}
+.d.d-mode .skill-tree .mh56 {margin-left: 646px;}
+.d.d-mode .skill-tree .mh57 {margin-left: 656px;}
+.d.d-mode .skill-tree .mh58 {margin-left: 680px;}
+.d.d-mode .skill-tree .mh59 {margin-left: 690px;}
+.d.d-mode .skill-tree .mh60 {margin-left: 714px;}
+
+/* Vertical margin */
+.d.d-mode .skill-tree .mv0 {margin-top: 6px;}
+.d.d-mode .skill-tree .mv1 {margin-top: 12px;}
+.d.d-mode .skill-tree .mv2 {margin-top: 18px;}
+.d.d-mode .skill-tree .mv3 {margin-top: 24px;}
+.d.d-mode .skill-tree .mv4 {margin-top: 30px;}
+.d.d-mode .skill-tree .mv5 {margin-top: 36px;}
+.d.d-mode .skill-tree .mv6 {margin-top: 42px;}
+.d.d-mode .skill-tree .mv7 {margin-top: 48px;}
+.d.d-mode .skill-tree .mv8 {margin-top: 54px;}
+.d.d-mode .skill-tree .mv9 {margin-top: 60px;}
+.d.d-mode .skill-tree .mv10 {margin-top: 66px;}
+.d.d-mode .skill-tree .mv11 {margin-top: 72px;}
+.d.d-mode .skill-tree .mv12 {margin-top: 78px;}
+.d.d-mode .skill-tree .mv13 {margin-top: 84px;}
+.d.d-mode .skill-tree .mv14 {margin-top: 90px;}
+.d.d-mode .skill-tree .mv15 {margin-top: 96px;}
+.d.d-mode .skill-tree .mv16 {margin-top: 102px;}
+.d.d-mode .skill-tree .mv17 {margin-top: 108px;}
+.d.d-mode .skill-tree .mv18 {margin-top: 114px;}
+.d.d-mode .skill-tree .mv19 {margin-top: 120px;}
+.d.d-mode .skill-tree .mv20 {margin-top: 126px;}
+.d.d-mode .skill-tree .mv21 {margin-top: 132px;}
+.d.d-mode .skill-tree .mv22 {margin-top: 138px;}
+.d.d-mode .skill-tree .mv23 {margin-top: 144px;}
+.d.d-mode .skill-tree .mv24 {margin-top: 150px;}
+.d.d-mode .skill-tree .mv25 {margin-top: 156px;}
+.d.d-mode .skill-tree .mv26 {margin-top: 162px;}
+.d.d-mode .skill-tree .mv27 {margin-top: 168px;}
+.d.d-mode .skill-tree .mv28 {margin-top: 174px;}
+.d.d-mode .skill-tree .mv29 {margin-top: 180px;}
+.d.d-mode .skill-tree .mv30 {margin-top: 186px;}
+.d.d-mode .skill-tree .mv31 {margin-top: 192px;}
+.d.d-mode .skill-tree .mv32 {margin-top: 198px;}
+.d.d-mode .skill-tree .mv33 {margin-top: 204px;}
+.d.d-mode .skill-tree .mv34 {margin-top: 210px;}
+.d.d-mode .skill-tree .mv35 {margin-top: 216px;}
+.d.d-mode .skill-tree .mv36 {margin-top: 222px;}
+.d.d-mode .skill-tree .mv37 {margin-top: 228px;}
+.d.d-mode .skill-tree .mv38 {margin-top: 234px;}
+.d.d-mode .skill-tree .mv39 {margin-top: 240px;}
+.d.d-mode .skill-tree .mv40 {margin-top: 246px;}
+.d.d-mode .skill-tree .mv41 {margin-top: 252px;}
+.d.d-mode .skill-tree .mv42 {margin-top: 258px;}
+.d.d-mode .skill-tree .mv43 {margin-top: 264px;}
+.d.d-mode .skill-tree .mv44 {margin-top: 270px;}
+.d.d-mode .skill-tree .mv45 {margin-top: 276px;}
+.d.d-mode .skill-tree .mv46 {margin-top: 282px;}
+.d.d-mode .skill-tree .mv47 {margin-top: 288px;}
+.d.d-mode .skill-tree .mv48 {margin-top: 294px;}
+.d.d-mode .skill-tree .mv49 {margin-top: 300px;}
+.d.d-mode .skill-tree .mv50 {margin-top: 306px;}
+.d.d-mode .skill-tree .mv51 {margin-top: 312px;}
+.d.d-mode .skill-tree .mv52 {margin-top: 318px;}
+.d.d-mode .skill-tree .mv53 {margin-top: 324px;}
+.d.d-mode .skill-tree .mv54 {margin-top: 330px;}
+.d.d-mode .skill-tree .mv55 {margin-top: 336px;}
+.d.d-mode .skill-tree .mv56 {margin-top: 342px;}
+.d.d-mode .skill-tree .mv57 {margin-top: 348px;}
+.d.d-mode .skill-tree .mv58 {margin-top: 354px;}
+.d.d-mode .skill-tree .mv59 {margin-top: 360px;}
+.d.d-mode .skill-tree .mv60 {margin-top: 366px;}
+.d.d-mode .skill-tree .mv61 {margin-top: 372px;}
+.d.d-mode .skill-tree .mv62 {margin-top: 378px;}
+.d.d-mode .skill-tree .mv63 {margin-top: 384px;}
+.d.d-mode .skill-tree .mv64 {margin-top: 390px;}
+.d.d-mode .skill-tree .mv65 {margin-top: 396px;}
+.d.d-mode .skill-tree .mv66 {margin-top: 402px;}
+.d.d-mode .skill-tree .mv67 {margin-top: 408px;}
+.d.d-mode .skill-tree .mv68 {margin-top: 414px;}
+.d.d-mode .skill-tree .mv69 {margin-top: 420px;}
+.d.d-mode .skill-tree .mv70 {margin-top: 426px;}
+.d.d-mode .skill-tree .mv71 {margin-top: 432px;}
+.d.d-mode .skill-tree .mv72 {margin-top: 438px;}
+.d.d-mode .skill-tree .mv73 {margin-top: 444px;}
+.d.d-mode .skill-tree .mv74 {margin-top: 450px;}
+.d.d-mode .skill-tree .mv75 {margin-top: 456px;}
+.d.d-mode .skill-tree .mv76 {margin-top: 462px;}
+.d.d-mode .skill-tree .mv77 {margin-top: 468px;}
+.d.d-mode .skill-tree .mv78 {margin-top: 474px;}
+.d.d-mode .skill-tree .mv79 {margin-top: 480px;}
+.d.d-mode .skill-tree .mv80 {margin-top: 486px;}
+.d.d-mode .skill-tree .mv81 {margin-top: 492px;}
+.d.d-mode .skill-tree .mv82 {margin-top: 498px;}
+.d.d-mode .skill-tree .mv83 {margin-top: 504px;}
+.d.d-mode .skill-tree .mv84 {margin-top: 510px;}
+.d.d-mode .skill-tree .mv85 {margin-top: 516px;}
+.d.d-mode .skill-tree .mv86 {margin-top: 522px;}
+.d.d-mode .skill-tree .mv87 {margin-top: 528px;}
+.d.d-mode .skill-tree .mv88 {margin-top: 534px;}
+.d.d-mode .skill-tree .mv89 {margin-top: 540px;}
+.d.d-mode .skill-tree .mv90 {margin-top: 546px;}
+.d.d-mode .skill-tree .mv91 {margin-top: 552px;}
+.d.d-mode .skill-tree .mv92 {margin-top: 558px;}
+.d.d-mode .skill-tree .mv93 {margin-top: 564px;}
+.d.d-mode .skill-tree .mv94 {margin-top: 570px;}
+.d.d-mode .skill-tree .mv95 {margin-top: 576px;}
+.d.d-mode .skill-tree .mv96 {margin-top: 582px;}
+.d.d-mode .skill-tree .mv97 {margin-top: 588px;}
+.d.d-mode .skill-tree .mv98 {margin-top: 594px;}
+.d.d-mode .skill-tree .mv99 {margin-top: 600px;}
+.d.d-mode .skill-tree .mv100 {margin-top: 606px;}
+.d.d-mode .skill-tree .mv101 {margin-top: 612px;}
+.d.d-mode .skill-tree .mv102 {margin-top: 618px;}
+.d.d-mode .skill-tree .mv103 {margin-top: 624px;}
+.d.d-mode .skill-tree .mv104 {margin-top: 630px;}
+.d.d-mode .skill-tree .mv105 {margin-top: 636px;}
+.d.d-mode .skill-tree .mv106 {margin-top: 642px;}
+.d.d-mode .skill-tree .mv107 {margin-top: 648px;}
+.d.d-mode .skill-tree .mv108 {margin-top: 654px;}
+.d.d-mode .skill-tree .mv109 {margin-top: 660px;}
+.d.d-mode .skill-tree .mv110 {margin-top: 666px;}
+.d.d-mode .skill-tree .mv111 {margin-top: 672px;}
+.d.d-mode .skill-tree .mv112 {margin-top: 678px;}
+.d.d-mode .skill-tree .mv113 {margin-top: 684px;}
+.d.d-mode .skill-tree .mv114 {margin-top: 690px;}
+.d.d-mode .skill-tree .mv115 {margin-top: 696px;}
+.d.d-mode .skill-tree .mv116 {margin-top: 702px;}
+.d.d-mode .skill-tree .mv117 {margin-top: 708px;}
+.d.d-mode .skill-tree .mv118 {margin-top: 714px;}
+.d.d-mode .skill-tree .mv119 {margin-top: 720px;}
+.d.d-mode .skill-tree .mv120 {margin-top: 726px;}
+.d.d-mode .skill-tree .mv121 {margin-top: 732px;}
+.d.d-mode .skill-tree .mv122 {margin-top: 738px;}
+.d.d-mode .skill-tree .mv123 {margin-top: 744px;}
+.d.d-mode .skill-tree .mv124 {margin-top: 750px;}
+.d.d-mode .skill-tree .mv125 {margin-top: 756px;}
+.d.d-mode .skill-tree .mv126 {margin-top: 762px;}
+.d.d-mode .skill-tree .mv127 {margin-top: 768px;}
+.d.d-mode .skill-tree .mv128 {margin-top: 774px;}
+.d.d-mode .skill-tree .mv129 {margin-top: 780px;}
+.d.d-mode .skill-tree .mv130 {margin-top: 786px;}
+.d.d-mode .skill-tree .mv131 {margin-top: 792px;}
+.d.d-mode .skill-tree .mv132 {margin-top: 798px;}
+.d.d-mode .skill-tree .mv133 {margin-top: 804px;}
+.d.d-mode .skill-tree .mv134 {margin-top: 810px;}
+.d.d-mode .skill-tree .mv135 {margin-top: 816px;}
+.d.d-mode .skill-tree .mv136 {margin-top: 822px;}
+.d.d-mode .skill-tree .mv137 {margin-top: 828px;}
+.d.d-mode .skill-tree .mv138 {margin-top: 834px;}
+.d.d-mode .skill-tree .mv139 {margin-top: 840px;}
+.d.d-mode .skill-tree .mv140 {margin-top: 846px;}
+.d.d-mode .skill-tree .mv141 {margin-top: 852px;}
+.d.d-mode .skill-tree .mv142 {margin-top: 858px;}
+.d.d-mode .skill-tree .mv143 {margin-top: 864px;}
+.d.d-mode .skill-tree .mv144 {margin-top: 870px;}
+.d.d-mode .skill-tree .mv145 {margin-top: 876px;}
+.d.d-mode .skill-tree .mv146 {margin-top: 882px;}
+.d.d-mode .skill-tree .mv147 {margin-top: 888px;}
+.d.d-mode .skill-tree .mv148 {margin-top: 894px;}
+.d.d-mode .skill-tree .mv149 {margin-top: 900px;}
+.d.d-mode .skill-tree .mv150 {margin-top: 906px;}
+.d.d-mode .skill-tree .mv151 {margin-top: 912px;}
+.d.d-mode .skill-tree .mv152 {margin-top: 918px;}
+.d.d-mode .skill-tree .mv153 {margin-top: 924px;}
+.d.d-mode .skill-tree .mv154 {margin-top: 930px;}
+.d.d-mode .skill-tree .mv155 {margin-top: 936px;}
+.d.d-mode .skill-tree .mv156 {margin-top: 942px;}
+.d.d-mode .skill-tree .mv157 {margin-top: 948px;}
+.d.d-mode .skill-tree .mv158 {margin-top: 954px;}
+.d.d-mode .skill-tree .mv159 {margin-top: 960px;}
+.d.d-mode .skill-tree .mv160 {margin-top: 966px;}
+
+
+/* Connectors */
+.d.d-mode .skill-tree .cl,
+.d.d-mode .skill-tree .cl-1,
+.d.d-mode .skill-tree .cr {
+    position: relative;
+    z-index: 1;
+}
+
+.d.d-mode .skill-tree .cl {
+    margin-left: -12px;
+    padding-left: 12px;
+}
+
+.d.d-mode .skill-tree .cl-1 {
+    margin-left: -22px;
+    padding-left: 12px;
+}
+
+.d.d-mode .skill-tree .cr {
+    margin-right: -11px;
+    padding-right: 12px;
+}
+
+/* Snake connectors */
+.d.d-mode .skill-tree .sct,
+.d.d-mode .skill-tree .scb {
+    position: relative;
+    z-index: 1;
+}
+/* Top */
+.d.d-mode .skill-tree .sct {
+    margin-bottom: -24px;
+    padding-bottom: 24px;
+}
+/* Top middle */
+.d.d-mode .skill-tree .sctm {
+    margin-top: -12px;
+    padding-top: 12px;
+}
+/* Bottom */
+.d.d-mode .skill-tree .scb {
+    margin-top: -24px;
+    padding-top: 24px;
+}
+/* Bottom middle */
+.d.d-mode .skill-tree .scbm {
+    margin-bottom: -12px;
+    padding-bottom: 12px;
+}
+
+.d.d-mode .skill-tree .core .branch {
+    z-index: 1;
+    position: relative;
+}
+
+/* Voracity lines */
+.d.d-mode .skill-tree .branch-line {
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+}
+
+.d.d-mode .skill-tree .branch-line.l:before,
+.d.d-mode .skill-tree .branch-line.active.b:after {
+    position: absolute;
+}
+
+.d.d-mode .skill-tree .branch-line.active.b:after {
+    right: 39px;
+    bottom: -10px;
+}
+
+.d.d-mode .skill-tree .branch-line.l:before {
+    top: 41px;
+}
+
+.d.d-mode .skill-tree .branch-line:first-child:before {
+    left: -35px;
+}
+
+.d.d-mode .skill-tree .sts-criminality-icon.branch-line.l:before {
+    right: 70px;
+}
+
+.d.d-mode .skill-tree .sts-criminality-icon.branch-line.l + *:before {
+    left: -44px;
+}
+
+.d.d-mode .skill-tree .sts-fortitude-icon.branch-line.l:before {
+    right: 61px;
+}
+
+.d.d-mode .skill-tree .sts-fortitude-icon.branch-line.l + *:before {
+    left: -51px;
+}
+
+.d.d-mode .skill-tree .sts-voracity-icon.branch-line.l:before {
+    right: 68px;
+}
+
+.d.d-mode .skill-tree .sts-voracity-icon.branch-line.l + *:before {
+    left: -45px;
+}
+
+.d.d-mode .skill-tree .sts-toleration-icon.branch-line.l:before {
+    right: 68px;
+}
+
+.d.d-mode .skill-tree .sts-toleration-icon.branch-line.l + *:before {
+    left: -47px;
+}
+
+.d.d-mode .skill-tree .sts-excursion-icon.branch-line.l:before {
+    right: 68px;
+}
+
+.d.d-mode .skill-tree .sts-excursion-icon.branch-line.l + *:before {
+    left: -44px;
+}
+
+.d.d-mode .skill-tree .sts-steadfast-icon.branch-line.l:before {
+    right: 68px;
+}
+
+.d.d-mode .skill-tree .sts-steadfast-icon.branch-line.l + *:before {
+    left: -47px;
+}
+
+.d.d-mode .skill-tree .sts-aggression-icon.branch-line.l:before {
+    right: 62px;
+}
+
+.d.d-mode .skill-tree .sts-aggression-icon.branch-line.l + *:before {
+    left: -53px;
+}
+
+.d.d-mode .skill-tree .sts-suppression-icon.branch-line.l:before {
+    right: 57px;
+}
+
+.d.d-mode .skill-tree .sts-suppression-icon.branch-line.l + *:before {
+    left: -56px;
+}
+
+.d.d-mode .skill-tree .sts-criminality-icon.branch-line.active.b:after {
+    top: 64px;
+}
+
+.d.d-mode .skill-tree .sts-fortitude-icon.branch-line.active.b:after {
+    top: 63px;
+}
+
+.d.d-mode .skill-tree .sts-voracity-icon.branch-line.active.b:after {
+    top: 61px;
+}
+
+.d.d-mode .skill-tree .sts-toleration-icon.branch-line.active.b:after {
+    top: 63px;
+}
+
+.d.d-mode .skill-tree .sts-excursion-icon.branch-line.active.b:after {
+    top: 65px;
+}
+
+.d.d-mode .skill-tree .sts-steadfast-icon.branch-line.active.b:after {
+    top: 64px;
+}
+
+.d.d-mode .skill-tree .sts-aggression-icon.branch-line.active.b:after {
+    top: 67px;
+}
+
+.d.d-mode .skill-tree .sts-suppression-icon.branch-line.active.b:after {
+    top: 63px;
+}
+
+.d.d-mode .skill-tree .branch-empty.branch-line .circle-box {
+    cursor: default;
+}
+
+.d.d-mode .skill-tree .unselected.branch-empty.branch-line .circle-box {
+    cursor: pointer;
+}
+
+.d.d-mode .skill-tree .branch-empty.branch-line.l + *:before {
+    left: -66px;
+}
+
+.d.d-mode .skill-tree .branch-empty.active.branch-line.l {
+    z-index: 3;
+}
+
+.d.d-mode .skill-tree .branch-line:first-child ~ .line {
+    display: none;
+}
+
+.d.d-mode a.branch-line.active:first-child ~ .line,
+.d.d-mode a.branch-line:first-child ~ .active ~ .line {
+    display: block;
+    margin: 10px 0 0 -35px;
+}
+
+.d.d-mode div.branch-line.branch-empty.active ~ .line {
+    display: none;
+}
+
+/* branch-line - 1 */
+.d.d-mode a.branch-line.active:first-child ~ .line {
+    width: 76px;
+}
+/* branch-line - 2 */
+.d.d-mode a.branch-line:first-child + *.active ~ .line {
+    width: 190px;
+}
+/* branch-line - 3 */
+.d.d-mode a.branch-line:first-child + * + *.active ~ .line {
+    width: 304px;
+}
+/* branch-line - 4 */
+.d.d-mode a.branch-line:first-child + * + * + *.active ~ .line {
+    width: 418px;
+}
+/* branch-line - 5 */
+.d.d-mode a.branch-line:first-child + * + * + * + *.active ~ .line {
+    width: 532px;
+}
+/* branch-line - 6 */
+.d.d-mode a.branch-line:first-child + * + * + * + * + *.active ~ .line {
+    width: 646px;
+}
+
+.d.d-mode .skill-tree .branch-line.branch-empty {
+    margin-top: 29px;
+    padding-left: 24px;
+    margin-right: 32px;
+}
+
+.d.d-mode .skill-tree .branch-line.branch-empty.l:before {
+    right: 24px;
+    top: 12px;
+}
+
+
+@media screen and (max-width: 784px) {
+    .r .skill-tree [class*="sts-"][class*="-icon"] {
+        display: block;
+    }
+
+    .r .skill-tree .core div {
+        display: table;
+    }
+
+    .r .skill-tree .core .contributions-wrap {
+        display: block;
+    }
+
+    .r .skill-tree .core .description-wrap .desc div:not(.options-confirm-wrap),
+    .r .skill-tree .core .description-wrap .unset-time div {
+        display: inline-block;
+    }
+
+    .r .skill-tree .core .line {
+        display: block;
+    }
+
+    .r .skill-tree .core .line,
+    .r .skill-tree .branch-line.l:before,
+    .r .skill-tree .branch-line.active.b:after {
+        position: relative;
+        background-color: #4A4A4A;
+        box-shadow: 0 0 3px #222;
+        z-index: 0;
+    }
+
+    .r .skill-tree .branch-line.l:before,
+    .r .skill-tree .branch-line.active.b:after {
+        content: "";
+        display: block;
+    }
+
+    .r .skill-tree .core .line[class*="line-color"],
+    .r .skill-tree .branch-line.l.line-color:before,
+    .r .skill-tree .branch-line.active.b.line-color:after {
+        background-color: rgba(133, 178, 0, 0.6);
+    }
+
+    .r .skill-tree.war-mode .core .line[class*="line-color"],
+    .r .skill-tree.war-mode .branch-line.l.line-color:before,
+    .r .skill-tree.war-mode .branch-line.active.b.line-color:after {
+        background-color: rgba(255, 92, 38, 1);
+    }
+
+    .r .skill-tree .core .line[class*="lh"],
+    .r .skill-tree .branch-line.l:before {
+        width: 1px;
+    }
+
+    .r .skill-tree .core .line[class*="lh"] {
+        margin-left: 11px;
+        margin-right: 12px;
+    }
+
+    .r .skill-tree .core .line[class*="lv"],
+    .r .skill-tree .branch-line.active.b:after {
+        height: 1px;
+    }
+
+    .r .skill-tree .core .line[class*="lv"] {
+        margin-top: 11px;
+        margin-bottom: 12px;
+    }
+
+    .r .skill-tree .core .line[class*="m-lh"] {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .r .skill-tree .core .line.l:before,
+    .r .skill-tree .core .line.r:after,
+    .r .skill-tree .core .line.t:before,
+    .r .skill-tree .core .line.b:after {
+        content: "";
+        display: block;
+        position: absolute;
+        height: 3px;
+        width: 3px;
+        background-color: #4A4A4A;
+    }
+
+    .r .skill-tree .core .line[class*="line-color"].l:before,
+    .r .skill-tree .core .line[class*="line-color"].r:after,
+    .r .skill-tree .core .line[class*="line-color"].t:before,
+    .r .skill-tree .core .line[class*="line-color"].b:after {
+        background-color: rgba(133, 178, 0, 0.6);
+    }
+
+    .r .skill-tree.war-mode .core .line[class*="line-color"].l:before,
+    .r .skill-tree.war-mode .core .line[class*="line-color"].r:after,
+    .r .skill-tree.war-mode .core .line[class*="line-color"].t:before,
+    .r .skill-tree.war-mode .core .line[class*="line-color"].b:after {
+        background-color: rgba(255, 92, 38, 1);
+    }
+
+    .r .skill-tree .core .line.l:before,
+    .r .skill-tree .core .line.r:after {
+        left: -1px;
+        transform: matrix(1,3,1,-3,0,0);
+    }
+
+    .r .skill-tree .core .line.t:before,
+    .r .skill-tree .core .line.b:after {
+        top: -1px;
+        transform: matrix(3,1,3,-1,0,0);
+    }
+
+    .r .skill-tree .core .line.l:before {
+        top: -3px;
+        box-shadow: -0.1px -0.1px 1px #222;
+    }
+
+    .r .skill-tree .core .line.r:after {
+        bottom: -3px;
+        box-shadow: 0.1px 0.1px 1px #222;
+    }
+
+    .r .skill-tree .core .line.t:before {
+        left: -3px;
+        box-shadow: -0.1px -0.1px 1px #222;
+    }
+
+    .r .skill-tree .core .line.b:after {
+        right: -3px;
+        box-shadow: 0.1px 0.1px 1px #222;
+    }
+
+    .r .skill-tree .core .line.red.l:before {
+        box-shadow: -0.1px -0.1px 1px #B22D00;
+    }
+
+    .r .skill-tree .core .line.red.r:after {
+        box-shadow: 0.1px 0.1px 1px #B22D00;
+    }
+
+    .r .skill-tree .core .line.red.t:before {
+        box-shadow: -0.1px -0.1px 1px #B22D00;
+    }
+
+    .r .skill-tree .core .line.red.b:after {
+        box-shadow: 0.1px 0.1px 1px #B22D00;
+    }
+
+    .r .skill-tree .core .snake-top > :nth-child(4n-3) {
+        margin-left: 25px;
+    }
+
+    .r .skill-tree .core .snake-top > .active:nth-child(4n-3) {
+        margin-left: 22px;
+    }
+
+    .r .skill-tree .core .snake-top > :nth-child(4n) {
+        transform: rotate(135deg);
+    }
+
+    .r .skill-tree .core .snake-top > :nth-child(4n-2) {
+        transform: rotate(45deg);
+    }
+
+    .r .skill-tree .core .snake-top > :nth-child(4n),
+    .r .skill-tree .core .snake-top > :nth-child(4n-2) {
+        margin: -5px 0 -5px 24px;
+    }
+
+    .r .skill-tree .core .snake-bottom > :nth-child(4n-1) {
+        margin-left: 24px;
+    }
+
+    .r .skill-tree .core .snake-bottom > .active:nth-child(4n-1) {
+        margin-left: 21px;
+    }
+
+    .r .skill-tree .core .snake-bottom > :nth-child(4n-2) {
+        transform: rotate(135deg);
+    }
+
+    .r .skill-tree .core .snake-bottom > :nth-child(4n) {
+        transform: rotate(45deg);
+    }
+
+    .r .skill-tree .core .snake-bottom > :nth-child(4n),
+    .r .skill-tree .core .snake-bottom > :nth-child(4n-2) {
+        margin: -5px 0 -5px 24px;
+    }
+
+    .r .skill-tree .core .line.lh0 {height: 10px;}
+    .r .skill-tree .core .line.lh1 {height: 44px;}
+    .r .skill-tree .core .line.lh2 {height: 78px;}
+    .r .skill-tree .core .line.lh3 {height: 112px;}
+    .r .skill-tree .core .line.lh4 {height: 146px;}
+    .r .skill-tree .core .line.lh5 {height: 180px;}
+    .r .skill-tree .core .line.lh6 {height: 214px;}
+    .r .skill-tree .core .line.lh7 {height: 248px;}
+    .r .skill-tree .core .line.lh8 {height: 282px;}
+    .r .skill-tree .core .line.lh9 {height: 316px;}
+    .r .skill-tree .core .line.lh10 {height: 350px;}
+    .r .skill-tree .core .line.lh11 {height: 384px;}
+    .r .skill-tree .core .line.lh12 {height: 418px;}
+    .r .skill-tree .core .line.lh13 {height: 452px;}
+    .r .skill-tree .core .line.lh14 {height: 486px;}
+    .r .skill-tree .core .line.lh15 {height: 520px;}
+    .r .skill-tree .core .line.lh16 {height: 554px;}
+    .r .skill-tree .core .line.lh17 {height: 588px;}
+    .r .skill-tree .core .line.lh18 {height: 622px;}
+    .r .skill-tree .core .line.lh19 {height: 656px;}
+    .r .skill-tree .core .line.lh20 {height: 690px;}
+    .r .skill-tree .core .line.big.lh0 {height: 24px;}
+    .r .skill-tree .core .line.big.lh1 {height: 48px;}
+    .r .skill-tree .core .line.big.lh2 {height: 72px;}
+    .r .skill-tree .core .line.big.lh3 {height: 96px;}
+    .r .skill-tree .core .line.big.lh4 {height: 120px;}
+    .r .skill-tree .core .line.big.lh5 {height: 144px;}
+    .r .skill-tree .core .line.big.lh6 {height: 168px;}
+    .r .skill-tree .core .line.big.lh7 {height: 192px;}
+    .r .skill-tree .core .line.big.lh8 {height: 216px;}
+    .r .skill-tree .core .line.big.lh9 {height: 240px;}
+    .r .skill-tree .core .line.big.lh10 {height: 264px;}
+    .r .skill-tree .core .line.big.lh11 {height: 288px;}
+    .r .skill-tree .core .line.big.lh12 {height: 312px;}
+    .r .skill-tree .core .line.big.lh13 {height: 336px;}
+    .r .skill-tree .core .line.big.lh14 {height: 360px;}
+    .r .skill-tree .core .line.big.lh15 {height: 384px;}
+    .r .skill-tree .core .line.big.lh16 {height: 408px;}
+    .r .skill-tree .core .line.big.lh17 {height: 432px;}
+    .r .skill-tree .core .line.big.lh18 {height: 456px;}
+    .r .skill-tree .core .line.big.lh19 {height: 480px;}
+    .r .skill-tree .core .line.big.lh20 {height: 504px;}
+    .r .skill-tree .core .line.lv0 {width: 12px;}
+    .r .skill-tree .core .line.lv0-12 {width: 24px;}
+    .r .skill-tree .core .line.lv1 {width: 24px;}
+    .r .skill-tree .core .line.lv1-12 {width: 36px;}
+    .r .skill-tree .core .line.lv2 {width: 48px;}
+    .r .skill-tree .core .line.lv2-12 {width: 60px;}
+    .r .skill-tree .core .line.lv3 {width: 72px;}
+    .r .skill-tree .core .line.lv3-12 {width: 84px;}
+    .r .skill-tree .core .line.lv4 {width: 96px;}
+    .r .skill-tree .core .line.lv4-12 {width: 108px;}
+    .r .skill-tree .core .line.lv5 {width: 120px;}
+    .r .skill-tree .core .line.lv5-12 {width: 132px;}
+    .r .skill-tree .core .line.lv6 {width: 144px;}
+    .r .skill-tree .core .line.lv6-12 {width: 156px;}
+    .r .skill-tree .core .line.lv7 {width: 168px;}
+    .r .skill-tree .core .line.lv7-12 {width: 180px;}
+    .r .skill-tree .core .line.lv8 {width: 192px;}
+    .r .skill-tree .core .line.lv8-12 {width: 204px;}
+    .r .skill-tree .core .line.lv9 {width: 216px;}
+    .r .skill-tree .core .line.lv9-12 {width: 228px;}
+    .r .skill-tree .core .line.lv10 {width: 240px;}
+    .r .skill-tree .core .line.lv10-12 {width: 252px;}
+    .r .skill-tree .core .line.lv11 {width: 264px;}
+    .r .skill-tree .core .line.lv11-12 {width: 276px;}
+    .r .skill-tree .core .line.lv12 {width: 288px;}
+    .r .skill-tree .core .line.lv12-12 {width: 300px;}
+    .r .skill-tree .core .line.lv13 {width: 312px;}
+    .r .skill-tree .core .line.lv13-12 {width: 324px;}
+    .r .skill-tree .core .line.lv14 {width: 336px;}
+    .r .skill-tree .core .line.lv14-12 {width: 348px;}
+    .r .skill-tree .core .line.lv15 {width: 360px;}
+    .r .skill-tree .core .line.lv15-12 {width: 372px;}
+    .r .skill-tree .core .line.lv16 {width: 384px;}
+    .r .skill-tree .core .line.lv16-12 {width: 396px;}
+    .r .skill-tree .core .line.lv17 {width: 408px;}
+    .r .skill-tree .core .line.lv17-12 {width: 420px;}
+    .r .skill-tree .core .line.lv18 {width: 432px;}
+    .r .skill-tree .core .line.lv18-12 {width: 444px;}
+    .r .skill-tree .core .line.lv19 {width: 456px;}
+    .r .skill-tree .core .line.lv19-12 {width: 468px;}
+    .r .skill-tree .core .line.lv20 {width: 480px;}
+    .r .skill-tree .core .line.lv20-12 {width: 492px;}
+
+    .r .skill-tree .core .line.t-lv0 {height: 10px;}
+    .r .skill-tree .core .line.t-lv1 {height: 44px;}
+    .r .skill-tree .core .line.t-lv2 {height: 78px;}
+    .r .skill-tree .core .line.t-lv3 {height: 112px;}
+    .r .skill-tree .core .line.t-lv4 {height: 146px;}
+    .r .skill-tree .core .line.t-lv5 {height: 180px;}
+    .r .skill-tree .core .line.t-lv6 {height: 214px;}
+    .r .skill-tree .core .line.t-lv7 {height: 248px;}
+    .r .skill-tree .core .line.t-lv8 {height: 282px;}
+    .r .skill-tree .core .line.t-lv9 {height: 316px;}
+    .r .skill-tree .core .line.t-lv10 {height: 350px;}
+    .r .skill-tree .core .line.t-lv11 {height: 384px;}
+    .r .skill-tree .core .line.t-lv12 {height: 418px;}
+    .r .skill-tree .core .line.t-lv13 {height: 452px;}
+    .r .skill-tree .core .line.t-lv14 {height: 486px;}
+    .r .skill-tree .core .line.t-lv15 {height: 520px;}
+    .r .skill-tree .core .line.t-lv16 {height: 554px;}
+    .r .skill-tree .core .line.t-lv17 {height: 588px;}
+    .r .skill-tree .core .line.t-lv18 {height: 622px;}
+    .r .skill-tree .core .line.t-lv19 {height: 656px;}
+    .r .skill-tree .core .line.t-lv20 {height: 690px;}
+    .r .skill-tree .core .line.t-big.t-lh0 {height: 24px;}
+    .r .skill-tree .core .line.t-big.t-lh1 {height: 48px;}
+    .r .skill-tree .core .line.t-big.t-lh2 {height: 72px;}
+    .r .skill-tree .core .line.t-big.t-lh3 {height: 96px;}
+    .r .skill-tree .core .line.t-big.t-lh4 {height: 120px;}
+    .r .skill-tree .core .line.t-big.t-lh5 {height: 144px;}
+    .r .skill-tree .core .line.t-big.t-lh6 {height: 168px;}
+    .r .skill-tree .core .line.t-big.t-lh7 {height: 192px;}
+    .r .skill-tree .core .line.t-big.t-lh8 {height: 216px;}
+    .r .skill-tree .core .line.t-big.t-lh9 {height: 240px;}
+    .r .skill-tree .core .line.t-big.t-lh10 {height: 264px;}
+    .r .skill-tree .core .line.t-big.t-lh11 {height: 288px;}
+    .r .skill-tree .core .line.t-big.t-lh12 {height: 312px;}
+    .r .skill-tree .core .line.t-big.t-lh13 {height: 336px;}
+    .r .skill-tree .core .line.t-big.t-lh14 {height: 360px;}
+    .r .skill-tree .core .line.t-big.t-lh15 {height: 384px;}
+    .r .skill-tree .core .line.t-big.t-lh16 {height: 408px;}
+    .r .skill-tree .core .line.t-big.t-lh17 {height: 432px;}
+    .r .skill-tree .core .line.t-big.t-lh18 {height: 456px;}
+    .r .skill-tree .core .line.t-big.t-lh19 {height: 480px;}
+    .r .skill-tree .core .line.t-big.t-lh20 {height: 504px;}
+    .r .skill-tree .core .line.t-lh0 {width: 10px;}
+    .r .skill-tree .core .line.t-lh1 {width: 24px;}
+    .r .skill-tree .core .line.t-lh2 {width: 48px;}
+    .r .skill-tree .core .line.t-lh3 {width: 72px;}
+    .r .skill-tree .core .line.t-lh4 {width: 96px;}
+    .r .skill-tree .core .line.t-lh5 {width: 120px;}
+    .r .skill-tree .core .line.t-lh6 {width: 144px;}
+    .r .skill-tree .core .line.t-lh7 {width: 168px;}
+    .r .skill-tree .core .line.t-lh8 {width: 192px;}
+    .r .skill-tree .core .line.t-lh9 {width: 216px;}
+    .r .skill-tree .core .line.t-lh10 {width: 240px;}
+    .r .skill-tree .core .line.t-lh11 {width: 264px;}
+    .r .skill-tree .core .line.t-lh12 {width: 288px;}
+    .r .skill-tree .core .line.t-lh13 {width: 312px;}
+    .r .skill-tree .core .line.t-lh14 {width: 336px;}
+    .r .skill-tree .core .line.t-lh15 {width: 360px;}
+    .r .skill-tree .core .line.t-lh16 {width: 384px;}
+    .r .skill-tree .core .line.t-lh17 {width: 408px;}
+    .r .skill-tree .core .line.t-lh18 {width: 432px;}
+    .r .skill-tree .core .line.t-lh19 {width: 456px;}
+    .r .skill-tree .core .line.t-lh20 {width: 480px;}
+
+    .r .skill-tree .mh0 {margin-top: 12px;}
+    .r .skill-tree .mh1 {margin-top: 24px;}
+    .r .skill-tree .mh2 {margin-top: 34px;}
+    .r .skill-tree .mh3 {margin-top: 44px;}
+    .r .skill-tree .mh4 {margin-top: 48px;}
+    .r .skill-tree .mh5 {margin-top: 68px;}
+    .r .skill-tree .mh6 {margin-top: 72px;}
+    .r .skill-tree .mh7 {margin-top: 78px;}
+    .r .skill-tree .mh8 {margin-top: 96px;}
+    .r .skill-tree .mh9 {margin-top: 102px;}
+    .r .skill-tree .mh10 {margin-top: 112px;}
+    .r .skill-tree .mh11 {margin-top: 120px;}
+    .r .skill-tree .mh12 {margin-top: 136px;}
+    .r .skill-tree .mh13 {margin-top: 144px;}
+    .r .skill-tree .mh14 {margin-top: 146px;}
+    .r .skill-tree .mh15 {margin-top: 168px;}
+    .r .skill-tree .mh16 {margin-top: 170px;}
+    .r .skill-tree .mh17 {margin-top: 180px;}
+    .r .skill-tree .mh18 {margin-top: 192px;}
+    .r .skill-tree .mh19 {margin-top: 204px;}
+    .r .skill-tree .mh20 {margin-top: 214px;}
+    .r .skill-tree .mh21 {margin-top: 216px;}
+    .r .skill-tree .mh22 {margin-top: 238px;}
+    .r .skill-tree .mh23 {margin-top: 240px;}
+    .r .skill-tree .mh24 {margin-top: 248px;}
+    .r .skill-tree .mh25 {margin-top: 264px;}
+    .r .skill-tree .mh26 {margin-top: 272px;}
+    .r .skill-tree .mh27 {margin-top: 282px;}
+    .r .skill-tree .mh28 {margin-top: 288px;}
+    .r .skill-tree .mh29 {margin-top: 306px;}
+    .r .skill-tree .mh30 {margin-top: 312px;}
+    .r .skill-tree .mh31 {margin-top: 316px;}
+    .r .skill-tree .mh32 {margin-top: 336px;}
+    .r .skill-tree .mh33 {margin-top: 340px;}
+    .r .skill-tree .mh34 {margin-top: 350px;}
+    .r .skill-tree .mh35 {margin-top: 360px;}
+    .r .skill-tree .mh36 {margin-top: 374px;}
+    .r .skill-tree .mh37 {margin-top: 384px;}
+    .r .skill-tree .mh38 {margin-top: 408px;}
+    .r .skill-tree .mh39 {margin-top: 418px;}
+    .r .skill-tree .mh40 {margin-top: 432px;}
+    .r .skill-tree .mh41 {margin-top: 442px;}
+    .r .skill-tree .mh42 {margin-top: 452px;}
+    .r .skill-tree .mh43 {margin-top: 456px;}
+    .r .skill-tree .mh44 {margin-top: 476px;}
+    .r .skill-tree .mh45 {margin-top: 480px;}
+    .r .skill-tree .mh46 {margin-top: 486px;}
+    .r .skill-tree .mh47 {margin-top: 504px;}
+    .r .skill-tree .mh48 {margin-top: 510px;}
+    .r .skill-tree .mh49 {margin-top: 520px;}
+    .r .skill-tree .mh50 {margin-top: 544px;}
+    .r .skill-tree .mh51 {margin-top: 554px;}
+    .r .skill-tree .mh52 {margin-top: 578px;}
+    .r .skill-tree .mh53 {margin-top: 588px;}
+    .r .skill-tree .mh54 {margin-top: 612px;}
+    .r .skill-tree .mh55 {margin-top: 622px;}
+    .r .skill-tree .mh56 {margin-top: 646px;}
+    .r .skill-tree .mh57 {margin-top: 656px;}
+    .r .skill-tree .mh58 {margin-top: 680px;}
+    .r .skill-tree .mh59 {margin-top: 690px;}
+    .r .skill-tree .mh60 {margin-top: 714px;}
+
+    .r .skill-tree .mv0 {margin-left: 6px;}
+    .r .skill-tree .mv1 {margin-left: 12px;}
+    .r .skill-tree .mv2 {margin-left: 18px;}
+    .r .skill-tree .mv3 {margin-left: 24px;}
+    .r .skill-tree .mv4 {margin-left: 30px;}
+    .r .skill-tree .mv5 {margin-left: 36px;}
+    .r .skill-tree .mv6 {margin-left: 42px;}
+    .r .skill-tree .mv7 {margin-left: 48px;}
+    .r .skill-tree .mv8 {margin-left: 54px;}
+    .r .skill-tree .mv9 {margin-left: 60px;}
+    .r .skill-tree .mv10 {margin-left: 66px;}
+    .r .skill-tree .mv11 {margin-left: 72px;}
+    .r .skill-tree .mv12 {margin-left: 78px;}
+    .r .skill-tree .mv13 {margin-left: 84px;}
+    .r .skill-tree .mv14 {margin-left: 90px;}
+    .r .skill-tree .mv15 {margin-left: 96px;}
+    .r .skill-tree .mv16 {margin-left: 102px;}
+    .r .skill-tree .mv17 {margin-left: 108px;}
+    .r .skill-tree .mv18 {margin-left: 114px;}
+    .r .skill-tree .mv19 {margin-left: 120px;}
+    .r .skill-tree .mv20 {margin-left: 126px;}
+    .r .skill-tree .mv21 {margin-left: 132px;}
+    .r .skill-tree .mv22 {margin-left: 138px;}
+    .r .skill-tree .mv23 {margin-left: 144px;}
+    .r .skill-tree .mv24 {margin-left: 150px;}
+    .r .skill-tree .mv25 {margin-left: 156px;}
+    .r .skill-tree .mv26 {margin-left: 162px;}
+    .r .skill-tree .mv27 {margin-left: 168px;}
+    .r .skill-tree .mv28 {margin-left: 174px;}
+    .r .skill-tree .mv29 {margin-left: 180px;}
+    .r .skill-tree .mv30 {margin-left: 186px;}
+    .r .skill-tree .mv31 {margin-left: 192px;}
+    .r .skill-tree .mv32 {margin-left: 198px;}
+    .r .skill-tree .mv33 {margin-left: 204px;}
+    .r .skill-tree .mv34 {margin-left: 210px;}
+    .r .skill-tree .mv35 {margin-left: 216px;}
+    .r .skill-tree .mv36 {margin-left: 222px;}
+    .r .skill-tree .mv37 {margin-left: 228px;}
+    .r .skill-tree .mv38 {margin-left: 234px;}
+    .r .skill-tree .mv39 {margin-left: 240px;}
+    .r .skill-tree .mv40 {margin-left: 246px;}
+    .r .skill-tree .mv41 {margin-left: 252px;}
+    .r .skill-tree .mv42 {margin-left: 258px;}
+    .r .skill-tree .mv43 {margin-left: 264px;}
+    .r .skill-tree .mv44 {margin-left: 270px;}
+    .r .skill-tree .mv45 {margin-left: 276px;}
+    .r .skill-tree .mv46 {margin-left: 282px;}
+    .r .skill-tree .mv47 {margin-left: 288px;}
+    .r .skill-tree .mv48 {margin-left: 294px;}
+    .r .skill-tree .mv49 {margin-left: 300px;}
+    .r .skill-tree .mv50 {margin-left: 306px;}
+    .r .skill-tree .mv51 {margin-left: 312px;}
+    .r .skill-tree .mv52 {margin-left: 318px;}
+    .r .skill-tree .mv53 {margin-left: 324px;}
+    .r .skill-tree .mv54 {margin-left: 330px;}
+    .r .skill-tree .mv55 {margin-left: 336px;}
+    .r .skill-tree .mv56 {margin-left: 342px;}
+    .r .skill-tree .mv57 {margin-left: 348px;}
+    .r .skill-tree .mv58 {margin-left: 354px;}
+    .r .skill-tree .mv59 {margin-left: 360px;}
+    .r .skill-tree .mv60 {margin-left: 366px;}
+    .r .skill-tree .mv61 {margin-left: 372px;}
+    .r .skill-tree .mv62 {margin-left: 378px;}
+    .r .skill-tree .mv63 {margin-left: 384px;}
+    .r .skill-tree .mv64 {margin-left: 390px;}
+    .r .skill-tree .mv65 {margin-left: 396px;}
+    .r .skill-tree .mv66 {margin-left: 402px;}
+    .r .skill-tree .mv67 {margin-left: 408px;}
+    .r .skill-tree .mv68 {margin-left: 414px;}
+    .r .skill-tree .mv69 {margin-left: 420px;}
+    .r .skill-tree .mv70 {margin-left: 426px;}
+    .r .skill-tree .mv71 {margin-left: 432px;}
+    .r .skill-tree .mv72 {margin-left: 438px;}
+    .r .skill-tree .mv73 {margin-left: 444px;}
+    .r .skill-tree .mv74 {margin-left: 450px;}
+    .r .skill-tree .mv75 {margin-left: 456px;}
+    .r .skill-tree .mv76 {margin-left: 462px;}
+    .r .skill-tree .mv77 {margin-left: 468px;}
+    .r .skill-tree .mv78 {margin-left: 474px;}
+    .r .skill-tree .mv79 {margin-left: 480px;}
+    .r .skill-tree .mv80 {margin-left: 486px;}
+    .r .skill-tree .mv81 {margin-left: 492px;}
+    .r .skill-tree .mv82 {margin-left: 498px;}
+    .r .skill-tree .mv83 {margin-left: 504px;}
+    .r .skill-tree .mv84 {margin-left: 510px;}
+    .r .skill-tree .mv85 {margin-left: 516px;}
+    .r .skill-tree .mv86 {margin-left: 522px;}
+    .r .skill-tree .mv87 {margin-left: 528px;}
+    .r .skill-tree .mv88 {margin-left: 534px;}
+    .r .skill-tree .mv89 {margin-left: 540px;}
+    .r .skill-tree .mv90 {margin-left: 546px;}
+    .r .skill-tree .mv91 {margin-left: 552px;}
+    .r .skill-tree .mv92 {margin-left: 558px;}
+    .r .skill-tree .mv93 {margin-left: 564px;}
+    .r .skill-tree .mv94 {margin-left: 570px;}
+    .r .skill-tree .mv95 {margin-left: 576px;}
+    .r .skill-tree .mv96 {margin-left: 582px;}
+    .r .skill-tree .mv97 {margin-left: 588px;}
+    .r .skill-tree .mv98 {margin-left: 594px;}
+    .r .skill-tree .mv99 {margin-left: 600px;}
+    .r .skill-tree .mv100 {margin-left: 606px;}
+    .r .skill-tree .mv101 {margin-left: 612px;}
+    .r .skill-tree .mv102 {margin-left: 618px;}
+    .r .skill-tree .mv103 {margin-left: 624px;}
+    .r .skill-tree .mv104 {margin-left: 630px;}
+    .r .skill-tree .mv105 {margin-left: 636px;}
+    .r .skill-tree .mv106 {margin-left: 642px;}
+    .r .skill-tree .mv107 {margin-left: 648px;}
+    .r .skill-tree .mv108 {margin-left: 654px;}
+    .r .skill-tree .mv109 {margin-left: 660px;}
+    .r .skill-tree .mv110 {margin-left: 666px;}
+    .r .skill-tree .mv111 {margin-left: 672px;}
+    .r .skill-tree .mv112 {margin-left: 678px;}
+    .r .skill-tree .mv113 {margin-left: 684px;}
+    .r .skill-tree .mv114 {margin-left: 690px;}
+    .r .skill-tree .mv115 {margin-left: 696px;}
+    .r .skill-tree .mv116 {margin-left: 702px;}
+    .r .skill-tree .mv117 {margin-left: 708px;}
+    .r .skill-tree .mv118 {margin-left: 714px;}
+    .r .skill-tree .mv119 {margin-left: 720px;}
+    .r .skill-tree .mv120 {margin-left: 726px;}
+    .r .skill-tree .mv121 {margin-left: 732px;}
+    .r .skill-tree .mv122 {margin-left: 738px;}
+    .r .skill-tree .mv123 {margin-left: 744px;}
+    .r .skill-tree .mv124 {margin-left: 750px;}
+    .r .skill-tree .mv125 {margin-left: 756px;}
+    .r .skill-tree .mv126 {margin-left: 762px;}
+    .r .skill-tree .mv127 {margin-left: 768px;}
+    .r .skill-tree .mv128 {margin-left: 774px;}
+    .r .skill-tree .mv129 {margin-left: 780px;}
+    .r .skill-tree .mv130 {margin-left: 786px;}
+    .r .skill-tree .mv131 {margin-left: 792px;}
+    .r .skill-tree .mv132 {margin-left: 798px;}
+    .r .skill-tree .mv133 {margin-left: 804px;}
+    .r .skill-tree .mv134 {margin-left: 810px;}
+    .r .skill-tree .mv135 {margin-left: 816px;}
+    .r .skill-tree .mv136 {margin-left: 822px;}
+    .r .skill-tree .mv137 {margin-left: 828px;}
+    .r .skill-tree .mv138 {margin-left: 834px;}
+    .r .skill-tree .mv139 {margin-left: 840px;}
+    .r .skill-tree .mv140 {margin-left: 846px;}
+    .r .skill-tree .mv141 {margin-left: 852px;}
+    .r .skill-tree .mv142 {margin-left: 858px;}
+    .r .skill-tree .mv143 {margin-left: 864px;}
+    .r .skill-tree .mv144 {margin-left: 870px;}
+    .r .skill-tree .mv145 {margin-left: 876px;}
+    .r .skill-tree .mv146 {margin-left: 882px;}
+    .r .skill-tree .mv147 {margin-left: 888px;}
+    .r .skill-tree .mv148 {margin-left: 894px;}
+    .r .skill-tree .mv149 {margin-left: 900px;}
+    .r .skill-tree .mv150 {margin-left: 906px;}
+    .r .skill-tree .mv151 {margin-left: 912px;}
+    .r .skill-tree .mv152 {margin-left: 918px;}
+    .r .skill-tree .mv153 {margin-left: 924px;}
+    .r .skill-tree .mv154 {margin-left: 930px;}
+    .r .skill-tree .mv155 {margin-left: 936px;}
+    .r .skill-tree .mv156 {margin-left: 942px;}
+    .r .skill-tree .mv157 {margin-left: 948px;}
+    .r .skill-tree .mv158 {margin-left: 954px;}
+    .r .skill-tree .mv159 {margin-left: 960px;}
+    .r .skill-tree .mv160 {margin-left: 966px;}
+
+
+    /* Connectors */
+    .r .skill-tree .cl,
+    .r .skill-tree .cr {
+        position: relative;
+        z-index: 1;
+    }
+
+    .r .skill-tree .cl {
+        margin-top: -12px;
+        padding-top: 12px;
+    }
+
+    .r .skill-tree .cr {
+        margin-bottom: -11px;
+        padding-bottom: 12px;
+    }
+
+    /* Snake connectors */
+    .r .skill-tree .sct,
+    .r .skill-tree .scb {
+        position: relative;
+        z-index: 1;
+    }
+    /* Top */
+    .r .skill-tree .sct {
+        margin-right: -24px;
+        padding-right: 24px;
+    }
+    /* Top middle */
+    .r .skill-tree .sctm {
+        margin-left: -12px;
+        padding-left: 12px;
+    }
+    /* Bottom */
+    .r .skill-tree .scb {
+        margin-left: -24px;
+        padding-left: 24px;
+    }
+    /* Bottom middle */
+    .r .skill-tree .scbm {
+        margin-right: -12px;
+        padding-right: 12px;
+    }
+
+    /* Voracity lines */
+    .r .skill-tree .branch-line {
+        position: relative;
+        z-index: 1;
+    }
+
+    .r .skill-tree .branch-line.l:before,
+    .r .skill-tree .branch-line.active.b:after {
+        position: absolute;
+    }
+
+    .r .skill-tree .branch-line.active.b:after {
+        right: 39px;
+        bottom: -10px;
+    }
+
+    .r .skill-tree .branch-line.l:before {
+        left: 39px;
+    }
+
+    .r .skill-tree .branch-line:first-child:before {
+        top: -35px;
+    }
+
+    .r .skill-tree .sts-criminality-icon.branch-line.l:before {
+        bottom: 61px;
+    }
+
+    .r .skill-tree .sts-criminality-icon.branch-line.l + *:before {
+        top: -50px;
+    }
+
+    .r .skill-tree .sts-fortitude-icon.branch-line.l:before {
+        bottom: 61px;
+    }
+
+    .r .skill-tree .sts-fortitude-icon.branch-line.l + *:before {
+        top: -51px;
+    }
+
+    .r .skill-tree .sts-voracity-icon.branch-line.l:before {
+        bottom: 61px;
+    }
+
+    .r .skill-tree .sts-voracity-icon.branch-line.l + *:before {
+        top: -53px;
+    }
+
+    .r .skill-tree .sts-toleration-icon.branch-line.l:before {
+        bottom: 61px;
+    }
+
+    .r .skill-tree .sts-toleration-icon.branch-line.l + *:before {
+        top: -51px;
+    }
+
+    .r .skill-tree .sts-excursion-icon.branch-line.l:before {
+        bottom: 61px;
+    }
+
+    .r .skill-tree .sts-excursion-icon.branch-line.l + *:before {
+        top: -50px;
+    }
+
+    .r .skill-tree .sts-steadfast-icon.branch-line.l:before {
+        bottom: 50px;
+    }
+
+    .r .skill-tree .sts-steadfast-icon.branch-line.l + *:before {
+        top: -50px;
+    }
+
+    .r .skill-tree .sts-aggression-icon.branch-line.l:before {
+        bottom: 66px;
+    }
+
+    .r .skill-tree .sts-aggression-icon.branch-line.l + *:before {
+        top: -56px;
+    }
+
+    .r .skill-tree .sts-suppression-icon.branch-line.l:before {
+        bottom: 61px;
+    }
+
+    .r .skill-tree .sts-suppression-icon.branch-line.l + *:before {
+        top: -56px;
+    }
+
+    .r .skill-tree .sts-criminality-icon.branch-line.active.b:after {
+        left: 68px;
+    }
+
+    .r .skill-tree .sts-fortitude-icon.branch-line.active.b:after {
+        left: 62px;
+    }
+
+    .r .skill-tree .sts-voracity-icon.branch-line.active.b:after {
+        left: 67px;
+    }
+
+    .r .skill-tree .sts-toleration-icon.branch-line.active.b:after {
+        left: 65px;
+    }
+
+    .r .skill-tree .sts-excursion-icon.branch-line.active.b:after {
+        left: 68px;
+    }
+
+    .r .skill-tree .sts-steadfast-icon.branch-line.active.b:after {
+        left: 66px;
+    }
+
+    .r .skill-tree .sts-aggression-icon.branch-line.active.b:after {
+        left: 60px;
+    }
+
+    .r .skill-tree .sts-suppression-icon.branch-line.active.b:after {
+        left: 59px;
+    }
+
+    .r .skill-tree .branch-line:first-child ~ .line {
+        display: none;
+    }
+
+    .r .skill-tree .branch-line.active:first-child ~ .line,
+    .r .skill-tree .branch-line:first-child ~ .active ~ .line {
+        display: block;
+        margin: 10px 0 0 -23px;
+    }
+
+    .r .skill-tree .branch-empty.branch-line .circle-box {
+        cursor: default;
+    }
+
+    .r .skill-tree .branch-empty.branch-line.l + *:before {
+        top: -63px;
+    }
+
+    .r .skill-tree .active.branch-empty.branch-line.l + * {
+        z-index: 0;
+    }
+
+    .r .skill-tree .unselected.branch-empty.branch-line .circle-box {
+        cursor: pointer;
+    }
+
+    .r .skill-tree .branch-line.branch-empty.active ~ .line {
+        display: none;
+    }
+
+    /* branch-line - 1 */
+    .r .skill-tree .branch-line.active:first-child ~ .line {
+        height: 74px;
+    }
+    /* branch-line - 2 */
+    .r .skill-tree .branch-line:first-child + *.active ~ .line {
+        height: 188px;
+    }
+    /* branch-line - 3 */
+    .r .skill-tree .branch-line:first-child + * + *.active ~ .line {
+        height: 302px;
+    }
+    /* branch-line - 4 */
+    .r .skill-tree .branch-line:first-child + * + * + *.active ~ .line {
+        height: 416px;
+    }
+    /* branch-line - 5 */
+    .r .skill-tree .branch-line:first-child + * + * + * + *.active ~ .line {
+        height: 530px;
+    }
+    /* branch-line - 6 */
+    .r .skill-tree .branch-line:first-child + * + * + * + * + *.active ~ .line {
+        height: 644px;
+    }
+
+    .r .skill-tree .branch-line.branch-empty {
+        margin-top: 34px;
+        padding-top: 28px;
+        padding-left: 26px;
+        padding-bottom: 28px;
+    }
+
+    .r .skill-tree .branch-line.branch-empty.l:before {
+        bottom: 52px;
+        left: 38px;
+    }
+
+    .r .skill-tree .core {
+        width: 654px;
+    }
+
+    .r .skill-tree .core.active {
+        margin-left: -256px;
+    }
+
+    .r .skill-tree .core .left {
+        float: none;
+    }
+
+    .r .skill-tree .core .clearfix:after {
+        display: none;
+    }
+
+    .r .skill-tree .core .t-float {
+        float: left;
+        position: relative;
+    }
+
+    .r .skill-tree .core.t-clearfix:after,
+    .r .skill-tree .core .t-clearfix:after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+
+    .r .skill-tree .core .branch {
+        position: relative;
+        margin-right: 10px;
+        padding-left: 3px;
+    }
+
+    .r .skill-tree .core .branch .line {
+        position: absolute;
+        right: -11px;
+        top: -35px;
+    }
+
+    .r .skill-tree .branch-line.active.b:after {
+        right: -10px;
+        bottom: 41px;
+    }
+
+    .r .skill-tree .branch-line.active:first-child ~ .line,
+    .r .skill-tree .branch-line:first-child ~ .active ~ .line {
+        margin: 0;
+    }
+
+    .r .skill-tree .invert .mv0 {margin-right: 6px;}
+    .r .skill-tree .invert .mv1 {margin-right: 12px;}
+    .r .skill-tree .invert .mv2 {margin-right: 18px;}
+    .r .skill-tree .invert .mv3 {margin-right: 24px;}
+    .r .skill-tree .invert .mv4 {margin-right: 30px;}
+    .r .skill-tree .invert .mv5 {margin-right: 36px;}
+    .r .skill-tree .invert .mv6 {margin-right: 42px;}
+    .r .skill-tree .invert .mv7 {margin-right: 48px;}
+    .r .skill-tree .invert .mv8 {margin-right: 54px;}
+    .r .skill-tree .invert .mv9 {margin-right: 60px;}
+    .r .skill-tree .invert .mv10 {margin-right: 66px;}
+    .r .skill-tree .invert .mv11 {margin-right: 72px;}
+    .r .skill-tree .invert .mv12 {margin-right: 78px;}
+    .r .skill-tree .invert .mv13 {margin-right: 84px;}
+    .r .skill-tree .invert .mv14 {margin-right: 90px;}
+    .r .skill-tree .invert .mv15 {margin-right: 96px;}
+    .r .skill-tree .invert .mv16 {margin-right: 102px;}
+    .r .skill-tree .invert .mv17 {margin-right: 108px;}
+    .r .skill-tree .invert .mv18 {margin-right: 114px;}
+    .r .skill-tree .invert .mv19 {margin-right: 120px;}
+    .r .skill-tree .invert .mv20 {margin-right: 126px;}
+    .r .skill-tree .invert .mv21 {margin-right: 132px;}
+    .r .skill-tree .invert .mv22 {margin-right: 138px;}
+    .r .skill-tree .invert .mv23 {margin-right: 144px;}
+    .r .skill-tree .invert .mv24 {margin-right: 150px;}
+    .r .skill-tree .invert .mv25 {margin-right: 156px;}
+    .r .skill-tree .invert .mv26 {margin-right: 162px;}
+    .r .skill-tree .invert .mv27 {margin-right: 168px;}
+    .r .skill-tree .invert .mv28 {margin-right: 174px;}
+    .r .skill-tree .invert .mv29 {margin-right: 180px;}
+    .r .skill-tree .invert .mv30 {margin-right: 186px;}
+    .r .skill-tree .invert .mv31 {margin-right: 192px;}
+    .r .skill-tree .invert .mv32 {margin-right: 198px;}
+    .r .skill-tree .invert .mv33 {margin-right: 204px;}
+    .r .skill-tree .invert .mv34 {margin-right: 210px;}
+    .r .skill-tree .invert .mv35 {margin-right: 216px;}
+    .r .skill-tree .invert .mv36 {margin-right: 222px;}
+    .r .skill-tree .invert .mv37 {margin-right: 228px;}
+    .r .skill-tree .invert .mv38 {margin-right: 234px;}
+    .r .skill-tree .invert .mv39 {margin-right: 240px;}
+    .r .skill-tree .invert .mv40 {margin-right: 246px;}
+    .r .skill-tree .invert .mv41 {margin-right: 252px;}
+    .r .skill-tree .invert .mv42 {margin-right: 258px;}
+    .r .skill-tree .invert .mv43 {margin-right: 264px;}
+    .r .skill-tree .invert .mv44 {margin-right: 270px;}
+    .r .skill-tree .invert .mv45 {margin-right: 276px;}
+    .r .skill-tree .invert .mv46 {margin-right: 282px;}
+    .r .skill-tree .invert .mv47 {margin-right: 288px;}
+    .r .skill-tree .invert .mv48 {margin-right: 294px;}
+    .r .skill-tree .invert .mv49 {margin-right: 300px;}
+    .r .skill-tree .invert .mv50 {margin-right: 306px;}
+    .r .skill-tree .invert .mv51 {margin-right: 312px;}
+    .r .skill-tree .invert .mv52 {margin-right: 318px;}
+    .r .skill-tree .invert .mv53 {margin-right: 324px;}
+    .r .skill-tree .invert .mv54 {margin-right: 330px;}
+    .r .skill-tree .invert .mv55 {margin-right: 336px;}
+    .r .skill-tree .invert .mv56 {margin-right: 342px;}
+    .r .skill-tree .invert .mv57 {margin-right: 348px;}
+    .r .skill-tree .invert .mv58 {margin-right: 354px;}
+    .r .skill-tree .invert .mv59 {margin-right: 360px;}
+    .r .skill-tree .invert .mv60 {margin-right: 366px;}
+    .r .skill-tree .invert .mv61 {margin-right: 372px;}
+    .r .skill-tree .invert .mv62 {margin-right: 378px;}
+    .r .skill-tree .invert .mv63 {margin-right: 384px;}
+    .r .skill-tree .invert .mv64 {margin-right: 390px;}
+    .r .skill-tree .invert .mv65 {margin-right: 396px;}
+    .r .skill-tree .invert .mv66 {margin-right: 402px;}
+    .r .skill-tree .invert .mv67 {margin-right: 408px;}
+    .r .skill-tree .invert .mv68 {margin-right: 414px;}
+    .r .skill-tree .invert .mv69 {margin-right: 420px;}
+    .r .skill-tree .invert .mv70 {margin-right: 426px;}
+    .r .skill-tree .invert .mv71 {margin-right: 432px;}
+    .r .skill-tree .invert .mv72 {margin-right: 438px;}
+    .r .skill-tree .invert .mv73 {margin-right: 444px;}
+    .r .skill-tree .invert .mv74 {margin-right: 450px;}
+    .r .skill-tree .invert .mv75 {margin-right: 456px;}
+    .r .skill-tree .invert .mv76 {margin-right: 462px;}
+    .r .skill-tree .invert .mv77 {margin-right: 468px;}
+    .r .skill-tree .invert .mv78 {margin-right: 474px;}
+    .r .skill-tree .invert .mv79 {margin-right: 480px;}
+    .r .skill-tree .invert .mv80 {margin-right: 486px;}
+    .r .skill-tree .invert .mv81 {margin-right: 492px;}
+    .r .skill-tree .invert .mv82 {margin-right: 498px;}
+    .r .skill-tree .invert .mv83 {margin-right: 504px;}
+    .r .skill-tree .invert .mv84 {margin-right: 510px;}
+    .r .skill-tree .invert .mv85 {margin-right: 516px;}
+    .r .skill-tree .invert .mv86 {margin-right: 522px;}
+    .r .skill-tree .invert .mv87 {margin-right: 528px;}
+    .r .skill-tree .invert .mv88 {margin-right: 534px;}
+    .r .skill-tree .invert .mv89 {margin-right: 540px;}
+    .r .skill-tree .invert .mv90 {margin-right: 546px;}
+    .r .skill-tree .invert .mv91 {margin-right: 552px;}
+    .r .skill-tree .invert .mv92 {margin-right: 558px;}
+    .r .skill-tree .invert .mv93 {margin-right: 564px;}
+    .r .skill-tree .invert .mv94 {margin-right: 570px;}
+    .r .skill-tree .invert .mv95 {margin-right: 576px;}
+    .r .skill-tree .invert .mv96 {margin-right: 582px;}
+    .r .skill-tree .invert .mv97 {margin-right: 588px;}
+    .r .skill-tree .invert .mv98 {margin-right: 594px;}
+    .r .skill-tree .invert .mv99 {margin-right: 600px;}
+    .r .skill-tree .invert .mv100 {margin-right: 606px;}
+    .r .skill-tree .invert .mv101 {margin-right: 612px;}
+    .r .skill-tree .invert .mv102 {margin-right: 618px;}
+    .r .skill-tree .invert .mv103 {margin-right: 624px;}
+    .r .skill-tree .invert .mv104 {margin-right: 630px;}
+    .r .skill-tree .invert .mv105 {margin-right: 636px;}
+    .r .skill-tree .invert .mv106 {margin-right: 642px;}
+    .r .skill-tree .invert .mv107 {margin-right: 648px;}
+    .r .skill-tree .invert .mv108 {margin-right: 654px;}
+    .r .skill-tree .invert .mv109 {margin-right: 660px;}
+    .r .skill-tree .invert .mv110 {margin-right: 666px;}
+    .r .skill-tree .invert .mv111 {margin-right: 672px;}
+    .r .skill-tree .invert .mv112 {margin-right: 678px;}
+    .r .skill-tree .invert .mv113 {margin-right: 684px;}
+    .r .skill-tree .invert .mv114 {margin-right: 690px;}
+    .r .skill-tree .invert .mv115 {margin-right: 696px;}
+    .r .skill-tree .invert .mv116 {margin-right: 702px;}
+    .r .skill-tree .invert .mv117 {margin-right: 708px;}
+    .r .skill-tree .invert .mv118 {margin-right: 714px;}
+    .r .skill-tree .invert .mv119 {margin-right: 720px;}
+    .r .skill-tree .invert .mv120 {margin-right: 726px;}
+    .r .skill-tree .invert .mv121 {margin-right: 732px;}
+    .r .skill-tree .invert .mv122 {margin-right: 738px;}
+    .r .skill-tree .invert .mv123 {margin-right: 744px;}
+    .r .skill-tree .invert .mv124 {margin-right: 750px;}
+    .r .skill-tree .invert .mv125 {margin-right: 756px;}
+    .r .skill-tree .invert .mv126 {margin-right: 762px;}
+    .r .skill-tree .invert .mv127 {margin-right: 768px;}
+    .r .skill-tree .invert .mv128 {margin-right: 774px;}
+    .r .skill-tree .invert .mv129 {margin-right: 780px;}
+    .r .skill-tree .invert .mv130 {margin-right: 786px;}
+    .r .skill-tree .invert .mv131 {margin-right: 792px;}
+    .r .skill-tree .invert .mv132 {margin-right: 798px;}
+    .r .skill-tree .invert .mv133 {margin-right: 804px;}
+    .r .skill-tree .invert .mv134 {margin-right: 810px;}
+    .r .skill-tree .invert .mv135 {margin-right: 816px;}
+    .r .skill-tree .invert .mv136 {margin-right: 822px;}
+    .r .skill-tree .invert .mv137 {margin-right: 828px;}
+    .r .skill-tree .invert .mv138 {margin-right: 834px;}
+    .r .skill-tree .invert .mv139 {margin-right: 840px;}
+    .r .skill-tree .invert .mv140 {margin-right: 846px;}
+    .r .skill-tree .invert .mv141 {margin-right: 852px;}
+    .r .skill-tree .invert .mv142 {margin-right: 858px;}
+    .r .skill-tree .invert .mv143 {margin-right: 864px;}
+    .r .skill-tree .invert .mv144 {margin-right: 870px;}
+    .r .skill-tree .invert .mv145 {margin-right: 876px;}
+    .r .skill-tree .invert .mv146 {margin-right: 882px;}
+    .r .skill-tree .invert .mv147 {margin-right: 888px;}
+    .r .skill-tree .invert .mv148 {margin-right: 894px;}
+    .r .skill-tree .invert .mv149 {margin-right: 900px;}
+    .r .skill-tree .invert .mv150 {margin-right: 906px;}
+    .r .skill-tree .invert .mv151 {margin-right: 912px;}
+    .r .skill-tree .invert .mv152 {margin-right: 918px;}
+    .r .skill-tree .invert .mv153 {margin-right: 924px;}
+    .r .skill-tree .invert .mv154 {margin-right: 930px;}
+    .r .skill-tree .invert .mv155 {margin-right: 936px;}
+    .r .skill-tree .invert .mv156 {margin-right: 942px;}
+    .r .skill-tree .invert .mv157 {margin-right: 948px;}
+    .r .skill-tree .invert .mv158 {margin-right: 954px;}
+    .r .skill-tree .invert .mv159 {margin-right: 960px;}
+    .r .skill-tree .invert .mv160 {margin-right: 966px;}
+
+    .r .skill-tree .invert .mv0 {margin-left: 0;}
+    .r .skill-tree .invert .mv1 {margin-left: 0;}
+    .r .skill-tree .invert .mv2 {margin-left: 0;}
+    .r .skill-tree .invert .mv3 {margin-left: 0;}
+    .r .skill-tree .invert .mv4 {margin-left: 0;}
+    .r .skill-tree .invert .mv5 {margin-left: 0;}
+    .r .skill-tree .invert .mv6 {margin-left: 0;}
+    .r .skill-tree .invert .mv7 {margin-left: 0;}
+    .r .skill-tree .invert .mv8 {margin-left: 0;}
+    .r .skill-tree .invert .mv9 {margin-left: 0;}
+    .r .skill-tree .invert .mv10 {margin-left: 0;}
+    .r .skill-tree .invert .mv11 {margin-left: 0;}
+    .r .skill-tree .invert .mv12 {margin-left: 0;}
+    .r .skill-tree .invert .mv13 {margin-left: 0;}
+    .r .skill-tree .invert .mv14 {margin-left: 0;}
+    .r .skill-tree .invert .mv15 {margin-left: 0;}
+    .r .skill-tree .invert .mv16 {margin-left: 0;}
+    .r .skill-tree .invert .mv17 {margin-left: 0;}
+    .r .skill-tree .invert .mv18 {margin-left: 0;}
+    .r .skill-tree .invert .mv19 {margin-left: 0;}
+    .r .skill-tree .invert .mv20 {margin-left: 0;}
+    .r .skill-tree .invert .mv21 {margin-left: 0;}
+    .r .skill-tree .invert .mv22 {margin-left: 0;}
+    .r .skill-tree .invert .mv23 {margin-left: 0;}
+    .r .skill-tree .invert .mv24 {margin-left: 0;}
+    .r .skill-tree .invert .mv25 {margin-left: 0;}
+    .r .skill-tree .invert .mv26 {margin-left: 0;}
+    .r .skill-tree .invert .mv27 {margin-left: 0;}
+    .r .skill-tree .invert .mv28 {margin-left: 0;}
+    .r .skill-tree .invert .mv29 {margin-left: 0;}
+    .r .skill-tree .invert .mv30 {margin-left: 0;}
+    .r .skill-tree .invert .mv31 {margin-left: 0;}
+    .r .skill-tree .invert .mv32 {margin-left: 0;}
+    .r .skill-tree .invert .mv33 {margin-left: 0;}
+    .r .skill-tree .invert .mv34 {margin-left: 0;}
+    .r .skill-tree .invert .mv35 {margin-left: 0;}
+    .r .skill-tree .invert .mv36 {margin-left: 0;}
+    .r .skill-tree .invert .mv37 {margin-left: 0;}
+    .r .skill-tree .invert .mv38 {margin-left: 0;}
+    .r .skill-tree .invert .mv39 {margin-left: 0;}
+    .r .skill-tree .invert .mv40 {margin-left: 0;}
+    .r .skill-tree .invert .mv41 {margin-left: 0;}
+    .r .skill-tree .invert .mv42 {margin-left: 0;}
+    .r .skill-tree .invert .mv43 {margin-left: 0;}
+    .r .skill-tree .invert .mv44 {margin-left: 0;}
+    .r .skill-tree .invert .mv45 {margin-left: 0;}
+    .r .skill-tree .invert .mv46 {margin-left: 0;}
+    .r .skill-tree .invert .mv47 {margin-left: 0;}
+    .r .skill-tree .invert .mv48 {margin-left: 0;}
+    .r .skill-tree .invert .mv49 {margin-left: 0;}
+    .r .skill-tree .invert .mv50 {margin-left: 0;}
+    .r .skill-tree .invert .mv51 {margin-left: 0;}
+    .r .skill-tree .invert .mv52 {margin-left: 0;}
+    .r .skill-tree .invert .mv53 {margin-left: 0;}
+    .r .skill-tree .invert .mv54 {margin-left: 0;}
+    .r .skill-tree .invert .mv55 {margin-left: 0;}
+    .r .skill-tree .invert .mv56 {margin-left: 0;}
+    .r .skill-tree .invert .mv57 {margin-left: 0;}
+    .r .skill-tree .invert .mv58 {margin-left: 0;}
+    .r .skill-tree .invert .mv59 {margin-left: 0;}
+    .r .skill-tree .invert .mv60 {margin-left: 0;}
+    .r .skill-tree .invert .mv61 {margin-left: 0;}
+    .r .skill-tree .invert .mv62 {margin-left: 0;}
+    .r .skill-tree .invert .mv63 {margin-left: 0;}
+    .r .skill-tree .invert .mv64 {margin-left: 0;}
+    .r .skill-tree .invert .mv65 {margin-left: 0;}
+    .r .skill-tree .invert .mv66 {margin-left: 0;}
+    .r .skill-tree .invert .mv67 {margin-left: 0;}
+    .r .skill-tree .invert .mv68 {margin-left: 0;}
+    .r .skill-tree .invert .mv69 {margin-left: 0;}
+    .r .skill-tree .invert .mv70 {margin-left: 0;}
+    .r .skill-tree .invert .mv71 {margin-left: 0;}
+    .r .skill-tree .invert .mv72 {margin-left: 0;}
+    .r .skill-tree .invert .mv73 {margin-left: 0;}
+    .r .skill-tree .invert .mv74 {margin-left: 0;}
+    .r .skill-tree .invert .mv75 {margin-left: 0;}
+    .r .skill-tree .invert .mv76 {margin-left: 0;}
+    .r .skill-tree .invert .mv77 {margin-left: 0;}
+    .r .skill-tree .invert .mv78 {margin-left: 0;}
+    .r .skill-tree .invert .mv79 {margin-left: 0;}
+    .r .skill-tree .invert .mv80 {margin-left: 0;}
+    .r .skill-tree .invert .mv81 {margin-left: 0;}
+    .r .skill-tree .invert .mv82 {margin-left: 0;}
+    .r .skill-tree .invert .mv83 {margin-left: 0;}
+    .r .skill-tree .invert .mv84 {margin-left: 0;}
+    .r .skill-tree .invert .mv85 {margin-left: 0;}
+    .r .skill-tree .invert .mv86 {margin-left: 0;}
+    .r .skill-tree .invert .mv87 {margin-left: 0;}
+    .r .skill-tree .invert .mv88 {margin-left: 0;}
+    .r .skill-tree .invert .mv89 {margin-left: 0;}
+    .r .skill-tree .invert .mv90 {margin-left: 0;}
+    .r .skill-tree .invert .mv91 {margin-left: 0;}
+    .r .skill-tree .invert .mv92 {margin-left: 0;}
+    .r .skill-tree .invert .mv93 {margin-left: 0;}
+    .r .skill-tree .invert .mv94 {margin-left: 0;}
+    .r .skill-tree .invert .mv95 {margin-left: 0;}
+    .r .skill-tree .invert .mv96 {margin-left: 0;}
+    .r .skill-tree .invert .mv97 {margin-left: 0;}
+    .r .skill-tree .invert .mv98 {margin-left: 0;}
+    .r .skill-tree .invert .mv99 {margin-left: 0;}
+    .r .skill-tree .invert .mv100 {margin-left: 0;}
+    .r .skill-tree .invert .mv101 {margin-left: 0;}
+    .r .skill-tree .invert .mv102 {margin-left: 0;}
+    .r .skill-tree .invert .mv103 {margin-left: 0;}
+    .r .skill-tree .invert .mv104 {margin-left: 0;}
+    .r .skill-tree .invert .mv105 {margin-left: 0;}
+    .r .skill-tree .invert .mv106 {margin-left: 0;}
+    .r .skill-tree .invert .mv107 {margin-left: 0;}
+    .r .skill-tree .invert .mv108 {margin-left: 0;}
+    .r .skill-tree .invert .mv109 {margin-left: 0;}
+    .r .skill-tree .invert .mv110 {margin-left: 0;}
+    .r .skill-tree .invert .mv111 {margin-left: 0;}
+    .r .skill-tree .invert .mv112 {margin-left: 0;}
+    .r .skill-tree .invert .mv113 {margin-left: 0;}
+    .r .skill-tree .invert .mv114 {margin-left: 0;}
+    .r .skill-tree .invert .mv115 {margin-left: 0;}
+    .r .skill-tree .invert .mv116 {margin-left: 0;}
+    .r .skill-tree .invert .mv117 {margin-left: 0;}
+    .r .skill-tree .invert .mv118 {margin-left: 0;}
+    .r .skill-tree .invert .mv119 {margin-left: 0;}
+    .r .skill-tree .invert .mv120 {margin-left: 0;}
+    .r .skill-tree .invert .mv121 {margin-left: 0;}
+    .r .skill-tree .invert .mv122 {margin-left: 0;}
+    .r .skill-tree .invert .mv123 {margin-left: 0;}
+    .r .skill-tree .invert .mv124 {margin-left: 0;}
+    .r .skill-tree .invert .mv125 {margin-left: 0;}
+    .r .skill-tree .invert .mv126 {margin-left: 0;}
+    .r .skill-tree .invert .mv127 {margin-left: 0;}
+    .r .skill-tree .invert .mv128 {margin-left: 0;}
+    .r .skill-tree .invert .mv129 {margin-left: 0;}
+    .r .skill-tree .invert .mv130 {margin-left: 0;}
+    .r .skill-tree .invert .mv131 {margin-left: 0;}
+    .r .skill-tree .invert .mv132 {margin-left: 0;}
+    .r .skill-tree .invert .mv133 {margin-left: 0;}
+    .r .skill-tree .invert .mv134 {margin-left: 0;}
+    .r .skill-tree .invert .mv135 {margin-left: 0;}
+    .r .skill-tree .invert .mv136 {margin-left: 0;}
+    .r .skill-tree .invert .mv137 {margin-left: 0;}
+    .r .skill-tree .invert .mv138 {margin-left: 0;}
+    .r .skill-tree .invert .mv139 {margin-left: 0;}
+    .r .skill-tree .invert .mv140 {margin-left: 0;}
+    .r .skill-tree .invert .mv141 {margin-left: 0;}
+    .r .skill-tree .invert .mv142 {margin-left: 0;}
+    .r .skill-tree .invert .mv143 {margin-left: 0;}
+    .r .skill-tree .invert .mv144 {margin-left: 0;}
+    .r .skill-tree .invert .mv145 {margin-left: 0;}
+    .r .skill-tree .invert .mv146 {margin-left: 0;}
+    .r .skill-tree .invert .mv147 {margin-left: 0;}
+    .r .skill-tree .invert .mv148 {margin-left: 0;}
+    .r .skill-tree .invert .mv149 {margin-left: 0;}
+    .r .skill-tree .invert .mv150 {margin-left: 0;}
+    .r .skill-tree .invert .mv151 {margin-left: 0;}
+    .r .skill-tree .invert .mv152 {margin-left: 0;}
+    .r .skill-tree .invert .mv153 {margin-left: 0;}
+    .r .skill-tree .invert .mv154 {margin-left: 0;}
+    .r .skill-tree .invert .mv155 {margin-left: 0;}
+    .r .skill-tree .invert .mv156 {margin-left: 0;}
+    .r .skill-tree .invert .mv157 {margin-left: 0;}
+    .r .skill-tree .invert .mv158 {margin-left: 0;}
+    .r .skill-tree .invert .mv159 {margin-left: 0;}
+    .r .skill-tree .invert .mv160 {margin-left: 0;}
+
+    .r .skill-tree .core .t-mhl0 {margin-left: 0;}
+    .r .skill-tree .core .t-mhr0 {margin-right: 0;}
+    .r .skill-tree .invert .t-mh0 {margin-left: 6px;}
+    .r .skill-tree .invert .t-mh1 {margin-left: 12px;}
+    .r .skill-tree .invert .t-mh2 {margin-left: 18px;}
+    .r .skill-tree .invert .t-mh3 {margin-left: 24px;}
+    .r .skill-tree .invert .t-mh4 {margin-left: 30px;}
+    .r .skill-tree .invert .t-mh5 {margin-left: 36px;}
+    .r .skill-tree .invert .t-mh6 {margin-left: 42px;}
+    .r .skill-tree .invert .t-mh7 {margin-left: 48px;}
+    .r .skill-tree .invert .t-mh8 {margin-left: 54px;}
+    .r .skill-tree .invert .t-mh9 {margin-left: 60px;}
+    .r .skill-tree .invert .t-mh10 {margin-left: 66px;}
+    .r .skill-tree .invert .t-mh11 {margin-left: 72px;}
+    .r .skill-tree .invert .t-mh12 {margin-left: 78px;}
+    .r .skill-tree .invert .t-mh13 {margin-left: 84px;}
+    .r .skill-tree .invert .t-mh14 {margin-left: 90px;}
+    .r .skill-tree .invert .t-mh15 {margin-left: 96px;}
+    .r .skill-tree .invert .t-mh16 {margin-left: 102px;}
+    .r .skill-tree .invert .t-mh17 {margin-left: 108px;}
+    .r .skill-tree .invert .t-mh18 {margin-left: 114px;}
+    .r .skill-tree .invert .t-mh19 {margin-left: 120px;}
+    .r .skill-tree .invert .t-mh20 {margin-left: 126px;}
+    .r .skill-tree .invert .t-mh21 {margin-left: 132px;}
+    .r .skill-tree .invert .t-mh22 {margin-left: 138px;}
+    .r .skill-tree .invert .t-mh23 {margin-left: 144px;}
+    .r .skill-tree .invert .t-mh24 {margin-left: 150px;}
+    .r .skill-tree .invert .t-mh25 {margin-left: 156px;}
+    .r .skill-tree .invert .t-mh26 {margin-left: 162px;}
+    .r .skill-tree .invert .t-mh27 {margin-left: 168px;}
+    .r .skill-tree .invert .t-mh28 {margin-left: 174px;}
+    .r .skill-tree .invert .t-mh29 {margin-left: 180px;}
+    .r .skill-tree .invert .t-mh30 {margin-left: 186px;}
+    .r .skill-tree .invert .t-mh31 {margin-left: 192px;}
+    .r .skill-tree .invert .t-mh32 {margin-left: 198px;}
+    .r .skill-tree .invert .t-mh33 {margin-left: 204px;}
+    .r .skill-tree .invert .t-mh34 {margin-left: 210px;}
+    .r .skill-tree .invert .t-mh35 {margin-left: 216px;}
+    .r .skill-tree .invert .t-mh36 {margin-left: 222px;}
+    .r .skill-tree .invert .t-mh37 {margin-left: 228px;}
+    .r .skill-tree .invert .t-mh38 {margin-left: 234px;}
+    .r .skill-tree .invert .t-mh39 {margin-left: 240px;}
+    .r .skill-tree .invert .t-mh40 {margin-left: 246px;}
+    .r .skill-tree .invert .t-mh41 {margin-left: 252px;}
+    .r .skill-tree .invert .t-mh42 {margin-left: 258px;}
+    .r .skill-tree .invert .t-mh43 {margin-left: 264px;}
+    .r .skill-tree .invert .t-mh44 {margin-left: 270px;}
+    .r .skill-tree .invert .t-mh45 {margin-left: 276px;}
+    .r .skill-tree .invert .t-mh46 {margin-left: 282px;}
+    .r .skill-tree .invert .t-mh47 {margin-left: 288px;}
+    .r .skill-tree .invert .t-mh48 {margin-left: 294px;}
+    .r .skill-tree .invert .t-mh49 {margin-left: 300px;}
+    .r .skill-tree .invert .t-mh50 {margin-left: 306px;}
+    .r .skill-tree .invert .t-mh51 {margin-left: 312px;}
+    .r .skill-tree .invert .t-mh52 {margin-left: 318px;}
+    .r .skill-tree .invert .t-mh53 {margin-left: 324px;}
+    .r .skill-tree .invert .t-mh54 {margin-left: 330px;}
+    .r .skill-tree .invert .t-mh55 {margin-left: 336px;}
+    .r .skill-tree .invert .t-mh56 {margin-left: 342px;}
+    .r .skill-tree .invert .t-mh57 {margin-left: 348px;}
+    .r .skill-tree .invert .t-mh58 {margin-left: 354px;}
+    .r .skill-tree .invert .t-mh59 {margin-left: 360px;}
+    .r .skill-tree .invert .t-mh60 {margin-left: 366px;}
+    .r .skill-tree .invert .t-mh61 {margin-left: 372px;}
+    .r .skill-tree .invert .t-mh62 {margin-left: 378px;}
+    .r .skill-tree .invert .t-mh63 {margin-left: 384px;}
+    .r .skill-tree .invert .t-mh64 {margin-left: 390px;}
+    .r .skill-tree .invert .t-mh65 {margin-left: 396px;}
+    .r .skill-tree .invert .t-mh66 {margin-left: 402px;}
+    .r .skill-tree .invert .t-mh67 {margin-left: 408px;}
+    .r .skill-tree .invert .t-mh68 {margin-left: 414px;}
+    .r .skill-tree .invert .t-mh69 {margin-left: 420px;}
+    .r .skill-tree .invert .t-mh70 {margin-left: 426px;}
+    .r .skill-tree .invert .t-mh71 {margin-left: 432px;}
+    .r .skill-tree .invert .t-mh72 {margin-left: 438px;}
+    .r .skill-tree .invert .t-mh73 {margin-left: 444px;}
+    .r .skill-tree .invert .t-mh74 {margin-left: 450px;}
+    .r .skill-tree .invert .t-mh75 {margin-left: 456px;}
+    .r .skill-tree .invert .t-mh76 {margin-left: 462px;}
+    .r .skill-tree .invert .t-mh77 {margin-left: 468px;}
+    .r .skill-tree .invert .t-mh78 {margin-left: 474px;}
+    .r .skill-tree .invert .t-mh79 {margin-left: 480px;}
+    .r .skill-tree .invert .t-mh80 {margin-left: 486px;}
+    .r .skill-tree .invert .t-mh81 {margin-left: 492px;}
+    .r .skill-tree .invert .t-mh82 {margin-left: 498px;}
+    .r .skill-tree .invert .t-mh83 {margin-left: 504px;}
+    .r .skill-tree .invert .t-mh84 {margin-left: 510px;}
+    .r .skill-tree .invert .t-mh85 {margin-left: 516px;}
+    .r .skill-tree .invert .t-mh86 {margin-left: 522px;}
+    .r .skill-tree .invert .t-mh87 {margin-left: 528px;}
+    .r .skill-tree .invert .t-mh88 {margin-left: 534px;}
+    .r .skill-tree .invert .t-mh89 {margin-left: 540px;}
+    .r .skill-tree .invert .t-mh90 {margin-left: 546px;}
+    .r .skill-tree .invert .t-mh91 {margin-left: 552px;}
+    .r .skill-tree .invert .t-mh92 {margin-left: 558px;}
+    .r .skill-tree .invert .t-mh93 {margin-left: 564px;}
+    .r .skill-tree .invert .t-mh94 {margin-left: 570px;}
+    .r .skill-tree .invert .t-mh95 {margin-left: 576px;}
+    .r .skill-tree .invert .t-mh96 {margin-left: 582px;}
+    .r .skill-tree .invert .t-mh97 {margin-left: 588px;}
+    .r .skill-tree .invert .t-mh98 {margin-left: 594px;}
+    .r .skill-tree .invert .t-mh99 {margin-left: 600px;}
+    .r .skill-tree .invert .t-mh100 {margin-left: 606px;}
+    .r .skill-tree .invert .t-mh101 {margin-left: 612px;}
+    .r .skill-tree .invert .t-mh102 {margin-left: 618px;}
+    .r .skill-tree .invert .t-mh103 {margin-left: 624px;}
+    .r .skill-tree .invert .t-mh104 {margin-left: 630px;}
+    .r .skill-tree .invert .t-mh105 {margin-left: 636px;}
+    .r .skill-tree .invert .t-mh106 {margin-left: 642px;}
+    .r .skill-tree .invert .t-mh107 {margin-left: 648px;}
+    .r .skill-tree .invert .t-mh108 {margin-left: 654px;}
+    .r .skill-tree .invert .t-mh109 {margin-left: 660px;}
+    .r .skill-tree .invert .t-mh110 {margin-left: 666px;}
+    .r .skill-tree .invert .t-mh111 {margin-left: 672px;}
+    .r .skill-tree .invert .t-mh112 {margin-left: 678px;}
+    .r .skill-tree .invert .t-mh113 {margin-left: 684px;}
+    .r .skill-tree .invert .t-mh114 {margin-left: 690px;}
+    .r .skill-tree .invert .t-mh115 {margin-left: 696px;}
+    .r .skill-tree .invert .t-mh116 {margin-left: 702px;}
+    .r .skill-tree .invert .t-mh117 {margin-left: 708px;}
+    .r .skill-tree .invert .t-mh118 {margin-left: 714px;}
+    .r .skill-tree .invert .t-mh119 {margin-left: 720px;}
+    .r .skill-tree .invert .t-mh120 {margin-left: 726px;}
+    .r .skill-tree .invert .t-mh121 {margin-left: 732px;}
+    .r .skill-tree .invert .t-mh122 {margin-left: 738px;}
+    .r .skill-tree .invert .t-mh123 {margin-left: 744px;}
+    .r .skill-tree .invert .t-mh124 {margin-left: 750px;}
+    .r .skill-tree .invert .t-mh125 {margin-left: 756px;}
+    .r .skill-tree .invert .t-mh126 {margin-left: 762px;}
+    .r .skill-tree .invert .t-mh127 {margin-left: 768px;}
+    .r .skill-tree .invert .t-mh128 {margin-left: 774px;}
+    .r .skill-tree .invert .t-mh129 {margin-left: 780px;}
+    .r .skill-tree .invert .t-mh130 {margin-left: 786px;}
+    .r .skill-tree .invert .t-mh131 {margin-left: 792px;}
+    .r .skill-tree .invert .t-mh132 {margin-left: 798px;}
+    .r .skill-tree .invert .t-mh133 {margin-left: 804px;}
+    .r .skill-tree .invert .t-mh134 {margin-left: 810px;}
+    .r .skill-tree .invert .t-mh135 {margin-left: 816px;}
+    .r .skill-tree .invert .t-mh136 {margin-left: 822px;}
+    .r .skill-tree .invert .t-mh137 {margin-left: 828px;}
+    .r .skill-tree .invert .t-mh138 {margin-left: 834px;}
+    .r .skill-tree .invert .t-mh139 {margin-left: 840px;}
+    .r .skill-tree .invert .t-mh140 {margin-left: 846px;}
+    .r .skill-tree .invert .t-mh141 {margin-left: 852px;}
+    .r .skill-tree .invert .t-mh142 {margin-left: 858px;}
+    .r .skill-tree .invert .t-mh143 {margin-left: 864px;}
+    .r .skill-tree .invert .t-mh144 {margin-left: 870px;}
+    .r .skill-tree .invert .t-mh145 {margin-left: 876px;}
+    .r .skill-tree .invert .t-mh146 {margin-left: 882px;}
+    .r .skill-tree .invert .t-mh147 {margin-left: 888px;}
+    .r .skill-tree .invert .t-mh148 {margin-left: 894px;}
+    .r .skill-tree .invert .t-mh149 {margin-left: 900px;}
+    .r .skill-tree .invert .t-mh150 {margin-left: 906px;}
+    .r .skill-tree .invert .t-mh151 {margin-left: 912px;}
+    .r .skill-tree .invert .t-mh152 {margin-left: 918px;}
+    .r .skill-tree .invert .t-mh153 {margin-left: 924px;}
+    .r .skill-tree .invert .t-mh154 {margin-left: 930px;}
+    .r .skill-tree .invert .t-mh155 {margin-left: 936px;}
+    .r .skill-tree .invert .t-mh156 {margin-left: 942px;}
+    .r .skill-tree .invert .t-mh157 {margin-left: 948px;}
+    .r .skill-tree .invert .t-mh158 {margin-left: 954px;}
+    .r .skill-tree .invert .t-mh159 {margin-left: 960px;}
+    .r .skill-tree .invert .t-mh160 {margin-left: 966px;}
+
+    .r .skill-tree .invert .t-mv0 {margin-top: 0;}
+    .r .skill-tree .invert .t-mv1 {margin-top: 6px;}
+    .r .skill-tree .invert .t-mv2 {margin-top: 12px;}
+    .r .skill-tree .invert .t-mv3 {margin-top: 24px;}
+    .r .skill-tree .invert .t-mv4 {margin-top: 34px;}
+    .r .skill-tree .invert .t-mv5 {margin-top: 44px;}
+    .r .skill-tree .invert .t-mv6 {margin-top: 48px;}
+    .r .skill-tree .invert .t-mv7 {margin-top: 68px;}
+    .r .skill-tree .invert .t-mv8 {margin-top: 72px;}
+    .r .skill-tree .invert .t-mv9 {margin-top: 78px;}
+    .r .skill-tree .invert .t-mv10 {margin-top: 96px;}
+    .r .skill-tree .invert .t-mv11 {margin-top: 102px;}
+    .r .skill-tree .invert .t-mv12 {margin-top: 112px;}
+    .r .skill-tree .invert .t-mv13 {margin-top: 120px;}
+    .r .skill-tree .invert .t-mv14 {margin-top: 136px;}
+    .r .skill-tree .invert .t-mv15 {margin-top: 144px;}
+    .r .skill-tree .invert .t-mv16 {margin-top: 146px;}
+    .r .skill-tree .invert .t-mv17 {margin-top: 168px;}
+    .r .skill-tree .invert .t-mv18 {margin-top: 170px;}
+    .r .skill-tree .invert .t-mv19 {margin-top: 180px;}
+    .r .skill-tree .invert .t-mv20 {margin-top: 192px;}
+    .r .skill-tree .invert .t-mv21 {margin-top: 204px;}
+    .r .skill-tree .invert .t-mv22 {margin-top: 214px;}
+    .r .skill-tree .invert .t-mv23 {margin-top: 216px;}
+    .r .skill-tree .invert .t-mv24 {margin-top: 238px;}
+    .r .skill-tree .invert .t-mv25 {margin-top: 240px;}
+    .r .skill-tree .invert .t-mv26 {margin-top: 248px;}
+    .r .skill-tree .invert .t-mv27 {margin-top: 264px;}
+    .r .skill-tree .invert .t-mv28 {margin-top: 272px;}
+    .r .skill-tree .invert .t-mv29 {margin-top: 282px;}
+    .r .skill-tree .invert .t-mv30 {margin-top: 288px;}
+    .r .skill-tree .invert .t-mv31 {margin-top: 306px;}
+    .r .skill-tree .invert .t-mv32 {margin-top: 312px;}
+    .r .skill-tree .invert .t-mv33 {margin-top: 316px;}
+    .r .skill-tree .invert .t-mv34 {margin-top: 336px;}
+    .r .skill-tree .invert .t-mv35 {margin-top: 340px;}
+    .r .skill-tree .invert .t-mv36 {margin-top: 350px;}
+    .r .skill-tree .invert .t-mv37 {margin-top: 360px;}
+    .r .skill-tree .invert .t-mv38 {margin-top: 374px;}
+    .r .skill-tree .invert .t-mv39 {margin-top: 384px;}
+    .r .skill-tree .invert .t-mv40 {margin-top: 408px;}
+    .r .skill-tree .invert .t-mv41 {margin-top: 418px;}
+    .r .skill-tree .invert .t-mv42 {margin-top: 432px;}
+    .r .skill-tree .invert .t-mv43 {margin-top: 442px;}
+    .r .skill-tree .invert .t-mv44 {margin-top: 452px;}
+    .r .skill-tree .invert .t-mv45 {margin-top: 456px;}
+    .r .skill-tree .invert .t-mv46 {margin-top: 476px;}
+    .r .skill-tree .invert .t-mv47 {margin-top: 480px;}
+    .r .skill-tree .invert .t-mv48 {margin-top: 486px;}
+    .r .skill-tree .invert .t-mv49 {margin-top: 504px;}
+    .r .skill-tree .invert .t-mv50 {margin-top: 510px;}
+    .r .skill-tree .invert .t-mv51 {margin-top: 520px;}
+    .r .skill-tree .invert .t-mv52 {margin-top: 544px;}
+    .r .skill-tree .invert .t-mv53 {margin-top: 554px;}
+    .r .skill-tree .invert .t-mv54 {margin-top: 578px;}
+    .r .skill-tree .invert .t-mv55 {margin-top: 588px;}
+    .r .skill-tree .invert .t-mv56 {margin-top: 612px;}
+    .r .skill-tree .invert .t-mv57 {margin-top: 622px;}
+    .r .skill-tree .invert .t-mv58 {margin-top: 646px;}
+    .r .skill-tree .invert .t-mv59 {margin-top: 656px;}
+    .r .skill-tree .invert .t-mv60 {margin-top: 680px;}
+    .r .skill-tree .invert .t-mv61 {margin-top: 690px;}
+    .r .skill-tree .invert .t-mv62 {margin-top: 714px;}
+
+    .r .skill-tree .core .invert {
+        display: block;
+    }
+
+    .r .skill-tree .core .invert .t-float {
+        float: right;
+    }
+
+    .r .skill-tree .core .t-float-left {
+        float: left;
+    }
+
+    .r .skill-tree .core .t-float-right {
+        float: left;
+    }
+
+    .r .skill-tree .core .invert .t-c0 .line {margin-left: -0px;}
+    .r .skill-tree .core .invert .t-c1 .line {margin-left: -12px;}
+    .r .skill-tree .core .invert .t-c2 .line {margin-left: -24px;}
+    .r .skill-tree .core .invert .t-c3 .line {margin-left: -36px;}
+    .r .skill-tree .core .invert .t-c4 .line {margin-left: -48px;}
+    .r .skill-tree .core .invert .t-c5 .line {margin-left: -60px;}
+    .r .skill-tree .core .invert .t-c6 .line {margin-left: -72px;}
+    .r .skill-tree .core .invert .t-c7 .line {margin-left: -84px;}
+    .r .skill-tree .core .invert .t-c8 .line {margin-left: -96px;}
+    .r .skill-tree .core .invert .t-c9 .line {margin-left: -108px;}
+    .r .skill-tree .core .invert .t-c10 .line {margin-left: -120px;}
+    .r .skill-tree .core .invert .t-c11 .line {margin-left: -132px;}
+    .r .skill-tree .core .invert .t-c12 .line {margin-left: -144px;}
+    .r .skill-tree .core .invert .t-c13 .line {margin-left: -156px;}
+    .r .skill-tree .core .invert .t-c14 .line {margin-left: -168px;}
+    .r .skill-tree .core .invert .t-c15 .line {margin-left: -180px;}
+    .r .skill-tree .core .invert .t-c16 .line {margin-left: -192px;}
+    .r .skill-tree .core .invert .t-c17 .line {margin-left: -204px;}
+    .r .skill-tree .core .invert .t-c18 .line {margin-left: -216px;}
+    .r .skill-tree .core .invert .t-c19 .line {margin-left: -228px;}
+    .r .skill-tree .core .invert .t-c20 .line {margin-left: -240px;}
+
+    /* Top */
+    .r .skill-tree .core .invert .sct {
+        margin-right: 0;
+        padding-right: 0;
+        margin-left: -24px;
+        padding-left: 24px;
+    }
+    /* Bottom */
+    .r .skill-tree .core .invert .scb {
+        margin-left: 0;
+        padding-left: 0;
+        margin-right: -24px;
+        padding-right: 24px;
+    }
+
+    /* Top */
+    .r .skill-tree .t-sct.line[class*="t-lh"] {
+        margin-right: -24px;
+        padding-right: 24px;
+    }
+    /* Top middle */
+    .r .skill-tree .t-sctm.line[class*="t-lh"] {
+        margin-left: -12px;
+        padding-left: 12px;
+    }
+    /* Bottom */
+    .r .skill-tree .t-scb.line[class*="t-lh"] {
+        margin-left: -24px;
+        padding-left: 24px;
+    }
+    /* Bottom middle */
+    .r .skill-tree .t-scbm.line[class*="t-lh"] {
+        margin-right: -12px;
+        padding-right: 12px;
+    }
+
+
+
+    .r .skill-tree .core .snake-top.t-inverse > :nth-child(4n),
+    .r .skill-tree .core .snake-top.t-inverse > :nth-child(4n-2) {
+        margin: -5px 0 -5px 24px;
+    }
+
+    .r .skill-tree .core .snake-top.t-inverse > :nth-child(4n-2) {
+        transform: rotate(135deg);
+    }
+
+    .r .skill-tree .core .snake-top.t-inverse > :nth-child(4n-1) {
+        margin-left: 24px;
+    }
+
+    .r .skill-tree .core .snake-top.t-inverse > :nth-child(4n) {
+        transform: rotate(45deg);
+    }
+
+    .r .skill-tree .core .snake-top.t-inverse > :nth-child(4n-3) {
+        margin-left: 0;
+    }
+
+    .r .skill-tree .core .snake-top.t-inverse > .active:nth-child(4n-3) {
+        margin-left: -3px;
+    }
+
+    .r .skill-tree .core .snake-top.t-inverse > .active:nth-child(4n-1) {
+        margin-left: 21px;
+    }
+
+}
+
+@media screen and (max-width: 386px) {
+    .r .skill-tree .core {
+        width: 538px;
+    }
+
+    .r .skill-tree .core.active {
+        margin-left: -222px;
+    }
+
+    .r .skill-tree .core .branch {
+        margin-right: 0;
+    }
+
+    .r .skill-tree .core .branch .line {
+        right: 0;
+    }
+
+    .r .skill-tree .branch-line.active.b:after {
+        right: 0;
+    }
+
+    .r .skill-tree .core .line.m-lh0 {width: 6px;}
+    .r .skill-tree .core .line.m-lh1 {width: 12px;}
+    .r .skill-tree .core .line.m-lh2 {width: 18px;}
+    .r .skill-tree .core .line.m-lh3 {width: 24px;}
+    .r .skill-tree .core .line.m-lh4 {width: 30px;}
+    .r .skill-tree .core .line.m-lh5 {width: 36px;}
+    .r .skill-tree .core .line.m-lh6 {width: 42px;}
+    .r .skill-tree .core .line.m-lh7 {width: 48px;}
+    .r .skill-tree .core .line.m-lh8 {width: 54px;}
+    .r .skill-tree .core .line.m-lh9 {width: 60px;}
+    .r .skill-tree .core .line.m-lh10 {width: 66px;}
+    .r .skill-tree .core .line.m-lh11 {width: 72px;}
+    .r .skill-tree .core .line.m-lh12 {width: 78px;}
+    .r .skill-tree .core .line.m-lh13 {width: 84px;}
+    .r .skill-tree .core .line.m-lh14 {width: 90px;}
+    .r .skill-tree .core .line.m-lh15 {width: 96px;}
+    .r .skill-tree .core .line.m-lh16 {width: 102px;}
+    .r .skill-tree .core .line.m-lh17 {width: 108px;}
+    .r .skill-tree .core .line.m-lh18 {width: 114px;}
+    .r .skill-tree .core .line.m-lh19 {width: 120px;}
+    .r .skill-tree .core .line.m-lh20 {width: 126px;}
+    .r .skill-tree .core .line.m-lh21 {width: 132px;}
+    .r .skill-tree .core .line.m-lh22 {width: 138px;}
+    .r .skill-tree .core .line.m-lh23 {width: 144px;}
+    .r .skill-tree .core .line.m-lh24 {width: 150px;}
+    .r .skill-tree .core .line.m-lh25 {width: 156px;}
+    .r .skill-tree .core .line.m-lh26 {width: 162px;}
+    .r .skill-tree .core .line.m-lh27 {width: 168px;}
+    .r .skill-tree .core .line.m-lh28 {width: 174px;}
+    .r .skill-tree .core .line.m-lh29 {width: 180px;}
+    .r .skill-tree .core .line.m-lh30 {width: 186px;}
+    .r .skill-tree .core .line.m-lh31 {width: 192px;}
+    .r .skill-tree .core .line.m-lh32 {width: 198px;}
+    .r .skill-tree .core .line.m-lh33 {width: 204px;}
+    .r .skill-tree .core .line.m-lh34 {width: 210px;}
+    .r .skill-tree .core .line.m-lh35 {width: 216px;}
+    .r .skill-tree .core .line.m-lh36 {width: 222px;}
+    .r .skill-tree .core .line.m-lh37 {width: 228px;}
+    .r .skill-tree .core .line.m-lh38 {width: 234px;}
+    .r .skill-tree .core .line.m-lh39 {width: 240px;}
+    .r .skill-tree .core .line.m-lh40 {width: 246px;}
+
+    .r .skill-tree .core .m-mhl0 {margin-left: 0;}
+    .r .skill-tree .core .m-mhr0 {margin-right: 0;}
+    .r .skill-tree .core .m-mh0 {margin-left: 3px;}
+    .r .skill-tree .core .m-mh1 {margin-left: 6px;}
+    .r .skill-tree .core .m-mh2 {margin-left: 12px;}
+    .r .skill-tree .core .m-mh3 {margin-left: 18px;}
+    .r .skill-tree .core .m-mh4 {margin-left: 24px;}
+    .r .skill-tree .core .m-mh5 {margin-left: 30px;}
+    .r .skill-tree .core .m-mh6 {margin-left: 36px;}
+    .r .skill-tree .core .m-mh7 {margin-left: 42px;}
+    .r .skill-tree .core .m-mh8 {margin-left: 48px;}
+    .r .skill-tree .core .m-mh9 {margin-left: 54px;}
+    .r .skill-tree .core .m-mh10 {margin-left: 60px;}
+    .r .skill-tree .core .m-mh11 {margin-left: 66px;}
+    .r .skill-tree .core .m-mh12 {margin-left: 72px;}
+    .r .skill-tree .core .m-mh13 {margin-left: 78px;}
+    .r .skill-tree .core .m-mh14 {margin-left: 84px;}
+    .r .skill-tree .core .m-mh15 {margin-left: 90px;}
+    .r .skill-tree .core .m-mh16 {margin-left: 96px;}
+    .r .skill-tree .core .m-mh17 {margin-left: 102px;}
+    .r .skill-tree .core .m-mh18 {margin-left: 108px;}
+    .r .skill-tree .core .m-mh19 {margin-left: 114px;}
+    .r .skill-tree .core .m-mh20 {margin-left: 120px;}
+    .r .skill-tree .core .m-mh21 {margin-left: 126px;}
+    .r .skill-tree .core .m-mh22 {margin-left: 132px;}
+    .r .skill-tree .core .m-mh23 {margin-left: 138px;}
+    .r .skill-tree .core .m-mh24 {margin-left: 144px;}
+    .r .skill-tree .core .m-mh25 {margin-left: 150px;}
+    .r .skill-tree .core .m-mh26 {margin-left: 156px;}
+    .r .skill-tree .core .m-mh27 {margin-left: 162px;}
+    .r .skill-tree .core .m-mh28 {margin-left: 168px;}
+    .r .skill-tree .core .m-mh29 {margin-left: 174px;}
+    .r .skill-tree .core .m-mh30 {margin-left: 180px;}
+    .r .skill-tree .core .m-mh31 {margin-left: 186px;}
+    .r .skill-tree .core .m-mh32 {margin-left: 192px;}
+    .r .skill-tree .core .m-mh33 {margin-left: 198px;}
+    .r .skill-tree .core .m-mh34 {margin-left: 204px;}
+    .r .skill-tree .core .m-mh35 {margin-left: 210px;}
+    .r .skill-tree .core .m-mh36 {margin-left: 216px;}
+    .r .skill-tree .core .m-mh37 {margin-left: 222px;}
+    .r .skill-tree .core .m-mh38 {margin-left: 228px;}
+    .r .skill-tree .core .m-mh39 {margin-left: 234px;}
+    .r .skill-tree .core .m-mh40 {margin-left: 240px;}
+    .r .skill-tree .core .m-mh41 {margin-left: 246px;}
+    .r .skill-tree .core .m-mh42 {margin-left: 252px;}
+    .r .skill-tree .core .m-mh43 {margin-left: 258px;}
+    .r .skill-tree .core .m-mh44 {margin-left: 264px;}
+    .r .skill-tree .core .m-mh45 {margin-left: 270px;}
+    .r .skill-tree .core .m-mh46 {margin-left: 276px;}
+    .r .skill-tree .core .m-mh47 {margin-left: 282px;}
+    .r .skill-tree .core .m-mh48 {margin-left: 288px;}
+    .r .skill-tree .core .m-mh49 {margin-left: 294px;}
+    .r .skill-tree .core .m-mh50 {margin-left: 300px;}
+    .r .skill-tree .core .m-mh51 {margin-left: 306px;}
+    .r .skill-tree .core .m-mh52 {margin-left: 312px;}
+    .r .skill-tree .core .m-mh53 {margin-left: 318px;}
+    .r .skill-tree .core .m-mh54 {margin-left: 324px;}
+    .r .skill-tree .core .m-mh55 {margin-left: 330px;}
+    .r .skill-tree .core .m-mh56 {margin-left: 336px;}
+    .r .skill-tree .core .m-mh57 {margin-left: 342px;}
+    .r .skill-tree .core .m-mh58 {margin-left: 348px;}
+    .r .skill-tree .core .m-mh59 {margin-left: 354px;}
+    .r .skill-tree .core .m-mh60 {margin-left: 360px;}
+    .r .skill-tree .core .m-mh61 {margin-left: 366px;}
+    .r .skill-tree .core .m-mh62 {margin-left: 372px;}
+    .r .skill-tree .core .m-mh63 {margin-left: 378px;}
+    .r .skill-tree .core .m-mh64 {margin-left: 384px;}
+    .r .skill-tree .core .m-mh65 {margin-left: 390px;}
+    .r .skill-tree .core .m-mh66 {margin-left: 396px;}
+    .r .skill-tree .core .m-mh67 {margin-left: 402px;}
+    .r .skill-tree .core .m-mh68 {margin-left: 408px;}
+    .r .skill-tree .core .m-mh69 {margin-left: 414px;}
+    .r .skill-tree .core .m-mh70 {margin-left: 420px;}
+    .r .skill-tree .core .m-mh71 {margin-left: 426px;}
+    .r .skill-tree .core .m-mh72 {margin-left: 432px;}
+    .r .skill-tree .core .m-mh73 {margin-left: 438px;}
+    .r .skill-tree .core .m-mh74 {margin-left: 444px;}
+    .r .skill-tree .core .m-mh75 {margin-left: 450px;}
+    .r .skill-tree .core .m-mh76 {margin-left: 456px;}
+    .r .skill-tree .core .m-mh77 {margin-left: 462px;}
+    .r .skill-tree .core .m-mh78 {margin-left: 468px;}
+    .r .skill-tree .core .m-mh79 {margin-left: 474px;}
+    .r .skill-tree .core .m-mh80 {margin-left: 480px;}
+    .r .skill-tree .core .m-mh81 {margin-left: 486px;}
+    .r .skill-tree .core .m-mh82 {margin-left: 492px;}
+    .r .skill-tree .core .m-mh83 {margin-left: 498px;}
+    .r .skill-tree .core .m-mh84 {margin-left: 504px;}
+    .r .skill-tree .core .m-mh85 {margin-left: 510px;}
+    .r .skill-tree .core .m-mh86 {margin-left: 516px;}
+    .r .skill-tree .core .m-mh87 {margin-left: 522px;}
+    .r .skill-tree .core .m-mh88 {margin-left: 528px;}
+    .r .skill-tree .core .m-mh89 {margin-left: 534px;}
+    .r .skill-tree .core .m-mh90 {margin-left: 540px;}
+    .r .skill-tree .core .m-mh91 {margin-left: 546px;}
+    .r .skill-tree .core .m-mh92 {margin-left: 552px;}
+    .r .skill-tree .core .m-mh93 {margin-left: 558px;}
+    .r .skill-tree .core .m-mh94 {margin-left: 564px;}
+    .r .skill-tree .core .m-mh95 {margin-left: 570px;}
+    .r .skill-tree .core .m-mh96 {margin-left: 576px;}
+    .r .skill-tree .core .m-mh97 {margin-left: 582px;}
+    .r .skill-tree .core .m-mh98 {margin-left: 588px;}
+    .r .skill-tree .core .m-mh99 {margin-left: 594px;}
+    .r .skill-tree .core .m-mh100 {margin-left: 600px;}
+    .r .skill-tree .core .m-mh101 {margin-left: 606px;}
+    .r .skill-tree .core .m-mh102 {margin-left: 612px;}
+    .r .skill-tree .core .m-mh103 {margin-left: 618px;}
+    .r .skill-tree .core .m-mh104 {margin-left: 624px;}
+    .r .skill-tree .core .m-mh105 {margin-left: 630px;}
+    .r .skill-tree .core .m-mh106 {margin-left: 636px;}
+    .r .skill-tree .core .m-mh107 {margin-left: 642px;}
+    .r .skill-tree .core .m-mh108 {margin-left: 648px;}
+    .r .skill-tree .core .m-mh109 {margin-left: 654px;}
+    .r .skill-tree .core .m-mh110 {margin-left: 660px;}
+    .r .skill-tree .core .m-mh111 {margin-left: 666px;}
+    .r .skill-tree .core .m-mh112 {margin-left: 672px;}
+    .r .skill-tree .core .m-mh113 {margin-left: 678px;}
+    .r .skill-tree .core .m-mh114 {margin-left: 684px;}
+    .r .skill-tree .core .m-mh115 {margin-left: 690px;}
+    .r .skill-tree .core .m-mh116 {margin-left: 696px;}
+    .r .skill-tree .core .m-mh117 {margin-left: 702px;}
+    .r .skill-tree .core .m-mh118 {margin-left: 708px;}
+    .r .skill-tree .core .m-mh119 {margin-left: 714px;}
+    .r .skill-tree .core .m-mh120 {margin-left: 720px;}
+    .r .skill-tree .core .m-mh121 {margin-left: 726px;}
+    .r .skill-tree .core .m-mh122 {margin-left: 732px;}
+    .r .skill-tree .core .m-mh123 {margin-left: 738px;}
+    .r .skill-tree .core .m-mh124 {margin-left: 744px;}
+    .r .skill-tree .core .m-mh125 {margin-left: 750px;}
+    .r .skill-tree .core .m-mh126 {margin-left: 756px;}
+    .r .skill-tree .core .m-mh127 {margin-left: 762px;}
+    .r .skill-tree .core .m-mh128 {margin-left: 768px;}
+    .r .skill-tree .core .m-mh129 {margin-left: 774px;}
+    .r .skill-tree .core .m-mh130 {margin-left: 780px;}
+    .r .skill-tree .core .m-mh131 {margin-left: 786px;}
+    .r .skill-tree .core .m-mh132 {margin-left: 792px;}
+    .r .skill-tree .core .m-mh133 {margin-left: 798px;}
+    .r .skill-tree .core .m-mh134 {margin-left: 804px;}
+    .r .skill-tree .core .m-mh135 {margin-left: 810px;}
+    .r .skill-tree .core .m-mh136 {margin-left: 816px;}
+    .r .skill-tree .core .m-mh137 {margin-left: 822px;}
+    .r .skill-tree .core .m-mh138 {margin-left: 828px;}
+    .r .skill-tree .core .m-mh139 {margin-left: 834px;}
+    .r .skill-tree .core .m-mh140 {margin-left: 840px;}
+    .r .skill-tree .core .m-mh141 {margin-left: 846px;}
+    .r .skill-tree .core .m-mh142 {margin-left: 852px;}
+    .r .skill-tree .core .m-mh143 {margin-left: 858px;}
+    .r .skill-tree .core .m-mh144 {margin-left: 864px;}
+    .r .skill-tree .core .m-mh145 {margin-left: 870px;}
+    .r .skill-tree .core .m-mh146 {margin-left: 876px;}
+    .r .skill-tree .core .m-mh147 {margin-left: 882px;}
+    .r .skill-tree .core .m-mh148 {margin-left: 888px;}
+    .r .skill-tree .core .m-mh149 {margin-left: 894px;}
+    .r .skill-tree .core .m-mh150 {margin-left: 900px;}
+    .r .skill-tree .core .m-mh151 {margin-left: 906px;}
+    .r .skill-tree .core .m-mh152 {margin-left: 912px;}
+    .r .skill-tree .core .m-mh153 {margin-left: 918px;}
+    .r .skill-tree .core .m-mh154 {margin-left: 924px;}
+    .r .skill-tree .core .m-mh155 {margin-left: 930px;}
+    .r .skill-tree .core .m-mh156 {margin-left: 936px;}
+    .r .skill-tree .core .m-mh157 {margin-left: 942px;}
+    .r .skill-tree .core .m-mh158 {margin-left: 948px;}
+    .r .skill-tree .core .m-mh159 {margin-left: 954px;}
+    .r .skill-tree .core .m-mh160 {margin-left: 960px;}
+    .r .skill-tree .core .m-mh161 {margin-left: 966px;}
+
+    .r .skill-tree .core .invert .m-c0 .line {margin-left: -0px;}
+    .r .skill-tree .core .invert .m-c1 .line {margin-left: -12px;}
+    .r .skill-tree .core .invert .m-c2 .line {margin-left: -24px;}
+    .r .skill-tree .core .invert .m-c3 .line {margin-left: -36px;}
+    .r .skill-tree .core .invert .m-c4 .line {margin-left: -48px;}
+    .r .skill-tree .core .invert .m-c5 .line {margin-left: -60px;}
+    .r .skill-tree .core .invert .m-c6 .line {margin-left: -72px;}
+    .r .skill-tree .core .invert .m-c7 .line {margin-left: -84px;}
+    .r .skill-tree .core .invert .m-c8 .line {margin-left: -96px;}
+    .r .skill-tree .core .invert .m-c9 .line {margin-left: -108px;}
+    .r .skill-tree .core .invert .m-c10 .line {margin-left: -120px;}
+    .r .skill-tree .core .invert .m-c11 .line {margin-left: -132px;}
+    .r .skill-tree .core .invert .m-c12 .line {margin-left: -144px;}
+    .r .skill-tree .core .invert .m-c13 .line {margin-left: -156px;}
+    .r .skill-tree .core .invert .m-c14 .line {margin-left: -168px;}
+    .r .skill-tree .core .invert .m-c15 .line {margin-left: -180px;}
+    .r .skill-tree .core .invert .m-c16 .line {margin-left: -192px;}
+    .r .skill-tree .core .invert .m-c17 .line {margin-left: -204px;}
+    .r .skill-tree .core .invert .m-c18 .line {margin-left: -216px;}
+    .r .skill-tree .core .invert .m-c19 .line {margin-left: -228px;}
+    .r .skill-tree .core .invert .m-c20 .line {margin-left: -240px;}
+}

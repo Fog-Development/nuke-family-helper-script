@@ -1,0 +1,2559 @@
+.d .war-report-wrap {
+    max-width: 784px;
+}
+
+.d .faction-main-wrap .title-toggle .arrow-999 {
+    display: none;
+}
+
+.d .territory-drop-list,
+.d .territory-drop-list .select-wrap {
+    display: none;
+}
+
+.d .faction-main-wrap .title-toggle {
+    border-radius: 5px;
+}
+
+.d .faction-main-wrap .title-toggle.active {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.d .faction-main-wrap .title-toggle + .cont-toggle {
+    display: none;
+}
+
+.d .faction-main-wrap .title-toggle.active + .cont-toggle {
+    display: block;
+}
+
+.d .faction-main-wrap .cont-toggle.announcement {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.d #factions .title-toggle.active + .cont-toggle video,
+.d #factions .title-toggle.active + .cont-toggle object,
+.d #factions .title-toggle.active + .cont-toggle source,
+.d #factions .title-toggle.active + .cont-toggle embed,
+.d #factions .title-toggle.active + .cont-toggle img,
+.d #factions .title-toggle.active + .cont-toggle track,
+.d #factions .title-toggle.active + .cont-toggle iframe {
+    max-width: 764px;
+    height: auto;
+}
+
+.d #factions .title-toggle.active + .cont-toggle video,
+.d #factions .title-toggle.active + .cont-toggle object,
+.d #factions .title-toggle.active + .cont-toggle source,
+.d #factions .title-toggle.active + .cont-toggle embed,
+.d #factions .title-toggle.active + .cont-toggle track,
+.d #factions .title-toggle.active + .cont-toggle iframe {
+    display: block;
+}
+
+.d .f-war-list.war-old .info {
+    float: left;
+}
+
+.d .f-war-list .f-chain,
+.d .f-war-list .f-flag,
+.d .f-war-list .f-daggers {
+    float: right;
+    margin: 13px 11px;
+    display: inline-block;
+    height: 47px;
+    width: 45px;
+    background: url(/images/v2/faction/wars/war_icons_976.png) left top no-repeat;
+}
+
+.d .f-war-list .f-chain {
+    background-position: 0 -141px;
+}
+
+.d .f-war-list .f-flag {
+    background-position: -45px -141px;
+}
+
+.d .f-war-list .f-daggers {
+    background-position: -90px -141px;
+}
+
+.d .f-war-list > li:hover .f-chain,
+.d .f-war-list > li.act .f-chain {
+    background-position: 0 -94px;
+}
+
+.d .f-war-list > li:hover .f-flag,
+.d .f-war-list > li.act .f-flag {
+    background-position: -45px -94px;
+}
+
+.d .f-war-list > li:hover .f-daggers,
+.d .f-war-list > li.act .f-daggers {
+    background-position: -90px -94px;
+}
+
+.d .f-war-list .f-chain.green {
+    background-position: 0 -47px;
+}
+
+.d .f-war-list .f-flag.green {
+    background-position: -45px -47px;
+}
+
+.d .f-war-list .f-daggers.green {
+    background-position: -90px -47px;
+}
+
+.d .f-war-list > li:hover .f-chain.green,
+.d .f-war-list > li.act .f-chain.green {
+    background-position: 0 0;
+}
+
+.d .f-war-list > li:hover .f-flag.green,
+.d .f-war-list > li.act .f-flag.green {
+    background-position: -45px 0;
+}
+
+.d .f-war-list > li:hover .f-daggers.green,
+.d .f-war-list > li.act .f-daggers.green {
+    background-position: -90px 0;
+}
+
+.d .f-war-list.war-old > li,
+.d .f-war-list.war-old > li .status-wrap {
+    height: 74px;
+    width: 188px;
+}
+
+.d .f-war-list.war-new > li,
+.d .f-war-list.war-new > li .status-wrap {
+    height: 109px;
+}
+
+.d .f-war-list.war-new .t-blue {
+    color: var(--faction-war-default-blue-color);
+}
+
+.d .f-war-list.war-new .t-blue.h:hover,
+.d .f-war-list.war-new .t-blue.h:focus {
+    color: var(--faction-war-default-blue-hover-color);
+}
+
+.d .f-war-list > li.inactive,
+.d .f-war-list > li.inactive:hover {
+    background-color: var(--default-bg-panel-color);
+}
+
+.d .f-war-list.war-new > li.inactive,
+.d .f-war-list.war-new > li.inactive:hover {
+    border-bottom: 0;
+}
+
+.d .f-war-list > li {
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+    float: left;
+    border-radius: 5px;
+}
+
+.d .f-war-list.war-old > li {
+    margin: 10px 0 0 10px;
+    box-shadow: 0 0 5px #AAA;
+}
+
+.d .f-war-list.war-new > li {
+    margin: 10px 0 0 11px;
+    width: 254px;
+    border-bottom: 1px solid #FFF;
+	border-bottom-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .f-war-list > li.first-in-row {
+    margin-left: 0;
+}
+
+.d .f-war-list.war-old > li.first-in-row {
+    padding-right: 2px;
+}
+
+.d .f-war-list > li .status-wrap {
+    cursor: pointer;
+}
+
+.d .f-war-list > li .desc-wrap {
+    display: none;
+}
+
+.d .f-war-list > li.act {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.d .f-war-list.war-old > li.act {
+    padding-bottom: 10px;
+}
+
+.d .f-war-list.war-new > li.act {
+    border-bottom: 0;
+}
+
+.d .f-war-list.war-new > li.act,
+.d .f-war-list.war-new > li.act .status-wrap {
+    height: 119px;
+    position: relative;
+}
+
+.d .f-war-list.war-old > li.clear {
+    float: none;
+    height: 0;
+    width: auto;
+}
+
+.d #factions .f-war-list.war-old .progress-wrap,
+.d #factions .f-war-list.war-old .progress-cont,
+.d #factions .f-war-list.war-old .progress {
+    height: 5px;
+}
+
+.d #factions .f-war-list.war-old .progress {
+    background: url(/images/v2/faction/wars/progress_bars_grey.png) left top repeat-x;
+        border-radius: 3px;
+}
+
+.d #factions .f-war-list.war-old .progress-wrap {
+    position: relative;
+}
+
+.d .f-war-list.war-new > li.descriptions .factions-tabs > li.clear,
+.d .f-war-list.war-new > li.clear,
+.d .f-war-list.war-old > li.descriptions .factions-tabs > li.clear,
+.d .f-war-list.war-old > li.clear {
+    float: none;
+    height: 0;
+    width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.d #factions .f-war-list.war-new .progress-cont,
+.d #factions .f-war-list.war-new .progress {
+    height: 5px;
+    background: url(/images/v2/faction/wars/progress_bars_new.png) 1px -60px no-repeat;
+}
+
+.d #factions .f-war-list.war-new .progress-wrap {
+    position: relative;
+    height: 6px;
+    background-position: left -60px;
+}
+
+.d #factions .progress-cont {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-position: left 0;
+}
+
+.d #factions .f-war-list.war-old .progress {
+    background-position: 0 -6px;
+}
+
+.d #factions .f-war-list .progress-cont.pos {
+    background-position: left -12px;
+}
+
+.d #factions .f-war-list .pos .progress {
+    background-position: 0 -18px;
+}
+
+.d #factions .f-war-list.war-old .act .progress-cont,
+.d #factions .f-war-list.war-old .act .progress {
+    background: url(/images/v2/faction/wars/progress_bars.png) left top no-repeat;
+}
+
+.d #factions .f-war-list.war-old .act .progress-cont {
+    background-position: left -88px;
+}
+
+.d #factions .f-war-list.war-old .act .progress {
+    margin-left: 8px;
+    background-position: -376px -102px;
+}
+
+.d #factions .f-war-list.war-old .act .progress-cont.pos {
+    background-position: left -32px;
+}
+
+.d #factions .f-war-list.war-old .act .pos .progress {
+    background-position: -376px -46px;
+}
+
+.d .f-war-list.war-old .progress-wrap {
+    margin: 5px 0 0 9px;
+    width: 102px;
+}
+
+.d .f-war-list.war-old .act .progress-wrap {
+    margin-left: 5px;
+    width: 111px;
+}
+
+.d .f-war-list.war-old > li .status-wrap .info {
+    height: 74px;
+    width: 121px;
+    background: url(/images/v2/faction/wars/war_tab_dividers.png) right top no-repeat;
+}
+
+.d #factions .f-war-list.war-new .progress {
+    margin-left: 4px;
+    background-position: -291px -75px;
+}
+
+.d #factions .f-war-list.war-new .your .progress-cont.pos {
+    background-position: 1px -30px;
+}
+
+.d #factions .f-war-list.war-new .your .pos .progress {
+    background-position: -291px -45px;
+}
+
+.d #factions .f-war-list.war-new .enemy .progress-cont.pos {
+    background-position: 1px top;
+}
+
+.d #factions .f-war-list.war-new .enemy .pos .progress {
+    background-position: -270px -15px;
+}
+
+.d .f-war-list.war-new .faction-progress-wrap .progress-wrap {
+    width: 80px;
+    margin-top: 4px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .info {
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    width: 254px;
+    padding-top: 3px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .info .b-delimiter,
+.d .f-war-list.war-new > li .status-wrap .info .t-delimiter {
+    height: 25px;
+    width: 3px;
+    left: -3px;
+    position: absolute;
+}
+
+.d .f-war-list.war-new > li .status-wrap .info .member-count .count {
+    font-family: "Fjalla One";
+    font-size: 19px;
+    line-height: 34px;
+    text-align: center;
+    text-shadow: 0 1px 0 rgb(255,255,255);
+    text-shadow: var(--title-text-shadow);
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .your,
+.d .f-war-list.war-new .faction-war .tab-menu-cont .tab-progress .text-progress.your,
+.d .f-war-list.war-new .factions-tabs > li.your a,
+.d .f-war-list.war-new .factions-tabs > li.your span,
+.d .f-war-list.war-new > li .status-wrap .info .member-count .count.your {
+    color: #798C3D;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .enemy,
+.d .f-war-list.war-new .faction-war .tab-menu-cont .tab-progress .text-progress.enemy,
+.d .f-war-list.war-new .factions-tabs > li.enemy a,
+.d .f-war-list.war-new .factions-tabs > li.enemy span,
+.d .f-war-list.war-new > li .status-wrap .info .member-count .count.enemy {
+    color: #BF7F6B;
+}
+
+
+.d .f-war-list.war-new .faction-war .tab-menu-cont .tab-progress .text-progress.your,
+.d .f-war-list.war-new .faction-war .tab-menu-cont .tab-progress .text-progress.enemy {
+    font-weight: bold;
+}
+
+.d .f-war-list > li:hover .status-wrap .info,
+.d .f-war-list > li.act .status-wrap .info {
+    background-position: left top;
+}
+
+.d .f-war-list > li .status-wrap .name {
+    padding-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.d .f-war-list.war-old > li .status-wrap .name {
+    margin: 9px 0;
+    width: 105px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .name {
+    line-height: 34px;
+    height: 34px;
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    color: var(--faction-war-box-text-color);
+    font-weight: bold;
+}
+
+.d .f-war-list.war-new > li .status-wrap .member-count {
+    width: 37px;
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .f-war-list.war-new > li .status-wrap .visual-map-wrap,
+.d .f-war-list.war-new > li .status-wrap .member-count {
+    height: 70px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap {
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+    width: 92px;
+    padding-left: 10px;
+    padding-top: 5px;
+    height: 65px;
+    position: relative;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .your-progress,
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .enemy-progress {
+    height: 32px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .faction-info {
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 13px;
+    text-align: left;
+    background-color: transparent;
+    border-top: 0;
+}
+
+.d .f-war-list.war-new > li .status-wrap .visual-map-wrap {
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+    position: relative;
+    width: 109px;
+}
+
+.d .f-war-list > li .status-wrap .status {
+    padding-top: 10px;
+    text-align: center;
+}
+
+.d .news-list {
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .news-list > li {
+    overflow: hidden;
+    display: table;
+    font-size: 0;
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    color: var(--default-full-text-color);
+}
+
+.d .news-list > li:first-child {
+    border-top: none;
+}
+
+.d .news-list > li .info,
+.d .news-list > li .date,
+.d .news-list > li .date span {
+    display: inline-block;
+}
+
+.d .news-list > li .date,
+.d .news-list > li .info {
+    vertical-align: middle;
+}
+
+.d .news-list > li .date {
+    margin: -200px 0;
+    padding: 200px 0;
+    width: 61px;
+    font-size: 10px;
+    text-align: center;
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .news-list > li .info {
+    padding: 10px;
+    width: 701px;
+    font-size: 12px;
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .pagination-wrap {
+    padding: 10px 0;
+}
+
+.d .news-list > li .t-red {
+    color: #BF7F6B;
+}
+
+.d .faction-news-wrap .update-loader {
+    height: 30px;
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.d .faction-news-wrap .update-loader .ajax-placeholder {
+    left: initial;
+    margin-left: 0;
+}
+
+.d .f-war-list > li.descriptions {
+    margin: 0;
+    float: left;
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    height: auto;
+    width: 100%;
+}
+
+.d .f-war-list.war-new > li.descriptions {
+    border-bottom: 0;
+    overflow: hidden;
+}
+
+.d .f-war-list.war-new > li.descriptions.first {
+    border-top-left-radius: 0;
+}
+
+.d .f-war-list.war-new > li.descriptions {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.d .f-war-list.war-new > li.descriptions.last {
+    border-top-right-radius: 0;
+}
+
+.d .f-war-list.war-new .faction-war-info {
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+    text-align: center;
+    line-height: 30px;
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    text-shadow: 0 1px 0 rgb(255,255,255);
+    text-shadow: var(--title-text-shadow);
+}
+
+.d .f-war-list.war-new .faction-war {
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .f-war-list.war-new .factions-tabs > li {
+    height: 57px;
+    line-height: 57px;
+    text-align: center;
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .f-war-list.war-new .factions-tabs > li a,
+.d .f-war-list.war-new .factions-tabs > li span {
+    text-decoration: none;
+    display: block;
+    cursor: default;
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    font-family: "Fjalla One";
+    font-size: 25px;
+    text-shadow: 0 1px 0 rgb(255,255,255);
+    text-shadow: var(--title-text-shadow);
+}
+
+.d .f-war-list.war-new .faction-war .tab-menu-cont .tab-progress {
+    height: 23px;
+    padding: 8px 10px 10px 10px;
+    text-align: center;
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .f-war-list.war-new .faction-war .tab-menu-cont {
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .f-war-list.war-new .faction-war .tab-menu-cont .tab-progress .progress-wrap {
+    width: 367px;
+    margin-top: 5px;
+}
+
+.d #factions .f-war-list.war-new .faction-war .tab-menu-cont .tab-progress .progress-wrap .progress {
+    background-position: -4px -75px;
+}
+
+.d #factions  .f-war-list.war-new  .faction-war .tab-menu-cont .tab-progress.enemy .progress-wrap .pos .progress {
+    background-position: -4px -15px;
+}
+
+.d #factions  .f-war-list.war-new  .faction-war .tab-menu-cont .tab-progress.your .progress-wrap .pos .progress {
+    background-position: -4px -45px;
+}
+
+.d .f-war-list  .faction-war.war-new .tab-menu-cont .tab-progress .text-progress {
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 13px;
+    text-align: left;
+}
+
+.d .f-war-list.war-new .faction-war .your-faction .members-list > li.msg-cont .msg,
+.d .f-war-list.war-new .faction-war .tab-menu-cont.your-faction .members-list .attack,
+.d .f-war-list.war-new .faction-war .tab-menu-cont.your-faction .members-cont .attack {
+    display: none;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .member,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .members {
+    padding-left: 10px;
+    width: 265px;
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .title .members {
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+/*.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .member {*/
+    /*width: 270px;*/
+    /*padding-left: 45px;*/
+/*}*/
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .level,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .level,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .attack,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .attack,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .status,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .status,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .points,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .points,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .user-icons  {
+    padding-right: 10px;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .level,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .level {
+    width: 40px;
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+    text-align: right;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .attack,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .attack {
+    width: 48px;
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+    text-align: right;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .member,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .members,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .level,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .level,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .attack,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .attack,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .points,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .points,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .status,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .status,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .id,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .id,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .join,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .timer-wrap  {
+    height: 33px;
+    line-height: 36px;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list {
+    overflow: hidden;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .id {
+    padding-left: 15px;
+    width: 28px;
+    height: 33px;
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+    border-left: 5px solid transparent;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .your .id {
+    color: #85B200;
+    border-left-color: rgba(108, 195, 21, 0.3);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .enemy .id {
+    color: rgb(255,122,77);
+    border-left-color: rgba(229, 76, 25, 0.3);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .join .id,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .timer-wrap .id {
+    border-right: 0;
+    color: #CCC;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .text-center {
+    height: 100%;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont:not(.profile-mode) .join:hover {
+    background: rgb(221,221,221); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(221,221,221,1) 0%, rgba(255,255,255,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(221,221,221,1) 0%,rgba(255,255,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(221,221,221,1) 0%,rgba(255,255,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    background: var(--tabs-active-bg-gradient);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .join .join-link {
+    color: #0092D8;
+    display: block;
+    width: auto;
+    height: 100%;
+    padding-right: 40px;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .join .join-link {
+    color: #CCC;
+    cursor: default;
+}
+
+.d .f-war-list.war-new .timer-icon {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background: url("/images/v2/faction/wars/timer.png") 0 0 no-repeat;
+}
+
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .timer {
+    text-align: center;
+    padding-right: 40px;
+}
+
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .timer-value {
+    color: #999;
+	color: var(--default-gray-9-color);
+    margin-left: 3px;
+}
+
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .attack {
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 33px;
+    height: 34px;
+    border-right: 5px solid transparent;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .your .attack {
+    color: #85B200;
+    border-right-color: rgba(108, 195, 21, 0.3);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .enemy .attack {
+    color: rgb(255,122,77);
+    border-right-color: rgba(229, 76, 25, 0.3);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .attack {
+    display: none;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .your .attack a,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .your .attack a:hover {
+    color: #CCCCCC;
+    cursor: pointer;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .member {
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .title .user-icons {
+    height: 33px;
+    line-height: 36px;
+    width: 256px;
+    padding-left: 10px;
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .user-icons {
+    padding: 7px 10px 0;
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+    min-height: 27px;
+    width: 256px;
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .user-icons {
+    width: 314px;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .status,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .status,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .points,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .points {
+    width: 57px;
+    padding-right: 10px;
+    text-align: right;
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .ok.status,
+.d .f-war-list.members-list .ok {
+    color: var(--user-status-green-color);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .your .points {
+    color: #85B200;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .not-ok.status,
+.d .f-war-list.members-list .not-ok {
+    color: var(--user-status-red-color);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .enemy .points {
+    color: #FF7A4D;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .abroad.status,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .traveling.status,
+.d .f-war-list.members-list .abroad,
+.d .f-war-list.members-list .traveling {
+    color: var(--user-status-blue-color);
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .points {
+    border-right: 0;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont.your-faction .members-list .level,
+.d .f-war-list.war-new  .faction-war .tab-menu-cont.your-faction .members-cont .level {
+    width: 100px;
+    border-right: 0;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .white-grad {
+    text-shadow: 0 1px 0 rgb(255,255,255);
+    text-shadow: var(--title-text-shadow);
+    color: #888;
+    color: var(--tabs-color);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .title {
+    margin-top: -1px;
+}
+
+
+.d .f-war-list.war-new  .faction-war .your-faction .members-list {
+    background: url(/images/v2/faction/wars/member_list_bg_green.png) left top repeat-x;
+}
+
+.d .f-war-list.war-new  .faction-war .enemy-faction .members-list {
+    background: url(/images/v2/faction/wars/member_list_bg_red.png) left top repeat-x;
+}
+
+.d .f-war-list.war-new .territory-control-wrp .map-wrap,
+.d .f-war-list.war-new  .faction-war .your-faction .members-list,
+.d .f-war-list.war-new  .faction-war .enemy-faction .members-list {
+    overflow: hidden;
+}
+
+.d .f-war-list.war-new  .faction-war .members-list > li {
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+    /*border-bottom: 1px solid transparent;*/
+    width: 102%;
+
+    -webkit-box-shadow: inset 0px 1px 1px 0px var(--default-panel-divider-inner-side-color);
+    -moz-box-shadow: inset 0px 1px 1px 0px var(--default-panel-divider-inner-side-color);
+    box-shadow: inset 0px 1px 1px 0px var(--default-panel-divider-inner-side-color);
+}
+
+.d .f-war-list.war-new  .faction-war .members-list > li.your {
+    background-color:rgba(108,195,21,0.07);
+    border-top-color: #C3CCC0;
+    border-top-color: var(--default-panel-divider-outer-side-color);
+    border-bottom-color: transparent;
+}
+
+.d .f-war-list.war-new  .faction-war .members-list > li.enemy {
+    background-color:rgba(229,76,25,0.1);
+    border-top-color: #D9C4BF;
+    border-bottom-color: transparent;
+    border-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .f-war-list.war-new  .faction-war .members-list > li.empty,
+.d .f-war-list.war-new  .faction-war .members-list > li.empty,
+.d .f-war-list.war-new  .faction-war .members-list > li.msg-cont {
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+}
+
+.d .f-war-list.war-new  .faction-war .your-faction .members-list > li.msg-cont .msg.act {
+    display: inline;
+}
+
+/*.d .f-war-list.war-new  .faction-war .members-list > li.empty.last,
+.d .f-war-list.war-new  .faction-war .your-faction .members-list > li.msg-cont.last */
+.d .f-war-list.war-new  .faction-war .members-list > li.last,
+.d .f-war-list.war-new  .faction-war .members-list > li:last-of-type {
+    border-bottom: 0;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .member .singleicon {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .member .singleicon .iconShow {
+    margin-bottom: 1px;
+    margin-left: 1px;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .member .singleicon {
+    height: 18px;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .member .user.faction img,
+.d .f-war-list.war-new .faction-war .tab-menu-cont .members-list .member .user.name img {
+    vertical-align: middle;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .member .user.name {
+    margin-left: 7px;
+}
+
+.d .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .member .user.faction {
+    margin-left: 6px;
+}
+
+.d .territory-control-wrp .map-scroll .viewport {
+    width: 68px;
+    height: 203px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+}
+
+.d .territory-control-wrp .map-tabs {
+    height: 203px;
+    overflow: hidden;
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .territory-control-wrp .t-details,
+.d .territory-control-wrp .t-block,
+.d .territory-control-wrp .t-map {
+    padding-left: 10px;
+    line-height: 36px;
+    height: 33px;
+    text-shadow: 0 1px 0 rgb(255,255,255);
+    text-shadow: var(--title-text-shadow);
+    color: #888;
+    font-weight: bold;
+}
+
+.d .territory-control-wrp .t-map {
+    width:  514px;
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .territory-control-wrp .t-details {
+    width: 179px;
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .territory-control-wrp .t-block {
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+    width: 57px;
+}
+
+.d .territory-control-wrp .tabs-panel-wrp {
+    height: 203px;
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+    width: 715px;
+}
+
+.d .territory-control-wrp .map-wrap > .white-grad {
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .territory-control-wrp .map-wrap .tabs-panel-wrp .map {
+    width: 522px;
+    border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+    background-color: #FFF;
+    background-color: var(--default-bg-panel-active-color);
+    padding: 0 1px 1px 1px;
+}
+
+.d .territory-control-wrp .map-wrap .tabs-panel-wrp .details {
+    width: 188px;
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+    height: 203px;
+}
+
+.d .territory-control-wrp .map-wrap .tabs-panel-wrp .map-inf {
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    padding-left: 10px;
+    line-height: 34px;
+    height: 32px;
+    text-shadow: 0 1px 0 rgb(255,255,255);
+    text-shadow: var(--title-text-shadow);
+}
+
+.d .territory-control-wrp .map-wrap .block-tabs li:first-child {
+    border-top: 0;
+}
+
+.d .territory-control-wrp .map-wrap .block-tabs li.last,
+.d .territory-control-wrp .map-wrap .tabs-panel-wrp .map-inf.last {
+    border-bottom: 0;
+}
+
+.d .territory-control-wrp .map-wrap .block-tabs li > div,
+.d .territory-control-wrp .map-wrap .block-tabs li > a {
+    text-decoration: none;
+    display: block;
+    padding-left: 10px;
+    color: #888;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgb(255,255,255);
+    text-shadow: var(--title-text-shadow);
+}
+
+.d .territory-control-wrp .map-wrap .block-tabs li {
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    line-height: 33px;
+    height: 32px;
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .territory-control-wrp .map-wrap .scrollbar.disable + .viewport .block-tabs li {
+    width: 67px;
+}
+
+.d .territory-control-wrp .map-wrap .block-tabs {
+    border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+    min-height: 203px;
+}
+
+.d .territory-control-wrp .map-wrap .block-tabs li.ui-state-active > a {
+    color: #333;
+    color: var(--default-color);
+}
+
+.d .territory-control-wrp .map-wrap .block-tabs li:first-child > a,
+.d .territory-control-wrp .map-wrap .block-tabs li.ui-state-active:first-child > a {
+    font-style: italic;
+}
+
+.d .territory-control-wrp .map-wrap .block-tabs li.ui-state-active {
+    background: transparent url(/images/v2/main/table_blue.png) left top repeat;
+}
+
+.d .f-war-list > li.act + li + li + li.descriptions {
+    border-top-left-radius: 0;
+}
+
+.d .f-war-list > li.act + li.descriptions {
+    border-top-right-radius: 0;
+}
+
+.territory-control-wrp .map-wrap .tabs-panel-wrp .details .l-cont .map-inf:first-child {
+    border-top: 0;
+}
+
+.territory-control-wrp .territory.my-faction-territory {
+    cursor: pointer;
+}
+
+.d .f-war-list .faction-war-info .text {
+    color: #888;
+    font-weight: bold;
+}
+
+/* Redesign Faction War Tabs */
+
+.d .f-war-list.war-new {
+    font-family: "Fjalla One";
+    font-weight: normal;
+}
+
+.d .f-war-list.war-new > li.green {
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzZjYTIzNiIgc3RvcC1vcGFjaXR5PSIwLjIiLz4KICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjZjJmMmYyIiBzdG9wLW9wYWNpdHk9IjAiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZ3JhZC11Y2dnLWdlbmVyYXRlZCkiIC8+Cjwvc3ZnPg==);
+    background: -moz-linear-gradient(top, rgba(108,162,54,0.2) 0%, rgba(242,242,242,0) 50%);
+    background: -webkit-linear-gradient(top, rgba(108,162,54,0.2) 0%,rgba(242,242,242,0) 50%);
+    background: linear-gradient(to bottom, rgba(108,162,54,0.2) 0%,rgba(242,242,242,0) 50%);
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+}
+
+.d .f-war-list.war-new > li.red {
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2U1NGMxOSIgc3RvcC1vcGFjaXR5PSIwLjE1Ii8+CiAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iI2YyZjJmMiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPgo8L3N2Zz4=);
+    background: -moz-linear-gradient(top, rgba(229,76,25,0.15) 0%, rgba(242,242,242,0) 50%);
+    background: -webkit-linear-gradient(top, rgba(229,76,25,0.15) 0%,rgba(242,242,242,0) 50%);
+    background: linear-gradient(to bottom, rgba(229,76,25,0.15) 0%,rgba(242,242,242,0) 50%);
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+}
+
+.d .f-war-list.war-new > li.blue {
+    background: -moz-linear-gradient(top, rgba(0,191,255,0.1) 0%, rgba(0,191,255,0) 50%);
+    background: -webkit-linear-gradient(top, rgba(0,191,255,0.1) 0%,rgba(0,191,255,0) 50%);
+    background: linear-gradient(to bottom, rgba(0,191,255,0.1) 0%,rgba(0,191,255,0) 50%);
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .faction-info {
+    font-weight: normal;
+}
+
+.d .f-war-list.war-new > li .status-wrap .info {
+    border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+}
+
+.d .f-war-list.war-new > li .status-wrap .name {
+    padding: 0 5px 0 10px;
+    font-weight: normal;
+    border: 1px solid #F2F2F2;
+	border-color: var(--default-bg-panel-color);
+    border-bottom: 0;
+    border-radius: 5px 5px 0 0;
+}
+
+.d .f-war-list.war-new > li .status-wrap .name .text {
+    float: left;
+    display: block;
+    width: 197px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .name .territory-wrap {
+    float: right;
+    display: block;
+    width: 40px;
+    height: 34px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .name a,
+.d .f-war-list.war-new .faction-war .your-faction .members-list > li.msg-cont .msg.act .t-blue {
+    color: #0092D8;
+    text-decoration: none;
+    font-weight: normal;
+}
+
+.d .f-war-list.war-new > li .status-wrap .name a:hover,
+.d .f-war-list.war-new > li .status-wrap .name a:focus,
+.d .f-war-list.war-new .faction-war-info a:hover,
+.d .f-war-list.war-new .faction-war-info a:focus,
+.d .f-war-list.war-new .faction-war .your-faction .members-list > li.msg-cont .msg.act .t-blue:hover,
+.d .f-war-list.war-new .faction-war .your-faction .members-list > li.msg-cont .msg.act .t-blue:focus {
+    color: #999;
+	color: var(--default-gray-9-color);
+}
+
+.d .f-war-list.war-new .faction-war-info {
+    line-height: 19px;
+    padding: 10px;
+}
+
+.d .f-war-list.war-new .faction-war-info .text {
+    font-weight: normal;
+    color: var(--faction-war-box-text-color);
+}
+
+.d .swords-icon,
+.d .shield-icon{
+    width: 22px;
+    height: 22px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.d .swords-icon.green,
+.d .f-war-list.war-new > li .status-wrap .member-count.your-count .swords-icon {
+    background: url("/images/v2/faction/wars/sword_shield.png") -6px -6px no-repeat;
+}
+
+.d .swords-icon.red,
+.d .f-war-list.war-new > li .status-wrap .member-count.enemy-count .swords-icon {
+    background: url("/images/v2/faction/wars/sword_shield.png") -6px -40px no-repeat;
+}
+
+.d .shield-icon.green,
+.d .f-war-list.war-new > li .status-wrap .member-count.your-count .shield-icon {
+    background: url("/images/v2/faction/wars/sword_shield.png") -40px -6px no-repeat;
+}
+
+.d .shield-icon.red,
+.d .f-war-list.war-new > li .status-wrap .member-count.enemy-count .shield-icon {
+    background: url("/images/v2/faction/wars/sword_shield.png") -40px -40px no-repeat;
+}
+
+.d .f-war-list.war-new > li .status-wrap .member-count {
+    float: left;
+    width: 56px;
+    text-align: center;
+    position: relative;
+    border: 0;
+}
+
+.d .f-war-list.war-new > li .status-wrap .your-count:before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: auto;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: linear-gradient(to bottom, rgba(204,204,204,0) 0%,rgba(204,204,204,1) 50%, rgba(204,204,204,0) 100%);
+}
+
+.d .f-war-list.war-new > li .status-wrap .enemy-count:before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 50%, rgba(255,255,255,0) 100%);
+}
+
+.d .f-war-list.war-new > li .status-wrap .member-count:last-child {
+    border-right: 0;
+}
+
+.d .f-war-list.war-new > li .status-wrap .info .member-count .count {
+    padding-top: 7px;
+    height: 24px;
+    line-height: 24px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .member-count.your-count .count {
+    color: #798C3D;
+}
+
+.d .f-war-list.war-new > li .status-wrap .member-count.enemy-count .count {
+    color: #BF7F6B;
+}
+
+.d .f-war-list.war-new > li .status-wrap .member-count .tag {
+    display: inline-block;
+    width: 37px;
+    height: 20px;
+    margin-top: 5px;
+    background: url("/images/v2/faction/wars/faction_tag_bg_image.png") 0 0 no-repeat;
+    color: #999;
+	color: var(--default-gray-9-color);
+    line-height: 22px;
+    font-size: 11px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap {
+    border: 0;
+    width: 121px;
+    padding: 12px 10px 0;
+    text-align: center;
+    height: 58px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap:after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: auto;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: linear-gradient(to bottom, rgba(204,204,204,0) 0%,rgba(204,204,204,1) 50%, rgba(204,204,204,0) 100%);
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap:before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 50%, rgba(255,255,255,0) 100%);
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .score {
+    font-size: 11px;
+    letter-spacing: 0.3px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .timer {
+    font-family: "Fjalla One";
+    font-size: 11px;
+    color: var(--faction-war-box-text-color);
+    text-shadow: 0 1px 0 rgb(255,255,255);
+    text-shadow: var(--title-text-shadow);
+    letter-spacing: 0.3px;
+    line-height: 14px;
+
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .timer span {
+    display: inline-block;
+    width: 6px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .score.green {
+    color: #85B200;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .score.red {
+    color: #FF794C;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar {
+    width: 100%;
+    height: 5px;
+    display: block;
+    border-radius: 100px;
+    margin: 5px 0;
+    overflow: hidden;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your {
+    /*display: table-cell;*/
+    display: inline-block;
+    float: left;
+    height: 5px;
+    width: 121px;
+    background: rgb(163,217,0);
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2EzZDkwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM2OThjMDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-linear-gradient(top, rgba(163,217,0,1) 0%, rgba(105,140,0,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(163,217,0,1) 0%,rgba(105,140,0,1) 100%);
+    background: linear-gradient(to bottom, rgba(163,217,0,1) 0%,rgba(105,140,0,1) 100%);
+    /*border-radius: 100px 0 0 100px;*/
+    /*position: relative;*/
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your:nth-child(2) {
+    border-radius: 0 100px 100px 0;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy {
+    /*display: table-cell;*/
+    display: inline-block;
+    float: left;
+    height: 5px;
+    width: 121px;
+    background: rgb(255,122,77);
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmN2E0ZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNkOTM2MDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-linear-gradient(top, rgba(255,122,77,1) 0%, rgba(217,54,0,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(255,122,77,1) 0%,rgba(217,54,0,1) 100%);
+    background: linear-gradient(to bottom, rgba(255,122,77,1) 0%,rgba(217,54,0,1) 100%);
+    /*border-radius: 0 100px 100px 0;*/
+    /*position: relative;*/
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy:nth-child(1) {
+    border-radius: 100px 0 0 100px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your .animation,
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy .animation {
+    height: 5px;
+    width: 100%;
+    position: relative;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your .animation .arrows,
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy .animation .arrows {
+    height: 5px;
+    width: auto;
+    position: relative;
+    top: 0;
+    left: -5px;
+    background: url("/images/v2/faction/wars/progress_bar_arrows.png") 0 -30px repeat-x;
+    -webkit-animation: advantage-bar-animation 30s linear 0.1s infinite normal;
+    animation: advantage-bar-animation 30s linear 0.1s infinite normal;
+    z-index: 8;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy .animation .arrows {
+    left: 5px;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your:nth-child(2) .animation .arrows {
+    left: 5px;
+    background-position-y: -10px;
+    -webkit-animation-direction: reverse;
+    animation-direction: reverse;
+    z-index: 8;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy:nth-child(1) .animation .arrows {
+    left: 5px;
+    background-position-y: -20px;
+    -webkit-animation-direction: normal;
+    animation-direction: normal;
+    z-index: 8;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your .animation:before,
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your .animation:after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: auto;
+    right: 0;
+    top: 0;
+    height: 5px;
+    width: 15px;
+    background: url("/images/v2/faction/wars/progress_bar_pointer.png") 0 -15px no-repeat;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your .animation:after {
+    background: rgb(255,122,77);
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmN2E0ZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNkOTM2MDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-linear-gradient(top, rgba(255,122,77,1) 0%, rgba(217,54,0,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(255,122,77,1) 0%,rgba(217,54,0,1) 100%);
+    background: linear-gradient(to bottom, rgba(255,122,77,1) 0%,rgba(217,54,0,1) 100%);
+    z-index: 5;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your .animation:before {
+    z-index: 6;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your:nth-child(2) .animation:before {
+    right: auto;
+    left: 0;
+    background: url("/images/v2/faction/wars/progress_bar_pointer_2.png") 0 -15px no-repeat;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your:nth-child(2) .animation:after {
+    right: auto;
+    left: 0;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy .animation .arrows {
+    background-position-y: 0;
+    -webkit-animation: advantage-bar-animation 30s linear 0.1s infinite reverse;
+    animation: advantage-bar-animation 30s linear 0.1s infinite reverse;
+    z-index: 7;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy .animation:before,
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy .animation:after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 5px;
+    width: 15px;
+    background: url("/images/v2/faction/wars/progress_bar_pointer.png") 0 0 no-repeat;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy .animation:after {
+    background: rgb(163,217,0);
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2EzZDkwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM2OThjMDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-linear-gradient(top, rgba(163,217,0,1) 0%, rgba(105,140,0,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(163,217,0,1) 0%,rgba(105,140,0,1) 100%);
+    background: linear-gradient(to bottom, rgba(163,217,0,1) 0%,rgba(105,140,0,1) 100%);
+    z-index: 5;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy .animation:before {
+    z-index: 6;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy:nth-child(1) .animation:before {
+    right: 0;
+    left: auto;
+    background: url("/images/v2/faction/wars/progress_bar_pointer_2.png") 0 0 no-repeat;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy:nth-child(1) .animation:after {
+    right: 0;
+    left: auto;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy:nth-child(1) .animation .arrows {
+    left: -5px;
+}
+
+.d .f-war-list.war-new .faction-war .tab-menu-cont .members-list .level {
+    color: #666;
+    color: var(--default-gray-6-color);
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your .animation.medium .arrows,
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy .animation.medium  .arrows {
+    -webkit-animation-duration: 50s;
+    animation-duration: 50s;
+}
+
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .your .animation.slow .arrows,
+.d .f-war-list.war-new > li .status-wrap .faction-progress-wrap .advantage-bar .enemy .animation.slow .arrows {
+    -webkit-animation-duration: 70s;
+    animation-duration: 70s;
+}
+
+.d .text-center {
+    text-align: center;
+}
+
+.d .f-war-list.war-new .desc-wrap {
+    width: 784px;
+}
+
+.d .f-war-list.war-new .faction-names {
+    color: #999;
+	color: var(--default-gray-9-color);
+    font-size: 25px;
+    text-shadow: 0 1px 0 rgb(255,255,255);
+    text-shadow: var(--title-text-shadow);
+    text-align: center;
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+    padding: 20px;
+}
+
+.d .f-war-list.war-new .faction-names .your {
+    color: #798C3D;
+    vertical-align: middle;
+}
+
+.d .f-war-list.war-new .faction-names .enemy {
+    color: #BF7F6B;
+    vertical-align: middle;
+}
+
+.d .f-war-list.war-new .faction-names .vs {
+    font-size: 20px;
+    vertical-align: middle;
+}
+
+@-webkit-keyframes advantage-bar-animation {
+    0% {
+        background-position-x: 0;
+    }
+    100% {
+        background-position-x: 1000px;
+    }
+}
+
+@keyframes advantage-bar-animation {
+    0% {
+        background-position-x: 0;
+    }
+    100% {
+        background-position-x: 1000px;
+    }
+}
+
+.d .f-war-list.war-new .faction-war .tab-menu-cont .members-cont .white-grad {
+    font-weight: normal;
+}
+
+.d .f-war-list.war-new .members-list {
+    will-change: transform;
+    contain: layout;
+}
+
+.d .f-war-list.war-new .row-animation-new {
+    background-image: url(/images/v2/faction/wars/arrows_green.png);
+    background-position-y: -42px;
+    background-repeat: no-repeat;
+    position: relative;
+    height: 34px;
+    width: 70px;
+    top: 34px;
+    margin-top: -34px;
+    z-index: -1;
+}
+
+.d .f-war-list.war-new .row-animation-new.enemy {
+    background-image: url(/images/v2/faction/wars/arrows_red.png);
+}
+
+.d .f-war-list.war-new .row-animation-new.to-right {
+    -webkit-animation: row-animation-new 7s linear 0.1s infinite;
+    animation: row-animation-new 7s linear 0.1s infinite;
+}
+
+.d .f-war-list.war-new .row-animation-new.to-left {
+    background-position-y: 0;
+    -webkit-animation: row-animation-new 7s linear 0.1s infinite reverse;
+    animation: row-animation-new 7s linear 0.1s infinite reverse;
+}
+
+@keyframes row-animation-new {
+    from {
+        transform: translateX(-70px);
+    }
+    to {
+        transform: translateX(784px);
+    }
+}
+
+@-webkit-keyframes row-animation-new {
+    from {
+        transform: translateX(-70px);
+    }
+    to {
+        transform: translateX(784px);
+    }
+}
+
+
+/* SCSS keyframes */
+/*
+@keyframes row-animation {
+  @for $i from 1 through 101 {
+    #{$i * 1000% / 1020} {
+      background-position-x: #{$i * 10px - 80px};
+    }
+    #{$i * 1000% / 1020 + 0.01} {
+      background-position-x: #{$i * 10px - 80px};
+    }
+    #{$i * 1000% / 1020 + 0.97} {
+      background-position-x: #{$i * 10px - 80px};
+    }
+  }
+  100% {
+    background-position-x: 930px;
+  }
+}
+*/
+
+@media screen and (max-width: 784px) {
+
+    .r .war-report-wrap {
+        max-width: 386px;
+    }
+
+    .r .f-war-list.war-old .progress-wrap {
+      width: 120px;
+    }
+
+    .r .faction-main-wrap .title-toggle {
+        cursor: pointer;
+    }
+
+    .r .faction-main-wrap .title-toggle .arrow-999 {
+        display: block;
+    }
+
+    .r .f-war-list .f-chain,
+    .r .f-war-list .f-flag,
+    .r .f-war-list .f-daggers {
+        float: left;
+        margin: 6px;
+        display: inline-block;
+        height: 22px;
+        width: 23px;
+        background: url(/images/v2/faction/wars/war_icons_320_578.png) left top no-repeat;
+    }
+
+    .r .f-war-list .f-chain {
+        background-position: 0 -66px;
+    }
+
+    .r .f-war-list .f-flag {
+        background-position: -23px -66px;
+    }
+
+    .r .f-war-list .f-daggers {
+        background-position: -46px -66px;
+    }
+
+    .r .f-war-list > li:hover .f-chain,
+    .r .f-war-list > li.act .f-chain {
+        background-position: 0 -44px;
+    }
+
+    .r .f-war-list > li:hover .f-flag,
+    .r .f-war-list > li.act .f-flag {
+        background-position: -23px -44px;
+    }
+
+    .r .f-war-list > li:hover .f-daggers,
+    .r .f-war-list > li.act .f-daggers {
+        background-position: -46px -44px;
+    }
+
+    .r .f-war-list .f-chain.green {
+        background-position: 0 -22px;
+    }
+
+    .r .f-war-list .f-flag.green {
+        background-position: -23px -22px;
+    }
+
+    .r .f-war-list .f-daggers.green {
+        background-position: -46px -22px;
+    }
+
+    .r .f-war-list > li:hover .f-chain.green,
+    .r .f-war-list > li.act .f-chain.green {
+        background-position: 0 0;
+    }
+
+    .r .f-war-list > li:hover .f-flag.green,
+    .r .f-war-list > li.act .f-flag.green {
+        background-position: -23px 0;
+    }
+
+    .r .f-war-list > li:hover .f-daggers.green,
+    .r .f-war-list > li.act .f-daggers.green {
+        background-position: -46px 0;
+    }
+
+    .r .f-war-list.war-old > li .status-wrap .info {
+        overflow: hidden;
+        height: auto;
+        width: 350px;
+        background-image: none;
+        border-left: 1px solid #CCC;
+	border-left-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .info {
+        height: auto;
+        width: 386px;
+        background-image: none;
+    }
+
+    .r .f-war-list > li .status-wrap .status {
+        margin-left: 4px;
+        padding-top: 7px;
+    }
+
+    .r .f-war-list > li.act .status-wrap .status {
+        margin-left: 0;
+    }
+
+    .r .f-war-list.war-old .progress-wrap,
+    .r .f-war-list.war-old .act .progress-wrap {
+        margin-left: 0;
+    }
+
+    .r .f-war-list.war-old > li .status-wrap .name,
+    .r .f-war-list.war-old > li .status-wrap .status {
+        float: left;
+    }
+
+    .r .f-war-list.war-old > li .status-wrap .name {
+        padding: 11px 0 11px 10px;
+        margin: 0;
+        border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+        width: 205px;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .name {
+        margin: 0;
+        width: 376px;
+    }
+
+    .r .f-war-list {
+        margin-top: 10px;
+    }
+
+    .r .f-war-list > li.act {
+        padding-bottom: 0;
+    }
+
+    .r .f-war-list.war-new > li,
+    .r .f-war-list.war-new > li .status-wrap,
+    .r .f-war-list.war-old > li,
+    .r .f-war-list.war-old > li .status-wrap {
+        width: 386px;
+    }
+
+    .r .f-war-list.war-old > li.first-in-row {
+        padding-right: 0;
+    }
+
+    .r .f-war-list.war-old > li {
+        margin: 0;
+        height: auto;
+        box-shadow: none;
+    }
+
+    .r .f-war-list.war-old > li .status-wrap {
+        height: 34px;
+        border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+        border-radius: 0;
+        background: #ffffff; /* Old browsers */
+        background-color: var(--default-bg-panel-active-color);
+        background: -moz-linear-gradient(top,  #ffffff 0%, #dddddd 100%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#dddddd)); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top,  #ffffff 0%,#dddddd 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top,  #ffffff 0%,#dddddd 100%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(top,  #ffffff 0%,#dddddd 100%); /* IE10+ */
+        background: linear-gradient(to bottom,  #ffffff 0%,#dddddd 100%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#dddddd',GradientType=0 ); /* IE6-9 */
+    }
+
+
+    .r .f-war-list.war-new > li {
+        margin: 10px 0 0 0;
+        border-top: 1px solid #FFF;
+	    border-top-color: var(--default-panel-divider-inner-side-color);
+        float: none;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap {
+        border-radius: 0;
+    }
+
+    .r .f-war-list > li.inactive {
+        display: none;
+    }
+
+    .r .f-war-list > li.first-in-row {
+        padding-right: 0;
+    }
+
+    .r .f-war-list .status-desc {
+        display: none;
+    }
+
+    .r .faction-main-wrap .desc-wrap .scrollbar + .viewport .member-list > li .act-cont {
+        padding-left: 5px;
+    }
+
+    .r .faction-main-wrap .desc-wrap .scrollbar.disable + .viewport .member-list > li .act-cont {
+        padding-left: 10px;
+    }
+
+    .r .f-war-list.war-new > li.descriptions {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        margin-top: 0;
+    }
+
+    .r .f-war-list > li.descriptions {
+        z-index: 1;
+        top: 0;
+        left: 0;
+        position: relative;
+    }
+
+    .r .news-list > li .info {
+        width: 303px;
+    }
+
+    .r .f-war-list > li.not-member .status-wrap {
+        cursor: default;
+    }
+
+    .r .f-war-list > li.not-member:hover .f-chain.green {
+        background-position: left -22px;
+    }
+
+    .r #factions .title-toggle.active + .cont-toggle video,
+    .r #factions .title-toggle.active + .cont-toggle object,
+    .r #factions .title-toggle.active + .cont-toggle source,
+    .r #factions .title-toggle.active + .cont-toggle embed,
+    .r #factions .title-toggle.active + .cont-toggle img,
+    .r #factions .title-toggle.active + .cont-toggle track,
+    .r #factions .title-toggle.active + .cont-toggle iframe {
+        max-width: 366px;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .faction-progress-wrap {
+        width: 224px;
+    }
+
+    .r .f-war-list.war-new > li.act,
+    .r .f-war-list.war-new > li.act .status-wrap {
+        border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .f-war-list.war-new > li.act .status-wrap {
+        height: 109px;
+    }
+
+    .r .f-war-list.war-new > li.act {
+        /*margin: 0;*/
+        border-radius: 5px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        height: auto;
+    }
+
+    .r .f-war-list.war-new .faction-progress-wrap .progress-wrap {
+        width: 214px;
+    }
+
+    .r #factions .f-war-list.war-new .progress {
+        background-position: -156px -75px;
+    }
+
+    .r #factions .f-war-list.war-new .enemy .pos .progress {
+        background-position: -157px -15px;
+    }
+
+    .r #factions .f-war-list.war-new .your .pos .progress {
+        background-position: -157px -45px;
+    }
+
+    .r .f-war-list.war-new > li .desc-wrap .t-block {
+        display: block;
+    }
+
+    .r .f-war-list.war-new .faction-war-info {
+        padding-top: 6px;
+        padding-bottom: 6px;
+        border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .f-war-list.war-new > li .desc-wrap .t-block {
+        line-height: 22px;
+    }
+
+    .r .f-war-list.war-new .factions-tabs > li {
+        width: 192px;
+        height: 32px;
+        line-height: 32px;
+        font-size: 12px;
+        border-right: 1px solid #CCC;
+	border-right-color: var(--default-panel-divider-outer-side-color);
+        border-left: 1px solid #FFF;
+	border-left-color: var(--default-panel-divider-inner-side-color);
+        background: #ffffff;
+        background-color: var(--default-bg-panel-active-color);
+        background: -moz-linear-gradient(top, #ffffff 0%, #dddddd 100%);
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#dddddd));
+        background: -webkit-linear-gradient(top, #ffffff 0%,#dddddd 100%);
+        background: -o-linear-gradient(top, #ffffff 0%,#dddddd 100%);
+        background: -ms-linear-gradient(top, #ffffff 0%,#dddddd 100%);
+        background: linear-gradient(to bottom, #ffffff 0%,#dddddd 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#dddddd',GradientType=0 );
+    }
+
+    .r .f-war-list.war-new .factions-tabs > li.ui-tabs-active {
+        background: #dddddd;
+        background: -moz-linear-gradient(top, #dddddd 0%, #ffffff 100%);
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#dddddd), color-stop(100%,#ffffff));
+        background: -webkit-linear-gradient(top, #dddddd 0%,#ffffff 100%);
+        background: -o-linear-gradient(top, #dddddd 0%,#ffffff 100%);
+        background: -ms-linear-gradient(top, #dddddd 0%,#ffffff 100%);
+        background: linear-gradient(to bottom, #dddddd 0%,#ffffff 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dddddd', endColorstr='#ffffff',GradientType=0 );
+    }
+
+    .r .f-war-list.war-new .factions-tabs > li:first-child {
+        border-left: 0;
+    }
+
+    .r .f-war-list.war-new .factions-tabs > li.last {
+        border-right: 0;
+    }
+
+    .r .f-war-list.war-new .factions-tabs > li.clear {
+        float: none;
+        height: 0;
+        width: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont {
+        float: none;
+    }
+
+    .r .f-war-list.war-new .factions-tabs > li a {
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont {
+        width: 386px;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont .members-list .attack,
+    .r .f-war-list.war-new .faction-war .tab-menu-cont .members-cont .attack {
+        width: 47px;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont.your-faction .members-list .level,
+    .r .f-war-list.war-new .faction-war .tab-menu-cont.your-faction .members-cont .level {
+        width: 99px;
+    }
+
+    .r .territory-control-wrp .map-tabs .map-scroll,
+    .r .territory-control-wrp .map-wrap > .white-grad {
+        display: none;
+    }
+
+    .r .territory-control-wrp .tabs-panel-wrp {
+        width: 386px;
+        border-right: 0;
+        border-top: 1px solid #FFF;
+	    border-top-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .details,
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .map {
+        float: none;
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .details {
+        border-left: 0;
+        padding: 10px;
+        width: 366px;
+        height: 46px;
+    }
+
+    .r .territory-control-wrp .tabs-panel-wrp {
+        height: auto;
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .details .l-cont,
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .details .r-cont {
+        float: left;
+        width: 183px;
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .map-inf {
+        border: 0;
+        padding-left: 0;
+        height: 15px;
+        line-height: 17px;
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .map {
+        z-index: 1;
+        width: 386px;
+        padding: 0;
+        border-right: 0;
+        max-height: 203px;
+        border: 1px solid #FFF;
+	    border-color: var(--default-panel-divider-inner-side-color);
+    }
+
+    .r .territory-drop-list {
+        padding: 9px;
+        border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    }
+
+    .r .territory-drop-list,
+    .r .territory-drop-list .select-wrap {
+        display: block;
+    }
+
+    .r .territory-control-wrp .map-tabs {
+        border-top: 0;
+        height: 326px;
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .map .map-img {
+        margin-left: -68px;
+    }
+
+    .r .f-war-list.war-new .factions-tabs > li a {
+        font-weight: normal;
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp #all .details .l-cont + .r-cont {
+        display: none;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .faction-progress-wrap {
+        width: 253px;
+    }
+
+    .r .f-war-list.war-new > li {
+        border-top: 0;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .name {
+        width: 369px;
+    }
+
+    .r .news-list > li {
+        overflow: visible;
+    }
+
+    .r .news-list {
+        overflow: hidden;
+    }
+
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .member,
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .members {
+        width: 168px;
+    }
+
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .member,
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .members {
+        width: 272px;
+    }
+
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .member .t-hide {
+        display: inline-block;
+    }
+
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .member .t-show {
+        display: none;
+    }
+
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .level {
+        border-right: 0;
+    }
+
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .points,
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .points,
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .status,
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .status,
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-list .user-icons,
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .user-icons {
+        display: none;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont .members-list .attack,
+    .r .f-war-list.war-new .faction-war .tab-menu-cont .members-cont .attack {
+        width: 79px;
+        text-align: center;
+    }
+
+    .r .f-war-list.war-new .factions-tabs {
+        display: none;
+    }
+
+    .r .f-war-list.war-new .desc-wrap {
+        width: 100%;
+    }
+
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont .title {
+        margin-top: -2px;
+    }
+
+    .r .f-war-list.war-new .faction-names {
+        display: none;
+    }
+
+    .r .f-war-list.war-new .row-animation-new.to-left,
+    .r .f-war-list.war-new .row-animation-new.to-right {
+        -webkit-animation-duration: 4s;
+        animation-duration: 4s;
+    }
+
+    @keyframes row-animation-new {
+        from {
+            transform: translateX(-70px);
+        }
+        to {
+            transform: translateX(386px);
+        }
+    }
+
+    @-webkit-keyframes row-animation-new {
+        from {
+            transform: translateX(-70px);
+        }
+        to {
+            transform: translateX(386px);
+        }
+    }
+}
+
+@media screen and (max-width: 784px) {
+
+    .r .faction-news-wrap .main-news-select-wrap {
+      padding: 10px 8px;
+    }
+
+    .r .faction-news-wrap .big-delimiter-wrap {
+      display: block;
+      border-bottom: 0 solid transparent;
+    }
+
+    .r .faction-news-wrap .big-delimiter {
+      background-color: #FFF;
+      background-color: var(--default-bg-panel-active-color);
+      border-top: 1px solid #CCC;
+	border-top-color: var(--default-panel-divider-outer-side-color);
+      border-bottom: 0 solid transparent;
+    }
+
+    .r .faction-news-wrap .main-news-select-wrap .select-wrap .select-list,
+    .r .faction-news-wrap .main-news-select-wrap .select-wrap .select-list .ui-selectmenu-menu li {
+        width: 354px !important;
+    }
+
+}
+
+@media screen and (max-width: 386px) {
+
+    .r .faction-news-wrap .main-news-select-wrap .select-wrap .ui-selectmenu,
+    .r .faction-news-wrap .main-news-select-wrap .select-wrap .select-list .ui-selectmenu-menu ul {
+        width: 290px !important;
+    }
+
+    .r .faction-news-wrap .main-news-select-wrap .select-wrap .select-list,
+    .r .faction-news-wrap .main-news-select-wrap .select-wrap .select-list .ui-selectmenu-menu li {
+        width: 290px !important;
+    }
+
+    .r .big-select-menu-wrap .select-list .viewport {
+        width: 298px;
+    }
+
+    .r .faction-main-wrap .title-toggle {
+        border-radius: 0;
+    }
+
+    .r .f-war-list > li,
+    .r .f-war-list > li .status-wrap {
+        width: 320px;
+    }
+
+    .r .f-war-list.war-old > li .status-wrap .info {
+        width: 284px;
+    }
+
+    .r .f-war-list.war-old > li .status-wrap .name {
+        width: 139px;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .info {
+        width: 320px;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .name {
+        width: 310px;
+    }
+
+    .r .f-war-list .member-list > li .member {
+        width: 139px;
+    }
+
+    .r .f-war-list .member-list > li .member .user.faction {
+        display: none;
+    }
+
+    .r .f-war-list .member-list > li .member .user.name {
+        margin-left: 0;
+    }
+
+    .r .f-war-list .member-list > li .status,
+    .r .f-war-list .member-list > li .act-cont,
+    .r .f-war-list .member-list-title > li.lvl {
+        padding-left: 5px;
+    }
+
+    .r .f-war-list .member-list-title > li.lvl {
+        width: 38px;
+    }
+
+    .r .f-war-list .member-list > li .lvl {
+        width: 36px;
+    }
+
+    .r .f-war-list .member-list > li .lvl {
+        padding-right: 5px;
+    }
+
+    .r .f-war-list .member-list-title > li.members {
+        width: 132px;
+    }
+
+    .r .f-war-list .member-list-title > li.status {
+        width: 72px;
+    }
+
+    .r .faction-main-wrap .desc-wrap .viewport {
+        width: 320px;
+    }
+
+    .r .news-list > li .info {
+        width: 237px;
+    }
+
+    .r #factions .title-toggle.active + .cont-toggle video,
+    .r #factions .title-toggle.active + .cont-toggle object,
+    .r #factions .title-toggle.active + .cont-toggle source,
+    .r #factions .title-toggle.active + .cont-toggle embed,
+    .r #factions .title-toggle.active + .cont-toggle img,
+    .r #factions .title-toggle.active + .cont-toggle track,
+    .r #factions .title-toggle.active + .cont-toggle iframe {
+        max-width: 300px;
+    }
+
+    .r .f-war-list.war-new > li {
+        border-radius: 0;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .faction-progress-wrap {
+        width: 157px;
+    }
+
+    .r .f-war-list.war-new .faction-progress-wrap .progress-wrap {
+        width: 148px;
+    }
+
+    .r #factions .f-war-list.war-new .enemy .pos .progress {
+        background-position: -225px -15px;
+    }
+
+    .r #factions .f-war-list.war-new .your .pos .progress {
+        background-position: -225px -45px;
+    }
+
+    .r .f-war-list.war-new .factions-tabs > li {
+        width: 159px;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont .members-list .member {
+        width: 168px;
+        padding-left: 5px;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont .members-cont .members {
+        width: 163px;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont {
+        width: 320px;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont.your-faction .members-list .level,
+    .r .f-war-list.war-new .faction-war .tab-menu-cont.your-faction .members-cont .level {
+        width: 133px;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont .members-list .level,
+    .r .f-war-list.war-new .faction-war .tab-menu-cont .members-cont .level {
+        width: 31px;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont .members-list .attack,
+    .r .f-war-list.war-new .faction-war .tab-menu-cont .members-cont .attack {
+        width: 27px;
+    }
+
+    .r .f-war-list.war-new > li,
+    .r .f-war-list.war-new > li.act {
+        border-radius: 0;
+    }
+
+    .r .f-war-list.war-new .faction-war .tab-menu-cont .tab-progress .progress-wrap {
+        width: 300px;
+    }
+
+    .r #factions .f-war-list.war-new .faction-war .tab-menu-cont .tab-progress .progress-wrap .progress {
+        background-position: -70px -75px;
+    }
+
+    .r #factions .f-war-list.war-new .faction-war .tab-menu-cont .tab-progress.your .progress-wrap .pos .progress {
+        background-position: -70px -45px;
+    }
+
+    .r #factions .f-war-list.war-new .faction-war .tab-menu-cont .tab-progress.enemy .progress-wrap .pos .progress {
+        background-position: -70px -15px;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .member-count {
+        width: 37px;
+    }
+
+    .r .f-war-list.war-new .faction-war-info {
+
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .map-inf {
+        height: 17px;
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .details .l-cont,
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .details .r-cont {
+        width: 150px;
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .details {
+        width: 300px;
+        height: 49px;
+    }
+
+    .r .territory-control-wrp .tabs-panel-wrp,
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .map {
+        width: 320px;
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .map .map-img {
+        margin-left: -101px;
+    }
+
+    .r #factions .f-war-list.war-new .progress {
+        background-position: -223px -75px;
+    }
+
+    .r #factions .f-war-list.war-new .enemy .pos .progress {
+        background-position: -224px -15px;
+    }
+
+    .r #factions .f-war-list.war-new .your .pos .progress {
+        background-position: -224px -45px;
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp .map-inf {
+        line-height: 14px;
+        white-space: nowrap;
+    }
+
+    .r .territory-control-wrp .map-wrap .tabs-panel-wrp #all .details .l-cont {
+        width: 164px;
+    }
+
+    .r .territory-control-wrp .map-tabs {
+        height: 330px;
+    }
+
+    .r .f-war-list.war-new > li,
+    .r .f-war-list.war-new > li .status-wrap,
+    .r .f-war-list.war-old > li,
+    .r .f-war-list.war-old > li .status-wrap {
+        width: 320px;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .faction-progress-wrap {
+        width: 187px;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .member-count {
+        width: 56px;
+    }
+
+    .r .f-war-list.war-new > li .status-wrap .name {
+        width: 303px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-left: 0;
+        border-right: 0;
+    }
+
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .members {
+        width: 215px;
+    }
+
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .member {
+        text-align: center;
+        width: 220px;
+        padding-right: 5px;
+        padding-left: 0;
+    }
+
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .member .t-hide {
+        display: none;
+    }
+
+    .r .f-war-list.war-new  .faction-war .tab-menu-cont .members-cont.profile-mode .member .t-show {
+        display: inline-block;
+    }
+
+    @keyframes row-animation-new {
+        from {
+            transform: translateX(-70px);
+        }
+        to {
+            transform: translateX(320px);
+        }
+    }
+
+    @-webkit-keyframes row-animation-new {
+        from {
+            transform: translateX(-70px);
+        }
+        to {
+            transform: translateX(320px);
+        }
+    }
+}

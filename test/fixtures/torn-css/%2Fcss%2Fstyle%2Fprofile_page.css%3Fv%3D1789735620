@@ -1,0 +1,4429 @@
+@import url('https://fonts.googleapis.com/css2?family=Jolly+Lodger&display=swap');
+
+.d .logged-out .profile-left-wrapper .title-black {
+    background-position: 2px 0;
+    border-top-left-radius: 0;
+}
+
+.d .logged-out .profile-right-wrapper .profile-action .title-black {
+    background-position: 1px 0;
+    border-top-right-radius: 0;
+}
+
+.d .user-profile {
+  margin-top: 10px;
+}
+
+.d .logged-out .user-profile {
+  margin-top: 0;
+}
+
+.d .profile-wrapper .profile-container #iconTray.singleicon,
+.d .profile-wrapper .profile-container #iconTray > li {
+    margin-right: 5px;
+}
+
+.d .profile-wrapper .profile-left-wrapper {
+    width: 386px;
+}
+
+.d .profile-wrapper .profile-name {
+    height: 30px;
+    line-height: 41px;
+    text-align: center;
+    background-color: #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+}
+
+.d .profile-wrapper .profile-image {
+    height: 315px;
+    width: 206px;
+    border-radius: 5px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+.d .profile-buttons .buttons-wrap {
+    padding-top: 10px;
+}
+
+.d .profile-wrapper .profile-image-info-container {
+    position: relative;
+    width: 206px;
+    height: 280px;
+}
+
+.d .profile-wrapper .profile-image-wrapper .img-wrap {
+    height: 275px;
+    width: 206px;
+    display: table-cell;
+    border: 3px solid #FFF;
+	border-color: var(--default-panel-divider-inner-side-color);
+    vertical-align: middle;
+    text-align: center;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+}
+
+.d .profile-wrapper .profile-image-wrapper .user.name {
+    text-align: center;
+}
+
+.d .profile-wrapper .profile-image-wrapper img {
+    max-height: 275px;
+    max-width: 200px;
+    vertical-align: middle;
+}
+
+.d .profile-wrapper .profile-image-information {
+    position: absolute;
+    left: 3px;
+    bottom: 3px;
+    padding: 4px;
+    width: 192px;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.d .profile-wrapper .profile-wrapper a {
+    text-decoration: none;
+}
+
+.d .profile-wrapper .box-info:first-child {
+    margin-top: 10px;
+}
+
+.d .logged-out .profile-wrapper .box-info:first-child {
+    margin-top: 20px;
+}
+
+.d .profile-wrapper .box-info {
+    height: 84px;
+    margin-bottom: 32px;
+    position: relative;
+}
+
+.d .profile-wrapper .box-info:last-child {
+    margin-bottom: 10px;
+}
+
+.d .logged-out .profile-wrapper .box-info {
+    margin-bottom: 15px;
+}
+
+.d .profile-wrapper .box-info .box-name {
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 8px;
+    /*text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);*/
+}
+
+.d .profile-wrapper .box-info .box-value {
+    text-align: center;
+    margin: 0 auto;
+    width: 133px;
+}
+
+.d .profile-wrapper .box-info.age .box-value {
+    width: 130px;
+}
+
+.d .profile-wrapper .box-info.rank .rank-description,
+.d .profile-wrapper .box-info.age .box-value {
+    background: url(/images/v2/profile/svg/container_desktop.svg) -5px 0 repeat-x;
+    background: var(--profile-digits-blocks-bg-large) -5px 0 repeat-x;
+}
+
+.d .profile-wrapper .box-info:first-child .box-value {
+    width: 95px;
+}
+
+.d .profile-wrapper .rank-description {
+    font-size: 14px;
+    font-weight: normal;
+    text-align: center;
+    line-height:1.3em;
+}
+
+.d .profile-wrapper .rank-title {
+    font-size: 11px;
+    font-weight: normal;
+    text-align: center;
+    color: #ccc;
+    padding-top:6px;
+}
+
+.d .profile-wrapper .rank-description a {
+    color: #FF6600;
+}
+
+.d .profile-wrapper .rank-description a:hover {
+    color: #FF9900;
+}
+
+.d .profile-wrapper .profile-right-wrapper {
+    width: 386px;
+}
+
+.d .profile-wrapper .profile-container {
+    /*padding-left: 10px;*/
+    border-radius: 0 0 5px 5px;
+}
+
+.d .profile-wrapper .profile-action .profile-container {
+    padding-left: 0;
+    min-height: 118px;
+}
+
+.d .profile-wrapper .profile-container-description {
+    line-height: 16px;
+    padding: 5px 10px 5px 10px;
+}
+
+.d .logged-out .profile-wrapper .profile-container-description {
+    padding: 10px 10px 5px 10px;
+}
+
+.d .profile-wrapper .profile-status .profile-container-description {
+    line-height: 14px;
+    padding: 10px;
+    height: 78px;
+}
+
+.d .profile-wrapper .action-list {
+    font-size: 0;
+    border-bottom: 1px solid #CCC;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    padding-bottom: 5px;
+    padding-left: 4px;
+}
+
+.d .logged-out .profile-wrapper .action-list {
+    padding: 0 10px 5px 10px;
+}
+
+.d .profile-wrapper .action-list li {
+    display: inline-block;
+}
+
+.d .profile-wrapper [class^="action-icon-"],
+.d .profile-wrapper [class*=" action-icon-"] {
+    margin: 5px;
+}
+
+.d .logged-out .profile-wrapper [class^="action-icon-"],
+.d .logged-out .profile-wrapper [class*=" action-icon-"] {
+    margin: 5px 11px;
+}
+
+.d .profile-wrapper .medals-container {
+    padding: 0 45px;
+}
+
+.d .profile-wrapper .medals {
+    display: block;
+    height: 50px;
+    width: 50px;
+    margin: 12px 0 11px 0;
+}
+
+/*new slider*/
+
+.d .profile-wrapper .medals-container {
+    user-select: none;
+    position: relative;
+    min-height: 91px;
+}
+
+.d .profile-wrapper .medals-container .swiper-container {
+    /*margin: 0 45px;*/
+    text-align: center;
+    position: static;
+}
+
+.d .profile-wrapper .medals-container .swiper-container .swiper-pagination {
+    position: static;
+    margin: 4px 0 12px;
+}
+
+.d .profile-wrapper .medals-container .swiper-container .swiper-pagination-bullet-active {
+    background: #666;
+}
+
+.d .profile-wrapper .medals-container .swiper-button-next,
+.d .profile-wrapper .medals-container .swiper-button-prev {
+    background: url(/images/v2/grey_arrows_sprite.png) no-repeat;
+    height: 52px;
+    width: 15px;
+    opacity: 1;
+    margin-top: -26px;
+}
+
+.d .profile-wrapper .medals-container .swiper-button-prev {
+    background-position: 0 0;
+    left: 16px;
+}
+
+.d .profile-wrapper .medals-container .swiper-button-prev:hover {
+    background-position: 0 -52px;
+}
+
+.d .profile-wrapper .medals-container .swiper-button-next {
+    background-position: 100% 0;
+    right: 16px;
+}
+
+.d .profile-wrapper .medals-container .swiper-button-next:hover {
+    background-position: 100% -52px;
+}
+
+.d .profile-wrapper .profile-container .row li {
+    margin-bottom: 5px;
+}
+
+.d .profile-wrapper .profile-container .row {
+    margin: 0;
+}
+
+.d .profile-wrapper .row.basic-info {
+    height: 25px;
+    margin-left: 0;
+    border-bottom: 1px solid #CCC;
+    border-bottom-color: var(--panel-divider-outer-side-color);
+    padding: 10px 10px 0 10px;
+}
+
+.d .profile-wrapper .profile-container .row.basic-info li {
+    margin-bottom: 0;
+    margin-top: 0;
+    margin-right: 9px;
+}
+
+.d .profile-wrapper .profile-container .row.basic-info li#icon1,
+.d .profile-wrapper .profile-container .row.basic-info li#icon2 {
+    margin-right: 7px;
+}
+
+.d .profile-wrapper .profile-container .row.basic-info li:last-child {
+    margin-right: 0;
+}
+
+.d .profile-wrapper .profile-container .row.basic-info li a {
+    margin-left: 0;
+    margin-right: 5px;
+}
+
+.d .profile-wrapper .profile-container.basic-info {
+    line-height: 15px;
+    border-bottom: 0;
+    overflow: hidden;
+}
+
+.d .profile-wrapper .profile-container.basic-info .permission1 {
+  color: #9A62B5;
+}
+
+.d .profile-wrapper .profile-container.basic-info .permission2 {
+  color: #6EA7BB;
+}
+
+.d .profile-wrapper .profile-container.basic-info .permission3 {
+  color: #4EA87B;
+}
+
+.d .profile-wrapper .profile-container.basic-info .permission4,
+.d .profile-wrapper .profile-container.basic-info .permission5 {
+  color: #B96A6A;
+}
+
+.d .profile-wrapper .profile-container.basic-info:after {
+    content: '';
+    display: block;
+}
+
+.d .profile-wrapper .profile-container .info-table li {
+    display: flex;
+    border-bottom: 1px solid #CCC;
+    border-bottom-color: var(--panel-divider-outer-side-color);
+    line-height: 24px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.d .profile-wrapper .profile-container .info-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.d .profile-wrapper .profile-container .info-table .user-information-section {
+    margin: 0;
+    width: 90px;
+}
+
+.d .profile-wrapper .profile-container .info-table .user-info-value {
+    margin: 0;
+    padding: 0 10px;
+    width: 68%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.d .profile-wrapper .profile-container.basic-info .info-table li:last-child {
+    border-bottom: 1px solid #fff;
+	border-bottom-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .profile-wrapper .profile-container.personal-info ul li {
+    line-height: 26px;
+    height: 24px;
+    border-bottom: 1px solid #CCC;
+    border-bottom-color: var(--panel-divider-outer-side-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.d .profile-wrapper .profile-container.personal-info {
+    height: 130px;
+    line-height: 15px;
+    background: url(/images/v2/profile/personal_info.png) -18px 14px no-repeat #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+}
+
+.d .profile-wrapper .menu-header {
+    height: 30px;
+    line-height: 30px;
+    border-radius: 5px 5px 0 0;
+}
+
+.d .profile-wrapper .user-information-section {
+    margin-right: 4px;
+    background: url(/images/v2/list_divider.png) right bottom repeat-x;
+    height: 16px;
+}
+
+.d .profile-wrapper .user-information-section span {
+    padding-bottom: 1px;
+    padding-right: 4px;
+}
+
+.d .profile-wrapper .profile-signature .title-black {
+    text-align: center;
+}
+
+.d .profile-wrapper .torn-of-the-dead img {
+    display: block;
+    margin: 0 auto;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.d .profile-wrapper .flex-control-nav.flex-control-paging {
+    display: none;
+}
+
+.d .profile-wrapper .profile-container .profile-container-mobile-action-button {
+    display: none;
+}
+
+.d .logged-out .profile-wrapper .flex-direction-nav [class*=flex-] {
+    width: 22px;
+    height: 51px;
+    cursor: pointer;
+}
+
+.d .logged-out.summer .profile-wrapper .flex-direction-nav [class*=flex-] {
+    background-image: url(/images/v2/profile/arrows_summer_vertical.png);
+    background-repeat: no-repeat;
+}
+
+.d .logged-out.autumn .profile-wrapper .flex-direction-nav [class*=flex-] {
+    background-image: url(/images/v2/profile/arrows_autumn_vertical.png);
+    background-repeat: no-repeat;
+}
+
+.d .logged-out.winter .profile-wrapper .flex-direction-nav [class*=flex-] {
+    background-image: url(/images/v2/profile/arrows_winter_vertical.png);
+    background-repeat: no-repeat;
+}
+
+.d .logged-out.spring .profile-wrapper .flex-direction-nav [class*=flex-] {
+    background-image: url(/images/v2/profile/arrows_spring_vertical.png);
+    background-repeat: no-repeat;
+}
+
+.d .logged-out .profile-wrapper .flex-direction-nav .flex-next.flex-disabled:hover,
+.d .logged-out .profile-wrapper .flex-direction-nav .flex-next.flex-disabled {
+    background-position: right 0;
+}
+
+.d .logged-out .profile-wrapper .flex-direction-nav .flex-prev.flex-disabled:hover,
+.d .logged-out .profile-wrapper .flex-direction-nav .flex-prev.flex-disabled {
+    background-position: left 0;
+}
+
+.d .logged-out .profile-wrapper .flex-direction-nav .flex-next.flex-disabled,
+.d .logged-out .profile-wrapper .flex-direction-nav .flex-prev.flex-disabled {
+    cursor: default;
+}
+
+.d .logged-out .profile-wrapper .flex-direction-nav .flex-prev {
+    background-position: left -52px;
+}
+
+.d .logged-out .profile-wrapper .flex-direction-nav .flex-next {
+    background-position: right -52px;
+}
+
+.d .logged-out .profile-wrapper .flex-direction-nav .flex-prev:hover {
+    background-position: left -103px;
+}
+
+.d .logged-out .profile-wrapper .flex-direction-nav .flex-next:hover {
+    background-position: right -103px;
+}
+
+.d .profile-wrapper .facebook-cont {
+    padding: 10px;
+    border-top: 1px solid #FFF;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+    min-height: 20px;
+}
+
+.d .logged-out .profile-wrapper .flexslider .slides > li {
+    width: 60px;
+}
+
+.d .logged-out .profile-wrapper .flexslider .slides > li {
+    width: 40px;
+}
+
+.d .profile-container .icons + .delimiter-gray {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.d .awards-tooltip {
+    clear: both;
+    width: 170px;
+    border-radius: 5px;
+    line-height: 18px;
+    text-align: center;
+}
+
+.d .tooltip-arrow {
+    overflow: hidden;
+    position: absolute;
+    border-style: solid;
+    width: 0;
+    height: 0;
+    background: transparent;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -7px;
+    margin: 0;
+    pointer-events: none;
+}
+
+.d .tooltip-arrow.bottom.left {
+    border-color: #f2f2f2 transparent transparent;
+    border-color: var(--tooltip-bg-color) transparent transparent;
+    border-width: 7px 7px 0;
+    filter: drop-shadow(0 1px 0 #fff) drop-shadow(0 2px 1px #11111124);
+    filter: var(--white-tooltip-arrow-bottom-left-filter);
+}
+
+.d .tooltip-arrow.top.left {
+    border-color: transparent transparent #f2f2f2;
+    border-color: transparent transparent var(--tooltip-bg-color);
+    border-width: 0 7px 7px;
+    filter: drop-shadow(0 -1px 0 #fff) drop-shadow(0 -2px 1px #11111124);
+    filter: var(--white-tooltip-arrow-top-left-filter);
+    bottom: auto;
+    top: -7px;
+}
+
+.d .awards-tooltip .ui-tooltip-content .tooltip-red,
+.d .awards-tooltip .ui-tooltip-content .tooltip-green {
+    border-bottom-color: #999;
+    border-bottom-color: var(--profile-tooltip-awards-ui-content-border-bottom-color);
+    color: #333;
+    color: var(--default-color);
+}
+
+.d .awards-tooltip {
+    border: 1px solid #F2F2F2;
+	border-color: var(--tooltip-bg-color);
+    background-color: #F2F2F2;
+    background-color: var(--tooltip-bg-color);
+    box-shadow: 0 0 3px #000;
+}
+
+.d .awards-tooltip .tooltip-red,
+.d .awards-tooltip .tooltip-green {
+    background-color: #CECECE;
+    background-color: var(--profile-tooltip-awards-title-bg-color);
+}
+
+.d .awards-tooltip .tooltip-cont {
+    color: #333;
+    color: var(--default-color);
+}
+
+.d .awards-tooltip .tooltip-red,
+.d .awards-tooltip .tooltip-green {
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom: 1px solid #666;
+    border-bottom-color: var(--profile-tooltip-awards-border-bottom-color);
+    padding: 2px 10px;
+    font-weight: bold;
+}
+
+.d .awards-tooltip .tooltip-red.medals,
+.d .awards-tooltip .tooltip-green.medals {
+    color: #CCC;
+    color: var(--profile-tooltip-awards-title-color);
+}
+
+.d .tooltip-cont {
+    margin: 5px;
+}
+
+.d .profile-wrapper .profile-container .icons #iconTray li.iconShow {
+    margin-bottom: 0;
+}
+
+.d .profile-wrapper .profile-action .profile-container .delimiter-gray {
+    margin-right: 0;
+}
+
+.d .logged-out .profile-right-wrapper,
+.d .logged-out .profile-left-wrapper {
+    width: 483px;
+}
+
+.d .profile-right-wrapper .profile-action .title-black {
+    border-radius: 5px 5px 0 0;
+}
+
+.d .profile-left-wrapper .profile-image .user.name > img {
+    width: 200px;
+    border: 3px solid #FFF;
+	border-color: var(--default-panel-divider-inner-side-color);
+    margin-bottom: 9px;
+    background-color: #FFFFFF;
+    background-color: var(--default-bg-panel-active-color);
+    -moz-box-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+    -webkit-box-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+}
+
+.d .profile-wrapper .profile-information-wrapper {
+    background:  url(/images/v2/profile/unauthorised_level_rank_age.png) center center no-repeat;
+    width: 168px;
+    height: 324px;
+}
+
+.d .logged-out .profile-wrapper .profile-information-wrapper {
+    background:  url(/images/v2/profile/unauthorised_level_rank_age.png) center 51px no-repeat;
+}
+
+.d .logged-out .profile-wrapper .profile-information-wrapper {
+    width: 267px;
+}
+
+.d .profile-wrapper .profile-container .row.basic-info li.clear,
+.d .profile-wrapper .box-info .box-value > li.clear {
+    background: none;
+    width: 0;
+    float: none;
+    height: 0;
+    font-size: 0;
+    padding: 0;
+    margin: 0;
+    line-height: 0;
+}
+
+.d .profile-wrapper .box-info .box-value > li {
+    height: 66px;
+    float: left;
+}
+
+.d .profile-wrapper .box-info .box-value > li:not(:first-child) {
+    background: url(/images/v2/profile/svg/divider.svg) 0 0 no-repeat;
+    background: var(--profile-digits-divider-bg) 0 0 no-repeat;
+}
+
+.d .logged-out .profile-wrapper .profile-information-wrapper .box-info.age .block-value.svg .box-value > li {
+    height: 73px;
+}
+
+
+.d .profile-wrapper .box-info:not(.age):not(.rank) .block-value.svg .box-value > li {
+    height: 68px;
+}
+
+.d .profile-wrapper .box-info .block-value.svg .box-value > li {
+    border: none;
+}
+
+.d .profile-wrapper .box-info .block-value.svg .box-value > li:not(:first-child):not(:last-child) {
+    background: url(/images/v2/profile/svg/divider.svg) 0 9px no-repeat;
+    background: var(--profile-digits-divider-bg) 0 9px no-repeat;
+}
+
+.d .profile-wrapper .box-info:not(.age):not(.rank) .block-value.svg .box-value > li:not(:first-child):not(:last-child) {
+    background-position-y: 5px;
+}
+
+.d .profile-wrapper .box-info:not(.age):not(.rank) .block-value.svg {
+    background: transparent url(/images/v2/profile/svg/container_113x66.svg) 0 4px no-repeat;
+    background: transparent var(--profile-digits-blocks-bg-small) 0 4px no-repeat;
+    background-size: contain;
+    width: 66%;
+}
+
+.d .profile-wrapper .box-info.age .block-value.svg .box-value > li:not(:first-child):not(:last-child) {
+    background-position-y: 4px;
+}
+
+.d .logged-out .profile-wrapper .box-info.age .block-value.svg .box-value > li:not(:first-child):not(:last-child) {
+    background-position-y: 3px;
+}
+
+.d .profile-wrapper .box-info .box-value > li.digit-l {
+    border-right: 0;
+}
+
+.d .profile-wrapper .box-info .box-value > li:first-child {
+    border-left: 0;
+}
+
+.d .profile-wrapper .box-info .box-value {
+    background: url(/images/v2/profile/svg/container_113x66.svg) -5px 0 repeat-x;
+    background: var(--profile-digits-blocks-bg-small) -5px 0 repeat-x;
+}
+
+.d .profile-wrapper .box-info .block-value.svg .box-value > li {
+    background: none;
+}
+
+.d .profile-wrapper .box-info .block-value.svg {
+    margin: 0 auto;
+    background: url(/images/v2/profile/svg/container.svg) 0 -1px no-repeat;
+    background-size: cover;
+    width: 70%;
+}
+
+.d .profile-wrapper .box-info.age .block-value.svg {
+    width: 80%;
+    background-position-y: -6px;
+}
+
+.d .profile-wrapper .box-info .box-value.svg > li {
+    height: 65px;
+}
+
+.d .profile-wrapper .profile-information-wrapper .box-info .block-value.svg {
+    width: 75%;
+    height: 90%;
+}
+
+.d .profile-wrapper .profile-information-wrapper .rank .block-value.svg {
+    width: 85%;
+    height: 90%;
+    background-position-y: 3px;
+    background-size: contain;
+}
+
+.d .user-icons-tooltip.user-short-description {
+    line-height: 1rem;
+}
+
+.d .user-icons-tooltip.user-short-description i {
+    font-style: italic;
+}
+
+.d .user-icons-tooltip.user-short-description > span {
+    display: block;
+}
+
+.d .user-icons-tooltip.user-short-description > span:first-child {
+    font-weight: bold;
+}
+
+.d .user-icons-tooltip.user-short-description a {
+    text-decoration: none;
+    color: #333;
+    color: var(--default-color);
+}
+
+.d .profile-wrapper .profile-information-wrapper .age .block-value.svg {
+    width: 85%;
+    background-position-y: 3px;
+    background-size: contain;
+}
+
+.d .logged-out .profile-wrapper .profile-information-wrapper .age .block-value.svg {
+    background-position-y: 3px;
+}
+
+.d .logged-out .profile-wrapper .profile-information-wrapper .box-info .block-value.svg {
+    width: 113px;
+}
+
+.d .logged-out .profile-wrapper .profile-information-wrapper .box-info.rank .block-value.svg,
+.d .logged-out .profile-wrapper .profile-information-wrapper .box-info.age .block-value.svg {
+    width: 154px;
+}
+
+.d .profile-wrapper .box-info .box-value > li .r-ear,
+.d .profile-wrapper .box-info .box-value > li .l-ear {
+    width: 10px;
+    height: 66px;
+}
+
+.d .profile-wrapper .box-info .box-value > li .r-ear {
+    margin-right: -10px;
+}
+
+.d .profile-wrapper .box-info .box-value > li .l-ear {
+    margin-left: -10px;
+}
+
+.d .logged-out.spring .profile-wrapper .box-info {
+    position: relative;
+}
+
+.d .profile-wrapper .box-info .box-value li .l-ear {
+    background: url(/images/v2/profile/svg/container_113x66.svg)  0 0 no-repeat;
+    background: var(--profile-digits-blocks-bg-small)  0 0 no-repeat;
+    border-top-left-radius: unset;
+    border-top-left-radius: var(--profile-digits-radius);
+    border-bottom-left-radius: unset;
+    border-bottom-left-radius: var(--profile-digits-radius);
+}
+
+.d .profile-wrapper .box-info.rank .box-value li .l-ear,
+.d .profile-wrapper .box-info.age .box-value li .l-ear {
+    background: url(/images/v2/profile/svg/container_desktop.svg) 0 0 no-repeat;
+    background: var(--profile-digits-blocks-bg-large) 0 0 no-repeat;
+    border-top-left-radius: unset;
+    border-top-left-radius: var(--profile-digits-radius);
+    border-bottom-left-radius: unset;
+    border-bottom-left-radius: var(--profile-digits-radius);
+}
+
+.d .profile-wrapper .box-info .box-value li .r-ear {
+    background: url(/images/v2/profile/svg/container_113x66.svg) right 0 no-repeat;
+    background: var(--profile-digits-blocks-bg-small) right 0 no-repeat;
+    border-top-right-radius: unset;
+    border-top-right-radius: var(--profile-digits-radius);
+    border-bottom-right-radius: unset;
+    border-bottom-right-radius: var(--profile-digits-radius);
+}
+
+.d .profile-wrapper .box-info.rank .box-value li .r-ear,
+.d .profile-wrapper .box-info.age .box-value li .r-ear {
+    background: url(/images/v2/profile/svg/container_desktop.svg) right 0 no-repeat;
+    background: var(--profile-digits-blocks-bg-large) right 0 no-repeat;
+    border-top-right-radius: unset;
+    border-top-right-radius: var(--profile-digits-radius);
+    border-bottom-right-radius: unset;
+    border-bottom-right-radius: var(--profile-digits-radius);
+}
+
+.d .profile-wrapper .box-info .horizontal-divider {
+    position: absolute;
+    width: 104px;
+    height: 2px;
+    top: 50px;
+    right: 80px;
+}
+
+.d .profile-wrapper .box-info .horizontal-divider.shadow {
+    width: 107px;
+}
+
+.d .profile-wrapper .box-info .horizontal-divider.shadow {
+    top: 53px;
+}
+
+.d .profile-wrapper .box-info.age .horizontal-divider,
+.d .profile-wrapper .box-info.rank .horizontal-divider {
+    width: 140px;
+    right: 61px;
+}
+
+.d .profile-wrapper .box-info.age .horizontal-divider.shadow,
+.d .profile-wrapper .box-info.rank .horizontal-divider.shadow {
+    width: 144px;
+}
+
+.d .profile-wrapper .box-info .reflection {
+    background: url(/images/v2/profile/svg/reflex.svg) 0 top repeat-x;
+    background: var(--profile-digits-reflections-bg);
+    position: absolute;
+    width: 113px;
+    height: 22px;
+    right: 59px;
+    top: 21px;
+}
+
+.d .profile-wrapper .box-info .reflection.svg {
+    width: 111px;
+}
+
+.d .profile-wrapper .box-info .reflection.svg {
+    background: url(/images/v2/profile/svg/reflex.svg) 0 top repeat-x;
+    background: var(--profile-digits-reflections-bg);
+    top: 34px;
+}
+
+.d .profile-wrapper .box-info.rank .reflection {
+    width: 150px;
+    right: 10px;
+}
+
+.d .profile-wrapper .box-info.age .reflection {
+    width: 148px;
+    right: 11px;
+}
+
+.d .profile-wrapper .box-info.rank .reflection.svg,
+.d .profile-wrapper .box-info.age .reflection.svg {
+    width: 144px;
+    right: 12px;
+    top: 34px;
+}
+.d .logged-out .profile-wrapper .box-info.rank .reflection.svg,
+.d .logged-out .profile-wrapper .box-info.age .reflection.svg {
+    width: 150px;
+}
+
+.d .profile-wrapper .box-info .horizontal-divider,
+.d .profile-wrapper .box-info .horizontal-divider.shadow,
+.d .logged-out.summer .profile-wrapper .box-info .horizontal-divider.shadow,
+.d .logged-out.spring .profile-wrapper .box-info .horizontal-divider.shadow,
+.d .logged-out.autumn .profile-wrapper .box-info .horizontal-divider.shadow,
+.d .logged-out.winter .profile-wrapper .box-info .horizontal-divider.shadow {
+    background: url(/images/v2/profile/neutral/horizontal_divider_neutral.png) 0 top repeat-x;
+}
+
+.d .profile-wrapper .box-info .box-value li .digit {
+    width: 35px;
+    margin-top: 7px;
+}
+
+.d .profile-wrapper .box-info:not(.rank) .block-value.svg .box-value li .digit,
+.d .logged-out .profile-wrapper .box-info.age .block-value.svg .box-value li .digit {
+    margin-top: 12px;
+}
+
+.d .profile-wrapper .box-info.age .block-value.svg .box-value li .digit {
+    margin-top: 9px;
+}
+
+
+.d .profile-wrapper .box-info .box-value li {
+    font-family: "Fjalla One", serif;
+    font-size: 47px;
+    line-height: 120%;
+    text-align: center;
+    color: #333;
+    color: var(--profile-digits-color);
+    text-shadow: 0 1px 0 rgba(255,255,255,0.65);
+    text-shadow: var(--profile-digits-shadow);
+    zoom: 1;
+}
+
+.d .profile-wrapper .box-info .box-value .digit-l .digit,
+.d .profile-wrapper .box-info .box-value .digit-r .digit {
+    width: 29px;
+}
+
+.d .profile-wrapper .box-info:not(.rank) .block-value.svg .box-value .digit-l .digit,
+.d .profile-wrapper .box-info:not(.rank) .block-value.svg .box-value .digit-r .digit {
+    width: 30px;
+}
+
+.d .profile-wrapper .box-info .box-value .digit-l .digit {
+    text-align: right;
+}
+
+.d .profile-wrapper .box-info .box-value .digit-r .digit {
+    text-align: left;
+}
+
+.d .profile-wrapper .box-info .rank-description.box-value .digit {
+    width: 130px;
+}
+
+.d .profile-wrapper .box-info .box-value li .digit.zero {
+    height: 62px;
+    margin-top: 3px;
+}
+
+.d .profile-wrapper .box-info .block-value.svg .box-value li .digit.zero {
+    margin-top: 8px;
+}
+
+.d .profile-wrapper .box-info .box-value li .digit.zero {
+    background: url(/images/v2/profile/neutral/976_0_placeholder_neutral.png) center center no-repeat;
+    background: var(--profile-digits-zero) center center no-repeat;
+}
+
+
+.d .profile-wrapper .box-info .box-value li.digit-r .digit.zero {
+    background-position: 0 center;
+}
+
+.d .profile-wrapper .box-info .box-value li.digit-l .digit.zero {
+    background-position: 6px  center;
+}
+
+.d .profile-wrapper .box-info .rank-description.box-value .digit {
+    text-align: center;
+}
+
+.d .profile-wrapper .box-info .box-value .digit .short {
+    font-size: 30px;
+}
+
+.d .profile-wrapper .box-info .box-value .digit .medium,
+.d .profile-wrapper .box-info .block-value.svg .box-value .digit .long + .medium {
+    font-size: 21px;
+    line-height: 33px;
+}
+
+.d .profile-wrapper .box-info .block-value.svg .box-value .digit .long + .medium {
+    line-height: 33px;
+}
+
+.d .profile-wrapper .box-info .block-value.svg .box-value .digit .medium + .medium {
+    line-height: 35px;
+}
+
+.d .profile-wrapper .box-info .box-value .digit .long {
+    font-size: 16px;
+    line-height: 33px;
+    text-transform: capitalize;
+}
+
+.d .profile-wrapper .box-info .box-value .digit > .two-row {
+    margin-top: 0;
+}
+
+.d .profile-wrapper .box-info .box-value .digit .two-row > span {
+    display: block;
+}
+
+.d .profile-wrapper .box-info .box-value .digit .two-row > span:first-child {
+    color: #333;
+    color: var(--profile-digits-color);
+}
+
+.d .profile-wrapper .box-info.rank .box-value  .digit {
+    margin-top: 3px;
+}
+
+.d .profile-wrapper .box-info .horizontal-divider {
+    right: 35px;
+}
+
+.d .profile-wrapper .box-info .horizontal-divider.shadow {
+    right: 33px;
+}
+
+.d .logged-out .profile-wrapper .box-info .horizontal-divider {
+    right: 83px;
+}
+
+.d .profile-wrapper .box-info .reflection {
+    right: 28px;
+}
+
+.d .logged-out .profile-wrapper .box-info .reflection {
+    right: 77px;
+}
+
+.d .logged-out .profile-wrapper .box-info.age .reflection,
+.d .logged-out .profile-wrapper .box-info.rank .reflection {
+    right: 59px;
+}
+
+.d .profile-wrapper .box-info.age .horizontal-divider,
+.d .profile-wrapper .box-info.rank .horizontal-divider {
+    right: 17px;
+}
+
+.d .profile-wrapper .box-info.age .horizontal-divider.shadow,
+.d .profile-wrapper .box-info.rank .horizontal-divider.shadow {
+    right: 15px;
+}
+
+.d .logged-out .profile-wrapper .box-info.age .horizontal-divider,
+.d .logged-out .profile-wrapper .box-info.rank .horizontal-divider {
+    right: 65px;
+}
+
+.d .profile-wrapper .box-info .box-value .digit .medium.inexp {
+    margin-top: 15px;
+    display: block;
+}
+
+.d .profile-wrapper .box-info.rank .box-value > li:first-child {
+    border-right: 0;
+}
+
+.d .profile-wrapper .competition-wrap {
+    height: 140px;
+}
+
+.d .profile-wrapper .competition-wrap.placeholder-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags {
+    line-height: 124px;
+    text-align: center;
+    background: url(/images/v2/dog_tags/main/competition_status_bg_light.jpg) no-repeat #F2F2F2;
+    background-image: var(--profile-dog-tags-competition-status-bg);
+    background-color: var(--default-bg-panel-color);
+    background-size: cover;
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags .message,
+.d .profile-wrapper .competition-wrap.dog-tags .returning {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags .arrows {
+    width: 375px;
+    height: 115px;
+    padding-top: 30px;
+    padding-left: 5px;
+    margin-left: -10px;
+    background: var(--profile-dog-tags-competition-status-arrows);
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags .message {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+    font-family:"Fjalla One", "Arial", serif;
+    font-size: 16px;
+    text-shadow: 0 1px 0 #FFF;
+    text-shadow: var(--title-text-shadow);
+    line-height: 20px;
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags .returning {
+    line-height: 16px;
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags .returning a.t-blue {
+    color: #006699;
+    color: var(--default-blue-color);
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags .returning a.t-blue:hover,
+.d .profile-wrapper .competition-wrap.dog-tags .returning a.t-blue:focus {
+    color: #999;
+    color: var(--default-gray-9-color);
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags .returning .return-msg,
+.d .profile-wrapper .competition-wrap.dog-tags .returning .confirm-msg {
+    margin-top: 6px;
+    background: rgba(255, 255, 255, .4);
+    background: var(--profile-dog-tags-competition-status-msg-bg);
+    padding: 10px;
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags .returning .confirm-msg .yes,
+.d .profile-wrapper .competition-wrap.dog-tags .returning .confirm-msg .no {
+    padding: 0 5px;
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags .lockedattack {
+    border: 1px solid #c34015;
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags .confirm-msg {
+    display: none;
+}
+
+.d .profile-wrapper .competition-wrap.dog-tags .message .score {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 114px;
+    height: 64px;
+    background-image: url(/images/v2/dog_tags/main/dog_tag_placeholder_light.svg);
+    background-image: var(--profile-dog-tags-competition-status-score-bg);
+    color: #333;
+    color: var(--profile-dog-tags-competition-status-color);
+    text-shadow: none;
+    text-shadow: var(--profile-dog-tags-competition-status-text-shadow);
+    font-size: 30px;
+    font-family: 'Big Shoulders Stencil Text Regular', normal;
+}
+
+.d .profile-wrapper .competition-wrap.easter-eggs-hunt .score-wrap .score-total {
+    font-size: 15px;
+    letter-spacing: 2pt;
+    text-transform: uppercase;
+    color:#999999;
+    margin-top: -12px;
+}
+
+.d .profile-wrapper .competition-wrap.empty {
+    background: url(/images/v2/profile/competition_status.png) top left no-repeat #F2F2F2;
+    background-color: var(--default-bg-panel-color);
+}
+
+.d .profile-wrapper .competition-wrap .img-cont {
+    top: 0;
+    left: 0;
+    position: relative;
+    height: 120px;
+    width: 93px;
+    line-height: 119px;
+    padding: 2px;
+    text-align: center;
+    background-color: #FFF;
+    background-color: var(--default-bg-panel-active-color);
+    box-shadow: 0 0 3px #BBB;
+}
+
+.d .profile-wrapper .competition-wrap .img-cont .img-hover {
+    display: none;
+}
+
+.d .profile-wrapper .competition-wrap .img-cont:hover .img-hover {
+    padding: 47px 0;
+    vertical-align: middle;
+    display: block;
+    width: 100%;
+    line-height: 16px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(255,255,255,.8);
+    background: url(/images/v2/newspaper/chronicles/hover_state.png?v=1437483314380) 0 0 repeat \9;
+}
+
+.d .profile-wrapper .competition-wrap .img-cont .act-icon {
+    display: block;
+    margin: 0 auto;
+    height: 17px;
+    width: 16px;
+    background: url(/images/v2/competition/accept_decline_remove_full_screen.png?v=1437483314380) -112px -42px no-repeat;
+}
+
+.d .profile-wrapper .competition-wrap .score-wrap {
+    width: 260px;
+    height: 122px;
+    font-family:"Fjalla One", "Arial", serif;
+    font-size: 130px;
+    color: rgba(153,153,153,0.1);
+    text-align: center;
+    top: 0;
+    left: 0;
+    position: relative;
+}
+
+.d .logged-out .profile-wrapper .competition-wrap .score-wrap {
+    width: 356px;
+}
+
+.d .profile-wrapper .competition-wrap .score-wrap .score {
+    top: 14px;
+    left: 0;
+    right: 0;
+    position: absolute;
+    font-size: 71px;
+    color:#999999;
+    text-align: center;
+    text-shadow: 0 1px 0 rgb(255,255,255);
+    text-shadow: var(--title-text-shadow);
+}
+
+.d .profile-wrapper .competition-wrap .score-wrap .score .text {
+    font-size: 15px;
+    padding-bottom: 5px;
+    letter-spacing: 2pt;
+    color:#999999;
+    text-align: center;
+}
+
+.d .profile-wrapper .competition-wrap .score-wrap .score .votes {
+    font-family: Arial;
+    font-size: 14px;
+    color: #999;
+	color: var(--default-gray-9-color);
+}
+
+.d .profile-wrapper .score-wrap-rps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.d .profile-wrapper .score-wrap-rps .wrap-rps {
+    margin: -9px -10px -20px -10px;
+    width: 386px;
+    height: 160px;
+    background-repeat: no-repeat;
+    background-position-x: left;
+    background-position-y: top;
+    background-size: cover;
+    background-image: url('/images/v2/rps/rock_paper_scissors_bg_386px_light@1x.png');
+    background-image: var(--profile-rps-status-background-image);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.d .logged-out .profile-wrapper .score-wrap-rps .wrap-rps {
+    width: 580px;
+    background-position: center center;
+    background-size: contain;
+    background-repeat: repeat-x;
+}
+
+.d .profile-wrapper .score-wrap-rps .wrap-rps .rps-type-rock {
+    width: 130px;
+    height: 130px;
+    background-repeat: no-repeat;
+    background-position-x: left;
+    background-position-y: top;
+    background-size: cover;
+    background-image: url('/images/v2/rps/rock@1x.png');
+    background-image: var(--profile-rps-status-rock-image);
+}
+
+.d .profile-wrapper .score-wrap-rps .wrap-rps .rps-type-paper {
+    width: 130px;
+    height: 130px;
+    background-repeat: no-repeat;
+    background-position-x: left;
+    background-position-y: top;
+    background-size: cover;
+    background-image: url('/images/v2/rps/paper_light@1x.png');
+    background-image: var(--profile-rps-status-paper-image);
+}
+
+.d .profile-wrapper .score-wrap-rps .wrap-rps .rps-type-scissors {
+    width: 130px;
+    height: 130px;
+    background-repeat: no-repeat;
+    background-position-x: left;
+    background-position-y: top;
+    background-size: cover;
+    background-image: url('/images/v2/rps/scissors_light_v2@1x.png');
+    background-image: var(--profile-rps-status-scissors-image);
+}
+
+.d .profile-wrapper .score-wrap-rps .hp-bar-wrap{
+    position: absolute; 
+    top: 118px; 
+    left: 165px; 
+    width: 55px; 
+    z-index: 1;
+}
+
+.d .logged-out .profile-wrapper .score-wrap-rps .wrap-rps .hp-bar-wrap{
+    left: 214px; 
+}
+
+.d .profile-wrapper .score-wrap-rps .hp-bar-wrap .hp-text{
+    text-align: center; 
+    font-size: 10px; 
+    font-weight: bold; 
+    margin-bottom: 1px; 
+    color: #444;
+    color: var(--default-gray-4-color);
+    position: relative; 
+    z-index: 2;
+}
+
+.d .profile-wrapper .score-wrap-rps .hp-bar-wrap .hp-bar{
+    position: relative; 
+    height: 2px; 
+    background: #aaa; 
+    background: var(--btn-disable-color);
+    border-radius: 10px; 
+    overflow: hidden;
+    box-shadow: 0px 1px 1px rgba(208, 208, 208, 0.7);
+}
+
+.d .profile-wrapper .score-wrap-rps .hp-bar-wrap .hp-bar .hp-bar-current{
+    height: 100%; 
+    background: #555; 
+    background: var(--default-gray-5-color);
+    position: absolute; 
+    top: 0; 
+    left: 0;
+}
+
+.d .profile-wrapper .competition-wrap .img-cont img {
+    max-height: 120px;
+    max-width: 93px;
+    vertical-align: middle;
+}
+
+.d .profile-wrapper .user-information-section {
+    background: none;
+    padding: 5px 10px;
+    height: 14px;
+    line-height: 14px;
+    border-right: 1px solid #CCC;
+    border-right-color: var(--panel-divider-outer-side-color);
+    margin-right: 10px;
+}
+
+.d .top-profile-wrap {
+    margin-top: 10px;
+}
+
+.d .profile-wrapper .competition-wrap.halloween-event .treats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 144px;
+    font: normal normal normal 18px/28px Jolly Lodger;
+    letter-spacing: 0.9px;
+}
+
+.d .profile-wrapper .competition-wrap.halloween-event .treats .treats-number {
+    font-size: 28px;
+}
+
+.d .profile-wrapper .competition-wrap.elimination {
+    font-family: "Fjalla One";
+    font-size: 14px;
+    line-height: 30px;
+    color: #878787;
+    text-align: center;
+    padding: 0 0 20px 0;
+}
+
+.d .profile-wrapper .competition-wrap.elimination .elimination-title {
+    height: 33px;
+    line-height: 28px;
+    position: relative;
+    padding-top: 10px;
+    color: var(--default-gray-4-color);
+}
+
+.d .profile-wrapper .competition-wrap.elimination .elimination-title:before,
+.d .profile-wrapper .competition-wrap.elimination .elimination-title:after {
+    content: "";
+    display: block;
+    height: 1px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    background: rgb(242,242,242);
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2YyZjJmMiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iI2NjY2NjYyIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmMmYyZjIiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-linear-gradient(left, rgba(242,242,242,1) 0%, rgba(204,204,204,1) 50%, rgba(242,242,242,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, rgba(242,242,242,1) 0%,rgba(204,204,204,1) 50%,rgba(242,242,242,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: var(--profile-elimination-status-header-bar-after); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+
+.d .profile-wrapper .competition-wrap.elimination .elimination-title:before {
+    bottom: -2px;
+    background: rgb(242,242,242);
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2YyZjJmMiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmMmYyZjIiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+    background: -moz-linear-gradient(left, rgba(242,242,242,1) 0%, rgba(255,255,255,1) 50%, rgba(242,242,242,1) 100%);
+    background: -webkit-linear-gradient(left, rgba(242,242,242,1) 0%,rgba(255,255,255,1) 50%,rgba(242,242,242,1) 100%);
+    background: var(--profile-elimination-status-header-bar-befor);
+}
+
+.d .profile-wrapper .competition-wrap.elimination.eliminated .elimination-title:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%; 
+    opacity: var(--profile-elimination-status-opacity-eliminated);
+    background: url("/images/v2/competition/elimination/profile-status-pattern-eliminated.svg") no-repeat center;
+    pointer-events: none; 
+}
+
+.d .profile-wrapper .competition-wrap.elimination  .block-info {
+    position: relative;
+    z-index: 4;
+    font-size: 0;
+    margin-top: 1px;
+}
+
+.d .profile-wrapper .competition-wrap.elimination .score,
+.d .profile-wrapper .competition-wrap.elimination .position {
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    top: 10px;
+    font-size: 13px;
+    width: 21%;
+}
+
+.d .profile-wrapper .competition-wrap.elimination .score {
+    /*margin-right: 30px;*/
+    text-align: left;
+    line-height: 20px;
+    margin-left: 15px;
+    margin-right: 30px;
+}
+
+.d .profile-wrapper .competition-wrap.elimination .position {
+    margin-left: 7px;
+    text-align: left;
+}
+
+/* Sigils */
+
+.d .profile-wrapper .competition-wrap.elimination .sigil {
+    display: inline-block;
+    width: 100px;
+    height: 93px;
+    background-image: var(--profile-elimination-status-empty-logos);
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+    position: relative;
+    font-size: 14px;
+    padding: 10px;
+    line-height: 16px;
+}
+
+.d .profile-wrapper .competition-wrap.elimination .sigil .text {
+    display: none;
+    line-height: 16px;
+    padding-right: 8px;
+}
+
+.d .profile-wrapper .competition-wrap.elimination.no-team .sigil .text {
+    display: block;
+    line-height: 16px;
+    padding-right: 5px;
+    font-size: 12px;
+}
+
+.d .profile-wrapper .competition-wrap.elimination .sigil .username {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    margin-top: 5px;
+    vertical-align: bottom;
+    margin-top: 0;
+}
+
+.d .profile-wrapper .competition-wrap.elimination.eliminated .sigil:before {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: url("/images/v2/competition/elimination/banners/sigils/cross.png") 4px 0 no-repeat;
+}
+
+.d .profile-wrapper .competition-wrap.elimination .pink-power.sigil {
+    /*background-image: url("/images/v2/competition/elimination/banners/sigils/1_pink_power.png");*/
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/1_pink_power.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/1_pink_power@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/1_pink_power@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/1_pink_power@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .green-army.sigil {
+    /*background-image: url("/images/v2/competition/elimination/banners/sigils/7_green_army.png");*/
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/7_green_army.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/7_green_army@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/7_green_army@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/7_green_army@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .area-51.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/13_area_51.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/13_area_51@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/13_area_51@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/13_area_51@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .mountain-men.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/2_mountain_man.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/2_mountain_man@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/2_mountain_man@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/2_mountain_man@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .short-bus.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/8_short_bus.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/8_short_bus@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/8_short_bus@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/8_short_bus@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .pacifists.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/14_pacifists.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/14_pacifists@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/14_pacifists@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/14_pacifists@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .knitting-circle.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/3_knitting_circle.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/3_knitting_circle@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/3_knitting_circle@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/3_knitting_circle@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .nerdz.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/9_nerdz.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/9_nerdz@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/9_nerdz@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/9_nerdz@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .cereal-killers.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/15_cereal_killers.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/15_cereal_killers@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/15_cereal_killers@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/15_cereal_killers@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .illuminati.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/4_illuminati.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/4_illuminati@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/4_illuminati@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/4_illuminati@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .lettuce-win.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/10_lettuce_win.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/10_lettuce_win@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/10_lettuce_win@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/10_lettuce_win@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .rebel-front.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/16_rebel_front.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/16_rebel_front@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/16_rebel_front@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/16_rebel_front@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .ninjas.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/5_ninjas.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/5_ninjas@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/5_ninjas@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/5_ninjas@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .murica.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/11_murica.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/11_murica@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/11_murica@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/11_murica@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .original-gangsters.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/17_original_gangsters.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/17_original_gangsters@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/17_original_gangsters@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/17_original_gangsters@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .pirates.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/6_pirates.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/6_pirates@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/6_pirates@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/6_pirates@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .trolls.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/12_trolls.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/12_trolls@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/12_trolls@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/12_trolls@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .band-of-mothers.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/18_band_of_mothers.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/18_band_of_mothers@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/18_band_of_mothers@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/18_band_of_mothers@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .dongs.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/19_dongs.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/19_dongs@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/19_dongs@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/19_dongs@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .stale-mates.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/20_stale_mates.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/20_stale_mates@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/20_stale_mates@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/20_stale_mates@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .chocolate-pain.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/21_chocolate_pain.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/21_chocolate_pain@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/21_chocolate_pain@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/21_chocolate_pain@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .nasty-surprise.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/22_nasty_surprise.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/22_nasty_surprise@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/22_nasty_surprise@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/22_nasty_surprise@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .romantics.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/23_romantics.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/23_romantics@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/23_romantics@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/23_romantics@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .villains.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/24_villains.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/24_villains@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/24_villains@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/24_villains@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .professionals.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/25_professionals.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/25_professionals@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/25_professionals@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/25_professionals@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .snowflakes.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/26_snowflakes.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/26_snowflakes@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/26_snowflakes@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/26_snowflakes@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .hillbillies.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/27_hillbillies.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/27_hillbillies@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/27_hillbillies@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/27_hillbillies@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .cowboys.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/28_cowboys.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/28_cowboys@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/28_cowboys@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/28_cowboys@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .necromancers.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/29_necromancers.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/29_necromancers@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/29_necromancers@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/29_necromancers@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .goat.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/30_goat.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/30_goat@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/30_goat@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/30_goat@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .undead.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/31_undead.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/31_undead@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/31_undead@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/31_undead@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .lumberjacks.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/32_lumberjacks.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/32_lumberjacks@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/32_lumberjacks@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/32_lumberjacks@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .team-cupcake.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/33_team_cupcake.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/33_team_cupcake@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/33_team_cupcake@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/33_team_cupcake@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .punchbags.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/34_punchbags.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/34_punchbags@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/34_punchbags@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/34_punchbags@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .spartans.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/35_spartans.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/35_spartans@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/35_spartans@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/35_spartans@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .breakfast-club.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/36_breakfast_club.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/36_breakfast_club@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/36_breakfast_club@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/36_breakfast_club@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .revengers.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/37_revengers.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/37_revengers@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/37_revengers@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/37_revengers@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .keyboard-warriors.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/38_keyboard_warriors.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/38_keyboard_warriors@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/38_keyboard_warriors@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/38_keyboard_warriors@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .field-mice.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/39_field_mice.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/39_field_mice@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/39_field_mice@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/39_field_mice@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .millennials.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/40_millennials.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/40_millennials@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/40_millennials@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/40_millennials@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .dream-team.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/41_dream_team.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/41_dream_team@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/41_dream_team@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/41_dream_team@4x.webp") 4x
+    );
+}
+
+
+
+.d .profile-wrapper .competition-wrap.elimination .karma-farmers.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/42_karma_farmers.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/42_karma_farmers@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/42_karma_farmers@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/42_karma_farmers@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .seal-team-six.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/43_seal_team_six.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/43_seal_team_six@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/43_seal_team_six@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/43_seal_team_six@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .baby-boomers.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/44_baby_boomers.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/44_baby_boomers@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/44_baby_boomers@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/44_baby_boomers@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .chicken-nuggets.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/45_chicken_nuggets.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/45_chicken_nuggets@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/45_chicken_nuggets@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/45_chicken_nuggets@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .heavyweights.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/46_heavyweights.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/46_heavyweights@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/46_heavyweights@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/46_heavyweights@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .murder-hornets.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/47_murder_hornets.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/47_murder_hornets@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/47_murder_hornets@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/47_murder_hornets@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .pandemic.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/48_pandemic.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/48_pandemic@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/48_pandemic@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/48_pandemic@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .terror-bytes.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/49_terror_bytes.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/49_terror_bytes@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/49_terror_bytes@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/49_terror_bytes@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .peasants.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/50_peasants.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/50_peasants@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/50_peasants@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/50_peasants@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .toothpaste.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/51_toothpaste.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/51_toothpaste@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/51_toothpaste@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/51_toothpaste@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .total-bankers.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/52_total_bankers.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/52_total_bankers@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/52_total_bankers@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/52_total_bankers@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .victorious-secret.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/53_victorious_secret.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/53_victorious_secret@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/53_victorious_secret@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/53_victorious_secret@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .vikings.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/54_vikings.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/54_vikings@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/54_vikings@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/54_vikings@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .sea-men.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/55_sea_men.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/55_sea_men@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/55_sea_men@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/55_sea_men@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .rawring-thunder.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/56_rawring_thunder.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/56_rawring_thunder@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/56_rawring_thunder@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/56_rawring_thunder@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .firestarters.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/57_firestarters.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/57_firestarters@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/57_firestarters@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/57_firestarters@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .hard-boiled.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/58_hard_boiled.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/58_hard_boiled@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/58_hard_boiled@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/58_hard_boiled@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .rain-men.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/59_rain_men.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/59_rain_men@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/59_rain_men@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/59_rain_men@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .sleepyheads.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/60_sleepyheads.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/60_sleepyheads@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/60_sleepyheads@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/60_sleepyheads@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .wolf-pack.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/61_wolf_pack.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/61_wolf_pack@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/61_wolf_pack@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/61_wolf_pack@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .satants-soldiers.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/62_satants_soldiers.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/62_satants_soldiers@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/62_satants_soldiers@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/62_satants_soldiers@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .quack-addicts.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/63_quack_addicts.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/63_quack_addicts@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/63_quack_addicts@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/63_quack_addicts@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .jean-therapy.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/64_jean_therapy.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/64_jean_therapy@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/64_jean_therapy@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/64_jean_therapy@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .laughing-stock.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/65_laughing_stock.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/65_laughing_stock@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/65_laughing_stock@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/65_laughing_stock@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .dirty-cops.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/66_dirty_cops.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/66_dirty_cops@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/66_dirty_cops@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/66_dirty_cops@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .totally-boned.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/67_totally_boned.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/67_totally_boned@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/67_totally_boned@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/67_totally_boned@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .metalheads.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/68_metalheads.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/68_metalheads@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/68_metalheads@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/68_metalheads@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .village-idiots.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/69_village_idiots.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/69_village_idiots@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/69_village_idiots@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/69_village_idiots@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .brain-surgeons.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/70_brain_surgeons.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/70_brain_surgeons@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/70_brain_surgeons@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/70_brain_surgeons@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .religious-extremists.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/71_religious_extremists.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/71_religious_extremists@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/71_religious_extremists@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/71_religious_extremists@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .caps-lock-crew.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/72_caps_lock_crew.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/72_caps_lock_crew@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/72_caps_lock_crew@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/72_caps_lock_crew@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .flower-rangers.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/73_flower_rangers.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/73_flower_rangers@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/73_flower_rangers@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/73_flower_rangers@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .regular-human-people.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/74_regular_human_people.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/74_regular_human_people@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/74_regular_human_people@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/74_regular_human_people@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .cheese.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/75_cheese.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/75_cheese@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/75_cheese@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/75_cheese@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .backstabbers.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/76_backstabbers.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/76_backstabbers@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/76_backstabbers@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/76_backstabbers@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .hivemind.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/77_hivemind.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/77_hivemind@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/77_hivemind@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/77_hivemind@4x.webp") 4x
+    );
+}
+.d .profile-wrapper .competition-wrap.elimination .deaths-door.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/78_deaths_door.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/78_deaths_door@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/78_deaths_door@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/78_deaths_door@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .theoretical-physicists.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/79_theoretical_physicists.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/79_theoretical_physicists@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/79_theoretical_physicists@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/79_theoretical_physicists@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .conspiracy-theorists.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/80_conspiracy_theorists.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/80_conspiracy_theorists@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/80_conspiracy_theorists@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/80_conspiracy_theorists@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .inanimate-objects.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/81_inanimate_objects.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/81_inanimate_objects@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/81_inanimate_objects@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/81_inanimate_objects@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .gold-dust.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/82_gold_dust.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/82_gold_dust@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/82_gold_dust@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/82_gold_dust@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .reptilians.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/83_reptilians.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/83_reptilians@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/83_reptilians@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/83_reptilians@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .rocket-scientists.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/84_rocket_scientists.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/84_rocket_scientists@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/84_rocket_scientists@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/84_rocket_scientists@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .sticks-and-stones.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/85_sticks_and_stones.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/85_sticks_and_stones@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/85_sticks_and_stones@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/85_sticks_and_stones@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .apex.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/86_apex.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/86_apex@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/86_apex@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/86_apex@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .touching-grass.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/87_touching_grass.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/87_touching_grass@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/87_touching_grass@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/87_touching_grass@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .nine-lives.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/88_nine_lives.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/88_nine_lives@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/88_nine_lives@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/88_nine_lives@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .high-voltage.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/89_high_voltage.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/89_high_voltage@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/89_high_voltage@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/89_high_voltage@4x.webp") 4x
+    );
+}
+
+.d .profile-wrapper .competition-wrap.elimination .loose-cannons.sigil {
+    background-image: image-set(
+            url("/images/v2/competition/elimination/sigils/90_loose_cannons.webp") 1x,
+            url("/images/v2/competition/elimination/sigils/90_loose_cannons@2x.webp") 2x,
+            url("/images/v2/competition/elimination/sigils/90_loose_cannons@3x.webp") 3x,
+            url("/images/v2/competition/elimination/sigils/90_loose_cannons@4x.webp") 4x
+    );
+}
+
+
+
+.d .profile-wrapper .competition-wrap.elimination.no-team .sigil {
+    width:90px;
+}
+
+/* User status */
+
+.d .profile-wrapper .profile-status .profile-container {
+    min-height: 100px;
+    background-position: right top;
+    background-repeat: no-repeat;
+    position: relative;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    height: 100px;
+}
+
+.d .logged-out .profile-wrapper .profile-status.okay .profile-container:before,
+.d .logged-out .profile-wrapper .profile-status.okay[class*="loot-"] .profile-container:before,
+.d .logged-out .profile-wrapper .profile-status.abroad .profile-container:before,
+.d .logged-out .profile-wrapper .profile-status.jail .profile-container:before,
+.d .logged-out .profile-wrapper .profile-status.hospital .profile-container:before,
+.d .logged-out .profile-wrapper .profile-status.federal-jail .profile-container:before,
+.d .logged-out .profile-wrapper .profile-status.dead .profile-container:before,
+.d .logged-out .profile-wrapper .profile-status[class*="awoken"] .profile-container:before,
+.d .logged-out .profile-wrapper .profile-status[class*="dormant"] .profile-container:before {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 100px;
+    position: absolute;
+    left: 96px;
+    background: linear-gradient(to right, rgba(242,242,242,1) 0%,rgba(242,242,242,0) 100%);
+    background: var(--profile-travelling-user-status-gradient);
+}
+
+.d .profile-wrapper .profile-status .profile-container .description {
+    line-height: 16px;
+    border-radius: 0 0 5px 5px;
+    min-height: 18px;
+    padding: 7px 10px;
+    font-size: 12px;
+    color: #fff;
+    position: relative;
+}
+
+.d .profile-wrapper .profile-status .profile-container .description .main-desc {
+    font-weight: 700;
+    display: block;
+}
+
+.d .profile-wrapper .profile-status .profile-container .description .sub-desc {
+    display: block;
+    font-style: italic;
+}
+
+.d .profile-wrapper .profile-status.okay[class*="loot-"] .profile-container .description .main-desc {
+    text-shadow : 0 1px 1px rgba(0, 0, 0, 0.25);
+}
+
+.d .profile-wrapper .profile-status.okay[class*="loot-"] .profile-container .description .sub-desc {
+    text-shadow : 0 1px 1px rgba(0, 0, 0, 0.35);
+}
+
+.d .profile-wrapper .profile-status .profile-container .description a {
+    color: #FFF;
+    text-decoration: none;
+}
+
+.d .profile-wrapper .profile-status.okay .profile-container .description {
+    background: var(--profile-okay-gradient);
+}
+
+.d .profile-wrapper .profile-status.okay[class*="loot-"] .profile-container .description {
+    background: var(--profile-npc-gradient);
+}
+
+.d .profile-wrapper .profile-status.okay[class*="loot-"] .profile-container svg {
+    fill: var(--profile-npc-icon-fill);
+    fill-opacity: var(--profile-npc-icon-fill-opacity);
+}
+
+.d .profile-wrapper .profile-status[class*="awoken"] .profile-container .description {
+    background: var(--profile-awoken-gradient);
+}
+
+.d .profile-wrapper .profile-status[class*="dormant"] .profile-container .description {
+    background: var(--profile-dormant-gradient);
+}
+
+.d .profile-wrapper .profile-status.abroad .profile-container .description {
+    background: var(--profile-abroad-gradient);
+}
+
+.d .profile-wrapper .profile-status.travelling .profile-container .description {
+    background: var(--profile-travelling-gradient);
+}
+
+.d .profile-wrapper .profile-status.travelling .profile-container svg {
+    fill: var(--profile-travelling-icon-fill);
+    fill-opacity: var(--profile-travelling-icon-fill-opacity);
+}
+
+.d .profile-wrapper .profile-status.hospital .profile-container .description,
+.d .profile-wrapper .profile-status.jail .profile-container .description {
+    background: var(--profile-jail-hospital-gradient);
+}
+
+.d .profile-wrapper .profile-status.hospital .profile-container svg,
+.d .profile-wrapper .profile-status.jail .profile-container svg {
+    fill: var(--profile-hospital-jail-icon-fill);
+    fill-opacity: var(--profile-hospital-jail-icon-fill-opacity);
+}
+
+.d .profile-wrapper .profile-status.federal-jail .profile-container .description {
+    background: var(--profile-federal-jail-gradient);
+}
+
+.d .profile-wrapper .profile-status.federal-jail .profile-container svg {
+    fill: var(--profile-federal-jail-icon-fill);
+    fill-opacity: var(--profile-federal-jail-icon-fill-opacity);
+}
+
+.d .profile-wrapper .profile-status.dead .profile-container .description {
+    color: #333333;
+    color: var(--default-color);
+    background: var(--profile-dead-gradient);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#80ffffff', endColorstr='#00ffffff',GradientType=1 );
+}
+
+.d .profile-wrapper .profile-status .profile-container .icon-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.d .profile-wrapper .profile-status .profile-container .icon-wrapper svg {
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+}
+
+.d .profile-wrapper .profile-status[class*="loot-"] .profile-container svg {
+    top: 11px;
+}
+
+.d .profile-wrapper .profile-status.federal-jail .profile-container svg {
+    top: 15px;
+}
+
+.d .profile-wrapper .profile-status.travelling.to .profile-container svg,
+.d .profile-wrapper .profile-status.travelling.from .profile-container svg {
+    top: 28px;
+}
+
+.d .profile-wrapper .profile-status[class*="loot-"] .profile-container .description:before {
+    top: -45px;
+}
+
+.d .profile-wrapper .profile-status.jail .profile-container .description:before {
+    background-position: 0 0;
+}
+
+.d .profile-wrapper .profile-status.hospital .profile-container .description:before {
+    background-position: -50px 0;
+}
+
+.d .profile-wrapper .profile-status.federal-jail .profile-container .description:before {
+    background-position: -100px 0;
+}
+
+.d .profile-wrapper .profile-status.awoken1 .profile-container {
+    background-image: url(/images/v2/profile/user_status/maol_status/light/386/1_awoken.png);
+    background-image: var(--profile-awoken1-bg-image);
+}
+
+.d .profile-wrapper .profile-status.awoken2 .profile-container {
+    background-image: url(/images/v2/profile/user_status/maol_status/light/386/2_awoken.png);
+    background-image: var(--profile-awoken2-bg-image);
+}
+
+.d .profile-wrapper .profile-status.dormant1 .profile-container {
+    background-image: url(/images/v2/profile/user_status/maol_status/light/386/1_dormant.png);
+    background-image: var(--profile-dormant1-bg-image);
+}
+
+.d .profile-wrapper .profile-status.dormant2 .profile-container {
+    background-image: url(/images/v2/profile/user_status/maol_status/light/386/2_dormant.png);
+    background-image: var(--profile-dormant2-bg-image);
+}
+
+.d .profile-wrapper .profile-status.dormant3 .profile-container {
+    background-image: url(/images/v2/profile/user_status/maol_status/light/386/3_dormant.png);
+    background-image: var(--profile-dormant3-bg-image);
+}
+
+.d .profile-wrapper .profile-status.dormant4 .profile-container {
+    background-image: url(/images/v2/profile/user_status/maol_status/light/386/4_dormant.png);
+    background-image: var(--profile-dormant4-bg-image);
+}
+
+.d .profile-wrapper .profile-status.dormant5 .profile-container {
+    background-image: url(/images/v2/profile/user_status/maol_status/light/386/5_dormant.png);
+    background-image: var(--profile-dormant5-bg-image);
+}
+
+.d .profile-wrapper .profile-status.okay .profile-container {
+    background-image: image-set(
+            var(--profile-okay-bg-image) 1x,
+            var(--profile-okay-bg-image-2x) 2x,
+            var(--profile-okay-bg-image-3x) 3x,
+            var(--profile-okay-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.okay[class*="loot-"] .profile-container {
+    background-image: image-set(
+            var(--profile-npc-bg-image) 1x,
+            var(--profile-npc-bg-image-2x) 2x,
+            var(--profile-npc-bg-image-3x) 3x,
+            var(--profile-npc-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.hospital .profile-container {
+    background-image: image-set(
+            var(--profile-hospital-bg-image) 1x,
+            var(--profile-hospital-bg-image-2x) 2x,
+            var(--profile-hospital-bg-image-3x) 3x,
+            var(--profile-hospital-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.jail .profile-container {
+    background-image: image-set(
+            var(--profile-jail-bg-image) 1x,
+            var(--profile-jail-bg-image-2x) 2x,
+            var(--profile-jail-bg-image-3x) 3x,
+            var(--profile-jail-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.federal-jail .profile-container {
+    background-image: image-set(
+            var(--profile-federal-jail-bg-image) 1x,
+            var(--profile-federal-jail-bg-image-2x) 2x,
+            var(--profile-federal-jail-bg-image-3x) 3x,
+            var(--profile-federal-jail-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.dead .profile-container {
+    background-image: image-set(
+            var(--profile-dead-bg-image) 1x,
+            var(--profile-dead-bg-image-2x) 2x,
+            var(--profile-dead-bg-image-3x) 3x,
+            var(--profile-dead-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.abroad.mexico .profile-container {
+    background-image: image-set(
+            var(--profile-abroad-mexico-bg-image) 1x,
+            var(--profile-abroad-mexico-bg-image-2x) 2x,
+            var(--profile-abroad-mexico-bg-image-3x) 3x,
+            var(--profile-abroad-mexico-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.abroad.canada .profile-container {
+    background-image: image-set(
+            var(--profile-abroad-canada-bg-image) 1x,
+            var(--profile-abroad-canada-bg-image-2x) 2x,
+            var(--profile-abroad-canada-bg-image-3x) 3x,
+            var(--profile-abroad-canada-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.abroad.cayman .profile-container {
+    background-image: image-set(
+            var(--profile-abroad-cayman-islands-bg-image) 1x,
+            var(--profile-abroad-cayman-islands-bg-image-2x) 2x,
+            var(--profile-abroad-cayman-islands-bg-image-3x) 3x,
+            var(--profile-abroad-cayman-islands-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.abroad.hawaii .profile-container {
+    background-image: image-set(
+            var(--profile-abroad-hawaii-bg-image) 1x,
+            var(--profile-abroad-hawaii-bg-image-2x) 2x,
+            var(--profile-abroad-hawaii-bg-image-3x) 3x,
+            var(--profile-abroad-hawaii-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.abroad.kingdom .profile-container {
+    background-image: image-set(
+            var(--profile-abroad-united-kingdom-bg-image) 1x,
+            var(--profile-abroad-united-kingdom-bg-image-2x) 2x,
+            var(--profile-abroad-united-kingdom-bg-image-3x) 3x,
+            var(--profile-abroad-united-kingdom-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.abroad.switzerland .profile-container {
+    background-image: image-set(
+            var(--profile-abroad-switzerland-bg-image) 1x,
+            var(--profile-abroad-switzerland-bg-image-2x) 2x,
+            var(--profile-abroad-switzerland-bg-image-3x) 3x,
+            var(--profile-abroad-switzerland-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.abroad.argentina .profile-container {
+    background-image: image-set(
+            var(--profile-abroad-argentina-bg-image) 1x,
+            var(--profile-abroad-argentina-bg-image-2x) 2x,
+            var(--profile-abroad-argentina-bg-image-3x) 3x,
+            var(--profile-abroad-argentina-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.abroad.japan .profile-container {
+    background-image: image-set(
+            var(--profile-abroad-japan-bg-image) 1x,
+            var(--profile-abroad-japan-bg-image-2x) 2x,
+            var(--profile-abroad-japan-bg-image-3x) 3x,
+            var(--profile-abroad-japan-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.abroad.china .profile-container {
+    background-image: image-set(
+            var(--profile-abroad-china-bg-image) 1x,
+            var(--profile-abroad-china-bg-image-2x) 2x,
+            var(--profile-abroad-china-bg-image-3x) 3x,
+            var(--profile-abroad-china-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.abroad.uae .profile-container {
+    background-image: image-set(
+            var(--profile-abroad-uae-bg-image) 1x,
+            var(--profile-abroad-uae-bg-image-2x) 2x,
+            var(--profile-abroad-uae-bg-image-3x) 3x,
+            var(--profile-abroad-uae-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.abroad.africa .profile-container {
+    background-image: image-set(
+            var(--profile-abroad-south-africa-bg-image) 1x,
+            var(--profile-abroad-south-africa-bg-image-2x) 2x,
+            var(--profile-abroad-south-africa-bg-image-3x) 3x,
+            var(--profile-abroad-south-africa-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.hidden-travelling .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-hidden-bg-image) 1x,
+            var(--profile-travelling-hidden-bg-image-2x) 2x,
+            var(--profile-travelling-hidden-bg-image-3x) 3x,
+            var(--profile-travelling-hidden-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.mexico .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-mexico-bg-image) 1x,
+            var(--profile-travelling-to-mexico-bg-image-2x) 2x,
+            var(--profile-travelling-to-mexico-bg-image-3x) 3x,
+            var(--profile-travelling-to-mexico-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.mexico .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-mexico-bg-image) 1x,
+            var(--profile-travelling-from-mexico-bg-image-2x) 2x,
+            var(--profile-travelling-from-mexico-bg-image-3x) 3x,
+            var(--profile-travelling-from-mexico-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.canada .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-canada-bg-image) 1x,
+            var(--profile-travelling-to-canada-bg-image-2x) 2x,
+            var(--profile-travelling-to-canada-bg-image-3x) 3x,
+            var(--profile-travelling-to-canada-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.canada .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-canada-bg-image) 1x,
+            var(--profile-travelling-from-canada-bg-image-2x) 2x,
+            var(--profile-travelling-from-canada-bg-image-3x) 3x,
+            var(--profile-travelling-from-canada-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.cayman .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-cayman-islands-bg-image) 1x,
+            var(--profile-travelling-to-cayman-islands-bg-image-2x) 2x,
+            var(--profile-travelling-to-cayman-islands-bg-image-3x) 3x,
+            var(--profile-travelling-to-cayman-islands-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.cayman .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-cayman-islands-bg-image) 1x,
+            var(--profile-travelling-from-cayman-islands-bg-image-2x) 2x,
+            var(--profile-travelling-from-cayman-islands-bg-image-3x) 3x,
+            var(--profile-travelling-from-cayman-islands-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.hawaii .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-hawaii-bg-image) 1x,
+            var(--profile-travelling-to-hawaii-bg-image-2x) 2x,
+            var(--profile-travelling-to-hawaii-bg-image-3x) 3x,
+            var(--profile-travelling-to-hawaii-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.hawaii .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-hawaii-bg-image) 1x,
+            var(--profile-travelling-from-hawaii-bg-image-2x) 2x,
+            var(--profile-travelling-from-hawaii-bg-image-3x) 3x,
+            var(--profile-travelling-from-hawaii-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.kingdom .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-united-kingdom-bg-image) 1x,
+            var(--profile-travelling-to-united-kingdom-bg-image-2x) 2x,
+            var(--profile-travelling-to-united-kingdom-bg-image-3x) 3x,
+            var(--profile-travelling-to-united-kingdom-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.kingdom .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-united-kingdom-bg-image) 1x,
+            var(--profile-travelling-from-united-kingdom-bg-image-2x) 2x,
+            var(--profile-travelling-from-united-kingdom-bg-image-3x) 3x,
+            var(--profile-travelling-from-united-kingdom-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.switzerland .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-switzerland-bg-image) 1x,
+            var(--profile-travelling-to-switzerland-bg-image-2x) 2x,
+            var(--profile-travelling-to-switzerland-bg-image-3x) 3x,
+            var(--profile-travelling-to-switzerland-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.switzerland .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-switzerland-bg-image) 1x,
+            var(--profile-travelling-from-switzerland-bg-image-2x) 2x,
+            var(--profile-travelling-from-switzerland-bg-image-3x) 3x,
+            var(--profile-travelling-from-switzerland-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.argentina .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-argentina-bg-image) 1x,
+            var(--profile-travelling-to-argentina-bg-image-2x) 2x,
+            var(--profile-travelling-to-argentina-bg-image-3x) 3x,
+            var(--profile-travelling-to-argentina-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.argentina .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-argentina-bg-image) 1x,
+            var(--profile-travelling-from-argentina-bg-image-2x) 2x,
+            var(--profile-travelling-from-argentina-bg-image-3x) 3x,
+            var(--profile-travelling-from-argentina-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.japan .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-japan-bg-image) 1x,
+            var(--profile-travelling-to-japan-bg-image-2x) 2x,
+            var(--profile-travelling-to-japan-bg-image-3x) 3x,
+            var(--profile-travelling-to-japan-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.japan .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-japan-bg-image) 1x,
+            var(--profile-travelling-from-japan-bg-image-2x) 2x,
+            var(--profile-travelling-from-japan-bg-image-3x) 3x,
+            var(--profile-travelling-from-japan-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.china .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-china-bg-image) 1x,
+            var(--profile-travelling-to-china-bg-image-2x) 2x,
+            var(--profile-travelling-to-china-bg-image-3x) 3x,
+            var(--profile-travelling-to-china-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.china .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-china-bg-image) 1x,
+            var(--profile-travelling-from-china-bg-image-2x) 2x,
+            var(--profile-travelling-from-china-bg-image-3x) 3x,
+            var(--profile-travelling-from-china-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.uae .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-uae-bg-image) 1x,
+            var(--profile-travelling-to-uae-bg-image-2x) 2x,
+            var(--profile-travelling-to-uae-bg-image-3x) 3x,
+            var(--profile-travelling-to-uae-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.uae .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-uae-bg-image) 1x,
+            var(--profile-travelling-from-uae-bg-image-2x) 2x,
+            var(--profile-travelling-from-uae-bg-image-3x) 3x,
+            var(--profile-travelling-from-uae-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.africa .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-south-africa-bg-image) 1x,
+            var(--profile-travelling-to-south-africa-bg-image-2x) 2x,
+            var(--profile-travelling-to-south-africa-bg-image-3x) 3x,
+            var(--profile-travelling-to-south-africa-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.africa .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-south-africa-bg-image) 1x,
+            var(--profile-travelling-from-south-africa-bg-image-2x) 2x,
+            var(--profile-travelling-from-south-africa-bg-image-3x) 3x,
+            var(--profile-travelling-from-south-africa-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.private .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-private-bg-image) 1x,
+            var(--profile-travelling-to-private-bg-image-2x) 2x,
+            var(--profile-travelling-to-private-bg-image-3x) 3x,
+            var(--profile-travelling-to-private-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.private .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-private-bg-image) 1x,
+            var(--profile-travelling-from-private-bg-image-2x) 2x,
+            var(--profile-travelling-from-private-bg-image-3x) 3x,
+            var(--profile-travelling-from-private-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.to.airstrip .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-to-airstrip-bg-image) 1x,
+            var(--profile-travelling-to-airstrip-bg-image-2x) 2x,
+            var(--profile-travelling-to-airstrip-bg-image-3x) 3x,
+            var(--profile-travelling-to-airstrip-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .profile-status.travelling.from.airstrip .profile-container {
+    background-image: image-set(
+            var(--profile-travelling-from-airstrip-bg-image) 1x,
+            var(--profile-travelling-from-airstrip-bg-image-2x) 2x,
+            var(--profile-travelling-from-airstrip-bg-image-3x) 3x,
+            var(--profile-travelling-from-airstrip-bg-image-4x) 4x
+    );
+}
+
+.d .profile-wrapper .user-information .cont,
+.d .profile-wrapper .user-information .cont .profile-preloader-wrap {
+    min-height: 336px;
+}
+
+.d .profile-wrapper .profile-buttons .cont,
+.d .profile-wrapper .profile-buttons .cont .profile-preloader-wrap {
+    min-height: 118px;
+}
+
+.d .profile-wrapper .profile-status .cont,
+.d .profile-wrapper .profile-status .cont .profile-preloader-wrap {
+    min-height: 100px;
+}
+
+.d .profile-wrapper.medals-wrapper .cont,
+.d .profile-wrapper.medals-wrapper .cont .profile-preloader-wrap {
+    min-height: 91px;
+}
+
+.d .profile-wrapper .basic-information .cont,
+.d .profile-wrapper .basic-information .cont .profile-preloader-wrap {
+    min-height: 335px;
+}
+
+.d .profile-wrapper .badges-panel .cont,
+.d .profile-wrapper .badges-panel .cont .profile-preloader-wrap {
+    min-height: 131px;
+}
+
+.d .profile-wrapper .badges-panel.without-pagination .cont,
+.d .profile-wrapper .badges-panel.without-pagination .cont .profile-preloader-wrap {
+    min-height: 121px;
+}
+
+.d .profile-wrapper .competition-status .cont,
+.d .profile-wrapper .competition-status .cont .profile-preloader-wrap {
+    min-height: 144px;
+}
+
+.d .profile-wrapper .profile-signature .cont,
+.d .profile-wrapper .profile-signature .cont .profile-preloader-wrap {
+    min-height: 45px;
+}
+
+.d .profile-wrapper .staff-tools .links-row {
+    margin-bottom: 10px;
+}
+
+.d .profile-wrapper .staff-tools .staff-link,
+.d .profile-wrapper .staff-tools .double-link {
+    margin-right: 20px;
+    display: inline-block;
+}
+
+.d .profile-wrapper .staff-tools .double-link .staff-link {
+    margin-right: 0;
+}
+
+.d .profile-wrapper .staff-tools .double-link-divider {
+    margin: 0 3px;
+}
+
+.d .profile-wrapper .staff-tools .warnings-list > li {
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+	border-bottom-color: var(--default-panel-divider-outer-side-color);
+    border-top: 1px solid #fff;
+	border-top-color: var(--default-panel-divider-inner-side-color);
+}
+
+.d .profile-wrapper .staff-tools .warnings-list > li:first-child {
+    border-top: none;
+}
+
+.d .profile-wrapper .staff-tools .warnings-list > li:last-child {
+    border-bottom: none;
+}
+
+.d .profile-wrapper .buttons-list {
+    min-height: 108px;
+}
+
+@media screen and (min-width: 785px) and (max-width: 1000px) {
+    .r .logged-out .profile-right-wrapper .profile-wrapper .profile-status {
+        margin-top: 10px;
+    }
+
+    .r .logged-out .profile-right-wrapper,
+    .r .logged-out .profile-left-wrapper {
+        width: 386px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-information-wrapper {
+        width: 168px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-status.okay .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.okay[class*="loot-"] .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.abroad .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.travelling .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.jail .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.hospital .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.federal-jail .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.dead .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status[class*="awoken"] .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status[class*="dormant"] .profile-container:before {
+        content: none;
+    }
+
+    .r .logged-out .profile-wrapper .row.basic-info {
+        padding: 10px 10px 4px 10px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-status {
+        margin-top: 10px;
+    }
+
+}
+
+@media screen and (max-width: 784px) {
+    .r .profile-wrapper .medals-container .slides li a {
+        margin-right: 10px;
+    }
+
+    .r .profile-wrapper .profile-right-wrapper {
+        float: left;
+    }
+
+    .r .profile-wrapper .profile-left-wrapper,
+    .r .profile-wrapper .profile-action {
+        margin-bottom: 10px;
+    }
+
+    .r .profile-wrapper .profile-container-description  {
+        line-height: 34px;
+    }
+
+    .r .profile-wrapper .profile-container .profile-container-mobile-action-button {
+        padding: 10px 10px 5px 10px;
+        line-height: 14px;
+    }
+
+    .r .profile-wrapper .menu-header {
+        height: 34px;
+        line-height: 34px;
+    }
+
+    .r .profile-wrapper .profile-container .profile-container-mobile-action-button.disable {
+        display: none;
+    }
+
+    .r .profile-wrapper .profile-container .profile-container-mobile-action-button {
+        display: inline;
+    }
+
+    .r .profile-wrapper .action-list {
+        height: auto;
+    }
+
+    .r .profile-wrapper [class^="action-icon-"],
+    .r .profile-wrapper [class*=" action-icon-"] {
+        margin: 0 0 9px 10px;
+    }
+
+    .r .profile-wrapper .profile-information-wrapper {
+        width: 168px;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit > div {
+        padding-top: 0;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit .medium.inexp {
+        margin-top: 17px;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit .medium {
+        line-height: 28px;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit .long {
+        line-height: 30px;
+    }
+
+    .r .profile-wrapper [class^="action-icon-"],
+    .r .profile-wrapper [class*=" action-icon-"] {
+        margin: 5px;
+    }
+
+    .r .profile-wrapper .profile-container-description {
+        line-height: 16px;
+    }
+
+    .r .profile-wrapper .profile-status .profile-container-description {
+        height: auto;
+    }
+
+    .r .profile-wrapper .competition-wrap {
+        background: none #F2F2F2;
+        background-color: var(--default-bg-panel-color);
+    }
+
+    .r .profile-wrapper .flex-control-nav.flex-control-paging {
+        display: inline-block;
+        position: static;
+        top: 75px;
+        padding: 10px 5px;
+    }
+
+    .r .profile-wrapper .flex-control-nav {
+        width: 376px;
+    }
+
+    .r .profile-wrapper .flex-direction-nav {
+        display: none;
+    }
+
+    .r .profile-wrapper .medals-container {
+        padding: 0;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit > .two-row {
+        margin-top: 5px;
+    }
+
+    .r .profile-wrapper .medals-container .swiper-container {
+        margin: 0;
+    }
+
+    .r .logged-out .profile-right-wrapper .menu-header {
+        border-radius: 5px 5px 0 0;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .horizontal-divider {
+        right: 130px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .reflection {
+        right: 126px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-left-wrapper {
+        margin-bottom: 10px;
+    }
+
+    .r .logged-out .profile-wrapper .medals-container {
+        padding: 0;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value .digit .medium {
+        line-height: 28px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value .digit > .two-row {
+        margin-top: 5px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info.age .reflection,
+    .r .logged-out .profile-wrapper .box-info.rank .reflection {
+        right: 106px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info.age .horizontal-divider,
+    .r .logged-out .profile-wrapper .box-info.rank .horizontal-divider {
+        right: 112px;
+    }
+
+    .r .logged-out .profile-wrapper [class^="action-icon-"],
+    .r .logged-out .profile-wrapper [class*=" action-icon-"] {
+        margin: 5px 9px;
+    }
+
+    .r .logged-out .profile-wrapper .action-list {
+        padding-left: 10px;
+    }
+
+    .r .logged-out .profile-wrapper .flex-viewport {
+        margin-left: 4px;
+    }
+
+    .r .logged-out .profile-right-wrapper .profile-action .title-black {
+        border-radius: 5px 5px 0 0;
+    }
+
+    .r .logged-out .profile-wrapper .competition-wrap .score-wrap {
+        width: 450px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-status.okay .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.okay[class*="loot-"] .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.abroad .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.travelling .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.hospital .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.jail .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.federal-jail .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.dead .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status[class*="awoken"] .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status[class*="dormant"] .profile-container:before {
+        left: 191px;
+    }
+
+    .r .logged-out .profile-left-wrapper .title-black {
+        border-top-right-radius: 0;
+    }
+
+    .r .logged-out .profile-right-wrapper,
+    .r .logged-out .profile-left-wrapper {
+        width: 578px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-information-wrapper {
+        width: 362px;
+    }
+
+    .r .logged-out .profile-wrapper .row.basic-info {
+        padding: 10px 10px 0 10px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .r .logged-out.content-wrapper {
+        margin: 0;
+    }
+
+    .r .logged-out .profile-buttons .buttons-list {
+        padding-left: 35px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-information-wrapper {
+        width: 165px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info {
+        margin-bottom: 25px;
+    }
+
+    .r .logged-out .profile-wrapper [class^="action-icon-"],
+    .r .logged-out .profile-wrapper [class*=" action-icon-"] {
+        margin: 8px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-information-wrapper .box-info .block-value.svg,
+    .r .logged-out .profile-wrapper .profile-information-wrapper .box-info.rank .block-value.svg,
+    .r .logged-out .profile-wrapper .profile-information-wrapper .box-info.age .block-value.svg {
+        width: 81%;
+        height: 75%;
+        background-size: cover;
+    }
+
+    .r .logged-out .profile-wrapper .profile-information-wrapper .box-info.rank .block-value.svg,
+    .r .logged-out .profile-wrapper .profile-information-wrapper .box-info.age .block-value.svg {
+        background-size: contain;
+        background-position-y: 4px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info.age .block-value.svg .box-value > li:not(:first-child):not(:last-child) {
+        height: 41px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info:not(.age):not(.rank) .block-value.svg .box-value > li:not(:first-child):not(:last-child) {
+        height: 42px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info:not(.age):not(.rank) .block-value.svg {
+        background-size: contain;
+        width: 61%;
+    }
+
+    .r .logged-out .profile-wrapper .profile-information-wrapper .rank .block-value.svg {
+        background-position-y: -2px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-information-wrapper .age .block-value.svg {
+        background-position-y: -3px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info.age .block-value.svg .box-value li .digit {
+        margin-top: 8px;
+    }
+
+    .r .logged-out .profile-wrapper .flex-viewport {
+        margin-left: 5px;
+    }
+
+    .r .logged-out .profile-wrapper .action-list {
+        padding: 0 10px 5px 10px;
+    }
+
+    .r .logged-out .profile-wrapper .cont-gray {
+        background: url(/images/v2/profile/unauthorised_level_rank_age.png) center center no-repeat #F2F2F2;
+        background-color: var(--default-bg-panel-color);
+    }
+
+    .r .logged-out .profile-wrapper .profile-container-description {
+        text-align: center;
+        line-height: 15px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-information-wrapper {
+        background: none;
+    }
+
+    .r .logged-out .profile-wrapper .profile-image {
+        margin-left: 7px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-image-information {
+        bottom: 4px;
+        width: 190px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-left-wrapper,
+    .r .profile-wrapper .profile-right-wrapper,
+    .r .profile-wrapper .box-info,
+    .r .profile-wrapper .medals-container {
+        width: 100%;
+    }
+
+    .r .logged-out .profile-wrapper .box-info {
+        height: 66px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-name {
+        margin-bottom: 5px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .reflection {
+        width: 77px;
+        right: 14px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .horizontal-divider {
+        right: 20px;
+        width: 67px;
+        top: 44px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .horizontal-divider.shadow {
+        right: 19px;
+        width: 69px;
+        top: 47px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info.age .horizontal-divider {
+        right: 9px;
+        width: 90px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info.age .horizontal-divider.shadow {
+        right: 8px;
+        width: 92px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info.rank .horizontal-divider {
+        display: none;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .reflection {
+        top: 22px;
+        height: 10px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info.age .reflection,
+    .r .logged-out .profile-wrapper .box-info.rank .reflection {
+        right: 7px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value,
+    .r .logged-out .profile-wrapper .box-info.age .box-value,
+    .r .logged-out .profile-wrapper .box-info.rank .rank-description {
+        background: url(/images/v2/profile/svg/container_mobile.svg) -5px 0 repeat-x;
+        background: var(--profile-digits-blocks-bg-mobile) -5px 0 repeat-x;
+    }
+
+    .r .logged-out .profile-wrapper .box-info:first-child .box-value {
+        background: url(/images/v2/profile/svg/container_mobile.svg) -3px 0 repeat-x;
+        background: var(--profile-digits-blocks-bg-mobile) -3px 0 repeat-x;
+        width: 57px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value {
+        background: url(/images/v2/profile/svg/container_mobile.svg) -3px 0 repeat-x;
+        background: var(--profile-digits-blocks-bg-mobile) -3px 0 repeat-x;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value,
+    .r .logged-out .profile-wrapper .box-info.age .box-value {
+        width: 80px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value li {
+        font-size: 27px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value > li {
+        height: 47px;
+        height: var(--profile-digits-blocks-height-mobile);
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value > li.clear {
+        height: 0;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value li .digit {
+        width: 21px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value.rank-description .digit .medium {
+        font-size: 14px;
+        line-height: 22px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value li .digit.zero {
+        height: 42px;
+        margin-top: 2px;
+        margin-top: var(--profile-digits-blocks-zero-margin-mobile);
+        background: url(/images/v2/profile/neutral/320_0_placeholder_neutral.png) center center no-repeat;
+        background: var(--profile-digits-zero) center center no-repeat;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value li .digit.left.zero {
+        background-position: 0 center;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value .digit-l .digit,
+    .r .logged-out .profile-wrapper .box-info .box-value .digit-r .digit,
+    .r .logged-out .profile-wrapper .box-info:not(.rank) .block-value.svg .box-value .digit-l .digit,
+    .r .logged-out .profile-wrapper .box-info:not(.rank) .block-value.svg .box-value .digit-r .digit {
+        width: 18px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .rank-description.box-value .digit {
+        width: 84px;
+        margin-left: -3px;
+        margin-right: -3px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value .digit .two-row,
+    .r .logged-out .profile-wrapper .box-info .box-value.rank-description .digit .two-row {
+        margin-top: 4px;
+        padding-top: 0;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value.rank-description .digit .two-row {
+        margin-top: -2px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value > li .r-ear,
+    .r .logged-out .profile-wrapper .box-info .box-value > li .l-ear {
+        height: 49px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value li .l-ear,
+    .r .logged-out .profile-wrapper .box-info.rank .box-value li .l-ear,
+    .r .logged-out .profile-wrapper .box-info.age .box-value li .l-ear {
+        background: url(/images/v2/profile/svg/container_mobile.svg) 0 0 no-repeat;
+        background: var(--profile-digits-blocks-bg-mobile) 0 0 no-repeat;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value li .r-ear,
+    .r .logged-out .profile-wrapper .box-info.rank .box-value li .r-ear,
+    .r .logged-out .profile-wrapper .box-info.age .box-value li .r-ear {
+        background: url(/images/v2/profile/svg/container_mobile.svg) right 0 no-repeat;
+        background: var(--profile-digits-blocks-bg-mobile) right 0 no-repeat;
+    }
+
+    .r .logged-out .profile-wrapper .user-information-section {
+        width: 152px;
+    }
+
+    .r .logged-out .profile-wrapper .box-info:first-child {
+        margin-top: 50px;
+    }
+
+    .r .logged-out .profile-wrapper .flex-control-nav {
+        width: 310px;
+    }
+
+    .r .logged-out .profile-right-wrapper .menu-header,
+    .r .logged-out .profile-right-wrapper .profile-action .title-black {
+        border-radius:  0;
+    }
+
+    .r .logged-out .profile-wrapper .box-info.rank .reflection.svg,
+    .r .logged-out .profile-wrapper .box-info.age .reflection.svg {
+        width: 98px;
+        right: 5px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-container .info-table .user-info-value {
+        width: 61%;
+    }
+
+    .r .logged-out .profile-wrapper .profile-container.personal-info {
+        background: none #F2F2F2;
+        background-color: var(--default-bg-panel-color);
+    }
+
+    .r .logged-out .profile-wrapper .competition-wrap .score-wrap {
+        width: 194px;
+    }
+
+    .r .logged-out .profile-wrapper .profile-status.okay .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.okay[class*="loot-"] .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.abroad .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.travelling .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.hospital .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.jail .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.federal-jail .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.dead .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status[class*="awoken"] .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status[class*="dormant"] .profile-container:before {
+        left: 65px;
+    }
+
+    .r .logged-out .profile-wrapper .score-wrap-rps .wrap-rps {
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 386px;
+    }
+}
+
+@media screen and (max-width: 386px) {
+    .r .profile-wrapper .profile-container .info-table .user-info-value {
+        width: 61%;
+    }
+
+    .r .profile-wrapper .profile-signature-wrapper {
+        display: none;
+    }
+
+    .r .content-wrapper,
+    .r .profile-wrapper .profile-left-wrapper,
+    .r .profile-wrapper .profile-right-wrapper,
+    .r .profile-wrapper .box-info,
+    .r .profile-wrapper .medals-container,
+    .r .profile-wrapper .bx-wrapper,
+    .r .profile-wrapper .bx-window {
+        width: 100%;
+    }
+
+    .r .profile-wrapper .menu-header {
+        cursor: default;
+        position: static;
+    }
+
+    .r .profile-wrapper .menu-header,
+    .r .profile-wrapper .profile-container {
+        border-radius: 0;
+    }
+
+    .r .content-wrapper {
+        margin: 0 0 50px 0;
+    }
+
+    .r .profile-wrapper .profile-image-information {
+        bottom: 4px;
+        width: 190px;
+    }
+
+    .r .profile-wrapper .profile-information-wrapper,
+    .r .logged-out .profile-wrapper .profile-information-wrapper {
+        width: 106px;
+    }
+
+    .r .profile-wrapper .box-info {
+        height: 66px;
+    }
+
+    .r .profile-wrapper .box-info .box-name {
+        margin-bottom: 5px;
+    }
+
+    .r .profile-wrapper .box-info {
+        margin-bottom: 25px;
+    }
+
+    .r .profile-wrapper [class^="action-icon-"],
+    .r .profile-wrapper [class*=" action-icon-"] {
+        margin: 8px;
+    }
+
+    .r .profile-wrapper .profile-information-wrapper .box-info .block-value.svg {
+        width: 81%;
+        height: 75%;
+        background-size: cover;
+    }
+
+    .r .profile-wrapper .box-info.age .block-value.svg {
+        background-size: contain;
+        width: 83%;
+        height: 80%;
+        background-position-y: 3px;
+    }
+
+    .r .profile-wrapper .box-info.age .block-value.svg .box-value > li:not(:first-child):not(:last-child) {
+        background-position-y: 4px;
+    }
+
+    .r .profile-wrapper .box-info.age .block-value.svg .box-value {
+        width: 72px;
+    }
+
+    .r .profile-wrapper .box-info .block-value.svg .box-value > li:not(:first-child):not(:last-child) {
+        height: 40px;
+    }
+
+    .r .profile-wrapper .box-info.age .block-value.svg .box-value > li:not(:first-child):not(:last-child) {
+        height: 42px;
+    }
+
+    .r .profile-wrapper .box-info:not(.age):not(.rank) .block-value.svg .box-value > li:not(:first-child):not(:last-child) {
+        height: 43px;
+    }
+
+    .r .profile-wrapper .box-info:not(.age):not(.rank) .block-value.svg {
+        width: 65%;
+    }
+
+    .r .logged-out .profile-wrapper .box-info .box-value.rank-description .digit .two-row {
+        margin-top: 0;
+    }
+
+    .r .profile-wrapper .profile-information-wrapper .rank .block-value.svg {
+        background-image: url(/images/v2/profile/svg/container_113x66.svg);
+        background-image: var(--profile-digits-blocks-bg-small);
+        width: 80%;
+        height: 80%;
+        background-size: contain;
+        background-position-y: 3px;
+    }
+
+    .r .profile-wrapper .box-info:not(.rank):not(.age) .block-value.svg .box-value li .digit:not(.zero) {
+        margin-top: 10px;
+    }
+
+    .r .profile-wrapper .box-info.age .block-value.svg .box-value li .digit {
+        margin-top: 8px;
+    }
+
+    .r .profile-wrapper .box-info .block-value.svg .box-value li .digit.zero {
+        margin-top: 4px;
+    }
+
+    .r .profile-wrapper .box-info .reflection.svg,
+    .r .profile-wrapper .box-info.rank .reflection.svg,
+    .r .profile-wrapper .box-info.age .reflection.svg {
+        top: 28px;
+    }
+
+    .r .profile-wrapper .flex-viewport {
+        margin-left: 5px;
+    }
+
+    .r .profile-wrapper .action-list {
+        padding: 0 10px 5px 10px;
+    }
+
+    .r .profile-wrapper .profile-container-description {
+        line-height: 15px;
+        padding-top: 10px;
+        text-align: center;
+    }
+
+    .r .profile-wrapper .box-info .box-value {
+        background: url(/images/v2/profile/svg/container_mobile.svg) -3px 0 repeat-x;
+        background: var(--profile-digits-blocks-bg-mobile) -3px 0 repeat-x;
+    }
+
+    .r .profile-wrapper .box-info .box-value li .l-ear,
+    .r .profile-wrapper .box-info.rank .box-value li .l-ear,
+    .r .profile-wrapper .box-info.age .box-value li .l-ear {
+        background: url(/images/v2/profile/svg/container_mobile.svg) 0 0 no-repeat;
+        background: var(--profile-digits-blocks-bg-mobile) 0 0 no-repeat;
+    }
+
+    .r .profile-wrapper .box-info .box-value li .r-ear,
+    .r .profile-wrapper .box-info.rank .box-value li .r-ear,
+    .r .profile-wrapper .box-info.age .box-value li .r-ear {
+        background: url(/images/v2/profile/svg/container_mobile.svg) right 0 no-repeat;
+        background: var(--profile-digits-blocks-bg-mobile) right 0 no-repeat;
+    }
+
+    .r .profile-wrapper .box-info .box-value li .digit.zero {
+        background: url(/images/v2/profile/neutral/320_0_placeholder_neutral.png) center center no-repeat;
+        background: var(--profile-digits-zero) center center no-repeat;
+    }
+
+    .r .profile-wrapper .box-info .box-value > li {
+        height: 47px;
+        height: var(--profile-digits-blocks-height-mobile);
+    }
+
+    .r .profile-wrapper .box-info .box-value > li .r-ear,
+    .r .profile-wrapper .box-info .box-value > li .l-ear {
+        height: 49px;
+    }
+
+    .r .profile-wrapper .box-info .box-value li .digit {
+        width: 21px;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit-l .digit,
+    .r .profile-wrapper .box-info .box-value .digit-r .digit,
+    .r .profile-wrapper .box-info:not(.rank) .block-value.svg .box-value .digit-l .digit,
+    .r .profile-wrapper .box-info:not(.rank) .block-value.svg .box-value .digit-r .digit{
+        width: 18px;
+    }
+
+    .r .profile-wrapper .profile-information-wrapper {
+        background: none;
+    }
+
+    .r .profile-wrapper .cont-gray {
+        background:  url(/images/v2/profile/unauthorised_level_rank_age.png) center center no-repeat #F2F2F2;
+        background-color: var(--default-bg-panel-color);
+    }
+
+    .r .profile-wrapper .box-info .rank-description.box-value .digit {
+        width: 84px;
+        margin-left: -3px;
+        margin-right: -3px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .r .profile-wrapper .box-info:first-child .box-value {
+        background: url(/images/v2/profile/svg/container_mobile.svg) -3px 0 repeat-x;
+        background: var(--profile-digits-blocks-bg-mobile) -3px 0 repeat-x;
+        width: 57px;
+    }
+
+    .r .profile-wrapper .box-info:first-child .block-value.svg .box-value {
+        width: 51px;
+    }
+
+    .r .profile-wrapper .box-info .reflection.svg,
+    .r .profile-wrapper .box-info .reflection {
+        width: 77px;
+        right: 14px;
+    }
+
+    .r .profile-wrapper .box-info .horizontal-divider {
+        right: 20px;
+        width: 67px;
+        top: 44px;
+    }
+
+    .r .profile-wrapper .box-info .horizontal-divider.shadow {
+        right: 19px;
+        width: 69px;
+        top: 47px;
+    }
+
+    .r .profile-wrapper .box-info.age .horizontal-divider {
+        right: 9px;
+        width: 90px;
+    }
+
+    .r .profile-wrapper .box-info.age .horizontal-divider.shadow {
+        right: 8px;
+        width: 92px;
+    }
+
+    .r .profile-wrapper .box-info.rank .horizontal-divider {
+        display: none;
+    }
+
+    .r .profile-wrapper .box-info .box-value li .digit.zero {
+        height: 42px;
+        margin-top: 2px;
+        margin-top: var(--profile-digits-blocks-zero-margin-mobile);
+    }
+
+    .r .profile-wrapper .box-info .box-value li {
+        font-size: 27px;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit .short {
+        font-size: 19px;
+        line-height: 27px;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit .medium,
+    .r .profile-wrapper .box-info .block-value.svg .box-value .digit .medium + .medium,
+    .r .profile-wrapper .box-info .block-value.svg .box-value .digit .long + .medium {
+        font-size: 14px;
+        line-height: 17px;
+    }
+
+    .r .profile-wrapper .box-info .block-value.svg .box-value .digit .medium:first-child {
+        line-height: 25px;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit .long {
+        font-size: 11px;
+        line-height: 11px;
+    }
+
+    .r .profile-wrapper .box-info .box-value,
+    .r .profile-wrapper .box-info.age .box-value {
+        width: 80px;
+    }
+
+    .r .profile-wrapper .box-info .box-value,
+    .r .profile-wrapper .box-info.age .box-value,
+    .r .profile-wrapper .box-info.rank .rank-description {
+        background: url(/images/v2/profile/svg/container_mobile.svg) -5px 0 repeat-x;
+        background: var(--profile-digits-blocks-bg-mobile) -5px 0 repeat-x;
+    }
+
+    .r .profile-wrapper .box-info,
+    .r .profile-wrapper .box-info.rank {
+        margin-bottom: 25px;
+    }
+
+    .r .profile-wrapper .profile-image {
+        margin-left: 7px;
+    }
+
+    .r .profile-wrapper .box-info .reflection {
+        top: 22px;
+        height: 10px;
+    }
+
+    .r .profile-wrapper .box-info .box-value li .digit.left.zero {
+        background-position: 0 center;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit > div {
+        padding-top: 4px;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit .two-row,
+    .r .profile-wrapper .box-info .box-value.rank-description .digit .two-row {
+        margin-top: 4px;
+        padding-top: 0;
+    }
+
+    .r .profile-wrapper .box-info .box-value.rank-description .digit .two-row {
+        margin-top: 0;
+    }
+
+    .r .profile-wrapper .box-info .box-value.rank-description .digit .medium {
+        font-size: 14px;
+        line-height: 22px;
+    }
+
+    .r .profile-wrapper .box-info .box-value.rank-description .digit .long {
+        font-size: 10px;
+        line-height: 22px;
+    }
+
+    .r .profile-wrapper .box-info .box-value .digit .medium.inexp {
+        margin-top: 10px;
+    }
+
+    .r .profile-wrapper .medals-container,
+    .r .profile-wrapper .profile-container.personal-info {
+        background: none #F2F2F2;
+        background-color: var(--default-bg-panel-color);
+    }
+
+    .r .profile-wrapper .box-info:first-child {
+        margin-top: 50px;
+    }
+
+    .r .profile-wrapper .flex-control-nav {
+        width: 310px;
+    }
+
+    .r .profile-right-wrapper .profile-action .title-black {
+        border-radius:  0;
+    }
+
+    .r .profile-wrapper .row.basic-info {
+        width: 300px;
+    }
+
+    .r .profile-wrapper .box-info.rank .reflection,
+    .r .profile-wrapper .box-info.age .reflection,
+    .r .profile-wrapper .box-info.rank .reflection.svg,
+    .r .profile-wrapper .box-info.age .reflection.svg {
+        width: 98px;
+        right: 5px;
+    }
+
+    .r .profile-wrapper .box-info.age .reflection {
+        width: 98px;
+        right: 5px;
+    }
+
+    .r .profile-wrapper .competition-wrap .score-wrap {
+        width: 193px;
+        font-size: 110px;
+        line-height: 130px;
+    }
+
+    .r .profile-wrapper .competition-wrap.elimination .score,
+    .r .profile-wrapper .competition-wrap.elimination .position {
+        width: 24%;
+    }
+
+    .r .profile-wrapper .competition-wrap.elimination .score {
+        margin-right: 15px;
+    }
+
+    .r .profile-wrapper .competition-wrap .score-wrap .score {
+        top: 0;
+        line-height: 41px;
+    }
+
+    .r .profile-wrapper .competition-wrap.easter-eggs-hunt .score-wrap .score-total {
+        margin-top: -65px;
+    }
+
+    /* User status */
+    .r .profile-wrapper .profile-status .profile-container,
+    .r .profile-wrapper .profile-status .profile-container .description {
+        border-radius: 0;
+    }
+
+    .r .profile-wrapper .profile-status.awoken1 .profile-container {
+        background-image: url(/images/v2/profile/user_status/maol_status/light/320/1_awoken.png);
+        background-image: var(--profile-awoken1-bg-image);
+    }
+
+    .r .profile-wrapper .profile-status.awoken2 .profile-container {
+        background-image: url(/images/v2/profile/user_status/maol_status/light/320/2_awoken.png);
+        background-image: var(--profile-awoken2-bg-image);
+    }
+
+    .r .profile-wrapper .profile-status.dormant1 .profile-container {
+        background-image: url(/images/v2/profile/user_status/maol_status/light/320/1_dormant.png);
+        background-image: var(--profile-dormant1-bg-image);
+    }
+
+    .r .profile-wrapper .profile-status.dormant2 .profile-container {
+        background-image: url(/images/v2/profile/user_status/maol_status/light/320/2_dormant.png);
+        background-image: var(--profile-dormant2-bg-image);
+    }
+
+    .r .profile-wrapper .profile-status.dormant3 .profile-container {
+        background-image: url(/images/v2/profile/user_status/maol_status/light/320/3_dormant.png);
+        background-image: var(--profile-dormant3-bg-image);
+    }
+
+    .r .profile-wrapper .profile-status.dormant4 .profile-container {
+        background-image: url(/images/v2/profile/user_status/maol_status/light/320/4_dormant.png);
+        background-image: var(--profile-dormant4-bg-image);
+    }
+
+    .r .profile-wrapper .profile-status.dormant5 .profile-container {
+        background-image: url(/images/v2/profile/user_status/maol_status/light/320/5_dormant.png);
+        background-image: var(--profile-dormant5-bg-image);
+    }
+
+    .r .profile-wrapper .profile-status.okay .profile-container {
+        background-image: image-set(
+                var(--profile-okay-bg-image) 1x,
+                var(--profile-okay-bg-image-2x) 2x,
+                var(--profile-okay-bg-image-3x) 3x,
+                var(--profile-okay-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.okay[class*="loot-"] .profile-container {
+        background-image: image-set(
+                var(--profile-npc-bg-image) 1x,
+                var(--profile-npc-bg-image-2x) 2x,
+                var(--profile-npc-bg-image-3x) 3x,
+                var(--profile-npc-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.hospital .profile-container {
+        background-image: image-set(
+                var(--profile-hospital-bg-image) 1x,
+                var(--profile-hospital-bg-image-2x) 2x,
+                var(--profile-hospital-bg-image-3x) 3x,
+                var(--profile-hospital-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.jail .profile-container {
+        background-image: image-set(
+                var(--profile-jail-bg-image) 1x,
+                var(--profile-jail-bg-image-2x) 2x,
+                var(--profile-jail-bg-image-3x) 3x,
+                var(--profile-jail-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.federal-jail .profile-container {
+        background-image: image-set(
+                var(--profile-federal-jail-bg-image) 1x,
+                var(--profile-federal-jail-bg-image-2x) 2x,
+                var(--profile-federal-jail-bg-image-3x) 3x,
+                var(--profile-federal-jail-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.dead .profile-container {
+        background-image: image-set(
+                var(--profile-dead-bg-image) 1x,
+                var(--profile-dead-bg-image-2x) 2x,
+                var(--profile-dead-bg-image-3x) 3x,
+                var(--profile-dead-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.abroad.mexico .profile-container {
+        background-image: image-set(
+                var(--profile-abroad-mexico-bg-image) 1x,
+                var(--profile-abroad-mexico-bg-image-2x) 2x,
+                var(--profile-abroad-mexico-bg-image-3x) 3x,
+                var(--profile-abroad-mexico-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.abroad.canada .profile-container {
+        background-image: image-set(
+                var(--profile-abroad-canada-bg-image) 1x,
+                var(--profile-abroad-canada-bg-image-2x) 2x,
+                var(--profile-abroad-canada-bg-image-3x) 3x,
+                var(--profile-abroad-canada-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.abroad.cayman .profile-container {
+        background-image: image-set(
+                var(--profile-abroad-cayman-islands-bg-image) 1x,
+                var(--profile-abroad-cayman-islands-bg-image-2x) 2x,
+                var(--profile-abroad-cayman-islands-bg-image-3x) 3x,
+                var(--profile-abroad-cayman-islands-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.abroad.hawaii .profile-container {
+        background-image: image-set(
+                var(--profile-abroad-hawaii-bg-image) 1x,
+                var(--profile-abroad-hawaii-bg-image-2x) 2x,
+                var(--profile-abroad-hawaii-bg-image-3x) 3x,
+                var(--profile-abroad-hawaii-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.abroad.kingdom .profile-container {
+        background-image: image-set(
+                var(--profile-abroad-united-kingdom-bg-image) 1x,
+                var(--profile-abroad-united-kingdom-bg-image-2x) 2x,
+                var(--profile-abroad-united-kingdom-bg-image-3x) 3x,
+                var(--profile-abroad-united-kingdom-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.abroad.switzerland .profile-container {
+        background-image: image-set(
+                var(--profile-abroad-switzerland-bg-image) 1x,
+                var(--profile-abroad-switzerland-bg-image-2x) 2x,
+                var(--profile-abroad-switzerland-bg-image-3x) 3x,
+                var(--profile-abroad-switzerland-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.abroad.argentina .profile-container {
+        background-image: image-set(
+                var(--profile-abroad-argentina-bg-image) 1x,
+                var(--profile-abroad-argentina-bg-image-2x) 2x,
+                var(--profile-abroad-argentina-bg-image-3x) 3x,
+                var(--profile-abroad-argentina-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.abroad.japan .profile-container {
+        background-image: image-set(
+                var(--profile-abroad-japan-bg-image) 1x,
+                var(--profile-abroad-japan-bg-image-2x) 2x,
+                var(--profile-abroad-japan-bg-image-3x) 3x,
+                var(--profile-abroad-japan-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.abroad.china .profile-container {
+        background-image: image-set(
+                var(--profile-abroad-china-bg-image) 1x,
+                var(--profile-abroad-china-bg-image-2x) 2x,
+                var(--profile-abroad-china-bg-image-3x) 3x,
+                var(--profile-abroad-china-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.abroad.uae .profile-container {
+        background-image: image-set(
+                var(--profile-abroad-uae-bg-image) 1x,
+                var(--profile-abroad-uae-bg-image-2x) 2x,
+                var(--profile-abroad-uae-bg-image-3x) 3x,
+                var(--profile-abroad-uae-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.abroad.africa .profile-container {
+        background-image: image-set(
+                var(--profile-abroad-south-africa-bg-image) 1x,
+                var(--profile-abroad-south-africa-bg-image-2x) 2x,
+                var(--profile-abroad-south-africa-bg-image-3x) 3x,
+                var(--profile-abroad-south-africa-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.hidden-travelling .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-hidden-bg-image) 1x,
+                var(--profile-travelling-hidden-bg-image-2x) 2x,
+                var(--profile-travelling-hidden-bg-image-3x) 3x,
+                var(--profile-travelling-hidden-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.mexico .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-mexico-bg-image) 1x,
+                var(--profile-travelling-to-mexico-bg-image-2x) 2x,
+                var(--profile-travelling-to-mexico-bg-image-3x) 3x,
+                var(--profile-travelling-to-mexico-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.mexico .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-mexico-bg-image) 1x,
+                var(--profile-travelling-from-mexico-bg-image-2x) 2x,
+                var(--profile-travelling-from-mexico-bg-image-3x) 3x,
+                var(--profile-travelling-from-mexico-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.canada .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-canada-bg-image) 1x,
+                var(--profile-travelling-to-canada-bg-image-2x) 2x,
+                var(--profile-travelling-to-canada-bg-image-3x) 3x,
+                var(--profile-travelling-to-canada-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.canada .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-canada-bg-image) 1x,
+                var(--profile-travelling-from-canada-bg-image-2x) 2x,
+                var(--profile-travelling-from-canada-bg-image-3x) 3x,
+                var(--profile-travelling-from-canada-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.cayman .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-cayman-islands-bg-image) 1x,
+                var(--profile-travelling-to-cayman-islands-bg-image-2x) 2x,
+                var(--profile-travelling-to-cayman-islands-bg-image-3x) 3x,
+                var(--profile-travelling-to-cayman-islands-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.cayman .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-cayman-islands-bg-image) 1x,
+                var(--profile-travelling-from-cayman-islands-bg-image-2x) 2x,
+                var(--profile-travelling-from-cayman-islands-bg-image-3x) 3x,
+                var(--profile-travelling-from-cayman-islands-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.hawaii .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-hawaii-bg-image) 1x,
+                var(--profile-travelling-to-hawaii-bg-image-2x) 2x,
+                var(--profile-travelling-to-hawaii-bg-image-3x) 3x,
+                var(--profile-travelling-to-hawaii-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.hawaii .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-hawaii-bg-image) 1x,
+                var(--profile-travelling-from-hawaii-bg-image-2x) 2x,
+                var(--profile-travelling-from-hawaii-bg-image-3x) 3x,
+                var(--profile-travelling-from-hawaii-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.kingdom .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-united-kingdom-bg-image) 1x,
+                var(--profile-travelling-to-united-kingdom-bg-image-2x) 2x,
+                var(--profile-travelling-to-united-kingdom-bg-image-3x) 3x,
+                var(--profile-travelling-to-united-kingdom-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.kingdom .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-united-kingdom-bg-image) 1x,
+                var(--profile-travelling-from-united-kingdom-bg-image-2x) 2x,
+                var(--profile-travelling-from-united-kingdom-bg-image-3x) 3x,
+                var(--profile-travelling-from-united-kingdom-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.switzerland .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-switzerland-bg-image) 1x,
+                var(--profile-travelling-to-switzerland-bg-image-2x) 2x,
+                var(--profile-travelling-to-switzerland-bg-image-3x) 3x,
+                var(--profile-travelling-to-switzerland-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.switzerland .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-switzerland-bg-image) 1x,
+                var(--profile-travelling-from-switzerland-bg-image-2x) 2x,
+                var(--profile-travelling-from-switzerland-bg-image-3x) 3x,
+                var(--profile-travelling-from-switzerland-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.argentina .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-argentina-bg-image) 1x,
+                var(--profile-travelling-to-argentina-bg-image-2x) 2x,
+                var(--profile-travelling-to-argentina-bg-image-3x) 3x,
+                var(--profile-travelling-to-argentina-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.argentina .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-argentina-bg-image) 1x,
+                var(--profile-travelling-from-argentina-bg-image-2x) 2x,
+                var(--profile-travelling-from-argentina-bg-image-3x) 3x,
+                var(--profile-travelling-from-argentina-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.japan .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-japan-bg-image) 1x,
+                var(--profile-travelling-to-japan-bg-image-2x) 2x,
+                var(--profile-travelling-to-japan-bg-image-3x) 3x,
+                var(--profile-travelling-to-japan-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.japan .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-japan-bg-image) 1x,
+                var(--profile-travelling-from-japan-bg-image-2x) 2x,
+                var(--profile-travelling-from-japan-bg-image-3x) 3x,
+                var(--profile-travelling-from-japan-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.china .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-china-bg-image) 1x,
+                var(--profile-travelling-to-china-bg-image-2x) 2x,
+                var(--profile-travelling-to-china-bg-image-3x) 3x,
+                var(--profile-travelling-to-china-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.china .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-china-bg-image) 1x,
+                var(--profile-travelling-from-china-bg-image-2x) 2x,
+                var(--profile-travelling-from-china-bg-image-3x) 3x,
+                var(--profile-travelling-from-china-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.uae .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-uae-bg-image) 1x,
+                var(--profile-travelling-to-uae-bg-image-2x) 2x,
+                var(--profile-travelling-to-uae-bg-image-3x) 3x,
+                var(--profile-travelling-to-uae-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.uae .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-uae-bg-image) 1x,
+                var(--profile-travelling-from-uae-bg-image-2x) 2x,
+                var(--profile-travelling-from-uae-bg-image-3x) 3x,
+                var(--profile-travelling-from-uae-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.africa .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-south-africa-bg-image) 1x,
+                var(--profile-travelling-to-south-africa-bg-image-2x) 2x,
+                var(--profile-travelling-to-south-africa-bg-image-3x) 3x,
+                var(--profile-travelling-to-south-africa-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.africa .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-south-africa-bg-image) 1x,
+                var(--profile-travelling-from-south-africa-bg-image-2x) 2x,
+                var(--profile-travelling-from-south-africa-bg-image-3x) 3x,
+                var(--profile-travelling-from-south-africa-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.private .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-private-bg-image) 1x,
+                var(--profile-travelling-to-private-bg-image-2x) 2x,
+                var(--profile-travelling-to-private-bg-image-3x) 3x,
+                var(--profile-travelling-to-private-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.private .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-private-bg-image) 1x,
+                var(--profile-travelling-from-private-bg-image-2x) 2x,
+                var(--profile-travelling-from-private-bg-image-3x) 3x,
+                var(--profile-travelling-from-private-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.to.airstrip .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-to-airstrip-bg-image) 1x,
+                var(--profile-travelling-to-airstrip-bg-image-2x) 2x,
+                var(--profile-travelling-to-airstrip-bg-image-3x) 3x,
+                var(--profile-travelling-to-airstrip-bg-image-4x) 4x
+        );
+    }
+
+    .r .profile-wrapper .profile-status.travelling.from.airstrip .profile-container {
+        background-image: image-set(
+                var(--profile-travelling-from-airstrip-bg-image) 1x,
+                var(--profile-travelling-from-airstrip-bg-image-2x) 2x,
+                var(--profile-travelling-from-airstrip-bg-image-3x) 3x,
+                var(--profile-travelling-from-airstrip-bg-image-4x) 4x
+        );
+    }
+
+    .r .logged-out .profile-wrapper .profile-status.okay .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.okay[class*="loot-"] .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.abroad .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.travelling .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.hospital .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.jail .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.federal-jail .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status.dead .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status[class*="awoken"] .profile-container:before,
+    .r .logged-out .profile-wrapper .profile-status[class*="dormant"] .profile-container:before {
+        display: none;
+    }
+
+    .r .logged-out .profile-buttons .buttons-list {
+        padding-left: 30px;
+    }
+
+    .r .profile-wrapper .medals-container .swiper-container {
+        margin: 0;
+    }
+
+    .r .profile-wrapper .competition-wrap.dog-tags .arrows {
+        width: 315px;
+    }
+
+    .r .profile-wrapper .score-wrap-rps .wrap-rps{
+        width: 320px;
+    }
+
+    .r .profile-wrapper .score-wrap-rps .hp-bar-wrap{
+        left: 132px;
+    }
+}
+
+@-moz-document url-prefix() {
+    .d .profile-wrapper .competition-wrap {
+        height: 140px;
+    }
+}

@@ -1,0 +1,35 @@
+.d .profile-signature .editor-content {
+    padding: 0;
+    text-align: center;
+    word-break: break-word;
+}
+
+.d .profile-signature .editor-content iframe {
+    max-width: calc(100% - 20px);
+}
+
+.d .profile-signature .editor-content>*:first-child {
+    padding-top: 10px;
+}
+
+.d .profile-signature .editor-content>* {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.d .profile-signature .editor-content>*:last-child {
+    padding-bottom: 10px;
+}
+
+.d .profile-container {
+    overflow: hidden;
+}
+
+
+@media screen and (max-width: 784px){
+    .d .profile-signature iframe {
+        max-width: 100%;
+        height: 300px;
+    }
+}
+

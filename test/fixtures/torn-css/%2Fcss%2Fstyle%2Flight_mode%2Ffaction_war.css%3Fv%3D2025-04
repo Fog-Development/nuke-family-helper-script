@@ -1,0 +1,21 @@
+:root {
+    --faction-war-notification-color: #444;
+    --faction-war-notification-text-shadow: 0 1px 0 #FFFFFFA6;
+    --faction-war-notification-background: transparent linear-gradient(180deg, #FFFFFF 0%, #CCCCCC 88%, #E4E4E4 100%) 0 0 no-repeat;
+    --faction-war-notification-property-color: #777;
+    --faction-war-notification-red-background: transparent linear-gradient(180deg, #FFFFFF 0%, #DAC9C3 88%, #E2DDDC 100%) 0 0 no-repeat;
+    --faction-war-notification-green-background: transparent linear-gradient(180deg, #FFFFFF 0%, #CDD9C0 88%, #E2E9DA 100%) 0 0 no-repeat;
+    --faction-war-notification-markers-background: url(/images/v2/faction/msg/rank_respect_976.svg) left top no-repeat;
+    --faction-raid-icons-url: url(/images/v2/faction/raid/raid_war_tab_icons_light.svg);
+
+    --faction-war-panel-bg-color: #DFDFDF;
+    --faction-war-box-text-color: #888;
+    --faction-war-default-blue-color: #0092d8;
+    --faction-war-default-blue-hover-color: #999;
+}
+
+@media screen and (max-width: 784px) {
+    :root .r {
+        --faction-war-notification-markers-background: url(/images/v2/faction/msg/rank_respect_320_578.svg) left top no-repeat;
+    }
+}

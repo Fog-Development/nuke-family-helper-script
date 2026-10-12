@@ -10,7 +10,8 @@
     "watch:debug": "node build.mjs --watch --debug",
     "test": "node test/run.mjs",
     "fixtures:css": "node test/tools/fetch-torn-css.mjs",
-    "fixtures:sanitize": "node test/tools/sanitize-captures.mjs"
+    "fixtures:sanitize": "node test/tools/sanitize-captures.mjs",
+    "fixtures:css:refresh": "node test/tools/fetch-torn-css.mjs --refresh"
   },
   "author": "Fogest <nuke@jhvisser.com>",
   "license": "UNLICENSED",
