@@ -2,7 +2,88 @@
   "GET /cache/last-updates": {
     "shitlist_cache_last_update": 1900000000,
     "shitlist_category_cache_last_update": 1900000000,
-    "contracts_cache_last_update": 1900000000
+    "contracts_cache_last_update": 1900000000,
+    "oc_config_cache_last_update": 1900000000
+  },
+  "GET /oc/config": {
+    "data": {
+      "faction_id": 5678,
+      "settings": {"productive_threshold_hours": 12, "under_level_gap": 2, "band_role_percent": 50, "spawn_requests_enabled": true, "spawn_request_min_level": 6},
+      "weights_synced_at": 1900000000,
+      "crimes": [
+        { "key": "gaslighttheway", "name": "Gaslight the Way", "level": 3, "roles": [
+          {"key": "imitator1", "name": "Imitator #1", "position_id": "P1", "weight": 9.4, "default_min_cpr": 60, "min_cpr": 60},
+          {"key": "imitator2", "name": "Imitator #2", "position_id": "P2", "weight": 27.5, "default_min_cpr": 72, "min_cpr": 72},
+          {"key": "imitator3", "name": "Imitator #3", "position_id": "P3", "weight": 41.3, "default_min_cpr": 74, "min_cpr": 74},
+          {"key": "looter1", "name": "Looter #1", "position_id": "P4", "weight": 9.4, "default_min_cpr": 60, "min_cpr": 60},
+          {"key": "looter2", "name": "Looter #2", "position_id": "P5", "weight": 0, "default_min_cpr": 1, "min_cpr": 1},
+          {"key": "looter3", "name": "Looter #3", "position_id": "P6", "weight": 12.4, "default_min_cpr": 60, "min_cpr": 60}
+        ] },
+        { "key": "counteroffer", "name": "Counter Offer", "level": 5, "roles": [
+          {"key": "robber", "name": "Robber", "position_id": "P1", "weight": 35.9, "default_min_cpr": 71, "min_cpr": 71},
+          {"key": "looter", "name": "Looter", "position_id": "P2", "weight": 7.0, "default_min_cpr": 61, "min_cpr": 61},
+          {"key": "hacker", "name": "Hacker", "position_id": "P3", "weight": 12.1, "default_min_cpr": 62, "min_cpr": 62},
+          {"key": "picklock", "name": "Picklock", "position_id": "P4", "weight": 16.5, "default_min_cpr": 50, "min_cpr": 50},
+          {"key": "engineer", "name": "Engineer", "position_id": "P5", "weight": 28.4, "default_min_cpr": 74, "min_cpr": 74}
+        ] },
+        { "key": "honeytrap", "name": "Honey Trap", "level": 5, "roles": [
+          {"key": "enforcer", "name": "Enforcer", "position_id": "P1", "weight": 27.0, "default_min_cpr": 65, "min_cpr": 65},
+          {"key": "muscle1", "name": "Muscle #1", "position_id": "P2", "weight": 30.9, "default_min_cpr": 69, "min_cpr": 69},
+          {"key": "muscle2", "name": "Muscle #2", "position_id": "P3", "weight": 42.1, "default_min_cpr": 72, "min_cpr": 72}
+        ] },
+        { "key": "biddingwar", "name": "Bidding War", "level": 6, "roles": [
+          {"key": "robber1", "name": "Robber #1", "position_id": "P1", "weight": 7.1, "default_min_cpr": 60, "min_cpr": 60},
+          {"key": "driver", "name": "Driver", "position_id": "P2", "weight": 12.5, "default_min_cpr": 61, "min_cpr": 61},
+          {"key": "robber2", "name": "Robber #2", "position_id": "P3", "weight": 22.9, "default_min_cpr": 71, "min_cpr": 71},
+          {"key": "robber3", "name": "Robber #3", "position_id": "P4", "weight": 31.7, "default_min_cpr": 74, "min_cpr": 74},
+          {"key": "bomber1", "name": "Bomber #1", "position_id": "P5", "weight": 7.8, "default_min_cpr": 60, "min_cpr": 60},
+          {"key": "bomber2", "name": "Bomber #2", "position_id": "P6", "weight": 18.0, "default_min_cpr": 65, "min_cpr": 65}
+        ] },
+        { "key": "sneakygitgrab", "name": "Sneaky Git Grab", "level": 6, "roles": [
+          {"key": "imitator", "name": "Imitator", "position_id": "P1", "weight": 17.5, "default_min_cpr": 63, "min_cpr": 63},
+          {"key": "pickpocket", "name": "Pickpocket", "position_id": "P2", "weight": 50.8, "default_min_cpr": 76, "min_cpr": 76},
+          {"key": "hacker", "name": "Hacker", "position_id": "P3", "weight": 14.5, "default_min_cpr": 65, "min_cpr": 65},
+          {"key": "techie", "name": "Techie", "position_id": "P4", "weight": 17.1, "default_min_cpr": 65, "min_cpr": 65}
+        ] },
+        { "key": "blastfromthepast", "name": "Blast from the Past", "level": 7, "roles": [
+          {"key": "picklock1", "name": "Picklock #1", "position_id": "P1", "weight": 10.8, "default_min_cpr": 67, "min_cpr": 67},
+          {"key": "hacker", "name": "Hacker", "position_id": "P2", "weight": 12.1, "default_min_cpr": 66, "min_cpr": 66},
+          {"key": "engineer", "name": "Engineer", "position_id": "P3", "weight": 24.0, "default_min_cpr": 74, "min_cpr": 74},
+          {"key": "bomber", "name": "Bomber", "position_id": "P4", "weight": 15.6, "default_min_cpr": 72, "min_cpr": 72},
+          {"key": "muscle", "name": "Muscle", "position_id": "P5", "weight": 34.6, "default_min_cpr": 77, "min_cpr": 77},
+          {"key": "picklock2", "name": "Picklock #2", "position_id": "P6", "weight": 2.9, "default_min_cpr": 50, "min_cpr": 50}
+        ] },
+        { "key": "clearedfortakeoff", "name": "Cleared for Takeoff", "level": 7, "roles": [
+          {"key": "imitator", "name": "Imitator", "position_id": "P1", "weight": 24.9, "default_min_cpr": 72, "min_cpr": 72},
+          {"key": "techie", "name": "Techie", "position_id": "P2", "weight": 11.3, "default_min_cpr": 66, "min_cpr": 66},
+          {"key": "pickpocket", "name": "Pickpocket", "position_id": "P3", "weight": 12.0, "default_min_cpr": 67, "min_cpr": 67},
+          {"key": "lookout", "name": "Lookout", "position_id": "P4", "weight": 8.4, "default_min_cpr": 64, "min_cpr": 64},
+          {"key": "assassin", "name": "Assassin", "position_id": "P5", "weight": 18.2, "default_min_cpr": 70, "min_cpr": 70},
+          {"key": "interrogator", "name": "Interrogator", "position_id": "P6", "weight": 25.2, "default_min_cpr": 73, "min_cpr": 73}
+        ] },
+        { "key": "windowofopportunity", "name": "Window of Opportunity", "level": 7, "roles": [
+          {"key": "engineer", "name": "Engineer", "position_id": "P1", "weight": 14.6, "default_min_cpr": 63, "min_cpr": 63},
+          {"key": "looter1", "name": "Looter #1", "position_id": "P2", "weight": 19.5, "default_min_cpr": 68, "min_cpr": 68},
+          {"key": "looter2", "name": "Looter #2", "position_id": "P3", "weight": 25.8, "default_min_cpr": 69, "min_cpr": 69},
+          {"key": "muscle1", "name": "Muscle #1", "position_id": "P4", "weight": 23.1, "default_min_cpr": 68, "min_cpr": 68},
+          {"key": "muscle2", "name": "Muscle #2", "position_id": "P5", "weight": 17.0, "default_min_cpr": 67, "min_cpr": 67}
+        ] },
+        { "key": "breakthebank", "name": "Break the Bank", "level": 8, "roles": [
+          {"key": "robber", "name": "Robber", "position_id": "P1", "weight": 12.7, "default_min_cpr": 62, "min_cpr": 62},
+          {"key": "muscle1", "name": "Muscle #1", "position_id": "P2", "weight": 13.5, "default_min_cpr": 63, "min_cpr": 63},
+          {"key": "muscle2", "name": "Muscle #2", "position_id": "P3", "weight": 10.1, "default_min_cpr": 61, "min_cpr": 61},
+          {"key": "thief1", "name": "Thief #1", "position_id": "P4", "weight": 2.9, "default_min_cpr": 50, "min_cpr": 50},
+          {"key": "muscle3", "name": "Muscle #3", "position_id": "P5", "weight": 31.7, "default_min_cpr": 72, "min_cpr": 72},
+          {"key": "thief2", "name": "Thief #2", "position_id": "P6", "weight": 29.1, "default_min_cpr": 72, "min_cpr": 72}
+        ] },
+        { "key": "clinicalprecision", "name": "Clinical Precision", "level": 8, "roles": [
+          {"key": "imitator", "name": "Imitator", "position_id": "P1", "weight": 43.3, "default_min_cpr": 75, "min_cpr": 75},
+          {"key": "catburglar", "name": "Cat Burglar", "position_id": "P2", "weight": 18.9, "default_min_cpr": 68, "min_cpr": 68},
+          {"key": "assassin", "name": "Assassin", "position_id": "P3", "weight": 16.1, "default_min_cpr": 63, "min_cpr": 63},
+          {"key": "cleaner", "name": "Cleaner", "position_id": "P4", "weight": 21.7, "default_min_cpr": 68, "min_cpr": 68}
+        ] }
+      ]
+    }
   },
   "GET /user/get-own-roles": { "role": "leader" },
   "GET /user/get-own-permissions": { "permissions": [] },

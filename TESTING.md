@@ -91,6 +91,26 @@ The automated tests stub the nuke.family API, so every item here needs a real
 - [ ] Switch to another faction tab and back: the line reappears once, and it
       does not appear on other factions' pages.
 
+## Organized crimes (`factions.php` → crimes tab, own faction)
+
+- [ ] Recruiting: every slot of a known crime shows a "Min CPR" line under
+      its header: green when your CPR meets it, red when it does not, grey on
+      filled slots. Role names are not truncated any more than Torn does itself.
+- [ ] Recruiting, not in a crime: one slot is tagged "Best for you" (up to two
+      more "Good for you") and the bar above the list names the same slot. "Show
+      me" scrolls to it.
+- [ ] Recruiting, already in a crime: the bar says Torn is not letting you
+      join and no slot is tagged. (This relies on Torn disabling every Join
+      button while you are in a crime; check that is still what happens.)
+- [ ] Scroll down so Torn loads more crimes: the new ones get their lines and
+      the suggestion updates if one of them is better. Nothing flickers.
+- [ ] Join or leave a slot, or watch someone else take the suggested one: the
+      tags move without a reload.
+- [ ] Planning: lines on every slot, no bar and no tags. Completed: nothing odd.
+- [ ] Change a minimum on nuke.family (Organized Crimes → OC Assistant): within
+      about five minutes and a page reload the line shows the new number.
+- [ ] Another faction's crimes tab is untouched.
+
 ## Faction controls (`factions.php` → controls tab)
 
 - [ ] "Change Nuke Family Key" and "Check NFH Updates" buttons appear.

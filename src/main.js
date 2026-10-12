@@ -17,6 +17,8 @@ import chainWatch from "./features/chain-watch/index.js";
 import contracts, { contractsStore } from "./features/contracts.js";
 import factionButtons from "./features/faction-buttons.js";
 import hospital from "./features/hospital.js";
+import organizedCrimes from "./features/organized-crimes/index.js";
+import { ocConfigStore } from "./features/organized-crimes/data.js";
 import reputation from "./features/reputation.js";
 import { categoriesStore, shitlistStore } from "./features/shitlist/data.js";
 import shitlistProfile from "./features/shitlist/profile.js";
@@ -34,6 +36,7 @@ const features = [
   hospital,
   factionButtons,
   chainWatch,
+  organizedCrimes,
 ];
 
 function dispatchFeatures() {
@@ -65,7 +68,7 @@ function main() {
 
   // Load cached data from previous sessions. Registration must happen before
   // any feature runs, so a manual force-refresh covers every store.
-  for (const store of [shitlistStore, categoriesStore, contractsStore]) {
+  for (const store of [shitlistStore, categoriesStore, contractsStore, ocConfigStore]) {
     store.load();
     registerSyncedStore(store);
   }

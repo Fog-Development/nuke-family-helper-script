@@ -15,6 +15,7 @@ export const PageType = {
   FactionControl: "Faction Control",
   FactionControlPayday: "Faction Control Per Day",
   FactionControlApplications: "Faction Control Applications",
+  FactionCrimes: "Faction Crimes",
   Market: "Market",
   Forum: "Forum",
   ForumThread: "ForumThread",
@@ -65,6 +66,7 @@ const mapPageAddressFragment = {
   [PageType.FactionArmouryDrug]: "tab=armoury&start=0&sub=drugs",
   [PageType.FactionControlPayday]: "tab=controls&option=pay-day",
   [PageType.FactionControlApplications]: "tab=controls&option=application",
+  [PageType.FactionCrimes]: "tab=crimes",
 };
 
 export function IsPage(pageType) {

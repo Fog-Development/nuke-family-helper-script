@@ -208,754 +208,862 @@ ${text}`) && onclick?.();
   }
 
   // src/styles.css
-  var styles_default = `/* Theme-aware CSS variables */
-:root {
-    --nfh-bg: #1a1a1a;
-    --nfh-text: #ffffff;
-    --nfh-section-bg: #2a2a2a;
-    --nfh-container-bg: #222;
-    --nfh-btn-bg: #333;
-    --nfh-btn-hover: #444;
-    --nfh-border: #444;
-    --nfh-list-key: #b0b0b0;
-    --nfh-hidden-count: #999;
-}
-
-/* Light theme overrides */
-body:not(.dark-mode) {
-    --nfh-bg: #f5f5f5;
-    --nfh-text: #333333;
-    --nfh-section-bg: #ffffff;
-    --nfh-container-bg: #eaeaea;
-    --nfh-btn-bg: #dddddd;
-    --nfh-btn-hover: #cccccc;
-    --nfh-border: #cccccc;
-    --nfh-list-key: #666666;
-    --nfh-hidden-count: #666666;
-}
-
-.nfh-section {
-    margin-top: 10px;
-    background-color: var(--nfh-bg);
-    border-radius: 5px;
-    overflow: hidden;
-    font-family: 'Roboto', sans-serif;
-}
-
-.nfh-section-title {
-    padding: 8px 12px;
-    font-weight: 600;
-    font-size: 14px;
-    background-color: var(--nfh-section-bg);
-    color: var(--nfh-text);
-}
-
-.nfh-section-container {
-    padding: 10px 12px !important;
-    background-color: var(--nfh-container-bg);
-}
-
-.nfh-section-list {
-    list-style-type: none;
-    padding-left: 0;
-    margin: 0;
-}
-
-.nfh-section-list li {
-    margin-bottom: 8px;
-    padding: 8px 10px 8px 20px;
-    background-color: var(--nfh-section-bg);
-    border-radius: 3px;
-    font-size: 13px;
-    line-height: 1.4;
-    color: var(--nfh-text);
-    position: relative;
-}
-
-.nfh-shitlist-entry-profile-container {
-  background-color: var(--nfh-container-bg) !important;
-  border-bottom: 0px !important;
-}
-
-.nfh-section-list li::before {
-    content: '\u25B6';
-    position: absolute;
-    left: 8px;
-    top: 11px;
-    color: #4caf50;
-    font-size: 10px;
-}
-
-.nfh-shitlist-profile-list li {
-  margin-bottom: 8px;
-    padding: 8px 10px 8px 20px;
-    background-color: var(--nfh-section-bg);
-    border-radius: 3px;
-    font-size: 13px;
-    line-height: 1.4;
-    color: var(--nfh-text);
-    position: relative;
-}
-
-.nfh-shitlist-profile-list li::before {
-    content: '\u25B6';
-    position: absolute;
-    left: 8px;
-    top: 11px;
-    color: #4caf50;
-    font-size: 10px;
-}
-
-.nfh-list-key {
-    font-weight: 600;
-    color: var(--nfh-list-key);
-    display: inline-block;
-    width: 100px;
-    vertical-align: top;
-}
-
-.nfh-list-value {
-    display: inline-block;
-    width: calc(100% - 105px);
-    vertical-align: top;
-}
-
-.nfh-shitlist-entry-container {
-    border-left: 3px solid #4caf50;
-    background-color: var(--nfh-container-bg);
-}
-
-.nfh-extra-shitlist-entry-condition {
-    font-size: 12px;
-    color: #4caf50;
-    margin-left: 5px;
-}
-
-.nfh-btn {
-    background-color: var(--nfh-btn-bg);
-    color: var(--nfh-text);
-    border: none;
-    padding: 6px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    font-size: 13px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 8px;
-}
-
-.nfh-btn:hover {
-    background-color: var(--nfh-btn-hover);
-}
-
-.nfh-shitlist-entry-profile-container-friendly {
-  border-right: 3px solid #4caf50;
-}
-
-.nfh-shitlist-entry-container-friendly {
-  background-color: #00ff1466 !important;
-  border-left: 0px !important;
-}
-
-/* Hospital row highlight styles */
-.nfh-hospital-contract {
-  background-color: #20b2aa7d !important;
-}
-
-.nfh-hospital-friendly {
-  background-color: #009d0075 !important;
-}
-
-.nfh-hospital-shitlist {
-  background-color: #f933337d !important;
-}
-
-/* Settings panel styles */
-.nfh-shitlist-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-}
-
-.nfh-settings-cog {
-    cursor: pointer;
-    color: var(--nfh-text);
-    font-size: 16px;
-    margin-right: 10px;
-    transition: transform 0.3s ease;
-}
-
-.nfh-settings-cog:hover {
-    color: #4caf50;
-    transform: rotate(90deg);
-}
-
-.nfh-settings-panel {
-    background-color: var(--nfh-section-bg);
-    border-radius: 5px;
-    padding: 15px;
-    border: 1px solid var(--nfh-border);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    position: fixed;
-    z-index: 9999;
-    width: 250px;
-    right: 20px;
-    bottom: 50px;
-    max-height: calc(100vh - 100px);
-    overflow-y: auto;
-    max-width: 95vw;
-    display: flex;
-    flex-direction: column;
-}
-
-.nfh-settings-title {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: var(--nfh-text);
-    border-bottom: 1px solid var(--nfh-border);
-    padding-bottom: 5px;
-}
-
-.nfh-category-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px;
-    padding: 5px;
-    border-radius: 3px;
-    transition: background-color 0.2s;
-}
-
-.nfh-category-item:hover {
-    background-color: var(--nfh-btn-bg);
-}
-
-.nfh-category-item input[type="checkbox"] {
-    margin-right: 8px;
-}
-
-.nfh-category-item.faction-locked {
-    opacity: 0.8;
-    pointer-events: none;
-}
-
-.nfh-category-item.faction-locked input[type="checkbox"] {
-    cursor: not-allowed;
-}
-
-.nfh-hidden-count {
-    font-size: 11px;
-    color: var(--nfh-hidden-count);
-    margin-top: 5px;
-    font-style: italic;
-}
-
-.nfh-close-settings {
-    background-color: var(--nfh-btn-bg);
-    color: var(--nfh-text);
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 12px;
-    margin-top: 10px;
-    transition: background-color 0.2s;
-    width: 100%;
-}
-
-.nfh-close-settings:hover {
-    background-color: var(--nfh-btn-hover);
-}
-
-/* Chain watch bar (own faction page) */
-.nfh-cw {
-    --nfh-cw-accent: #4caf50;
-    --nfh-cw-warn: #f5a623;
-    --nfh-cw-muted: #9a9a9a;
-    --nfh-cw-empty: #c0392b;
-    clear: both;
-    margin-top: 10px;
-    border-radius: 5px;
-    border-left: 3px solid var(--nfh-border);
-    background-color: var(--nfh-section-bg);
-    color: var(--nfh-text);
-    font-size: 12px;
-    line-height: 1.4;
-    overflow: hidden;
-}
-
-body:not(.dark-mode) .nfh-cw {
-    --nfh-cw-accent: #256b29;
-    --nfh-cw-warn: #b26a00;
-    --nfh-cw-muted: #5c5c5c;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-}
-
-.nfh-cw--in {
-    border-left-color: var(--nfh-cw-accent);
-}
-
-.nfh-cw--attn {
-    border-left-color: var(--nfh-cw-warn);
-}
-
-.nfh-cw [hidden] {
-    display: none !important;
-}
-
-.nfh-cw a {
-    color: inherit;
-    text-decoration: none;
-}
-
-.nfh-cw a:hover {
-    text-decoration: underline;
-}
-
-.nfh-cw-bar {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 30px;
-    padding: 0 8px;
-}
-
-.nfh-cw-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 0;
-    border: none;
-    background: none;
-    color: inherit;
-    font: inherit;
-    font-weight: 700;
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.nfh-cw-toggle:disabled {
-    cursor: default;
-}
-
-.nfh-cw-caret {
-    display: inline-block;
-    width: 9px;
-    color: var(--nfh-cw-muted);
-}
-
-.nfh-cw-title,
-.nfh-cw-muted {
-    color: var(--nfh-cw-muted);
-}
-
-.nfh-cw-title {
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.nfh-cw-status {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.nfh-cw-status[data-action] {
-    cursor: pointer;
-}
-
-.nfh-cw--attn .nfh-cw-status {
-    color: var(--nfh-cw-warn);
-    font-weight: 700;
-}
-
-.nfh-cw-need,
-.nfh-cw-error {
-    color: var(--nfh-cw-warn);
-}
-
-.nfh-cw-ok {
-    color: var(--nfh-cw-accent);
-}
-
-.nfh-cw-actions,
-.nfh-cw-detail-actions {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.nfh-cw .is-busy {
-    opacity: 0.5;
-    pointer-events: none;
-}
-
-.nfh-cw-btn,
-.nfh-cw-chip {
-    padding: 3px 9px;
-    border: 1px solid var(--nfh-border);
-    border-radius: 3px;
-    background-color: var(--nfh-btn-bg);
-    color: var(--nfh-text);
-    font: inherit;
-    line-height: 1.3;
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.nfh-cw-btn:hover,
-.nfh-cw-chip:hover {
-    background-color: var(--nfh-btn-hover);
-}
-
-.nfh-cw-btn--primary {
-    border-color: var(--nfh-cw-accent);
-    background-color: var(--nfh-cw-accent);
-    color: #fff;
-    font-weight: 700;
-}
-
-.nfh-cw-btn--primary:hover {
-    background-color: var(--nfh-cw-accent);
-    filter: brightness(1.1);
-}
-
-.nfh-cw-chip {
-    border-radius: 10px;
-    background: none;
-    color: var(--nfh-cw-muted);
-}
-
-.nfh-cw-chip.is-armed {
-    border-color: var(--nfh-cw-accent);
-    color: var(--nfh-cw-accent);
-}
-
-.nfh-cw-picker,
-.nfh-cw-settings select,
-.nfh-cw-input {
-    padding: 2px 4px;
-    border: 1px solid var(--nfh-border);
-    border-radius: 3px;
-    background-color: var(--nfh-container-bg);
-    color: var(--nfh-text);
-    font: inherit;
-}
-
-.nfh-cw-picker {
-    max-width: 180px;
-}
-
-.nfh-cw-settings,
-.nfh-cw-panel {
-    padding: 8px 10px;
-    border-top: 1px solid var(--nfh-border);
-    background-color: var(--nfh-container-bg);
-}
-
-.nfh-cw-settings-row,
-.nfh-cw-footer {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px 14px;
-}
-
-.nfh-cw-settings label,
-.nfh-cw-footer label {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
-}
-
-.nfh-cw-settings input[type="range"] {
-    width: 80px;
-}
-
-.nfh-cw-settings input[type="color"] {
-    width: 26px;
-    height: 20px;
-    padding: 0;
-    border: 1px solid var(--nfh-border);
-    background: none;
-}
-
-.nfh-cw-time {
-    width: 36px;
-    text-align: center;
-}
-
-.nfh-cw-input.is-invalid {
-    border-color: var(--nfh-cw-empty);
-}
-
-.nfh-cw-settings .nfh-cw-need,
-.nfh-cw-help {
-    margin-top: 6px;
-}
-
-.nfh-cw-section + .nfh-cw-section {
-    margin-top: 10px;
-}
-
-.nfh-cw-heading {
-    margin-bottom: 4px;
-    font-weight: 700;
-}
-
-.nfh-cw-heading .nfh-cw-muted {
-    margin-left: 6px;
-    font-weight: 400;
-}
-
-.nfh-cw-roster-row {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    padding: 2px 0;
-}
-
-.nfh-cw-roster-when {
-    width: 52px;
-    color: var(--nfh-cw-muted);
-}
-
-.nfh-cw-roster-row.is-now .nfh-cw-roster-when {
-    color: var(--nfh-cw-accent);
-    font-weight: 700;
-}
-
-.nfh-cw-roster-time {
-    width: 62px;
-    font-variant-numeric: tabular-nums;
-}
-
-.nfh-cw-people {
-    display: flex;
-    flex: 1;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 12px;
-}
-
-.nfh-cw-person {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.nfh-cw-person::before {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border: 1px solid var(--nfh-cw-muted);
-    border-radius: 50%;
-}
-
-.nfh-cw-person--plain::before {
-    content: none;
-}
-
-.nfh-cw-person.is-present::before {
-    border-color: var(--nfh-cw-accent);
-    background-color: var(--nfh-cw-accent);
-}
-
-.nfh-cw-person.is-me > a,
-.nfh-cw-person.is-me > span:first-child {
-    font-weight: 700;
-}
-
-.nfh-cw-person .nfh-cw-btn {
-    padding: 0 6px;
-    font-size: 11px;
-}
-
-.nfh-cw-tag {
-    padding: 0 5px;
-    border-radius: 3px;
-    background-color: var(--nfh-btn-bg);
-    font-size: 11px;
-}
-
-.nfh-cw-tag--scheduled {
-    color: var(--nfh-cw-accent);
-}
-
-.nfh-cw-tag--past_slot {
-    color: var(--nfh-cw-warn);
-}
-
-.nfh-cw-staff {
-    margin-top: 6px;
-}
-
-.nfh-cw-search {
-    width: 280px;
-    max-width: 100%;
-    margin-bottom: 4px;
-}
-
-.nfh-cw-mine {
-    margin-bottom: 6px;
-}
-
-.nfh-cw-day {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 4px;
-}
-
-.nfh-cw-day-label {
-    width: 70px;
-    padding-top: 6px;
-    color: var(--nfh-cw-muted);
-    white-space: nowrap;
-}
-
-.nfh-cw-grid {
-    display: flex;
-    flex: 1;
-    flex-wrap: wrap;
-    gap: 4px;
-}
-
-.nfh-cw-slot {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 34px;
-    padding: 2px 0;
-    border: 1px solid var(--nfh-border);
-    border-radius: 4px;
-    background-color: var(--nfh-section-bg);
-    color: var(--nfh-text);
-    font: inherit;
-    line-height: 1.2;
-    cursor: pointer;
-}
-
-.nfh-cw-slot-hour {
-    font-weight: 700;
-}
-
-.nfh-cw-slot-fill {
-    font-size: 10px;
-    color: var(--nfh-cw-muted);
-}
-
-/* Fill level is carried by the count: open paid spots stand out, a full
-   hour fades back. */
-.nfh-cw-slot--empty .nfh-cw-slot-fill,
-.nfh-cw-slot--short .nfh-cw-slot-fill {
-    color: var(--nfh-cw-warn);
-}
-
-.nfh-cw-slot--full {
-    opacity: 0.6;
-}
-
-.nfh-cw-slot.is-now {
-    border-color: var(--nfh-cw-muted);
-}
-
-.nfh-cw-slot.is-mine {
-    border-color: var(--nfh-cw-accent);
-    background-color: var(--nfh-cw-accent);
-    color: #fff;
-    opacity: 1;
-}
-
-.nfh-cw-slot.is-mine .nfh-cw-slot-fill {
-    color: #fff;
-}
-
-.nfh-cw-slot.is-selected {
-    box-shadow: 0 0 0 2px var(--nfh-text);
-}
-
-.nfh-cw-slot:hover {
-    border-color: var(--nfh-text);
-}
-
-.nfh-cw-detail {
-    margin-top: 6px;
-    padding: 6px 8px;
-    border-radius: 4px;
-    background-color: var(--nfh-section-bg);
-}
-
-.nfh-cw-detail > div + div {
-    margin-top: 4px;
-}
-
-.nfh-cw-footer {
-    margin-top: 10px;
-    padding-top: 8px;
-    border-top: 1px solid var(--nfh-border);
-}
-
-.nfh-cw-link {
-    margin-left: auto;
-    color: var(--nfh-cw-muted) !important;
-}
-
-/* Chain timer alert: click-through flash over the whole page */
-#nfh-chain-flash {
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-    pointer-events: none;
-    animation: nfh-chain-flash 2s steps(1, end) infinite;
-}
-
-@keyframes nfh-chain-flash {
-    0% { opacity: 1; }
-    50% { opacity: 0; }
-}
-
-/* Territory war walls: who not to hit, and who to hit */
-body.nfh-mark-wall .faction-war .members-list .your .user.name {
-    text-decoration: line-through !important;
-    cursor: not-allowed !important;
-}
-
-body.nfh-mark-wall .faction-war .members-list .enemy .user.name {
-    color: #e53935 !important;
-}
-
-body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
-    display: inline-block;
-    animation: nfh-wall-ring 4s 0.7s ease-in-out infinite;
-}
-
-@keyframes nfh-wall-ring {
-    0%, 39%, 100% { transform: rotate(0); }
-    2% { transform: rotate(15deg); }
-    6% { transform: rotate(-15deg); color: #e53935; }
-    10% { transform: rotate(13deg); }
-    14% { transform: rotate(-12deg); }
-    18% { transform: rotate(10deg); }
-    22% { transform: rotate(-8deg); }
-    26% { transform: rotate(6deg); }
-    30% { transform: rotate(-4deg); }
-    34% { transform: rotate(2deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
-        animation: none;
-    }
-}
+  var styles_default = `/* Theme-aware CSS variables */\r
+:root {\r
+    --nfh-bg: #1a1a1a;\r
+    --nfh-text: #ffffff;\r
+    --nfh-section-bg: #2a2a2a;\r
+    --nfh-container-bg: #222;\r
+    --nfh-btn-bg: #333;\r
+    --nfh-btn-hover: #444;\r
+    --nfh-border: #444;\r
+    --nfh-list-key: #b0b0b0;\r
+    --nfh-hidden-count: #999;\r
+}\r
+\r
+/* Light theme overrides */\r
+body:not(.dark-mode) {\r
+    --nfh-bg: #f5f5f5;\r
+    --nfh-text: #333333;\r
+    --nfh-section-bg: #ffffff;\r
+    --nfh-container-bg: #eaeaea;\r
+    --nfh-btn-bg: #dddddd;\r
+    --nfh-btn-hover: #cccccc;\r
+    --nfh-border: #cccccc;\r
+    --nfh-list-key: #666666;\r
+    --nfh-hidden-count: #666666;\r
+}\r
+\r
+.nfh-section {\r
+    margin-top: 10px;\r
+    background-color: var(--nfh-bg);\r
+    border-radius: 5px;\r
+    overflow: hidden;\r
+    font-family: 'Roboto', sans-serif;\r
+}\r
+\r
+.nfh-section-title {\r
+    padding: 8px 12px;\r
+    font-weight: 600;\r
+    font-size: 14px;\r
+    background-color: var(--nfh-section-bg);\r
+    color: var(--nfh-text);\r
+}\r
+\r
+.nfh-section-container {\r
+    padding: 10px 12px !important;\r
+    background-color: var(--nfh-container-bg);\r
+}\r
+\r
+.nfh-section-list {\r
+    list-style-type: none;\r
+    padding-left: 0;\r
+    margin: 0;\r
+}\r
+\r
+.nfh-section-list li {\r
+    margin-bottom: 8px;\r
+    padding: 8px 10px 8px 20px;\r
+    background-color: var(--nfh-section-bg);\r
+    border-radius: 3px;\r
+    font-size: 13px;\r
+    line-height: 1.4;\r
+    color: var(--nfh-text);\r
+    position: relative;\r
+}\r
+\r
+.nfh-shitlist-entry-profile-container {\r
+  background-color: var(--nfh-container-bg) !important;\r
+  border-bottom: 0px !important;\r
+}\r
+\r
+.nfh-section-list li::before {\r
+    content: '\u25B6';\r
+    position: absolute;\r
+    left: 8px;\r
+    top: 11px;\r
+    color: #4caf50;\r
+    font-size: 10px;\r
+}\r
+\r
+.nfh-shitlist-profile-list li {\r
+  margin-bottom: 8px;\r
+    padding: 8px 10px 8px 20px;\r
+    background-color: var(--nfh-section-bg);\r
+    border-radius: 3px;\r
+    font-size: 13px;\r
+    line-height: 1.4;\r
+    color: var(--nfh-text);\r
+    position: relative;\r
+}\r
+\r
+.nfh-shitlist-profile-list li::before {\r
+    content: '\u25B6';\r
+    position: absolute;\r
+    left: 8px;\r
+    top: 11px;\r
+    color: #4caf50;\r
+    font-size: 10px;\r
+}\r
+\r
+.nfh-list-key {\r
+    font-weight: 600;\r
+    color: var(--nfh-list-key);\r
+    display: inline-block;\r
+    width: 100px;\r
+    vertical-align: top;\r
+}\r
+\r
+.nfh-list-value {\r
+    display: inline-block;\r
+    width: calc(100% - 105px);\r
+    vertical-align: top;\r
+}\r
+\r
+.nfh-shitlist-entry-container {\r
+    border-left: 3px solid #4caf50;\r
+    background-color: var(--nfh-container-bg);\r
+}\r
+\r
+.nfh-extra-shitlist-entry-condition {\r
+    font-size: 12px;\r
+    color: #4caf50;\r
+    margin-left: 5px;\r
+}\r
+\r
+.nfh-btn {\r
+    background-color: var(--nfh-btn-bg);\r
+    color: var(--nfh-text);\r
+    border: none;\r
+    padding: 6px 10px;\r
+    border-radius: 3px;\r
+    cursor: pointer;\r
+    transition: background-color 0.2s ease;\r
+    font-size: 13px;\r
+    font-weight: 500;\r
+    text-transform: uppercase;\r
+    letter-spacing: 0.5px;\r
+    margin-top: 8px;\r
+}\r
+\r
+.nfh-btn:hover {\r
+    background-color: var(--nfh-btn-hover);\r
+}\r
+\r
+.nfh-shitlist-entry-profile-container-friendly {\r
+  border-right: 3px solid #4caf50;\r
+}\r
+\r
+.nfh-shitlist-entry-container-friendly {\r
+  background-color: #00ff1466 !important;\r
+  border-left: 0px !important;\r
+}\r
+\r
+/* Hospital row highlight styles */\r
+.nfh-hospital-contract {\r
+  background-color: #20b2aa7d !important;\r
+}\r
+\r
+.nfh-hospital-friendly {\r
+  background-color: #009d0075 !important;\r
+}\r
+\r
+.nfh-hospital-shitlist {\r
+  background-color: #f933337d !important;\r
+}\r
+\r
+/* Settings panel styles */\r
+.nfh-shitlist-header {\r
+    display: flex;\r
+    justify-content: space-between;\r
+    align-items: center;\r
+    position: relative;\r
+}\r
+\r
+.nfh-settings-cog {\r
+    cursor: pointer;\r
+    color: var(--nfh-text);\r
+    font-size: 16px;\r
+    margin-right: 10px;\r
+    transition: transform 0.3s ease;\r
+}\r
+\r
+.nfh-settings-cog:hover {\r
+    color: #4caf50;\r
+    transform: rotate(90deg);\r
+}\r
+\r
+.nfh-settings-panel {\r
+    background-color: var(--nfh-section-bg);\r
+    border-radius: 5px;\r
+    padding: 15px;\r
+    border: 1px solid var(--nfh-border);\r
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);\r
+    position: fixed;\r
+    z-index: 9999;\r
+    width: 250px;\r
+    right: 20px;\r
+    bottom: 50px;\r
+    max-height: calc(100vh - 100px);\r
+    overflow-y: auto;\r
+    max-width: 95vw;\r
+    display: flex;\r
+    flex-direction: column;\r
+}\r
+\r
+.nfh-settings-title {\r
+    font-size: 14px;\r
+    font-weight: 600;\r
+    margin-bottom: 10px;\r
+    color: var(--nfh-text);\r
+    border-bottom: 1px solid var(--nfh-border);\r
+    padding-bottom: 5px;\r
+}\r
+\r
+.nfh-category-item {\r
+    display: flex;\r
+    align-items: center;\r
+    margin-bottom: 8px;\r
+    padding: 5px;\r
+    border-radius: 3px;\r
+    transition: background-color 0.2s;\r
+}\r
+\r
+.nfh-category-item:hover {\r
+    background-color: var(--nfh-btn-bg);\r
+}\r
+\r
+.nfh-category-item input[type="checkbox"] {\r
+    margin-right: 8px;\r
+}\r
+\r
+.nfh-category-item.faction-locked {\r
+    opacity: 0.8;\r
+    pointer-events: none;\r
+}\r
+\r
+.nfh-category-item.faction-locked input[type="checkbox"] {\r
+    cursor: not-allowed;\r
+}\r
+\r
+.nfh-hidden-count {\r
+    font-size: 11px;\r
+    color: var(--nfh-hidden-count);\r
+    margin-top: 5px;\r
+    font-style: italic;\r
+}\r
+\r
+.nfh-close-settings {\r
+    background-color: var(--nfh-btn-bg);\r
+    color: var(--nfh-text);\r
+    border: none;\r
+    padding: 5px 10px;\r
+    border-radius: 3px;\r
+    cursor: pointer;\r
+    font-size: 12px;\r
+    margin-top: 10px;\r
+    transition: background-color 0.2s;\r
+    width: 100%;\r
+}\r
+\r
+.nfh-close-settings:hover {\r
+    background-color: var(--nfh-btn-hover);\r
+}\r
+\r
+/* Chain watch bar (own faction page) */\r
+.nfh-cw {\r
+    --nfh-cw-accent: #4caf50;\r
+    --nfh-cw-warn: #f5a623;\r
+    --nfh-cw-muted: #9a9a9a;\r
+    --nfh-cw-empty: #c0392b;\r
+    clear: both;\r
+    margin-top: 10px;\r
+    border-radius: 5px;\r
+    border-left: 3px solid var(--nfh-border);\r
+    background-color: var(--nfh-section-bg);\r
+    color: var(--nfh-text);\r
+    font-size: 12px;\r
+    line-height: 1.4;\r
+    overflow: hidden;\r
+}\r
+\r
+body:not(.dark-mode) .nfh-cw {\r
+    --nfh-cw-accent: #256b29;\r
+    --nfh-cw-warn: #b26a00;\r
+    --nfh-cw-muted: #5c5c5c;\r
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);\r
+}\r
+\r
+.nfh-cw--in {\r
+    border-left-color: var(--nfh-cw-accent);\r
+}\r
+\r
+.nfh-cw--attn {\r
+    border-left-color: var(--nfh-cw-warn);\r
+}\r
+\r
+.nfh-cw [hidden] {\r
+    display: none !important;\r
+}\r
+\r
+.nfh-cw a {\r
+    color: inherit;\r
+    text-decoration: none;\r
+}\r
+\r
+.nfh-cw a:hover {\r
+    text-decoration: underline;\r
+}\r
+\r
+.nfh-cw-bar {\r
+    display: flex;\r
+    align-items: center;\r
+    gap: 8px;\r
+    min-height: 30px;\r
+    padding: 0 8px;\r
+}\r
+\r
+.nfh-cw-toggle {\r
+    display: inline-flex;\r
+    align-items: center;\r
+    gap: 5px;\r
+    padding: 0;\r
+    border: none;\r
+    background: none;\r
+    color: inherit;\r
+    font: inherit;\r
+    font-weight: 700;\r
+    white-space: nowrap;\r
+    cursor: pointer;\r
+}\r
+\r
+.nfh-cw-toggle:disabled {\r
+    cursor: default;\r
+}\r
+\r
+.nfh-cw-caret {\r
+    display: inline-block;\r
+    width: 9px;\r
+    color: var(--nfh-cw-muted);\r
+}\r
+\r
+.nfh-cw-title,\r
+.nfh-cw-muted {\r
+    color: var(--nfh-cw-muted);\r
+}\r
+\r
+.nfh-cw-title {\r
+    max-width: 180px;\r
+    overflow: hidden;\r
+    text-overflow: ellipsis;\r
+    white-space: nowrap;\r
+}\r
+\r
+.nfh-cw-status {\r
+    flex: 1;\r
+    min-width: 0;\r
+    overflow: hidden;\r
+    text-overflow: ellipsis;\r
+    white-space: nowrap;\r
+}\r
+\r
+.nfh-cw-status[data-action] {\r
+    cursor: pointer;\r
+}\r
+\r
+.nfh-cw--attn .nfh-cw-status {\r
+    color: var(--nfh-cw-warn);\r
+    font-weight: 700;\r
+}\r
+\r
+.nfh-cw-need,\r
+.nfh-cw-error {\r
+    color: var(--nfh-cw-warn);\r
+}\r
+\r
+.nfh-cw-ok {\r
+    color: var(--nfh-cw-accent);\r
+}\r
+\r
+.nfh-cw-actions,\r
+.nfh-cw-detail-actions {\r
+    display: inline-flex;\r
+    align-items: center;\r
+    gap: 6px;\r
+}\r
+\r
+.nfh-cw .is-busy {\r
+    opacity: 0.5;\r
+    pointer-events: none;\r
+}\r
+\r
+.nfh-cw-btn,\r
+.nfh-cw-chip {\r
+    padding: 3px 9px;\r
+    border: 1px solid var(--nfh-border);\r
+    border-radius: 3px;\r
+    background-color: var(--nfh-btn-bg);\r
+    color: var(--nfh-text);\r
+    font: inherit;\r
+    line-height: 1.3;\r
+    white-space: nowrap;\r
+    cursor: pointer;\r
+}\r
+\r
+.nfh-cw-btn:hover,\r
+.nfh-cw-chip:hover {\r
+    background-color: var(--nfh-btn-hover);\r
+}\r
+\r
+.nfh-cw-btn--primary {\r
+    border-color: var(--nfh-cw-accent);\r
+    background-color: var(--nfh-cw-accent);\r
+    color: #fff;\r
+    font-weight: 700;\r
+}\r
+\r
+.nfh-cw-btn--primary:hover {\r
+    background-color: var(--nfh-cw-accent);\r
+    filter: brightness(1.1);\r
+}\r
+\r
+.nfh-cw-chip {\r
+    border-radius: 10px;\r
+    background: none;\r
+    color: var(--nfh-cw-muted);\r
+}\r
+\r
+.nfh-cw-chip.is-armed {\r
+    border-color: var(--nfh-cw-accent);\r
+    color: var(--nfh-cw-accent);\r
+}\r
+\r
+.nfh-cw-picker,\r
+.nfh-cw-settings select,\r
+.nfh-cw-input {\r
+    padding: 2px 4px;\r
+    border: 1px solid var(--nfh-border);\r
+    border-radius: 3px;\r
+    background-color: var(--nfh-container-bg);\r
+    color: var(--nfh-text);\r
+    font: inherit;\r
+}\r
+\r
+.nfh-cw-picker {\r
+    max-width: 180px;\r
+}\r
+\r
+.nfh-cw-settings,\r
+.nfh-cw-panel {\r
+    padding: 8px 10px;\r
+    border-top: 1px solid var(--nfh-border);\r
+    background-color: var(--nfh-container-bg);\r
+}\r
+\r
+.nfh-cw-settings-row,\r
+.nfh-cw-footer {\r
+    display: flex;\r
+    flex-wrap: wrap;\r
+    align-items: center;\r
+    gap: 6px 14px;\r
+}\r
+\r
+.nfh-cw-settings label,\r
+.nfh-cw-footer label {\r
+    display: inline-flex;\r
+    align-items: center;\r
+    gap: 5px;\r
+    white-space: nowrap;\r
+}\r
+\r
+.nfh-cw-settings input[type="range"] {\r
+    width: 80px;\r
+}\r
+\r
+.nfh-cw-settings input[type="color"] {\r
+    width: 26px;\r
+    height: 20px;\r
+    padding: 0;\r
+    border: 1px solid var(--nfh-border);\r
+    background: none;\r
+}\r
+\r
+.nfh-cw-time {\r
+    width: 36px;\r
+    text-align: center;\r
+}\r
+\r
+.nfh-cw-input.is-invalid {\r
+    border-color: var(--nfh-cw-empty);\r
+}\r
+\r
+.nfh-cw-settings .nfh-cw-need,\r
+.nfh-cw-help {\r
+    margin-top: 6px;\r
+}\r
+\r
+.nfh-cw-section + .nfh-cw-section {\r
+    margin-top: 10px;\r
+}\r
+\r
+.nfh-cw-heading {\r
+    margin-bottom: 4px;\r
+    font-weight: 700;\r
+}\r
+\r
+.nfh-cw-heading .nfh-cw-muted {\r
+    margin-left: 6px;\r
+    font-weight: 400;\r
+}\r
+\r
+.nfh-cw-roster-row {\r
+    display: flex;\r
+    align-items: baseline;\r
+    gap: 8px;\r
+    padding: 2px 0;\r
+}\r
+\r
+.nfh-cw-roster-when {\r
+    width: 52px;\r
+    color: var(--nfh-cw-muted);\r
+}\r
+\r
+.nfh-cw-roster-row.is-now .nfh-cw-roster-when {\r
+    color: var(--nfh-cw-accent);\r
+    font-weight: 700;\r
+}\r
+\r
+.nfh-cw-roster-time {\r
+    width: 62px;\r
+    font-variant-numeric: tabular-nums;\r
+}\r
+\r
+.nfh-cw-people {\r
+    display: flex;\r
+    flex: 1;\r
+    flex-wrap: wrap;\r
+    align-items: center;\r
+    gap: 4px 12px;\r
+}\r
+\r
+.nfh-cw-person {\r
+    display: inline-flex;\r
+    align-items: center;\r
+    gap: 5px;\r
+}\r
+\r
+.nfh-cw-person::before {\r
+    content: "";\r
+    width: 6px;\r
+    height: 6px;\r
+    border: 1px solid var(--nfh-cw-muted);\r
+    border-radius: 50%;\r
+}\r
+\r
+.nfh-cw-person--plain::before {\r
+    content: none;\r
+}\r
+\r
+.nfh-cw-person.is-present::before {\r
+    border-color: var(--nfh-cw-accent);\r
+    background-color: var(--nfh-cw-accent);\r
+}\r
+\r
+.nfh-cw-person.is-me > a,\r
+.nfh-cw-person.is-me > span:first-child {\r
+    font-weight: 700;\r
+}\r
+\r
+.nfh-cw-person .nfh-cw-btn {\r
+    padding: 0 6px;\r
+    font-size: 11px;\r
+}\r
+\r
+.nfh-cw-tag {\r
+    padding: 0 5px;\r
+    border-radius: 3px;\r
+    background-color: var(--nfh-btn-bg);\r
+    font-size: 11px;\r
+}\r
+\r
+.nfh-cw-tag--scheduled {\r
+    color: var(--nfh-cw-accent);\r
+}\r
+\r
+.nfh-cw-tag--past_slot {\r
+    color: var(--nfh-cw-warn);\r
+}\r
+\r
+.nfh-cw-staff {\r
+    margin-top: 6px;\r
+}\r
+\r
+.nfh-cw-search {\r
+    width: 280px;\r
+    max-width: 100%;\r
+    margin-bottom: 4px;\r
+}\r
+\r
+.nfh-cw-mine {\r
+    margin-bottom: 6px;\r
+}\r
+\r
+.nfh-cw-day {\r
+    display: flex;\r
+    align-items: flex-start;\r
+    gap: 8px;\r
+    margin-bottom: 4px;\r
+}\r
+\r
+.nfh-cw-day-label {\r
+    width: 70px;\r
+    padding-top: 6px;\r
+    color: var(--nfh-cw-muted);\r
+    white-space: nowrap;\r
+}\r
+\r
+.nfh-cw-grid {\r
+    display: flex;\r
+    flex: 1;\r
+    flex-wrap: wrap;\r
+    gap: 4px;\r
+}\r
+\r
+.nfh-cw-slot {\r
+    display: flex;\r
+    flex-direction: column;\r
+    align-items: center;\r
+    width: 34px;\r
+    padding: 2px 0;\r
+    border: 1px solid var(--nfh-border);\r
+    border-radius: 4px;\r
+    background-color: var(--nfh-section-bg);\r
+    color: var(--nfh-text);\r
+    font: inherit;\r
+    line-height: 1.2;\r
+    cursor: pointer;\r
+}\r
+\r
+.nfh-cw-slot-hour {\r
+    font-weight: 700;\r
+}\r
+\r
+.nfh-cw-slot-fill {\r
+    font-size: 10px;\r
+    color: var(--nfh-cw-muted);\r
+}\r
+\r
+/* Fill level is carried by the count: open paid spots stand out, a full\r
+   hour fades back. */\r
+.nfh-cw-slot--empty .nfh-cw-slot-fill,\r
+.nfh-cw-slot--short .nfh-cw-slot-fill {\r
+    color: var(--nfh-cw-warn);\r
+}\r
+\r
+.nfh-cw-slot--full {\r
+    opacity: 0.6;\r
+}\r
+\r
+.nfh-cw-slot.is-now {\r
+    border-color: var(--nfh-cw-muted);\r
+}\r
+\r
+.nfh-cw-slot.is-mine {\r
+    border-color: var(--nfh-cw-accent);\r
+    background-color: var(--nfh-cw-accent);\r
+    color: #fff;\r
+    opacity: 1;\r
+}\r
+\r
+.nfh-cw-slot.is-mine .nfh-cw-slot-fill {\r
+    color: #fff;\r
+}\r
+\r
+.nfh-cw-slot.is-selected {\r
+    box-shadow: 0 0 0 2px var(--nfh-text);\r
+}\r
+\r
+.nfh-cw-slot:hover {\r
+    border-color: var(--nfh-text);\r
+}\r
+\r
+.nfh-cw-detail {\r
+    margin-top: 6px;\r
+    padding: 6px 8px;\r
+    border-radius: 4px;\r
+    background-color: var(--nfh-section-bg);\r
+}\r
+\r
+.nfh-cw-detail > div + div {\r
+    margin-top: 4px;\r
+}\r
+\r
+.nfh-cw-footer {\r
+    margin-top: 10px;\r
+    padding-top: 8px;\r
+    border-top: 1px solid var(--nfh-border);\r
+}\r
+\r
+.nfh-cw-link {\r
+    margin-left: auto;\r
+    color: var(--nfh-cw-muted) !important;\r
+}\r
+\r
+/* Chain timer alert: click-through flash over the whole page */\r
+#nfh-chain-flash {\r
+    position: fixed;\r
+    inset: 0;\r
+    z-index: 99999;\r
+    pointer-events: none;\r
+    animation: nfh-chain-flash 2s steps(1, end) infinite;\r
+}\r
+\r
+@keyframes nfh-chain-flash {\r
+    0% { opacity: 1; }\r
+    50% { opacity: 0; }\r
+}\r
+\r
+/* Territory war walls: who not to hit, and who to hit */\r
+body.nfh-mark-wall .faction-war .members-list .your .user.name {\r
+    text-decoration: line-through !important;\r
+    cursor: not-allowed !important;\r
+}\r
+\r
+body.nfh-mark-wall .faction-war .members-list .enemy .user.name {\r
+    color: #e53935 !important;\r
+}\r
+\r
+body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
+    display: inline-block;\r
+    animation: nfh-wall-ring 4s 0.7s ease-in-out infinite;\r
+}\r
+\r
+@keyframes nfh-wall-ring {\r
+    0%, 39%, 100% { transform: rotate(0); }\r
+    2% { transform: rotate(15deg); }\r
+    6% { transform: rotate(-15deg); color: #e53935; }\r
+    10% { transform: rotate(13deg); }\r
+    14% { transform: rotate(-12deg); }\r
+    18% { transform: rotate(10deg); }\r
+    22% { transform: rotate(-8deg); }\r
+    26% { transform: rotate(6deg); }\r
+    30% { transform: rotate(-4deg); }\r
+    34% { transform: rotate(2deg); }\r
+}\r
+\r
+@media (prefers-reduced-motion: reduce) {\r
+    body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
+        animation: none;\r
+    }\r
+}\r
+\r
+/* ---- OC Assistant (faction crimes page) ---- */\r
+\r
+.nfh-oc-bar {\r
+    display: flex;\r
+    flex-wrap: wrap;\r
+    align-items: center;\r
+    gap: 6px 10px;\r
+    margin-bottom: 10px;\r
+    padding: 8px 10px;\r
+    border-left: 3px solid #7b3fb5;\r
+    border-radius: 5px;\r
+    background-color: var(--nfh-section-bg);\r
+    color: var(--nfh-text);\r
+    font-size: 13px;\r
+    line-height: 1.4;\r
+}\r
+\r
+.nfh-oc-bar-label {\r
+    flex: none;\r
+    padding: 1px 6px;\r
+    border-radius: 3px;\r
+    background-color: #6a1b9a;\r
+    color: #ffffff;\r
+    font-size: 11px;\r
+    font-weight: 700;\r
+    text-transform: uppercase;\r
+    letter-spacing: 0.03em;\r
+}\r
+\r
+.nfh-oc-bar-text {\r
+    flex: 1 1 260px;\r
+}\r
+\r
+.nfh-oc-bar-muted {\r
+    color: var(--nfh-list-key);\r
+}\r
+\r
+.nfh-oc-bar-button {\r
+    flex: none;\r
+    padding: 4px 10px;\r
+    border: 1px solid var(--nfh-border);\r
+    border-radius: 3px;\r
+    background-color: var(--nfh-btn-bg);\r
+    color: var(--nfh-text);\r
+    font: inherit;\r
+    font-weight: 600;\r
+    cursor: pointer;\r
+}\r
+\r
+.nfh-oc-bar-button:hover {\r
+    background-color: var(--nfh-btn-hover);\r
+}\r
+\r
+/* "Min CPR 63" under a slot's header */\r
+.nfh-oc-min {\r
+    padding: 0 4px;\r
+    color: #ffffff;\r
+    font-size: 10px;\r
+    font-weight: 700;\r
+    line-height: 14px;\r
+    text-align: center;\r
+    white-space: nowrap;\r
+}\r
+\r
+.nfh-oc-min--ok {\r
+    background-color: #2e7d32;\r
+}\r
+\r
+.nfh-oc-min--below {\r
+    background-color: #c62828;\r
+}\r
+\r
+.nfh-oc-min--filled {\r
+    background-color: #5f6368;\r
+}\r
+\r
+/* Suggested slots */\r
+.nfh-oc-pick {\r
+    position: relative;\r
+    border-radius: 5px;\r
+}\r
+\r
+.nfh-oc-pick--best {\r
+    box-shadow: 0 0 0 2px #9c4dcc;\r
+}\r
+\r
+.nfh-oc-pick--good {\r
+    box-shadow: 0 0 0 2px #1976d2;\r
+}\r
+\r
+.nfh-oc-tag {\r
+    padding: 2px 6px;\r
+    border-radius: 3px 3px 0 0;\r
+    color: #ffffff;\r
+    font-size: 11px;\r
+    font-weight: 700;\r
+    line-height: 15px;\r
+    text-align: center;\r
+}\r
+\r
+.nfh-oc-pick--best > .nfh-oc-tag {\r
+    background-color: #6a1b9a;\r
+}\r
+\r
+.nfh-oc-pick--good > .nfh-oc-tag {\r
+    background-color: #1565c0;\r
+}\r
 `;
 
   // src/core/config.js
@@ -1196,14 +1304,14 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
       if (document.querySelector(selector)) {
         return resolve(document.querySelector(selector));
       }
-      const observer = new MutationObserver(() => {
+      const observer2 = new MutationObserver(() => {
         const elm = document.querySelector(selector);
         if (elm) {
           resolve(elm);
-          observer.disconnect();
+          observer2.disconnect();
         }
       });
-      observer.observe(document.body, {
+      observer2.observe(document.body, {
         childList: true,
         subtree: true
       });
@@ -1251,6 +1359,7 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     FactionControl: "Faction Control",
     FactionControlPayday: "Faction Control Per Day",
     FactionControlApplications: "Faction Control Applications",
+    FactionCrimes: "Faction Crimes",
     Market: "Market",
     Forum: "Forum",
     ForumThread: "ForumThread",
@@ -1294,7 +1403,8 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     [PageType.FactionControl]: "/tab=controls",
     [PageType.FactionArmouryDrug]: "tab=armoury&start=0&sub=drugs",
     [PageType.FactionControlPayday]: "tab=controls&option=pay-day",
-    [PageType.FactionControlApplications]: "tab=controls&option=application"
+    [PageType.FactionControlApplications]: "tab=controls&option=application",
+    [PageType.FactionCrimes]: "tab=crimes"
   };
   function IsPage(pageType) {
     const fragment = mapPageAddressFragment[pageType];
@@ -1633,8 +1743,8 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     return date.getTime();
   }
   function usable(watches, now = Date.now()) {
-    return (Array.isArray(watches) ? watches : []).filter((watch) => {
-      const end = toMs(watch.end_time);
+    return (Array.isArray(watches) ? watches : []).filter((watch2) => {
+      const end = toMs(watch2.end_time);
       return end === null || end > now;
     }).sort((a, b) => toMs(a.start_time) - toMs(b.start_time));
   }
@@ -1903,7 +2013,7 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     const expandable = !!board;
     const expanded = expandable && prefs2.expanded;
     const picker = watches.length > 1 ? `<select class="nfh-cw-picker" data-role="watch-picker" title="Chain watch">${watches.map(
-      (watch) => `<option value="${escapeHtml(watch.id)}"${board && board.id === watch.id ? " selected" : ""}>${escapeHtml(watch.title || `Chain watch #${watch.id}`)}</option>`
+      (watch2) => `<option value="${escapeHtml(watch2.id)}"${board && board.id === watch2.id ? " selected" : ""}>${escapeHtml(watch2.title || `Chain watch #${watch2.id}`)}</option>`
     ).join("")}</select>` : title;
     return {
       tone: state2.tone,
@@ -2165,7 +2275,7 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
   async function load({ force = false } = {}) {
     state.lastListAt = Date.now();
     state.watches = await getActiveWatches({ force });
-    if (!state.watches.some((watch) => watch.id === state.watchId)) {
+    if (!state.watches.some((watch2) => watch2.id === state.watchId)) {
       state.watchId = state.watches.length ? state.watches[0].id : null;
       state.board = null;
     }
@@ -3028,11 +3138,11 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     waitForElm(".user-info-list-wrap").then((userInfoList) => {
       LogInfo("Hospital list found, processing initial rows...");
       processHospitalRows();
-      const observer = new MutationObserver(() => {
+      const observer2 = new MutationObserver(() => {
         LogInfo("Hospital list changed, reprocessing rows...");
         processHospitalRows();
       });
-      observer.observe(userInfoList, {
+      observer2.observe(userInfoList, {
         childList: true,
         subtree: true
       });
@@ -3043,6 +3153,411 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     name: "hospital",
     pages: [PageType.Hospital],
     init: init3
+  };
+
+  // src/features/organized-crimes/data.js
+  var ocConfigStore = createSyncedStore({
+    storageKey: "nfhOcConfig",
+    dataField: "config",
+    emptyValue: null,
+    serverField: "oc_config_cache_last_update",
+    fallbackTtlMs: 6 * 60 * 60 * 1e3,
+    // 6 hours
+    fetcher: async () => {
+      try {
+        return (await api("/oc/config")).data || null;
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 403) return null;
+        throw error;
+      }
+    }
+  });
+
+  // src/features/organized-crimes/page.js
+  var CRIMES_ROOT_SELECTOR = "#faction-crimes-root";
+  var SubTab = {
+    Recruiting: "recruiting",
+    Planning: "planning",
+    Completed: "completed"
+  };
+  function activeSubTab(root2) {
+    for (const name of root2.querySelectorAll('[class^="tabName___"]')) {
+      const button2 = name.closest("button");
+      if (button2 && /(^|\s)active___/.test(button2.className)) {
+        return name.textContent.trim().toLowerCase();
+      }
+    }
+    return null;
+  }
+  function planningProgress(slotEl) {
+    const clock = slotEl.querySelector('[class^="slotIcon___"] [class^="planning___"]');
+    if (!clock) return 0;
+    const match = /conic-gradient\([^,]*?([\d.]+)deg/.exec(clock.getAttribute("style") || "");
+    if (!match) return 0;
+    return Math.min(1, Math.max(0, parseFloat(match[1]) / 360));
+  }
+  function readSlot(headerEl) {
+    const titleEl = headerEl.querySelector('[class^="title___"]');
+    if (!titleEl) return null;
+    const el = headerEl.parentElement;
+    const chanceEl = headerEl.querySelector('[class^="successChance___"]');
+    const cpr = chanceEl ? parseFloat(chanceEl.textContent) : NaN;
+    const occupied = !!el.querySelector('[class^="badge___"]');
+    const joinButton = el.querySelector('button[class*="joinButton___"]');
+    return {
+      el,
+      headerEl,
+      titleEl,
+      name: titleEl.textContent.trim(),
+      // On an empty slot this is the viewer's own CPR for the role; on a filled
+      // one it is the occupant's.
+      cpr: Number.isNaN(cpr) ? null : cpr,
+      occupied,
+      progress: occupied ? planningProgress(el) : 0,
+      joinButton
+    };
+  }
+  function crimeName(crimeEl) {
+    const titleEl = crimeEl.querySelector('[class^="panelTitle___"]');
+    if (!titleEl) return null;
+    let name = "";
+    for (const node of titleEl.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE) name += node.textContent;
+    }
+    return name.trim() || null;
+  }
+  function readCrimes(root2) {
+    const crimes = [];
+    for (const el of root2.querySelectorAll("[data-oc-id]")) {
+      const name = crimeName(el);
+      if (!name) continue;
+      const levelEl = el.querySelector('[class^="levelValue___"]');
+      const slots = [];
+      for (const headerEl of el.querySelectorAll('button[class^="slotHeader___"]')) {
+        const slot = readSlot(headerEl);
+        if (slot) slots.push(slot);
+      }
+      crimes.push({
+        id: el.getAttribute("data-oc-id"),
+        el,
+        name,
+        level: levelEl ? parseInt(levelEl.textContent, 10) || null : null,
+        slots
+      });
+    }
+    return crimes;
+  }
+  var JoinState = {
+    Open: "open",
+    // at least one slot can be joined
+    Blocked: "blocked",
+    // there are open slots, but Torn has every Join button disabled
+    Full: "full"
+    // no open slot is loaded
+  };
+  function joinState(crimes) {
+    const buttons = crimes.flatMap(
+      (crime) => crime.slots.map((slot) => slot.joinButton).filter(Boolean)
+    );
+    if (buttons.length === 0) return JoinState.Full;
+    return buttons.some((button2) => !button2.disabled) ? JoinState.Open : JoinState.Blocked;
+  }
+
+  // src/features/organized-crimes/catalog.js
+  function keyFor(name) {
+    return String(name).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  }
+  function findRole(config, crimeName2, roleName) {
+    if (!config || !Array.isArray(config.crimes)) return null;
+    const crimeKey = keyFor(crimeName2);
+    const crime = config.crimes.find((entry) => entry.key === crimeKey);
+    if (!crime) return null;
+    const roleKey = keyFor(roleName);
+    return (crime.roles || []).find((role) => role.key === roleKey) || null;
+  }
+
+  // src/features/organized-crimes/scoring.js
+  var PLANNING_HOURS = 24;
+  var SlotStatus = {
+    Filled: "filled",
+    // someone is in it
+    Eligible: "eligible",
+    // open, and the viewer meets the minimum
+    Below: "below",
+    // open, but the viewer's CPR is under the minimum
+    Unrated: "unrated"
+    // open, but the site has no minimum for it
+  };
+  var Rank = { Best: "best", Good: "good" };
+  var GOOD_SLOTS = 2;
+  function hoursUntilPlanning(crime) {
+    return crime.slots.filter((slot) => slot.occupied).reduce((hours, slot) => hours + (1 - (slot.progress || 0)) * PLANNING_HOURS, 0);
+  }
+  function rateSlot(slot, crime, config) {
+    const role = findRole(config, crime.name, slot.name);
+    const minCpr = role ? role.min_cpr : null;
+    const weight = role && role.weight !== null && role.weight !== void 0 ? role.weight : null;
+    let status;
+    if (slot.occupied) status = SlotStatus.Filled;
+    else if (minCpr === null || slot.cpr === null) status = SlotStatus.Unrated;
+    else status = slot.cpr >= minCpr ? SlotStatus.Eligible : SlotStatus.Below;
+    return { slot, minCpr, weight, status };
+  }
+  function pickSlot(ratedSlots) {
+    return ratedSlots.filter((rated) => rated.status === SlotStatus.Eligible).sort((a, b) => (b.weight ?? -1) - (a.weight ?? -1) || b.slot.cpr - a.slot.cpr)[0] || null;
+  }
+  function rateCrimes(crimes, config) {
+    const settings = config && config.settings || {};
+    const threshold = settings.productive_threshold_hours ?? 12;
+    const levelGap = settings.under_level_gap ?? 2;
+    const rated = crimes.map((crime) => {
+      const waitHours = hoursUntilPlanning(crime);
+      return {
+        crime,
+        waitHours,
+        productive: waitHours <= threshold,
+        slots: crime.slots.map((slot) => rateSlot(slot, crime, config))
+      };
+    });
+    const candidates = rated.map((entry) => ({ ...entry, pick: pickSlot(entry.slots) })).filter((entry) => entry.pick).sort(
+      (a, b) => Number(b.productive) - Number(a.productive) || (b.crime.level ?? 0) - (a.crime.level ?? 0) || a.waitHours - b.waitHours || (b.pick.weight ?? -1) - (a.pick.weight ?? -1)
+    );
+    const suggestions = [];
+    const best = candidates[0];
+    if (best) {
+      suggestions.push(suggestion(Rank.Best, best));
+      const lowestGoodLevel = (best.crime.level ?? 0) - (levelGap - 1);
+      for (const candidate of candidates.slice(1)) {
+        if (suggestions.length > GOOD_SLOTS) break;
+        if (candidate.productive !== best.productive) continue;
+        if ((candidate.crime.level ?? 0) < lowestGoodLevel) continue;
+        suggestions.push(suggestion(Rank.Good, candidate));
+      }
+    }
+    return { crimes: rated, suggestions };
+  }
+  function suggestion(rank, candidate) {
+    return {
+      rank,
+      crime: candidate.crime,
+      rated: candidate.pick,
+      waitHours: candidate.waitHours,
+      productive: candidate.productive
+    };
+  }
+  function describeWait(hours) {
+    if (hours < 0.5) return "now";
+    if (hours < 36) {
+      const rounded = Math.max(1, Math.round(hours));
+      return `in about ${rounded} hour${rounded === 1 ? "" : "s"}`;
+    }
+    const days = Math.round(hours / 24);
+    return `in about ${days} days`;
+  }
+
+  // src/features/organized-crimes/view.js
+  var BAR_ID = "nfh-oc-bar";
+  var CHIP_CLASS = "nfh-oc-min";
+  var TAG_CLASS = "nfh-oc-tag";
+  var PICK_CLASS = "nfh-oc-pick";
+  var CHIP_STATES = ["ok", "below", "filled"];
+  function chipFor(rated) {
+    const { slot, minCpr, weight, status } = rated;
+    if (minCpr === null) return null;
+    const weightNote = weight === null ? "" : ` This role carries ${weight.toFixed(1)}% of the crime's outcome.`;
+    switch (status) {
+      case SlotStatus.Eligible:
+        return {
+          state: "ok",
+          title: `Your CPR of ${slot.cpr} meets your faction's minimum of ${minCpr} for this role.${weightNote}`
+        };
+      case SlotStatus.Below:
+        return {
+          state: "below",
+          title: `Your CPR of ${slot.cpr} is below your faction's minimum of ${minCpr} for this role.${weightNote}`
+        };
+      case SlotStatus.Filled:
+        return { state: "filled", title: `Your faction's minimum CPR for this role is ${minCpr}.${weightNote}` };
+      default:
+        return null;
+    }
+  }
+  function renderMinimum(rated) {
+    const { slot, minCpr } = rated;
+    const existing = slot.el.querySelector(`:scope > .${CHIP_CLASS}`);
+    const chip = chipFor(rated);
+    if (!chip) {
+      if (existing) existing.remove();
+      return;
+    }
+    const element = existing || document.createElement("div");
+    const text = `Min CPR ${minCpr}`;
+    if (element.textContent !== text) element.textContent = text;
+    if (element.title !== chip.title) element.title = chip.title;
+    element.classList.add(CHIP_CLASS);
+    for (const state2 of CHIP_STATES) {
+      element.classList.toggle(`${CHIP_CLASS}--${state2}`, state2 === chip.state);
+    }
+    if (!existing) slot.headerEl.insertAdjacentElement("afterend", element);
+  }
+  var TAG_TEXT = { [Rank.Best]: "Best for you", [Rank.Good]: "Good for you" };
+  function waitSentence(suggestion2) {
+    return `Your planning would start ${describeWait(suggestion2.waitHours)}.`;
+  }
+  function renderSuggestions(root2, suggestions) {
+    const wanted = new Map(suggestions.map((suggestion2) => [suggestion2.rated.slot.el, suggestion2]));
+    for (const marked of root2.querySelectorAll(`.${PICK_CLASS}`)) {
+      if (wanted.has(marked)) continue;
+      marked.classList.remove(PICK_CLASS, `${PICK_CLASS}--best`, `${PICK_CLASS}--good`);
+      const tag = marked.querySelector(`:scope > .${TAG_CLASS}`);
+      if (tag) tag.remove();
+    }
+    for (const [slotEl, suggestion2] of wanted) {
+      slotEl.classList.add(PICK_CLASS);
+      slotEl.classList.toggle(`${PICK_CLASS}--best`, suggestion2.rank === Rank.Best);
+      slotEl.classList.toggle(`${PICK_CLASS}--good`, suggestion2.rank === Rank.Good);
+      let tag = slotEl.querySelector(`:scope > .${TAG_CLASS}`);
+      if (!tag) {
+        tag = document.createElement("div");
+        tag.className = TAG_CLASS;
+        slotEl.prepend(tag);
+      }
+      const text = TAG_TEXT[suggestion2.rank];
+      if (tag.textContent !== text) tag.textContent = text;
+      const title = waitSentence(suggestion2);
+      if (tag.title !== title) tag.title = title;
+    }
+  }
+  function barHtml(state2) {
+    const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
+    if (state2.kind === "best") {
+      const [best, ...others] = state2.suggestions;
+      const { slot, minCpr } = best.rated;
+      const more = others.length > 0 ? ` <span class="nfh-oc-bar-muted">${others.length} other good slot${others.length === 1 ? " is" : "s are"} marked below.</span>` : "";
+      const late = best.productive ? "" : ' <span class="nfh-oc-bar-muted">Nothing open would start you sooner.</span>';
+      return `${label}<span class="nfh-oc-bar-text">Best slot for you: <strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${escapeHtml(waitSentence(best))}${late}${more}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>Show me</button>`;
+    }
+    const messages = {
+      none: "None of the open slots loaded so far meets your faction's minimum CPR for you. Scroll down to load more crimes.",
+      blocked: "Torn is not letting you join a crime right now (you are probably already in one), so no slot is suggested.",
+      full: "No open slot is loaded yet. Scroll down to load more crimes."
+    };
+    return `${label}<span class="nfh-oc-bar-text">${messages[state2.kind]}</span>`;
+  }
+  function renderBar2(root2, html) {
+    let bar = document.getElementById(BAR_ID);
+    if (!bar) {
+      bar = document.createElement("div");
+      bar.id = BAR_ID;
+      bar.className = "nfh-oc-bar";
+      root2.parentElement.insertBefore(bar, root2);
+    }
+    if (bar.dataset.nfhHtml !== html) {
+      bar.dataset.nfhHtml = html;
+      bar.innerHTML = html;
+    }
+    return bar;
+  }
+  function removeBar() {
+    const bar = document.getElementById(BAR_ID);
+    if (bar) bar.remove();
+  }
+  function clearAll(root2) {
+    removeBar();
+    renderSuggestions(root2, []);
+    for (const chip of root2.querySelectorAll(`.${CHIP_CLASS}`)) chip.remove();
+  }
+  function isOwnElement(node) {
+    return node.nodeType === Node.ELEMENT_NODE && (node.classList.contains(CHIP_CLASS) || node.classList.contains(TAG_CLASS) || node.id === BAR_ID);
+  }
+
+  // src/features/organized-crimes/index.js
+  var RENDER_DEBOUNCE_MS = 150;
+  var observer = null;
+  var observedRoot = null;
+  var renderTimer = null;
+  var subscribed = false;
+  function isOwnFactionCrimesTab() {
+    return window.location.search.includes("step=your") && IsPage(PageType.FactionCrimes);
+  }
+  function render2() {
+    const root2 = document.querySelector(CRIMES_ROOT_SELECTOR);
+    if (!root2 || !isOwnFactionCrimesTab()) return;
+    const config = ocConfigStore.data;
+    if (!config) {
+      clearAll(root2);
+      return;
+    }
+    const crimes = readCrimes(root2);
+    const result = rateCrimes(crimes, config);
+    for (const crime of result.crimes) {
+      for (const rated of crime.slots) renderMinimum(rated);
+    }
+    if (activeSubTab(root2) !== SubTab.Recruiting || crimes.length === 0) {
+      renderSuggestions(root2, []);
+      removeBar();
+      return;
+    }
+    const joining = joinState(crimes);
+    const suggestions = joining === JoinState.Open ? result.suggestions : [];
+    renderSuggestions(root2, suggestions);
+    let state2;
+    if (joining === JoinState.Blocked) state2 = { kind: "blocked" };
+    else if (joining === JoinState.Full) state2 = { kind: "full" };
+    else if (suggestions.length === 0) state2 = { kind: "none" };
+    else state2 = { kind: "best", suggestions };
+    const bar = renderBar2(root2, barHtml(state2));
+    if (!bar.dataset.nfhBound) {
+      bar.dataset.nfhBound = "1";
+      bar.addEventListener("click", (event) => {
+        if (!event.target.closest("[data-nfh-oc-show]")) return;
+        const best = document.querySelector(`${CRIMES_ROOT_SELECTOR} .nfh-oc-pick--best`);
+        if (best) best.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+  }
+  function scheduleRender() {
+    if (renderTimer) clearTimeout(renderTimer);
+    renderTimer = setTimeout(() => {
+      renderTimer = null;
+      try {
+        render2();
+      } catch (error) {
+        console.error("[NFH] OC Assistant failed to render:", error);
+      }
+    }, RENDER_DEBOUNCE_MS);
+  }
+  function isOwnMutation(mutation) {
+    const nodes = [...mutation.addedNodes, ...mutation.removedNodes];
+    return nodes.length > 0 && nodes.every(isOwnElement);
+  }
+  function watch(root2) {
+    if (observedRoot === root2 && root2.isConnected) return;
+    if (observer) observer.disconnect();
+    observedRoot = root2;
+    observer = new MutationObserver((mutations) => {
+      if (!isOwnFactionCrimesTab()) return;
+      if (mutations.every(isOwnMutation)) return;
+      scheduleRender();
+    });
+    observer.observe(root2, { childList: true, subtree: true });
+    LogInfo("OC Assistant watching the crimes list");
+  }
+  function init4() {
+    if (!isOwnFactionCrimesTab()) return;
+    if (!subscribed) {
+      subscribed = true;
+      ocConfigStore.subscribe(() => scheduleRender());
+    }
+    waitForElm(CRIMES_ROOT_SELECTOR).then((root2) => {
+      watch(root2);
+      scheduleRender();
+    });
+  }
+  var organized_crimes_default = {
+    name: "organized-crimes",
+    pages: [PageType.FactionCrimes],
+    init: init4
   };
 
   // src/features/recruiting.js
@@ -3662,7 +4177,7 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
         <path d="M21 12a1 1 0 0 1-.74.97l-1.54.47a7.986 7.986 0 0 1-.85 2.05l.64 1.47a1 1 0 0 1-.18 1.11l-1.41 1.41a1 1 0 0 1-1.11.18l-1.47-.64a7.986 7.986 0 0 1-2.05.85l-.47 1.54A1 1 0 0 1 12 21h-2a1 1 0 0 1-.97-.74l-.47-1.54a7.986 7.986 0 0 1-2.05-.85l-1.47.64a1 1 0 0 1-1.11-.18L2.52 16.92a1 1 0 0 1-.18-1.11l.64-1.47a7.986 7.986 0 0 1-.85-2.05L.59 11.82A1 1 0 0 1 0 11V9a1 1 0 0 1 .74-.97l1.54-.47a7.986 7.986 0 0 1 .85-2.05l-.64-1.47a1 1 0 0 1 .18-1.11L4.08 1.52a1 1 0 0 1 1.11-.18l1.47.64a7.986 7.986 0 0 1 2.05-.85L9.18.59A1 1 0 0 1 10 0h2a1 1 0 0 1 .97.74l.47 1.54c.71.2 1.39.51 2.05.85l1.47-.64a1 1 0 0 1 1.11.18l1.41 1.41a1 1 0 0 1 .18 1.11l-.64 1.47c.34.66.65 1.34.85 2.05l1.54.47A1 1 0 0 1 21 9v3zm-2.32-1.5l-1.42-.44a1 1 0 0 1-.68-.82 5.977 5.977 0 0 0-1.19-2.88 1 1 0 0 1-.07-1.06l.59-1.35-1-1-.35.59a1 1 0 0 1-1.06.07 5.977 5.977 0 0 0-2.88-1.19 1 1 0 0 1-.82-.68L10.5 1.32h-1l-.44 1.42a1 1 0 0 1-.82.68 5.977 5.977 0 0 0-2.88 1.19 1 1 0 0 1-1.06-.07L3.25 4.19l-1 1 .59 1.35a1 1 0 0 1-.07 1.06 5.977 5.977 0 0 0-1.19 2.88 1 1 0 0 1-.68.82L1.32 11.5v1l1.42.44a1 1 0 0 1 .68.82 5.977 5.977 0 0 0 1.19 2.88 1 1 0 0 1 .07 1.06l-.59 1.35 1 1 1.35-.59a1 1 0 0 1 1.06.07 5.977 5.977 0 0 0 2.88 1.19 1 1 0 0 1 .82.68l.44 1.42h1l.44-1.42a1 1 0 0 1 .82-.68 5.977 5.977 0 0 0 2.88-1.19 1 1 0 0 1 1.06.07l1.35.59 1-1-.59-1.35a1 1 0 0 1 .07-1.06 5.977 5.977 0 0 0 1.19-2.88 1 1 0 0 1 .68-.82l1.42-.44v-1z"/>
       </svg>
       `;
-  function init4() {
+  function init5() {
     if (document.querySelector(".nfh-shitlist-profile")) return;
     LogInfo("Profile page detected");
     waitForElm(".profile-status.m-top10").then((injectPoint) => {
@@ -3758,14 +4273,14 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
   var profile_default = {
     name: "shitlist-profile",
     pages: [PageType.Profile],
-    init: init4
+    init: init5
   };
 
   // src/features/token-capture.js
   function initTokenCapture() {
     waitForElm("#token").then((elm) => {
       let token = elm.innerText.trim();
-      const observer = new MutationObserver(() => {
+      const observer2 = new MutationObserver(() => {
         const newToken = elm.innerText.trim();
         if (!newToken || newToken === token) return;
         token = newToken;
@@ -3780,7 +4295,7 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
           alert("Nuke Family API token saved. You can now close this tab.");
         }
       });
-      observer.observe(elm, {
+      observer2.observe(elm, {
         childList: true,
         subtree: true,
         characterData: true
@@ -3795,7 +4310,8 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     reputation_default,
     hospital_default,
     faction_buttons_default,
-    chain_watch_default
+    chain_watch_default,
+    organized_crimes_default
   ];
   function dispatchFeatures() {
     for (const feature of features) {
@@ -3816,7 +4332,7 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     addStyle(styles_default);
     LogInfo("Nuke Family Helper Script Loaded");
     checkForUpdates();
-    for (const store of [shitlistStore, categoriesStore, contractsStore]) {
+    for (const store of [shitlistStore, categoriesStore, contractsStore, ocConfigStore]) {
       store.load();
       registerSyncedStore(store);
     }
