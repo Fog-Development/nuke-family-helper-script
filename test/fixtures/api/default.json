@@ -1,0 +1,43 @@
+{
+  "GET /cache/last-updates": {
+    "shitlist_cache_last_update": 1900000000,
+    "shitlist_category_cache_last_update": 1900000000,
+    "contracts_cache_last_update": 1900000000
+  },
+  "GET /user/get-own-roles": { "role": "leader" },
+  "GET /user/get-own-permissions": { "permissions": [] },
+  "GET /reputation/1234": { "paid_revives_90d": 7, "window_days": 90 },
+  "GET /contracts/active-coverage": { "coverage": [] },
+  "GET /shit-list-categories": {
+    "data": [
+      { "id": 1, "name": "Scammer", "description": "Scams people", "is_faction": false, "is_friendly": false },
+      { "id": 2, "name": "Ally", "description": "Friendly", "is_faction": false, "is_friendly": true },
+      { "id": 3, "name": "Faction Ban", "description": "Banned faction", "is_faction": true, "is_friendly": false }
+    ]
+  },
+  "GET /shit-lists": {
+    "data": [
+      {
+        "id": 101, "playerName": "TestPlayer", "playerId": 1234, "factionId": 5678, "factionName": "Test Faction",
+        "isFactionBan": false, "isApproved": true, "shitListCategoryId": 1,
+        "reason": "Took a $50m trade and never delivered.",
+        "updated_at": "2026-09-01T12:00:00.000000Z",
+        "shitListCategory": { "name": "Scammer", "is_friendly": false }
+      },
+      {
+        "id": 102, "playerName": "TestPlayer", "playerId": 1234, "factionId": 5678, "factionName": "Test Faction",
+        "isFactionBan": false, "isApproved": false, "shitListCategoryId": 1,
+        "reason": "Second report, awaiting approval.",
+        "updated_at": "2026-10-09T08:30:00.000000Z",
+        "shitListCategory": { "name": "Scammer", "is_friendly": false }
+      },
+      {
+        "id": 201, "playerName": null, "playerId": null, "factionId": 5678, "factionName": "Test Faction",
+        "isFactionBan": true, "isApproved": true, "shitListCategoryId": 3,
+        "reason": "Whole faction banned for chain-stealing.",
+        "updated_at": "2026-08-15T00:00:00.000000Z",
+        "shitListCategory": { "name": "Faction Ban", "is_friendly": false }
+      }
+    ]
+  }
+}

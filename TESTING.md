@@ -4,6 +4,11 @@ Run through this before bumping the version and committing a release build.
 Load the script via `dev.user.js` (with `npm run watch` running) or install
 the built `nuke-family-helper.user.js` directly.
 
+Run `npm test` first (see `test/README.md`): it covers the shitlist profile
+section, the faction-controls buttons and hospital row colouring in light and
+dark mode against captured pages, and smoke-tests every captured page. The items below are the
+real-site pass; do each UI check in both Torn light and dark mode.
+
 ## Setup / token flow
 
 - [ ] With no `apiToken` stored (`GM_setValue("apiToken", "")` +

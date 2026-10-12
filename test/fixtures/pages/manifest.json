@@ -1,0 +1,9 @@
+{
+  "profiles": "https://www.torn.com/profiles.php?XID=1234",
+  "factions-faction": "https://www.torn.com/factions.php?step=your#/",
+  "factions-controls": "https://www.torn.com/factions.php?step=your#/tab=controls",
+  "factions-crimes-recruiting": "https://www.torn.com/factions.php?step=your#/tab=crimes",
+  "factions-crimes-planning": "https://www.torn.com/factions.php?step=your#/tab=crimes",
+  "factions-crimes-completed": "https://www.torn.com/factions.php?step=your#/tab=crimes",
+  "hospitalview": "https://www.torn.com/hospitalview.php"
+}
