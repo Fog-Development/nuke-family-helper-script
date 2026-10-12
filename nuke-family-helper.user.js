@@ -469,6 +469,493 @@ body:not(.dark-mode) {
 .nfh-close-settings:hover {
     background-color: var(--nfh-btn-hover);
 }
+
+/* Chain watch bar (own faction page) */
+.nfh-cw {
+    --nfh-cw-accent: #4caf50;
+    --nfh-cw-warn: #f5a623;
+    --nfh-cw-muted: #9a9a9a;
+    --nfh-cw-empty: #c0392b;
+    clear: both;
+    margin-top: 10px;
+    border-radius: 5px;
+    border-left: 3px solid var(--nfh-border);
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font-size: 12px;
+    line-height: 1.4;
+    overflow: hidden;
+}
+
+body:not(.dark-mode) .nfh-cw {
+    --nfh-cw-accent: #256b29;
+    --nfh-cw-warn: #b26a00;
+    --nfh-cw-muted: #5c5c5c;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.nfh-cw--in {
+    border-left-color: var(--nfh-cw-accent);
+}
+
+.nfh-cw--attn {
+    border-left-color: var(--nfh-cw-warn);
+}
+
+.nfh-cw [hidden] {
+    display: none !important;
+}
+
+.nfh-cw a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.nfh-cw a:hover {
+    text-decoration: underline;
+}
+
+.nfh-cw-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 30px;
+    padding: 0 8px;
+}
+
+.nfh-cw-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.nfh-cw-toggle:disabled {
+    cursor: default;
+}
+
+.nfh-cw-caret {
+    display: inline-block;
+    width: 9px;
+    color: var(--nfh-cw-muted);
+}
+
+.nfh-cw-title,
+.nfh-cw-muted {
+    color: var(--nfh-cw-muted);
+}
+
+.nfh-cw-title {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nfh-cw-status {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nfh-cw-status[data-action] {
+    cursor: pointer;
+}
+
+.nfh-cw--attn .nfh-cw-status {
+    color: var(--nfh-cw-warn);
+    font-weight: 700;
+}
+
+.nfh-cw-need,
+.nfh-cw-error {
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-cw-ok {
+    color: var(--nfh-cw-accent);
+}
+
+.nfh-cw-actions,
+.nfh-cw-detail-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nfh-cw .is-busy {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.nfh-cw-btn,
+.nfh-cw-chip {
+    padding: 3px 9px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 3px;
+    background-color: var(--nfh-btn-bg);
+    color: var(--nfh-text);
+    font: inherit;
+    line-height: 1.3;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.nfh-cw-btn:hover,
+.nfh-cw-chip:hover {
+    background-color: var(--nfh-btn-hover);
+}
+
+.nfh-cw-btn--primary {
+    border-color: var(--nfh-cw-accent);
+    background-color: var(--nfh-cw-accent);
+    color: #fff;
+    font-weight: 700;
+}
+
+.nfh-cw-btn--primary:hover {
+    background-color: var(--nfh-cw-accent);
+    filter: brightness(1.1);
+}
+
+.nfh-cw-chip {
+    border-radius: 10px;
+    background: none;
+    color: var(--nfh-cw-muted);
+}
+
+.nfh-cw-chip.is-armed {
+    border-color: var(--nfh-cw-accent);
+    color: var(--nfh-cw-accent);
+}
+
+.nfh-cw-picker,
+.nfh-cw-settings select,
+.nfh-cw-input {
+    padding: 2px 4px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 3px;
+    background-color: var(--nfh-container-bg);
+    color: var(--nfh-text);
+    font: inherit;
+}
+
+.nfh-cw-picker {
+    max-width: 180px;
+}
+
+.nfh-cw-settings,
+.nfh-cw-panel {
+    padding: 8px 10px;
+    border-top: 1px solid var(--nfh-border);
+    background-color: var(--nfh-container-bg);
+}
+
+.nfh-cw-settings-row,
+.nfh-cw-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+}
+
+.nfh-cw-settings label,
+.nfh-cw-footer label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.nfh-cw-settings input[type="range"] {
+    width: 80px;
+}
+
+.nfh-cw-settings input[type="color"] {
+    width: 26px;
+    height: 20px;
+    padding: 0;
+    border: 1px solid var(--nfh-border);
+    background: none;
+}
+
+.nfh-cw-time {
+    width: 36px;
+    text-align: center;
+}
+
+.nfh-cw-input.is-invalid {
+    border-color: var(--nfh-cw-empty);
+}
+
+.nfh-cw-settings .nfh-cw-need,
+.nfh-cw-help {
+    margin-top: 6px;
+}
+
+.nfh-cw-section + .nfh-cw-section {
+    margin-top: 10px;
+}
+
+.nfh-cw-heading {
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+.nfh-cw-heading .nfh-cw-muted {
+    margin-left: 6px;
+    font-weight: 400;
+}
+
+.nfh-cw-roster-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 2px 0;
+}
+
+.nfh-cw-roster-when {
+    width: 52px;
+    color: var(--nfh-cw-muted);
+}
+
+.nfh-cw-roster-row.is-now .nfh-cw-roster-when {
+    color: var(--nfh-cw-accent);
+    font-weight: 700;
+}
+
+.nfh-cw-roster-time {
+    width: 62px;
+    font-variant-numeric: tabular-nums;
+}
+
+.nfh-cw-people {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+}
+
+.nfh-cw-person {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nfh-cw-person::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--nfh-cw-muted);
+    border-radius: 50%;
+}
+
+.nfh-cw-person--plain::before {
+    content: none;
+}
+
+.nfh-cw-person.is-present::before {
+    border-color: var(--nfh-cw-accent);
+    background-color: var(--nfh-cw-accent);
+}
+
+.nfh-cw-person.is-me > a,
+.nfh-cw-person.is-me > span:first-child {
+    font-weight: 700;
+}
+
+.nfh-cw-person .nfh-cw-btn {
+    padding: 0 6px;
+    font-size: 11px;
+}
+
+.nfh-cw-tag {
+    padding: 0 5px;
+    border-radius: 3px;
+    background-color: var(--nfh-btn-bg);
+    font-size: 11px;
+}
+
+.nfh-cw-tag--scheduled {
+    color: var(--nfh-cw-accent);
+}
+
+.nfh-cw-tag--past_slot {
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-cw-staff {
+    margin-top: 6px;
+}
+
+.nfh-cw-search {
+    width: 280px;
+    max-width: 100%;
+    margin-bottom: 4px;
+}
+
+.nfh-cw-mine {
+    margin-bottom: 6px;
+}
+
+.nfh-cw-day {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.nfh-cw-day-label {
+    width: 70px;
+    padding-top: 6px;
+    color: var(--nfh-cw-muted);
+    white-space: nowrap;
+}
+
+.nfh-cw-grid {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.nfh-cw-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 34px;
+    padding: 2px 0;
+    border: 1px solid var(--nfh-border);
+    border-radius: 4px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font: inherit;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.nfh-cw-slot-hour {
+    font-weight: 700;
+}
+
+.nfh-cw-slot-fill {
+    font-size: 10px;
+    color: var(--nfh-cw-muted);
+}
+
+/* Fill level is carried by the count: open paid spots stand out, a full
+   hour fades back. */
+.nfh-cw-slot--empty .nfh-cw-slot-fill,
+.nfh-cw-slot--short .nfh-cw-slot-fill {
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-cw-slot--full {
+    opacity: 0.6;
+}
+
+.nfh-cw-slot.is-now {
+    border-color: var(--nfh-cw-muted);
+}
+
+.nfh-cw-slot.is-mine {
+    border-color: var(--nfh-cw-accent);
+    background-color: var(--nfh-cw-accent);
+    color: #fff;
+    opacity: 1;
+}
+
+.nfh-cw-slot.is-mine .nfh-cw-slot-fill {
+    color: #fff;
+}
+
+.nfh-cw-slot.is-selected {
+    box-shadow: 0 0 0 2px var(--nfh-text);
+}
+
+.nfh-cw-slot:hover {
+    border-color: var(--nfh-text);
+}
+
+.nfh-cw-detail {
+    margin-top: 6px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    background-color: var(--nfh-section-bg);
+}
+
+.nfh-cw-detail > div + div {
+    margin-top: 4px;
+}
+
+.nfh-cw-footer {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-cw-link {
+    margin-left: auto;
+    color: var(--nfh-cw-muted) !important;
+}
+
+/* Chain timer alert: click-through flash over the whole page */
+#nfh-chain-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    pointer-events: none;
+    animation: nfh-chain-flash 2s steps(1, end) infinite;
+}
+
+@keyframes nfh-chain-flash {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Territory war walls: who not to hit, and who to hit */
+body.nfh-mark-wall .faction-war .members-list .your .user.name {
+    text-decoration: line-through !important;
+    cursor: not-allowed !important;
+}
+
+body.nfh-mark-wall .faction-war .members-list .enemy .user.name {
+    color: #e53935 !important;
+}
+
+body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
+    display: inline-block;
+    animation: nfh-wall-ring 4s 0.7s ease-in-out infinite;
+}
+
+@keyframes nfh-wall-ring {
+    0%, 39%, 100% { transform: rotate(0); }
+    2% { transform: rotate(15deg); }
+    6% { transform: rotate(-15deg); color: #e53935; }
+    10% { transform: rotate(13deg); }
+    14% { transform: rotate(-12deg); }
+    18% { transform: rotate(10deg); }
+    22% { transform: rotate(-8deg); }
+    26% { transform: rotate(6deg); }
+    30% { transform: rotate(-4deg); }
+    34% { transform: rotate(2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
+        animation: none;
+    }
+}
 `;
 
   // src/core/config.js
@@ -919,6 +1406,1085 @@ body:not(.dark-mode) {
     return false;
   }
 
+  // src/features/chain-watch/prefs.js
+  var STORAGE_KEY = "nfhChainWatch";
+  var LEGACY_KEY = "chainWarcher";
+  var AlertMode = {
+    Always: "always",
+    // any active chain
+    Watch: "watch",
+    // only while the faction has a chain watch set up
+    CheckedIn: "checkedin",
+    // as Watch, and only once checked in to it
+    Off: "off"
+  };
+  var PACES = { fast: 1e3, normal: 2e3, slow: 4e3 };
+  var MAX_ALERT_SECONDS = 299;
+  var DEFAULTS = {
+    expanded: false,
+    alertMode: AlertMode.Always,
+    alertSeconds: 150,
+    beep: false,
+    volume: 0.5,
+    color: "#ff0000",
+    opacity: 0.2,
+    pace: "normal",
+    markWall: false,
+    dmReminder: true
+  };
+  function clamp(value, min, max, fallback) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return fallback;
+    return Math.min(max, Math.max(min, number));
+  }
+  function sanitize(raw) {
+    const source = raw && typeof raw === "object" ? raw : {};
+    return {
+      expanded: source.expanded === true,
+      alertMode: Object.values(AlertMode).includes(source.alertMode) ? source.alertMode : DEFAULTS.alertMode,
+      alertSeconds: Math.round(
+        clamp(source.alertSeconds, 1, MAX_ALERT_SECONDS, DEFAULTS.alertSeconds)
+      ),
+      beep: source.beep === true,
+      volume: clamp(source.volume, 0.01, 1, DEFAULTS.volume),
+      color: /^#[0-9a-f]{6}$/i.test(source.color) ? source.color : DEFAULTS.color,
+      opacity: clamp(source.opacity, 0.05, 1, DEFAULTS.opacity),
+      pace: source.pace in PACES ? source.pace : DEFAULTS.pace,
+      markWall: source.markWall === true,
+      dmReminder: source.dmReminder !== false
+    };
+  }
+  function importLegacy() {
+    let legacy;
+    try {
+      legacy = JSON.parse(localStorage.getItem(LEGACY_KEY) || "null");
+    } catch (e) {
+      return null;
+    }
+    if (!legacy || typeof legacy !== "object") return null;
+    const period = (Number(legacy.interval) || 1e3) * 2;
+    return {
+      alertMode: legacy.watchChain === false ? AlertMode.Off : AlertMode.Always,
+      alertSeconds: (Number(legacy.minuteAlert) || 0) * 60 + (Number(legacy.secundeAlert) || 0),
+      beep: legacy.beepAlert === true,
+      volume: legacy.beepVolume,
+      color: legacy.color,
+      opacity: legacy.opacity,
+      pace: period <= 1e3 ? "fast" : period <= 2e3 ? "normal" : "slow",
+      markWall: legacy.markWallTargets !== false
+    };
+  }
+  var prefs = null;
+  function getPrefs() {
+    if (prefs) return prefs;
+    let stored = null;
+    try {
+      stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    } catch (e) {
+    }
+    prefs = sanitize(stored || importLegacy());
+    return prefs;
+  }
+  function setPrefs(patch) {
+    prefs = sanitize({ ...getPrefs(), ...patch });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+    return prefs;
+  }
+  function formatAlertTime(seconds) {
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+  }
+  function parseAlertTime(text) {
+    const match = String(text).trim().match(/^(\d):([0-5]\d)$/);
+    if (!match) return null;
+    const seconds = Number(match[1]) * 60 + Number(match[2]);
+    return seconds >= 1 && seconds <= MAX_ALERT_SECONDS ? seconds : null;
+  }
+
+  // src/features/chain-watch/alert.js
+  var FLASH_ID = "nfh-chain-flash";
+  var BEEP_MS = 400;
+  var BEEP_HZ = 440;
+  var MIN_CHAIN_HITS = 25;
+  function readChainTimer() {
+    const box = document.querySelector(".chain-box");
+    if (!box) return null;
+    const title = box.querySelector(".chain-box-title");
+    const timeLeft = box.querySelector(".chain-box-timeleft");
+    const count = box.querySelector(".chain-box-center-stat");
+    const match = timeLeft && timeLeft.textContent.trim().match(/^(\d+):(\d{2})$/);
+    const hits = count ? count.textContent.replace(/[,\s]/g, "") : "";
+    return {
+      active: !!title && title.textContent.trim().toLowerCase() === "chain active",
+      seconds: match ? Number(match[1]) * 60 + Number(match[2]) : null,
+      hits: /^\d+$/.test(hits) ? Number(hits) : null
+    };
+  }
+  function hexToRgba(hex, alpha) {
+    const value = parseInt(hex.slice(1), 16);
+    return `rgba(${value >> 16}, ${value >> 8 & 255}, ${value & 255}, ${alpha})`;
+  }
+  function setFlashing(on) {
+    let flash = document.getElementById(FLASH_ID);
+    if (!on) {
+      if (flash) flash.remove();
+      return;
+    }
+    const prefs2 = getPrefs();
+    if (!flash) {
+      flash = document.createElement("div");
+      flash.id = FLASH_ID;
+      document.body.appendChild(flash);
+    }
+    flash.style.backgroundColor = hexToRgba(prefs2.color, prefs2.opacity);
+    flash.style.animationDuration = `${PACES[prefs2.pace]}ms`;
+  }
+  var audioContext = null;
+  var lastBeepAt = 0;
+  function beep(volume) {
+    try {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.value = BEEP_HZ;
+      gain.gain.value = volume;
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + BEEP_MS / 1e3);
+    } catch (e) {
+    }
+  }
+  function updateAlert({ timer, armed, test = false }) {
+    const prefs2 = getPrefs();
+    const low = armed && !!timer && timer.active && // An unreadable hit count must not silence the alert.
+    (timer.hits === null || timer.hits > MIN_CHAIN_HITS) && timer.seconds !== null && timer.seconds > 0 && timer.seconds < prefs2.alertSeconds;
+    const alerting = low || test;
+    setFlashing(alerting);
+    if (alerting && prefs2.beep) {
+      const now = Date.now();
+      if (now - lastBeepAt >= PACES[prefs2.pace] - 100) {
+        lastBeepAt = now;
+        beep(prefs2.volume);
+      }
+    }
+    return low;
+  }
+  function stopAlert() {
+    setFlashing(false);
+  }
+
+  // src/core/time.js
+  function formatDateTime(dateObj) {
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    const hours = String(dateObj.getHours()).padStart(2, "0");
+    const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  }
+  function timeSince(dateObj) {
+    const seconds = Math.floor((Date.now() - dateObj.getTime()) / 1e3);
+    if (seconds < 60) {
+      return "just now";
+    }
+    const intervals = [
+      { label: "year", secs: 31536e3 },
+      { label: "month", secs: 2592e3 },
+      { label: "day", secs: 86400 },
+      { label: "hour", secs: 3600 },
+      { label: "minute", secs: 60 }
+    ];
+    for (const interval of intervals) {
+      const count = Math.floor(seconds / interval.secs);
+      if (count >= 1) {
+        return count === 1 ? `${count} ${interval.label} ago` : `${count} ${interval.label}s ago`;
+      }
+    }
+    return "just now";
+  }
+  function parseApiUtcDate(value) {
+    if (!value) return null;
+    return /* @__PURE__ */ new Date(value.replace(" ", "T") + "Z");
+  }
+
+  // src/features/chain-watch/data.js
+  var LIST_KEY = "nfhChainWatchList";
+  var BOARD_KEY = "nfhChainWatchBoard";
+  var LIST_TTL_MS = 10 * 60 * 1e3;
+  var LIST_RETRY_MS = 60 * 1e3;
+  var BOARD_FRESH_MS = 45 * 1e3;
+  var BOARD_MAX_AGE_MS = 15 * 60 * 1e3;
+  function readJson(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || "null");
+    } catch (e) {
+      return null;
+    }
+  }
+  function toMs(value) {
+    if (!value) return null;
+    const date = value.includes("T") ? new Date(value) : parseApiUtcDate(value);
+    return date.getTime();
+  }
+  function usable(watches, now = Date.now()) {
+    return (Array.isArray(watches) ? watches : []).filter((watch) => {
+      const end = toMs(watch.end_time);
+      return end === null || end > now;
+    }).sort((a, b) => toMs(a.start_time) - toMs(b.start_time));
+  }
+  function cachedWatches() {
+    const cached = readJson(LIST_KEY);
+    return cached ? usable(cached.watches) : [];
+  }
+  async function getActiveWatches({ force = false } = {}) {
+    const cached = readJson(LIST_KEY);
+    if (!force && cached && cached.timestamp && Date.now() - cached.timestamp < LIST_TTL_MS) {
+      return usable(cached.watches);
+    }
+    if (!getApiToken()) {
+      return [];
+    }
+    try {
+      const watches = (await api("/chain-watch")).data || [];
+      localStorage.setItem(
+        LIST_KEY,
+        JSON.stringify({ watches, timestamp: Date.now() })
+      );
+      return usable(watches);
+    } catch (error) {
+      LogInfo("Chain watch list fetch failed:", error);
+      const watches = cached ? cached.watches : [];
+      localStorage.setItem(
+        LIST_KEY,
+        JSON.stringify({
+          watches,
+          timestamp: Date.now() - LIST_TTL_MS + LIST_RETRY_MS
+        })
+      );
+      return usable(watches);
+    }
+  }
+  function clearChainWatchCache() {
+    localStorage.removeItem(LIST_KEY);
+    localStorage.removeItem(BOARD_KEY);
+  }
+  function cachedBoard(watchId) {
+    const cached = readJson(BOARD_KEY);
+    if (!cached || !cached.board || cached.board.id !== watchId || Date.now() - cached.timestamp > BOARD_MAX_AGE_MS) {
+      return null;
+    }
+    return cached;
+  }
+  function remember(board) {
+    localStorage.setItem(
+      BOARD_KEY,
+      JSON.stringify({ board, timestamp: Date.now() })
+    );
+    return board;
+  }
+  async function boardCall(path, options) {
+    return remember((await api(path, options)).data);
+  }
+  function fetchBoard(watchId) {
+    return boardCall(`/chain-watch/${watchId}`);
+  }
+  function claimSlot(watchId, slotIso, wantDmReminder) {
+    return boardCall(`/chain-watch/${watchId}/signups`, {
+      method: "POST",
+      data: { slot_start: slotIso, want_dm_reminder: wantDmReminder }
+    });
+  }
+  function leaveSlot(watchId, slotIso) {
+    return boardCall(`/chain-watch/${watchId}/signups?_method=DELETE`, {
+      method: "POST",
+      data: { slot_start: slotIso }
+    });
+  }
+  function attendanceData(playerId) {
+    return playerId ? { source: "userscript", player_id: playerId } : { source: "userscript" };
+  }
+  function checkIn(watchId, playerId) {
+    return boardCall(`/chain-watch/${watchId}/checkin`, {
+      method: "POST",
+      data: attendanceData(playerId)
+    });
+  }
+  function checkOut(watchId, playerId) {
+    return boardCall(`/chain-watch/${watchId}/checkout`, {
+      method: "POST",
+      data: attendanceData(playerId)
+    });
+  }
+  function respondToPrompt(watchId, checkinId, action) {
+    return api(`/chain-watch/${watchId}/checkins/${checkinId}/respond`, {
+      method: "POST",
+      data: { action }
+    });
+  }
+  async function searchMembers(watchId, query) {
+    const result = await api(
+      `/chain-watch/${watchId}/members?q=${encodeURIComponent(query)}`
+    );
+    return result.data || [];
+  }
+  function sendTestDm(watchId) {
+    return api(`/chain-watch/${watchId}/test-notification`, { method: "POST", data: {} });
+  }
+  function errorMessage(error, fallback) {
+    if (error && error.status === 401) {
+      return "Your Nuke Family key was rejected. Set a new one on the faction controls tab.";
+    }
+    if (error && error.body && typeof error.body.error === "string") {
+      return error.body.error;
+    }
+    if (error && error.status === 403) {
+      return "You don't have access to do that on this chain watch.";
+    }
+    return fallback;
+  }
+
+  // src/features/chain-watch/view.js
+  var HOUR_MS = 60 * 60 * 1e3;
+  var DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  var MONTHS = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ];
+  var ROSTER_SLOTS = 3;
+  var SOON_MS = 10 * 60 * 1e3;
+  var CHECKIN_STATUS = {
+    scheduled: "Scheduled",
+    unscheduled: "Unscheduled",
+    past_slot: "Past slot, check if active"
+  };
+  var pad = (number) => String(number).padStart(2, "0");
+  var slotStart = (slot) => Date.parse(slot.slot_start_iso);
+  function hourLabel(ms) {
+    return `${pad(new Date(ms).getUTCHours())}:00`;
+  }
+  function slotLabel(ms) {
+    return `${DAYS[new Date(ms).getUTCDay()]} ${hourLabel(ms)}`;
+  }
+  function dayLabel(ms) {
+    const date = new Date(ms);
+    return `${DAYS[date.getUTCDay()]} ${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]}`;
+  }
+  function localTime(ms) {
+    return new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+  function duration(ms) {
+    const minutes = Math.max(0, Math.round(ms / 6e4));
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 48) return minutes % 60 ? `${hours}h ${minutes % 60}m` : `${hours}h`;
+    return `${Math.floor(hours / 24)}d ${hours % 24}h`;
+  }
+  function playerName(entry) {
+    return entry.player_name || `Player ${entry.player_id}`;
+  }
+  function playerLink(entry, className = "") {
+    const name = escapeHtml(playerName(entry));
+    if (!entry.player_id) return `<span class="${className}">${name}</span>`;
+    return `<a class="${className}" href="/profiles.php?XID=${escapeHtml(entry.player_id)}">${name}</a>`;
+  }
+  function button(action, label, { primary = false, data = {}, title = "" } = {}) {
+    const attributes = Object.entries(data).map(([key, value]) => ` data-${key}="${escapeHtml(value)}"`).join("");
+    return `<button type="button" class="nfh-cw-btn${primary ? " nfh-cw-btn--primary" : ""}" data-action="${action}"${attributes}${title ? ` title="${escapeHtml(title)}"` : ""}>${escapeHtml(label)}</button>`;
+  }
+  function summarize(board, now) {
+    const slots = board.slots || [];
+    const checkins = board.checkins || [];
+    const current = slots.find((slot) => slotStart(slot) <= now && now < slotStart(slot) + HOUR_MS) || null;
+    const mine = slots.filter((slot) => slot.signups.some((signup) => signup.is_me));
+    return {
+      slots,
+      checkins,
+      current,
+      mine,
+      myCheckin: checkins.find((checkin) => checkin.is_me) || null,
+      myCurrent: !!current && mine.includes(current),
+      myNext: mine.find((slot) => slotStart(slot) > now) || null,
+      started: Date.parse(board.start_time) <= now,
+      checkedInIds: new Set(checkins.map((checkin) => Number(checkin.player_id)))
+    };
+  }
+  function barState(board, summary, now) {
+    const { myCheckin, myNext, current } = summary;
+    const checkInButton = (primary) => button("checkin", "Check in", { primary });
+    if (myCheckin) {
+      if (myCheckin.status === "past_slot") {
+        return {
+          tone: "attn",
+          text: "Your slot ended. Still watching?",
+          actions: button("stay", "Stay on", { primary: true, data: { checkin: myCheckin.id } }) + button("checkout", "Check out")
+        };
+      }
+      const next = myNext ? ` \xB7 next slot ${slotLabel(slotStart(myNext))}` : "";
+      return {
+        tone: "in",
+        text: `Checked in \xB7 ${duration(now - Date.parse(myCheckin.checked_in_at))}${next}`,
+        actions: button("checkout", "Check out")
+      };
+    }
+    if (summary.myCurrent) {
+      return {
+        tone: "attn",
+        text: "Your slot is running",
+        actions: checkInButton(true)
+      };
+    }
+    if (myNext) {
+      const wait = slotStart(myNext) - now;
+      if (wait <= SOON_MS) {
+        return {
+          tone: "attn",
+          text: `Your slot starts in ${duration(wait)}`,
+          actions: checkInButton(true)
+        };
+      }
+      return {
+        tone: "",
+        text: `Your next slot: ${slotLabel(slotStart(myNext))} TCT \xB7 in ${duration(wait)}`,
+        actions: summary.started ? checkInButton(false) : ""
+      };
+    }
+    if (!summary.started) {
+      const start = Date.parse(board.start_time);
+      return {
+        tone: "",
+        text: `Starts ${slotLabel(start)} TCT \xB7 in ${duration(start - now)}`,
+        actions: ""
+      };
+    }
+    const watching = summary.checkins.length;
+    const open = current ? Math.max(0, current.cap - current.paid_count) : 0;
+    return {
+      tone: "",
+      text: `${watching} checked in` + (open > 0 ? ` \xB7 <span class="nfh-cw-need">this hour has ${open} open paid spot${open === 1 ? "" : "s"}</span>` : ""),
+      actions: checkInButton(false)
+    };
+  }
+  function alertChip(prefs2, armed) {
+    let label = `Alert ${formatAlertTime(prefs2.alertSeconds)}`;
+    let title = `Flashes the page when an active chain of more than ${MIN_CHAIN_HITS} hits drops below ${formatAlertTime(prefs2.alertSeconds)}. Click for settings.`;
+    if (prefs2.alertMode === AlertMode.Off) {
+      label = "Alert off";
+      title = "Chain timer alert is off. Click for settings.";
+    } else if (!armed) {
+      title = prefs2.alertMode === AlertMode.Watch ? "Chain timer alert is waiting: your faction has no chain watch set up on nuke.family. Click for settings." : "Chain timer alert is waiting: you are not checked in to a chain watch. Click for settings.";
+    }
+    return `<button type="button" class="nfh-cw-chip${armed ? " is-armed" : ""}" data-action="settings" title="${escapeHtml(title)}">${escapeHtml(label)}</button>`;
+  }
+  function renderBar({ board, watches, prefs: prefs2, armed, chainActive, flash, busy, now }) {
+    const summary = board ? summarize(board, now) : null;
+    const state2 = summary ? barState(board, summary, now) : { tone: "", text: '<span class="nfh-cw-muted">No chain watch scheduled</span>', actions: "" };
+    if (summary && summary.started && !summary.myCheckin && chainActive && armed && state2.tone !== "attn") {
+      state2.text = '<span class="nfh-cw-need" title="Check in so your time watching is recorded on the chain watch sheet">Not checked in</span> \xB7 ' + state2.text;
+      state2.actions = button("checkin", "Check in");
+    }
+    const title = board && board.title ? `<span class="nfh-cw-title">${escapeHtml(board.title)}</span>` : "";
+    const status = flash ? `<span class="${flash.error ? "nfh-cw-error" : "nfh-cw-ok"}">${escapeHtml(flash.text)}</span>` : state2.text;
+    const expandable = !!board;
+    const expanded = expandable && prefs2.expanded;
+    const picker = watches.length > 1 ? `<select class="nfh-cw-picker" data-role="watch-picker" title="Chain watch">${watches.map(
+      (watch) => `<option value="${escapeHtml(watch.id)}"${board && board.id === watch.id ? " selected" : ""}>${escapeHtml(watch.title || `Chain watch #${watch.id}`)}</option>`
+    ).join("")}</select>` : title;
+    return {
+      tone: state2.tone,
+      html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy ? " is-busy" : ""}">${state2.actions}</span>` + alertChip(prefs2, armed)
+    };
+  }
+  function rosterSection(summary, board, now) {
+    const { slots } = summary;
+    if (slots.length === 0) {
+      return '<div class="nfh-cw-muted">No open slots in the current signup window.</div>';
+    }
+    const firstRunning = slotStart(slots[0]) <= now;
+    const rows = slots.slice(0, ROSTER_SLOTS).map((slot, index) => {
+      const running = slot === summary.current;
+      const heading = running ? "Now" : index === (firstRunning ? 1 : 0) ? "Up next" : "Then";
+      const names = slot.signups.map((signup) => {
+        const present = summary.checkedInIds.has(Number(signup.player_id));
+        const staffCheckIn = running && !present && board.can_manage_attendance && signup.player_id && !signup.is_me ? button("staff-in", "check in", {
+          data: { player: signup.player_id },
+          title: `Check ${playerName(signup)} in`
+        }) : "";
+        return `<span class="nfh-cw-person${present ? " is-present" : ""}${signup.is_me ? " is-me" : ""}" title="${present ? "Checked in" : "Not checked in"}">` + playerLink(signup) + (signup.paid ? "" : ' <span class="nfh-cw-muted">(unpaid)</span>') + staffCheckIn + "</span>";
+      });
+      return `<div class="nfh-cw-roster-row${running ? " is-now" : ""}"><span class="nfh-cw-roster-when">${heading}</span><span class="nfh-cw-roster-time">${slotLabel(slotStart(slot))}</span><span class="nfh-cw-people">${names.length ? names.join("") : '<span class="nfh-cw-need">nobody signed up</span>'}</span></div>`;
+    });
+    return rows.join("");
+  }
+  function checkinSection(summary, board, ui, now) {
+    const rows = summary.checkins.map((checkin) => {
+      const staffOut = board.can_manage_attendance && !checkin.is_me ? button("staff-out", "check out", {
+        data: { player: checkin.player_id },
+        title: `Check ${playerName(checkin)} out`
+      }) : "";
+      return `<span class="nfh-cw-person is-present${checkin.is_me ? " is-me" : ""}">` + playerLink(checkin) + ` <span class="nfh-cw-tag nfh-cw-tag--${escapeHtml(checkin.status)}">${escapeHtml(CHECKIN_STATUS[checkin.status] || checkin.status)}</span> <span class="nfh-cw-muted">${duration(now - Date.parse(checkin.checked_in_at))}</span>` + staffOut + "</span>";
+    });
+    let staff = "";
+    if (board.can_manage_attendance) {
+      let results = "";
+      if (ui.searchLoading) {
+        results = '<div class="nfh-cw-muted">Searching\u2026</div>';
+      } else if (ui.searchResults) {
+        results = ui.searchResults.length ? ui.searchResults.map(
+          (member) => `<span class="nfh-cw-person${member.checked_in ? " is-present" : ""}">` + playerLink(member) + ` <span class="nfh-cw-muted">[${escapeHtml(member.player_id)}]</span>` + button(
+            member.checked_in ? "staff-out" : "staff-in",
+            member.checked_in ? "check out" : "check in",
+            { data: { player: member.player_id } }
+          ) + "</span>"
+        ).join("") : '<div class="nfh-cw-muted">No member of this faction matches.</div>';
+      }
+      staff = `<div class="nfh-cw-staff"><input type="text" class="nfh-cw-input nfh-cw-search" data-role="member-search" maxlength="50" placeholder="Staff: check a member in or out (name or ID)" value="${escapeHtml(ui.searchQuery)}"><div class="nfh-cw-people">${results}</div></div>`;
+    }
+    return `<div class="nfh-cw-people">${rows.length ? rows.join("") : '<span class="nfh-cw-muted">Nobody is checked in right now.</span>'}</div>` + staff;
+  }
+  function slotFill(slot) {
+    if (slot.total_count === 0) return "empty";
+    return slot.paid_count < slot.cap ? "short" : "full";
+  }
+  function slotDetail(slot, busy) {
+    const start = slotStart(slot);
+    const isMine = slot.signups.some((signup) => signup.is_me);
+    const waitlist = slot.total_count - slot.paid_count;
+    const names = slot.signups.map(
+      (signup) => `<span class="nfh-cw-person nfh-cw-person--plain${signup.is_me ? " is-me" : ""}">${playerLink(signup)}${signup.paid ? "" : ' <span class="nfh-cw-muted">(unpaid)</span>'}</span>`
+    ).join("");
+    const unpaidWarning = !isMine && slot.paid_count >= slot.cap ? '<span class="nfh-cw-need">Paid spots are full: you would be unpaid unless staff approve it.</span>' : "";
+    return `<div class="nfh-cw-detail"><div><strong>${slotLabel(start)}\u2013${hourLabel(start + HOUR_MS)} TCT</strong> <span class="nfh-cw-muted">(${escapeHtml(localTime(start))} your time)</span> \xB7 ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " \u2605" : ""}` + (slot.range_label ? ` \xB7 ${escapeHtml(slot.range_label)}` : "") + ` \xB7 ${escapeHtml(slot.paid_count)}/${escapeHtml(slot.cap)} paid` + (waitlist > 0 ? ` (+${waitlist} unpaid)` : "") + `</div><div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div><div class="nfh-cw-detail-actions${busy ? " is-busy" : ""}">` + (isMine ? button("leave", "Leave this slot", { data: { slot: slot.slot_start_iso } }) : button("signup", "Sign up", { primary: true, data: { slot: slot.slot_start_iso } })) + unpaidWarning + "</div></div>";
+  }
+  function slotsSection(summary, ui, busy) {
+    const { slots } = summary;
+    if (slots.length === 0) return "";
+    const days = [];
+    for (const slot of slots) {
+      const label = dayLabel(slotStart(slot));
+      if (!days.length || days[days.length - 1].label !== label) {
+        days.push({ label, slots: [] });
+      }
+      days[days.length - 1].slots.push(slot);
+    }
+    const grid = days.map(
+      (day) => `<div class="nfh-cw-day"><span class="nfh-cw-day-label">${day.label}</span><div class="nfh-cw-grid">` + day.slots.map((slot) => {
+        const isMine = summary.mine.includes(slot);
+        const classes = [
+          "nfh-cw-slot",
+          `nfh-cw-slot--${slotFill(slot)}`,
+          isMine ? "is-mine" : "",
+          slot === summary.current ? "is-now" : "",
+          ui.selectedSlot === slot.slot_start_iso ? "is-selected" : ""
+        ];
+        const tip = `${slotLabel(slotStart(slot))} TCT \xB7 ${slot.rate} xanax/hr \xB7 ${slot.paid_count}/${slot.cap} paid${isMine ? " \xB7 you are signed up" : ""}`;
+        return `<button type="button" class="${classes.filter(Boolean).join(" ")}" data-action="slot" data-slot="${escapeHtml(slot.slot_start_iso)}" title="${escapeHtml(tip)}"><span class="nfh-cw-slot-hour">${pad(new Date(slotStart(slot)).getUTCHours())}${slot.is_premium ? "\u2605" : ""}</span><span class="nfh-cw-slot-fill">${escapeHtml(slot.paid_count)}/${escapeHtml(slot.cap)}</span></button>`;
+      }).join("") + "</div></div>"
+    ).join("");
+    const selected = slots.find((slot) => slot.slot_start_iso === ui.selectedSlot);
+    const mine = summary.mine.length ? `Your slots: ${summary.mine.map((slot) => slotLabel(slotStart(slot))).join(", ")}` : "Pick an hour to see who is on it and sign up.";
+    return `<div class="nfh-cw-muted nfh-cw-mine">${mine}</div>` + grid + (selected ? slotDetail(selected, busy) : "");
+  }
+  function section(title, body) {
+    return `<div class="nfh-cw-section"><div class="nfh-cw-heading">${title}</div>${body}</div>`;
+  }
+  function renderPanel({ board, prefs: prefs2, ui, busy, now }) {
+    const summary = summarize(board, now);
+    const pay = `${escapeHtml(board.default_rate)} xanax/hr \xB7 ${escapeHtml(board.default_slot_cap)} paid per slot`;
+    return section("On watch", rosterSection(summary, board, now)) + section(`Checked in (${summary.checkins.length})`, checkinSection(summary, board, ui, now)) + section(
+      `Slots <span class="nfh-cw-muted">TCT \xB7 ${pay} \xB7 \u2605 pays more</span>`,
+      slotsSection(summary, ui, busy)
+    ) + `<div class="nfh-cw-footer"><label title="Applies to slots you sign up for from here"><input type="checkbox" data-pref="dmReminder"${prefs2.dmReminder ? " checked" : ""}> Discord DM reminder before my slots</label>` + button("test-dm", "Test DM", { title: "Send yourself a test reminder on Discord" }) + button("refresh", "Refresh") + (/^https?:\/\//.test(board.signup_url || "") ? `<a class="nfh-cw-link" href="${escapeHtml(board.signup_url)}" target="_blank" rel="noopener">Open on nuke.family</a>` : "") + "</div>";
+  }
+  var ALERT_MODE_HELP = {
+    [AlertMode.Always]: "You are alerted whenever your faction has an active chain in Torn and its timer gets low, whether or not a chain watch exists on nuke.family.",
+    [AlertMode.Watch]: "You are alerted only when both are true: your faction has an active chain in Torn, and it has a chain watch set up on nuke.family. Other chains never alert.",
+    [AlertMode.CheckedIn]: "You are alerted only when all three are true: your faction has an active chain in Torn, it has a chain watch set up on nuke.family, and you are checked in to it.",
+    [AlertMode.Off]: "You are never alerted about the chain timer."
+  };
+  function renderSettings({ prefs: prefs2, legacyScript }) {
+    const option = (value, label, current) => `<option value="${value}"${value === current ? " selected" : ""}>${label}</option>`;
+    return `<div class="nfh-cw-settings-row"><label>Chain timer alert <select data-pref="alertMode">` + option(AlertMode.Always, "Any active chain", prefs2.alertMode) + option(AlertMode.Watch, "Only chains with a chain watch", prefs2.alertMode) + option(AlertMode.CheckedIn, "Only while I'm checked in", prefs2.alertMode) + option(AlertMode.Off, "Off", prefs2.alertMode) + `</select></label><label>Alert below <input type="text" class="nfh-cw-input nfh-cw-time" data-pref="alertSeconds" value="${formatAlertTime(prefs2.alertSeconds)}" maxlength="4" title="m:ss, up to 4:59"></label><label>Pace <select data-pref="pace">` + option("fast", "Fast", prefs2.pace) + option("normal", "Normal", prefs2.pace) + option("slow", "Slow", prefs2.pace) + `</select></label><label>Colour <input type="color" data-pref="color" value="${escapeHtml(prefs2.color)}"></label><label>Strength <input type="range" data-pref="opacity" min="5" max="100" value="${Math.round(prefs2.opacity * 100)}"></label><label><input type="checkbox" data-pref="beep"${prefs2.beep ? " checked" : ""}> Beep</label><label>Volume <input type="range" data-pref="volume" min="1" max="100" value="${Math.round(prefs2.volume * 100)}"></label>` + button("test-alert", "Test", { title: "Preview the alert for a few seconds" }) + `<label title="On territory war walls: strike through your own members and highlight enemies"><input type="checkbox" data-pref="markWall"${prefs2.markWall ? " checked" : ""}> Mark wall targets</label></div><div class="nfh-cw-muted nfh-cw-help">${ALERT_MODE_HELP[prefs2.alertMode]}` + (prefs2.alertMode === AlertMode.Off ? "" : ` Chains of ${MIN_CHAIN_HITS} hits or fewer never alert.`) + "</div>" + (legacyScript ? '<div class="nfh-cw-need">The old "Chain watcher" script is still running. This replaces it, so you can remove it (otherwise both will alert).</div>' : "");
+  }
+
+  // src/features/chain-watch/index.js
+  var ROOT_ID = "nfh-chain-watch";
+  var ANCHOR_SELECTOR = "#faction_war_list_id";
+  var HOUR_MS2 = 60 * 60 * 1e3;
+  var POLL_EXPANDED_MS = 60 * 1e3;
+  var POLL_ENGAGED_MS = 2 * 60 * 1e3;
+  var POLL_IDLE_MS = 5 * 60 * 1e3;
+  var LIST_RECHECK_MS = 60 * 1e3;
+  var TEST_ALERT_MS = 5e3;
+  var state = {
+    watches: [],
+    watchId: null,
+    board: null,
+    lastFetchAt: 0,
+    // when the board was last fetched (or tried)
+    lastListAt: 0,
+    loading: false,
+    busy: false,
+    // an action (sign up, check in, ...) is in flight
+    flash: null,
+    // transient { text, error, until } shown in the bar
+    settingsOpen: false,
+    testUntil: 0,
+    chainActive: false,
+    // Torn's chain box currently says "Chain active"
+    ui: {
+      selectedSlot: null,
+      searchQuery: "",
+      searchResults: null,
+      searchLoading: false
+    }
+  };
+  var root = null;
+  var regions = {};
+  var renderedHtml = {};
+  var ticker = null;
+  var tickCount = 0;
+  var searchTimer = null;
+  function isOwnFactionMainTab() {
+    return window.location.search.includes("step=your") && !window.location.hash.includes("tab=");
+  }
+  function applyWallMarking() {
+    document.body.classList.toggle("nfh-mark-wall", getPrefs().markWall);
+  }
+  function isCheckedIn() {
+    return !!state.board && (state.board.checkins || []).some((checkin) => checkin.is_me);
+  }
+  function isArmed() {
+    switch (getPrefs().alertMode) {
+      case AlertMode.Always:
+        return true;
+      case AlertMode.Watch:
+        return !!state.board;
+      case AlertMode.CheckedIn:
+        return isCheckedIn();
+      default:
+        return false;
+    }
+  }
+  function setBoard(board) {
+    if (!board || board.is_finished || board.status !== "active") {
+      clearChainWatchCache();
+      state.board = null;
+      state.watchId = null;
+      state.watches = [];
+      state.lastListAt = 0;
+      return;
+    }
+    state.board = board;
+    const selected = state.ui.selectedSlot;
+    if (selected && !board.slots.some((slot) => slot.slot_start_iso === selected)) {
+      state.ui.selectedSlot = null;
+    }
+  }
+  function setFlash(text, error = false) {
+    state.flash = { text, error, until: Date.now() + (error ? 7e3 : 4e3) };
+  }
+  function setRegion(name, html) {
+    if (renderedHtml[name] === html) return;
+    renderedHtml[name] = html;
+    const region = regions[name];
+    const active = document.activeElement;
+    const typing = active && region.contains(active) && active.dataset.role === "member-search" ? [active.selectionStart, active.selectionEnd] : null;
+    region.innerHTML = html;
+    if (typing) {
+      const input = region.querySelector('[data-role="member-search"]');
+      if (input) {
+        input.focus();
+        input.setSelectionRange(typing[0], typing[1]);
+      }
+    }
+  }
+  function render() {
+    if (!root || !root.isConnected) return;
+    const now = Date.now();
+    const prefs2 = getPrefs();
+    const bar = renderBar({
+      board: state.board,
+      watches: state.watches,
+      prefs: prefs2,
+      armed: isArmed(),
+      chainActive: state.chainActive,
+      flash: state.flash,
+      busy: state.busy,
+      now
+    });
+    setRegion("bar", bar.html);
+    root.className = "nfh-cw" + (bar.tone ? ` nfh-cw--${bar.tone}` : "");
+    const showPanel = !!state.board && prefs2.expanded;
+    regions.panel.hidden = !showPanel;
+    if (showPanel) {
+      setRegion(
+        "panel",
+        renderPanel({ board: state.board, prefs: prefs2, ui: state.ui, busy: state.busy, now })
+      );
+    }
+    regions.settings.hidden = !state.settingsOpen;
+  }
+  function renderSettingsRegion() {
+    regions.settings.innerHTML = renderSettings({
+      prefs: getPrefs(),
+      legacyScript: !!document.getElementById("JoxDiv")
+    });
+  }
+  async function refreshBoard() {
+    if (state.loading || state.watchId === null) return;
+    state.loading = true;
+    state.lastFetchAt = Date.now();
+    try {
+      setBoard(await fetchBoard(state.watchId));
+    } catch (error) {
+      LogInfo("Chain watch board fetch failed:", error);
+      if (error && (error.status === 403 || error.status === 404)) {
+        setBoard(null);
+      }
+    } finally {
+      state.loading = false;
+      render();
+    }
+  }
+  async function load({ force = false } = {}) {
+    state.lastListAt = Date.now();
+    state.watches = await getActiveWatches({ force });
+    if (!state.watches.some((watch) => watch.id === state.watchId)) {
+      state.watchId = state.watches.length ? state.watches[0].id : null;
+      state.board = null;
+    }
+    if (state.watchId === null) {
+      state.board = null;
+      render();
+      return;
+    }
+    const cached = cachedBoard(state.watchId);
+    if (cached && cached.timestamp > state.lastFetchAt) {
+      state.lastFetchAt = cached.timestamp;
+      setBoard(cached.board);
+    }
+    render();
+    if (state.watchId !== null && (force || Date.now() - state.lastFetchAt > BOARD_FRESH_MS)) {
+      await refreshBoard();
+    }
+  }
+  function pollDue(now) {
+    if (document.hidden || root.offsetParent === null || state.loading || state.busy) {
+      return false;
+    }
+    if (state.watchId === null) {
+      return now - state.lastListAt > LIST_RECHECK_MS;
+    }
+    const sinceHour = now % HOUR_MS2;
+    if (sinceHour > 2e4 && state.lastFetchAt < now - sinceHour) {
+      return true;
+    }
+    let interval = POLL_IDLE_MS;
+    if (getPrefs().expanded) {
+      interval = POLL_EXPANDED_MS;
+    } else if (isCheckedIn() || state.board && state.board.slots.some((slot) => slot.signups.some((signup) => signup.is_me))) {
+      interval = POLL_ENGAGED_MS;
+    }
+    return now - state.lastFetchAt > interval;
+  }
+  function tick() {
+    if (!root || !root.isConnected) {
+      stop();
+      return;
+    }
+    const now = Date.now();
+    const timer = readChainTimer();
+    updateAlert({ timer, armed: isArmed(), test: now < state.testUntil });
+    const chainActive = !!timer && timer.active;
+    if (chainActive !== state.chainActive) {
+      state.chainActive = chainActive;
+      render();
+    } else if (state.flash && now > state.flash.until) {
+      state.flash = null;
+      render();
+    } else if (++tickCount % 15 === 0) {
+      render();
+    }
+    if (pollDue(now)) {
+      if (state.watchId === null) {
+        load();
+      } else {
+        refreshBoard();
+      }
+    }
+  }
+  function stop() {
+    clearInterval(ticker);
+    ticker = null;
+    root = null;
+    stopAlert();
+  }
+  async function act(work, successText, failureText) {
+    if (state.busy || state.watchId === null) return;
+    state.busy = true;
+    render();
+    try {
+      const board = await work(state.watchId);
+      if (board) {
+        state.lastFetchAt = Date.now();
+        setBoard(board);
+      }
+      setFlash(successText);
+    } catch (error) {
+      LogInfo("Chain watch action failed:", error);
+      setFlash(errorMessage(error, failureText), true);
+    } finally {
+      state.busy = false;
+      render();
+    }
+  }
+  function markSearchResult(playerId, checkedIn) {
+    for (const member of state.ui.searchResults || []) {
+      if (Number(member.player_id) === playerId) member.checked_in = checkedIn;
+    }
+  }
+  function onClick(event) {
+    const target = event.target.closest("[data-action]");
+    if (!target || !root.contains(target)) return;
+    const { action } = target.dataset;
+    switch (action) {
+      case "toggle":
+        if (!state.board) return;
+        setPrefs({ expanded: !getPrefs().expanded });
+        render();
+        if (getPrefs().expanded && Date.now() - state.lastFetchAt > BOARD_FRESH_MS) {
+          refreshBoard();
+        }
+        break;
+      case "settings":
+        state.settingsOpen = !state.settingsOpen;
+        if (state.settingsOpen) renderSettingsRegion();
+        render();
+        break;
+      case "test-alert":
+        state.testUntil = Date.now() + TEST_ALERT_MS;
+        updateAlert({ timer: readChainTimer(), armed: isArmed(), test: true });
+        break;
+      case "refresh":
+        load({ force: true });
+        break;
+      case "slot":
+        state.ui.selectedSlot = state.ui.selectedSlot === target.dataset.slot ? null : target.dataset.slot;
+        render();
+        break;
+      case "checkin":
+        act((id) => checkIn(id), "You are checked in.", "Could not check you in.");
+        break;
+      case "checkout":
+        act(
+          (id) => checkOut(id),
+          "You are checked out. Thanks for watching!",
+          "Could not check you out."
+        );
+        break;
+      case "stay": {
+        const checkinId = target.dataset.checkin;
+        act(
+          async (id) => {
+            await respondToPrompt(id, checkinId, "stay");
+            return fetchBoard(id);
+          },
+          "Thanks, you stay checked in.",
+          "Could not record your answer."
+        );
+        break;
+      }
+      case "staff-in":
+      case "staff-out": {
+        const playerId = Number(target.dataset.player);
+        const checkingIn = action === "staff-in";
+        act(
+          async (id) => {
+            const board = await (checkingIn ? checkIn(id, playerId) : checkOut(id, playerId));
+            markSearchResult(playerId, checkingIn);
+            return board;
+          },
+          checkingIn ? "Member checked in." : "Member checked out.",
+          "Could not update their check-in."
+        );
+        break;
+      }
+      case "signup": {
+        const { slot } = target.dataset;
+        act(
+          (id) => claimSlot(id, slot, getPrefs().dmReminder),
+          `Signed up for ${slotLabel(Date.parse(slot))} TCT.`,
+          "Could not sign you up."
+        );
+        break;
+      }
+      case "leave": {
+        const { slot } = target.dataset;
+        act(
+          (id) => leaveSlot(id, slot),
+          `You left ${slotLabel(Date.parse(slot))} TCT.`,
+          "Could not remove your signup."
+        );
+        break;
+      }
+      case "test-dm":
+        act(
+          async (id) => {
+            await sendTestDm(id);
+          },
+          "Test sent. Check your Discord DMs.",
+          "Could not send a test notification."
+        );
+        break;
+    }
+  }
+  function runSearch(query) {
+    searchTimer = setTimeout(async () => {
+      const watchId = state.watchId;
+      state.ui.searchLoading = true;
+      render();
+      try {
+        const results = await searchMembers(watchId, query);
+        if (state.ui.searchQuery.trim() === query) {
+          state.ui.searchResults = results;
+        }
+      } catch (error) {
+        state.ui.searchResults = null;
+        setFlash(errorMessage(error, "Could not search the faction members."), true);
+      } finally {
+        state.ui.searchLoading = false;
+        render();
+      }
+    }, 350);
+  }
+  function onInput(event) {
+    const target = event.target;
+    if (target.dataset.role === "member-search") {
+      state.ui.searchQuery = target.value;
+      clearTimeout(searchTimer);
+      const query = target.value.trim();
+      if (query.length < 2) {
+        if (state.ui.searchResults) {
+          state.ui.searchResults = null;
+          render();
+        }
+        return;
+      }
+      runSearch(query);
+      return;
+    }
+    switch (target.dataset.pref) {
+      case "opacity":
+      case "volume":
+        setPrefs({ [target.dataset.pref]: Number(target.value) / 100 });
+        break;
+      case "color":
+        setPrefs({ color: target.value });
+        break;
+    }
+  }
+  function onChange(event) {
+    const target = event.target;
+    if (target.dataset.role === "watch-picker") {
+      state.watchId = Number(target.value);
+      state.board = null;
+      state.lastFetchAt = 0;
+      state.ui = { selectedSlot: null, searchQuery: "", searchResults: null, searchLoading: false };
+      load();
+      return;
+    }
+    switch (target.dataset.pref) {
+      case "alertMode":
+        setPrefs({ alertMode: target.value });
+        renderSettingsRegion();
+        regions.settings.querySelector('[data-pref="alertMode"]').focus();
+        break;
+      case "pace":
+        setPrefs({ pace: target.value });
+        break;
+      case "alertSeconds": {
+        const seconds = parseAlertTime(target.value);
+        if (seconds !== null) setPrefs({ alertSeconds: seconds });
+        target.value = formatAlertTime(getPrefs().alertSeconds);
+        target.classList.toggle("is-invalid", seconds === null);
+        break;
+      }
+      case "beep":
+      case "markWall":
+      case "dmReminder":
+        setPrefs({ [target.dataset.pref]: target.checked });
+        applyWallMarking();
+        break;
+      default:
+        return;
+    }
+    render();
+  }
+  function mount(anchor) {
+    root = document.createElement("div");
+    root.id = ROOT_ID;
+    root.className = "nfh-cw";
+    root.innerHTML = '<div class="nfh-cw-bar"></div><div class="nfh-cw-settings" hidden></div><div class="nfh-cw-panel" hidden></div>';
+    regions = {
+      bar: root.querySelector(".nfh-cw-bar"),
+      settings: root.querySelector(".nfh-cw-settings"),
+      panel: root.querySelector(".nfh-cw-panel")
+    };
+    renderedHtml = {};
+    state.settingsOpen = false;
+    root.addEventListener("click", onClick);
+    root.addEventListener("input", onInput);
+    root.addEventListener("change", onChange);
+    anchor.insertAdjacentElement("afterend", root);
+    if (state.watchId === null) {
+      state.watches = cachedWatches();
+      state.watchId = state.watches.length ? state.watches[0].id : null;
+    }
+    if (state.watchId !== null && !state.board) {
+      const cached = cachedBoard(state.watchId);
+      if (cached) {
+        state.lastFetchAt = cached.timestamp;
+        setBoard(cached.board);
+      }
+    }
+    render();
+    if (!ticker) {
+      ticker = setInterval(tick, 1e3);
+    }
+    load();
+    LogInfo("Chain watch bar inserted");
+  }
+  function init() {
+    applyWallMarking();
+    if (!isOwnFactionMainTab()) return;
+    ensureInjected({
+      containerSelector: ANCHOR_SELECTOR,
+      isPresent: () => !!document.getElementById(ROOT_ID),
+      inject: mount
+    });
+  }
+  var chain_watch_default = {
+    name: "chain-watch",
+    pages: [PageType.Faction],
+    init
+  };
+
   // src/core/synced-store.js
   function createSyncedStore({
     storageKey,
@@ -990,40 +2556,6 @@ body:not(.dark-mode) {
       }
     };
     return store;
-  }
-
-  // src/core/time.js
-  function formatDateTime(dateObj) {
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const day = String(dateObj.getDate()).padStart(2, "0");
-    const hours = String(dateObj.getHours()).padStart(2, "0");
-    const minutes = String(dateObj.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day} ${hours}:${minutes}`;
-  }
-  function timeSince(dateObj) {
-    const seconds = Math.floor((Date.now() - dateObj.getTime()) / 1e3);
-    if (seconds < 60) {
-      return "just now";
-    }
-    const intervals = [
-      { label: "year", secs: 31536e3 },
-      { label: "month", secs: 2592e3 },
-      { label: "day", secs: 86400 },
-      { label: "hour", secs: 3600 },
-      { label: "minute", secs: 60 }
-    ];
-    for (const interval of intervals) {
-      const count = Math.floor(seconds / interval.secs);
-      if (count >= 1) {
-        return count === 1 ? `${count} ${interval.label} ago` : `${count} ${interval.label}s ago`;
-      }
-    }
-    return "just now";
-  }
-  function parseApiUtcDate(value) {
-    if (!value) return null;
-    return /* @__PURE__ */ new Date(value.replace(" ", "T") + "Z");
   }
 
   // src/core/torn-page.js
@@ -1237,6 +2769,7 @@ body:not(.dark-mode) {
       const originalLabel = btn.innerHTML;
       btn.innerHTML = "Refreshing\u2026";
       try {
+        clearChainWatchCache();
         await refreshAllCaches();
         LogInfo("All caches force-refreshed from the update button");
       } catch (error) {
@@ -1248,7 +2781,7 @@ body:not(.dark-mode) {
     });
     return btn;
   }
-  function init() {
+  function init2() {
     ensureInjected({
       containerSelector: CONTAINER_SELECTOR,
       isPresent: () => !!document.getElementById(CHANGE_KEY_ID),
@@ -1262,7 +2795,7 @@ body:not(.dark-mode) {
   var faction_buttons_default = {
     name: "faction-buttons",
     pages: [PageType.FactionControl],
-    init
+    init: init2
   };
 
   // src/core/settings.js
@@ -1372,9 +2905,9 @@ body:not(.dark-mode) {
     let playerId = null;
     let factionId = null;
     try {
-      const playerLink = li.querySelector('a.user.name[href*="profiles.php"]');
-      if (playerLink && playerLink.href) {
-        const playerMatch = playerLink.href.match(/XID=(\d+)/);
+      const playerLink2 = li.querySelector('a.user.name[href*="profiles.php"]');
+      if (playerLink2 && playerLink2.href) {
+        const playerMatch = playerLink2.href.match(/XID=(\d+)/);
         if (playerMatch) {
           playerId = playerMatch[1];
         }
@@ -1488,7 +3021,7 @@ body:not(.dark-mode) {
     });
   }
   var isHospitalObserverSetup = false;
-  function init2() {
+  function init3() {
     if (isHospitalObserverSetup) return;
     isHospitalObserverSetup = true;
     LogInfo("Setting up hospital observer...");
@@ -1509,7 +3042,7 @@ body:not(.dark-mode) {
   var hospital_default = {
     name: "hospital",
     pages: [PageType.Hospital],
-    init: init2
+    init: init3
   };
 
   // src/features/recruiting.js
@@ -2129,7 +3662,7 @@ body:not(.dark-mode) {
         <path d="M21 12a1 1 0 0 1-.74.97l-1.54.47a7.986 7.986 0 0 1-.85 2.05l.64 1.47a1 1 0 0 1-.18 1.11l-1.41 1.41a1 1 0 0 1-1.11.18l-1.47-.64a7.986 7.986 0 0 1-2.05.85l-.47 1.54A1 1 0 0 1 12 21h-2a1 1 0 0 1-.97-.74l-.47-1.54a7.986 7.986 0 0 1-2.05-.85l-1.47.64a1 1 0 0 1-1.11-.18L2.52 16.92a1 1 0 0 1-.18-1.11l.64-1.47a7.986 7.986 0 0 1-.85-2.05L.59 11.82A1 1 0 0 1 0 11V9a1 1 0 0 1 .74-.97l1.54-.47a7.986 7.986 0 0 1 .85-2.05l-.64-1.47a1 1 0 0 1 .18-1.11L4.08 1.52a1 1 0 0 1 1.11-.18l1.47.64a7.986 7.986 0 0 1 2.05-.85L9.18.59A1 1 0 0 1 10 0h2a1 1 0 0 1 .97.74l.47 1.54c.71.2 1.39.51 2.05.85l1.47-.64a1 1 0 0 1 1.11.18l1.41 1.41a1 1 0 0 1 .18 1.11l-.64 1.47c.34.66.65 1.34.85 2.05l1.54.47A1 1 0 0 1 21 9v3zm-2.32-1.5l-1.42-.44a1 1 0 0 1-.68-.82 5.977 5.977 0 0 0-1.19-2.88 1 1 0 0 1-.07-1.06l.59-1.35-1-1-.35.59a1 1 0 0 1-1.06.07 5.977 5.977 0 0 0-2.88-1.19 1 1 0 0 1-.82-.68L10.5 1.32h-1l-.44 1.42a1 1 0 0 1-.82.68 5.977 5.977 0 0 0-2.88 1.19 1 1 0 0 1-1.06-.07L3.25 4.19l-1 1 .59 1.35a1 1 0 0 1-.07 1.06 5.977 5.977 0 0 0-1.19 2.88 1 1 0 0 1-.68.82L1.32 11.5v1l1.42.44a1 1 0 0 1 .68.82 5.977 5.977 0 0 0 1.19 2.88 1 1 0 0 1 .07 1.06l-.59 1.35 1 1 1.35-.59a1 1 0 0 1 1.06.07 5.977 5.977 0 0 0 2.88 1.19 1 1 0 0 1 .82.68l.44 1.42h1l.44-1.42a1 1 0 0 1 .82-.68 5.977 5.977 0 0 0 2.88-1.19 1 1 0 0 1 1.06.07l1.35.59 1-1-.59-1.35a1 1 0 0 1 .07-1.06 5.977 5.977 0 0 0 1.19-2.88 1 1 0 0 1 .68-.82l1.42-.44v-1z"/>
       </svg>
       `;
-  function init3() {
+  function init4() {
     if (document.querySelector(".nfh-shitlist-profile")) return;
     LogInfo("Profile page detected");
     waitForElm(".profile-status.m-top10").then((injectPoint) => {
@@ -2225,7 +3758,7 @@ body:not(.dark-mode) {
   var profile_default = {
     name: "shitlist-profile",
     pages: [PageType.Profile],
-    init: init3
+    init: init4
   };
 
   // src/features/token-capture.js
@@ -2261,7 +3794,8 @@ body:not(.dark-mode) {
     contracts_default,
     reputation_default,
     hospital_default,
-    faction_buttons_default
+    faction_buttons_default,
+    chain_watch_default
   ];
   function dispatchFeatures() {
     for (const feature of features) {

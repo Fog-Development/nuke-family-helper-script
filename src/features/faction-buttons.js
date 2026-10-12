@@ -5,6 +5,7 @@ import { LogInfo } from "../core/log.js";
 import { PageType } from "../core/pages.js";
 import { checkForUpdates } from "../core/update-checker.js";
 import { refreshPermissions, refreshUserRole } from "../core/user.js";
+import { clearChainWatchCache } from "./chain-watch/data.js";
 
 // "Change Nuke Family Key" + "Check NFH Updates" buttons on the faction
 // controls page. This is the script's only settings surface outside the
@@ -40,9 +41,11 @@ function buildCheckUpdatesButton() {
     btn.innerHTML = "Refreshing…";
 
     // Force-refresh every cached resource (shitlist, categories, contracts,
-    // role and permissions) so this button doubles as a "fix my stale data"
-    // escape hatch, then check for a script update.
+    // role and permissions; the chain watch cache is just dropped) so this
+    // button doubles as a "fix my stale data" escape hatch, then check for a
+    // script update.
     try {
+      clearChainWatchCache();
       await refreshAllCaches();
       LogInfo("All caches force-refreshed from the update button");
     } catch (error) {

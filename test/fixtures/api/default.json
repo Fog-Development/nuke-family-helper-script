@@ -8,6 +8,7 @@
   "GET /user/get-own-permissions": { "permissions": [] },
   "GET /reputation/1234": { "paid_revives_90d": 7, "window_days": 90 },
   "GET /contracts/active-coverage": { "coverage": [] },
+  "GET /chain-watch": { "data": [] },
   "GET /shit-list-categories": {
     "data": [
       { "id": 1, "name": "Scammer", "description": "Scams people", "is_faction": false, "is_friendly": false },

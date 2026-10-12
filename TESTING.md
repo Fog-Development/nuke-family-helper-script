@@ -51,6 +51,46 @@ real-site pass; do each UI check in both Torn light and dark mode.
       red (shitlisted player/faction).
 - [ ] Highlighting persists as the hospital list refreshes/paginates.
 
+## Chain watch (`factions.php?step=your`, main tab)
+
+The automated tests stub the nuke.family API, so every item here needs a real
+(or nuke.test) chain watch for your faction.
+
+- [ ] With no chain watch for the faction: a single slim "Chain Watch · No
+      chain watch scheduled" line sits under the war/chain boxes and cannot be
+      expanded. Reloading within 10 minutes makes no `/chain-watch` request.
+- [ ] With an active or upcoming watch: the line shows its title and what
+      applies to you (start time, your next slot, people checked in).
+      Expanding shows the roster (now / up next / then), who is checked in,
+      and the hourly slots. The expanded state survives a reload.
+- [ ] Pick an hour, "Sign up", then "Leave this slot": both show up on the
+      nuke.family board and the Discord board. (Leaving is sent as a POST with
+      `_method=DELETE`; confirm the site accepts it.)
+- [ ] "Check in" / "Check out" from the collapsed line work, and the
+      attendance page on nuke.family records them.
+- [ ] Stay checked in past the end of a slot you signed up for: the line turns
+      amber and asks "Still watching?"; "Stay on" clears it.
+- [ ] As a helper or above: the search box finds a faction member by name or
+      ID and checks them in/out; scheduled-but-absent members of the running
+      hour have a "check in" shortcut. As a plain member none of that shows.
+- [ ] "Test DM" delivers a Discord DM (and is throttled to one a minute).
+- [ ] Chain timer alert: with it set to "Any active chain" (the default), the page
+      flashes (and beeps, if enabled, after you have clicked the page once)
+      while an active chain's timer is below the threshold, and stops when the
+      chain is hit. A chain of 25 hits or fewer never alerts. With "Only chains with a chain watch" it stays quiet unless the faction
+      has a watch on nuke.family; with "Only while I'm checked in" it also needs you checked
+      in. The "Test" button previews it. Flashing never blocks clicks.
+- [ ] With a chain watch running, an active chain and the alert armed, but not
+      checked in: the line shows a small "Not checked in" note with a "Check
+      in" button, and it goes away once checked in.
+- [ ] Someone who used the old "Chain watcher" script gets their alert time,
+      colour, beep and wall-marking settings carried over, and a note in the
+      alert settings while the old script is still installed.
+- [ ] "Mark wall targets" on a territory war wall strikes through your own
+      members and highlights enemies.
+- [ ] Switch to another faction tab and back: the line reappears once, and it
+      does not appear on other factions' pages.
+
 ## Faction controls (`factions.php` → controls tab)
 
 - [ ] "Change Nuke Family Key" and "Check NFH Updates" buttons appear.

@@ -13,6 +13,7 @@ import { LogInfo } from "./core/log.js";
 import { IsPage, onNavigate, PageType } from "./core/pages.js";
 import { checkForUpdates } from "./core/update-checker.js";
 
+import chainWatch from "./features/chain-watch/index.js";
 import contracts, { contractsStore } from "./features/contracts.js";
 import factionButtons from "./features/faction-buttons.js";
 import hospital from "./features/hospital.js";
@@ -32,6 +33,7 @@ const features = [
   reputation,
   hospital,
   factionButtons,
+  chainWatch,
 ];
 
 function dispatchFeatures() {
