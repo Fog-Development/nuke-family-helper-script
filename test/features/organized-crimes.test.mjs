@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
 import { launch, loadApiFixture, openTornPage, respond, screenshot } from "../harness/torn.js";
-import { measureContrast, THEMES } from "../harness/theme.js";
+import { contrastRatio, measureContrast, THEMES } from "../harness/theme.js";
 
 const BAR = "#nfh-oc-bar";
 const ROOT = "#faction-crimes-root";
@@ -308,6 +308,201 @@ describe("OC Assistant on the Recruiting tab", () => {
       assert.deepEqual(errors, []);
     } finally {
       await close();
+    }
+  });
+});
+
+// Flags under each slot of a crime: [role, [flag texts]].
+const flagsOf = (page, crimeId) =>
+  page.evaluate((id) => {
+    const crime = document.querySelector(`[data-oc-id="${id}"]`);
+    return [...crime.querySelectorAll('button[class^="slotHeader___"]')].map((header) => [
+      header.querySelector('[class^="title___"]').textContent.trim(),
+      [...header.parentElement.querySelectorAll(":scope > .nfh-oc-flags .nfh-oc-flag")].map((flag) =>
+        flag.textContent.replace(/^\S+\s/, ""),
+      ),
+    ]);
+  }, crimeId);
+
+// What the site sends staff: every member's level (here, one level 8 member
+// who is sitting in a level 5 crime).
+const staffBoard = (extra = {}) => ({
+  data: {
+    synced_at: 1900000000,
+    crimes: [],
+    me: { player_id: 1, level: 8, cprs: {} },
+    members: { 100124: { name: "Member100124", level: 8 }, 100012: { name: "Member100012", level: 6 } },
+    ...extra,
+  },
+});
+
+describe("OC Assistant staff flags", () => {
+  for (const theme of THEMES) {
+    it(`marks each kind of problem differently on the Planning tab (${theme})`, async () => {
+      const { page, errors, close } = await openTornPage(browser, {
+        page: "factions-crimes-planning",
+        theme,
+        api: { "GET /oc/board": staffBoard() },
+      });
+      try {
+        await page.waitForSelector(".nfh-oc-flag");
+
+        // Blast from the Past: the Muscle's 69 is under the minimum of 77.
+        assert.deepEqual((await flagsOf(page, "2265157")).filter(([, flags]) => flags.length), [["Muscle", ["CPR 69 < 77"]]]);
+        // Window of Opportunity: the last to join waits on two members ahead.
+        assert.deepEqual((await flagsOf(page, "2294629")).at(-1), ["Muscle #2", ["Idle 27h"]]);
+        // Honey Trap (level 5): a level 8 member, and one waiting 36 hours.
+        // The level 6 member beside them is within the two-level gap.
+        assert.deepEqual(await flagsOf(page, "2275218"), [
+          ["Enforcer", []],
+          ["Muscle #1", ["Level 8 member"]],
+          ["Muscle #2", ["Idle 36h"]],
+        ]);
+
+        const bar = await page.locator(BAR).innerText();
+        assert.match(bar, /Staff flags on this page:\s+\d+ unqualified, \d+ not productive, 1 under-levelled/);
+        assert.doesNotMatch(bar, /Best slot for you/, "the Planning tab suggests nothing");
+        assert.equal(await page.locator(".nfh-oc-pick").count(), 0);
+
+        for (const selector of [".nfh-oc-flag--unqualified", ".nfh-oc-flag--unproductive", ".nfh-oc-flag--underlevel", `${BAR} .nfh-oc-staff`]) {
+          const { ratio } = await measureContrast(page, selector);
+          assert.ok(ratio >= 4.5, `${selector} contrast ${ratio.toFixed(2)} in ${theme}`);
+        }
+        const colours = await page.evaluate(() =>
+          ["unqualified", "unproductive", "underlevel"].map(
+            (kind) => getComputedStyle(document.querySelector(`.nfh-oc-flag--${kind}`)).backgroundColor,
+          ),
+        );
+        assert.equal(new Set(colours).size, 3);
+
+        assert.deepEqual(errors, []);
+        await screenshot(page.locator('[data-oc-id="2275218"]'), `oc-flags-${theme}`);
+        await page.locator(`${BAR} [data-nfh-oc-staff-toggle]`).click();
+        await page.waitForSelector(`${BAR} .nfh-oc-staff-panel`);
+        await screenshot(page.locator(BAR), `oc-flags-settings-${theme}`);
+      } finally {
+        await close();
+      }
+    });
+  }
+
+  it("lets a staff member hide a kind of flag and use their own thresholds", async () => {
+    const { page, close } = await openTornPage(browser, {
+      page: "factions-crimes-planning",
+      api: { "GET /oc/board": staffBoard() },
+    });
+    try {
+      await page.waitForSelector(".nfh-oc-flag");
+      await page.locator(`${BAR} [data-nfh-oc-staff-toggle]`).click();
+
+      await page.locator(`${BAR} [data-nfh-oc-flag="unqualified"]`).uncheck();
+      await page.waitForFunction(() => !document.querySelector(".nfh-oc-flags .nfh-oc-flag--unqualified"));
+      assert.match(await page.locator(`${BAR} .nfh-oc-staff`).innerText(), /page:\s+\d+ not productive, 1 under-levelled/);
+
+      // 27 hours of waiting is fine by this staff member; 36 is still not.
+      await page.locator(`${BAR} [data-nfh-oc-limit="thresholdHours"]`).fill("30");
+      await page.locator(`${BAR} [data-nfh-oc-limit="thresholdHours"]`).blur();
+      await page.waitForFunction(() => !document.querySelector('[data-oc-id="2294629"] .nfh-oc-flag'));
+      assert.deepEqual((await flagsOf(page, "2275218"))[2], ["Muscle #2", ["Idle 36h"]]);
+
+      // A wider gap clears the under-levelled flag; blank goes back to the faction's.
+      const gap = page.locator(`${BAR} [data-nfh-oc-limit="levelGap"]`);
+      await gap.fill("4");
+      await gap.blur();
+      await page.waitForFunction(() => !document.querySelector(".nfh-oc-flags .nfh-oc-flag--underlevel"));
+      await page.locator(`${BAR} [data-nfh-oc-limit="levelGap"]`).fill("");
+      await page.locator(`${BAR} [data-nfh-oc-limit="levelGap"]`).blur();
+      await page.waitForSelector(".nfh-oc-flags .nfh-oc-flag--underlevel");
+
+      assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("nfhOcStaffPrefs"))), {
+        show: { unqualified: false, unproductive: true, underlevel: true },
+        thresholdHours: 30,
+        levelGap: null,
+      });
+    } finally {
+      await close();
+    }
+  });
+
+  it("shows flags on the Recruiting tab too, beside the member's own suggestion", async () => {
+    const { page, errors, close } = await openRecruiting({ api: { "GET /oc/board": staffBoard() } });
+    try {
+      await page.waitForSelector(".nfh-oc-flag");
+      // Bidding War: four members queued behind one who is half done.
+      assert.deepEqual((await flagsOf(page, "2296934")).map(([, flags]) => flags), [[], [], ["Idle 35h"], ["Idle 59h"], ["Idle 83h"], []]);
+      const bar = await page.locator(BAR).innerText();
+      assert.match(bar, /Best slot for you: Clinical Precision/);
+      assert.match(bar, /Staff flags on this page:/);
+      assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+
+  it("shows nothing of the kind to a member who is not staff", async () => {
+    const { page, close } = await openTornPage(browser, { page: "factions-crimes-planning" });
+    try {
+      await page.waitForSelector(`${ROOT} .nfh-oc-min`);
+      await page.waitForTimeout(500);
+      assert.equal(await page.locator(".nfh-oc-flag").count(), 0);
+      assert.equal(await page.locator(BAR).count(), 0);
+    } finally {
+      await close();
+    }
+  });
+});
+
+describe("OC Assistant warning about your own slot", () => {
+  // The viewer (player 1) sits in a level 5 crime, last in a long queue.
+  const ownCrime = (slots) => ({
+    synced_at: 1900000000,
+    me: { player_id: 1, level: 8, cprs: {} },
+    crimes: [{ id: 7000009, name: "Honey Trap", key: "honeytrap", level: 5, status: "Planning", slots }],
+  });
+  const slot = (role, playerId, progress, cpr) => ({ role, role_key: role, position_id: "P1", player_id: playerId, progress, cpr });
+
+  it("warns a member in a bad slot and suggests better ones", async () => {
+    const board = { data: ownCrime([slot("Enforcer", 4001, 0.1, 80), slot("Muscle #1", 4002, 0, 80), slot("Muscle #2", 1, 0, 60)]) };
+    // Join stays disabled, as Torn has it for a member already in a crime.
+    const { page, errors, close } = await openRecruiting({ before: undefined, api: { "GET /oc/board": board } });
+    try {
+      await page.waitForFunction(() => /You are in Honey Trap/.test(document.querySelector("#nfh-oc-bar").innerText));
+      const bar = await page.locator(BAR).innerText();
+      assert.match(bar, /You are in Honey Trap as Muscle #2, but: CPR 60 is below the faction's minimum of 72 for this role\./);
+      assert.match(bar, /later than the 12 hour threshold\./);
+      assert.match(bar, /This member qualifies for level 8 crimes; this one is level 5\./);
+      assert.match(bar, /A better slot: Clinical Precision \(level 8\), Imitator\./);
+      assert.equal((await picksOf(page)).length, 3);
+      // The warning wraps over several lines, so its box holds other text too:
+      // compare its colour with the bar's own background instead of sampling.
+      const [fg, bg] = await page.evaluate(() => {
+        const rgb = (value) => value.match(/[\d.]+/g).slice(0, 3).map(Number);
+        return [
+          rgb(getComputedStyle(document.querySelector("#nfh-oc-bar .nfh-oc-bar-warning")).color),
+          rgb(getComputedStyle(document.querySelector("#nfh-oc-bar")).backgroundColor),
+        ];
+      });
+      assert.ok(contrastRatio(fg, bg) >= 4.5, `warning contrast ${contrastRatio(fg, bg).toFixed(2)}`);
+      assert.deepEqual(errors, []);
+      await screenshot(page.locator(BAR), "oc-own-slot-warning");
+    } finally {
+      await close();
+    }
+  });
+
+  it("says nothing when the crime is nearly done, or the slot is fine", async () => {
+    for (const slots of [
+      // Under 24 hours left: not worth leaving, whatever is wrong with the slot.
+      [slot("Enforcer", 4001, 1, 80), slot("Muscle #1", 4002, 1, 80), slot("Muscle #2", 1, 0.5, 60)],
+    ]) {
+      const { page, close } = await openRecruiting({ before: undefined, api: { "GET /oc/board": { data: ownCrime(slots) } } });
+      try {
+        await page.waitForTimeout(700);
+        assert.match(await page.locator(BAR).innerText(), /Torn is not letting you join a crime right now/);
+        assert.deepEqual(await picksOf(page), []);
+      } finally {
+        await close();
+      }
     }
   });
 });

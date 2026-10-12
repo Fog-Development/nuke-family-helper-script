@@ -114,7 +114,17 @@ The automated tests stub the nuke.family API, so every item here needs a real
 - [ ] With a better slot in a crime further down than Torn has loaded, the
       bar names it and offers "Scroll down"; once it loads it is tagged, or
       the suggestion moves on if the slot was taken meanwhile.
-- [ ] Planning: lines on every slot, no bar and no tags. Completed: nothing odd.
+- [ ] Planning (not staff): lines on every slot, no bar and no tags. Completed: nothing odd.
+- [ ] Staff (Helper and above), Recruiting and Planning: filled slots with a
+      problem show a flag under the Min CPR line: red "CPR 61 < 72", amber
+      "Idle 27h", blue "Level 8 member". The bar counts them.
+- [ ] "Flag settings": unticking a kind hides it; a number in "Not productive
+      after" or "Under-levelled from" changes which slots are flagged for you
+      only; blank goes back to the faction's. Survives a reload.
+- [ ] A normal member never sees flags or "Flag settings".
+- [ ] In a slot staff would flag, with over 24 hours left on the crime:
+      Recruiting shows a red "You are in ... but ..." line and tags better
+      slots. With under 24 hours left, or in a fine slot, it does not.
 - [ ] Change a minimum on nuke.family (Organized Crimes → OC Assistant): within
       about five minutes and a page reload the line shows the new number.
 - [ ] Another faction's crimes tab is untouched.

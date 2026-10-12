@@ -40,6 +40,8 @@ function readSlot(headerEl) {
   const cpr = chanceEl ? parseFloat(chanceEl.textContent) : NaN;
   const occupied = !!el.querySelector('[class^="badge___"]');
   const joinButton = el.querySelector('button[class*="joinButton___"]');
+  const profile = occupied ? el.querySelector('a[href*="profiles.php?XID="]') : null;
+  const playerId = profile ? /XID=(\d+)/.exec(profile.getAttribute("href")) : null;
 
   return {
     el,
@@ -50,6 +52,7 @@ function readSlot(headerEl) {
     // one it is the occupant's.
     cpr: Number.isNaN(cpr) ? null : cpr,
     occupied,
+    playerId: playerId ? playerId[1] : null,
     progress: occupied ? planningProgress(el) : 0,
     joinButton,
   };

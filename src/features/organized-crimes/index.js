@@ -1,11 +1,24 @@
 import { waitForElm } from "../../core/dom.js";
 import { LogInfo } from "../../core/log.js";
 import { IsPage, PageType } from "../../core/pages.js";
+import { getUserscriptUsersPlayerId } from "../../core/torn-page.js";
 import { ocConfigStore } from "./data.js";
+import { crimeHoursLeft, limitsFor, slotFlags } from "./flags.js";
+import { getStaffPrefs, parseOverride, setStaffPrefs } from "./prefs.js";
 import { activeSubTab, CRIMES_ROOT_SELECTOR, joinState, JoinState, readCrimes, SubTab } from "./page.js";
 import { cachedBoard, learnCprs, offPageCrimes, refreshBoard } from "./remote.js";
 import { rateCrimes } from "./scoring.js";
-import { barHtml, clearAll, isOwnElement, removeBar, renderBar, renderMinimum, renderSuggestions } from "./view.js";
+import {
+  barHtml,
+  clearAll,
+  isOwnElement,
+  removeBar,
+  renderBar,
+  renderFlags,
+  renderMinimum,
+  renderSuggestions,
+  staffHtml,
+} from "./view.js";
 
 // OC Assistant on your own faction's crimes page. Every slot shows the
 // minimum CPR your faction asks for the role; on the Recruiting tab the slot
@@ -20,6 +33,45 @@ import { barHtml, clearAll, isOwnElement, removeBar, renderBar, renderMinimum, r
 // the page takes over and a slot that has gone is simply no longer suggested.
 
 const RENDER_DEBOUNCE_MS = 150;
+// A member is only told to move out of a bad slot while the crime still has
+// more than this long to run; near the end it is not worth leaving.
+const MOVE_WORTHWHILE_HOURS = 24;
+
+let staffPanelOpen = false;
+
+// What is wrong with the slot the viewer sits in, judged by the faction's own
+// thresholds (never a staff member's), or null. Looks on the page first, then
+// in the site's board, since the member's crime is usually on another tab.
+function ownSlotWarning(pageCrimes, board, config, rate) {
+  const me = String(getUserscriptUsersPlayerId() || "");
+  if (!me) return null;
+
+  const boardCrimes = ((board && board.crimes) || []).map((crime) => ({
+    id: String(crime.id),
+    name: crime.name,
+    level: crime.level,
+    slots: crime.slots.map((slot) => ({
+      name: slot.role,
+      occupied: slot.player_id !== null,
+      playerId: slot.player_id === null ? null : String(slot.player_id),
+      progress: slot.progress || 0,
+      cpr: slot.cpr,
+    })),
+  }));
+
+  for (const crime of [...pageCrimes, ...boardCrimes]) {
+    const index = crime.slots.findIndex((slot) => slot.occupied && slot.playerId === me);
+    if (index === -1) continue;
+    if (crimeHoursLeft(crime) <= MOVE_WORTHWHILE_HOURS) return null;
+
+    const rated = rate([crime], config).crimes[0].slots[index];
+    const level = board && board.me ? board.me.level : null;
+    const flags = slotFlags(crime, index, rated, level, limitsFor(config));
+    if (flags.length === 0) return null;
+    return `You are in ${crime.name} as ${crime.slots[index].name}, but: ${flags.map((flag) => flag.title).join(" ")}`;
+  }
+  return null;
+}
 
 let observer = null;
 let observedRoot = null;
@@ -41,44 +93,99 @@ function render() {
   }
 
   const crimes = readCrimes(root);
-  const recruiting = activeSubTab(root) === SubTab.Recruiting;
+  const tab = activeSubTab(root);
+  const recruiting = tab === SubTab.Recruiting;
+  const active = (recruiting || tab === SubTab.Planning) && crimes.length > 0;
   const joining = joinState(crimes);
-  const suggesting = recruiting && crimes.length > 0 && joining === JoinState.Open;
 
   if (recruiting) learnCprs(crimes);
-  if (suggesting) {
+  // The board serves the crimes Torn has not loaded, the viewer's own slot
+  // and (for staff) every member's level. Cached a minute.
+  if (active) {
     refreshBoard().then((fresh) => {
       if (fresh) scheduleRender();
     });
   }
+  const cached = active ? cachedBoard() : null;
+  const board = cached ? cached.board : null;
 
-  const cached = suggesting ? cachedBoard() : null;
-  const elsewhere = cached ? offPageCrimes(cached.board, crimes) : [];
+  // In a slot staff would flag, with long enough left to be worth moving:
+  // the member is warned and shown better slots even though Torn has the
+  // Join buttons disabled until they leave.
+  const warning = recruiting && joining === JoinState.Blocked ? ownSlotWarning(crimes, board, config, rateCrimes) : null;
+  const suggesting = recruiting && crimes.length > 0 && (joining === JoinState.Open || warning !== null);
+
+  const elsewhere = suggesting && board ? offPageCrimes(board, crimes) : [];
   const result = rateCrimes([...crimes, ...elsewhere], config);
+
+  // Staff are whoever the site sends every member's level to.
+  const members = board && board.members ? board.members : null;
+  const prefs = members ? getStaffPrefs() : null;
+  const limits = limitsFor(config, prefs);
+  const counts = {};
+
   for (const crime of result.crimes) {
     if (crime.crime.offPage) continue;
-    for (const rated of crime.slots) renderMinimum(rated);
-  }
-
-  if (!recruiting || crimes.length === 0) {
-    renderSuggestions(root, []);
-    removeBar();
-    return;
+    crime.slots.forEach((rated, index) => {
+      renderMinimum(rated);
+      let flags = [];
+      if (members && active && rated.slot.occupied) {
+        const member = members[rated.slot.playerId];
+        flags = slotFlags(crime.crime, index, rated, member ? member.level : null, limits).filter(
+          (flag) => prefs.show[flag.flag],
+        );
+        for (const flag of flags) counts[flag.flag] = (counts[flag.flag] || 0) + 1;
+      }
+      renderFlags(rated.slot, flags);
+    });
   }
 
   const suggestions = suggesting ? result.suggestions : [];
   renderSuggestions(root, suggestions);
 
-  let state;
-  if (joining === JoinState.Blocked) state = { kind: "blocked" };
-  else if (joining === JoinState.Full) state = { kind: "full" };
-  else if (suggestions.length === 0) state = { kind: "none" };
-  else state = { kind: "best", suggestions };
+  const staffPart =
+    members && active
+      ? staffHtml({ counts, prefs, factionLimits: limitsFor(config), open: staffPanelOpen })
+      : "";
 
-  const bar = renderBar(root, barHtml(state));
+  let memberPart = "";
+  if (recruiting && crimes.length > 0) {
+    let state;
+    if (suggestions.length > 0) state = { kind: "best", suggestions, warning };
+    else if (joining === JoinState.Blocked) state = { kind: "blocked" };
+    else if (joining === JoinState.Full) state = { kind: "full" };
+    else state = { kind: "none" };
+    memberPart = barHtml(state);
+  } else if (staffPart) {
+    memberPart = '<span class="nfh-oc-bar-label">OC Assistant</span>';
+  }
+
+  if (!memberPart) {
+    removeBar();
+    return;
+  }
+
+  const bar = renderBar(root, memberPart + staffPart);
   if (!bar.dataset.nfhBound) {
     bar.dataset.nfhBound = "1";
+    bar.addEventListener("change", (event) => {
+      const flag = event.target.getAttribute("data-nfh-oc-flag");
+      const limit = event.target.getAttribute("data-nfh-oc-limit");
+      if (flag) {
+        setStaffPrefs({ show: { ...getStaffPrefs().show, [flag]: event.target.checked } });
+      } else if (limit) {
+        setStaffPrefs({ [limit]: parseOverride(event.target.value, 1, limit === "levelGap" ? 9 : 168) });
+      } else {
+        return;
+      }
+      scheduleRender();
+    });
     bar.addEventListener("click", (event) => {
+      if (event.target.closest("[data-nfh-oc-staff-toggle]")) {
+        staffPanelOpen = !staffPanelOpen;
+        scheduleRender();
+        return;
+      }
       if (!event.target.closest("[data-nfh-oc-show]")) return;
       const best = document.querySelector(`${CRIMES_ROOT_SELECTOR} .nfh-oc-pick--best`);
       if (best) {

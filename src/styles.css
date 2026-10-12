@@ -854,3 +854,84 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
 .nfh-oc-pick--good > .nfh-oc-tag {
     background-color: #1565c0;
 }
+
+/* Staff flags under a filled slot: one colour and one symbol per kind */
+.nfh-oc-flags {
+    display: flex;
+    flex-direction: column;
+}
+
+.nfh-oc-flag {
+    display: block;
+    padding: 0 4px;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.nfh-oc-flag--unqualified {
+    background-color: #b71c1c;
+}
+
+.nfh-oc-flag--unproductive {
+    background-color: #8a5300;
+}
+
+.nfh-oc-flag--underlevel {
+    background-color: #1565c0;
+}
+
+.nfh-oc-bar-warning {
+    color: #c62828;
+}
+
+body.dark-mode .nfh-oc-bar-warning {
+    color: #ff8a80;
+}
+
+.nfh-oc-staff {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-oc-bar-label + .nfh-oc-staff {
+    flex: 1 1 260px;
+    padding-top: 0;
+    border-top: none;
+}
+
+.nfh-oc-staff-panel {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+}
+
+.nfh-oc-staff-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nfh-oc-staff-option .nfh-oc-flag {
+    border-radius: 3px;
+}
+
+.nfh-oc-staff-number {
+    width: 52px;
+    padding: 2px 4px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 3px;
+    background-color: var(--nfh-bg);
+    color: var(--nfh-text);
+    font: inherit;
+}

@@ -1,4 +1,5 @@
 import { escapeHtml } from "../../core/dom.js";
+import { Flag, FLAG_LABELS } from "./flags.js";
 import { describeWait, Rank, SlotStatus } from "./scoring.js";
 
 // Everything the feature draws on the crimes page: a minimum-CPR line under
@@ -12,6 +13,11 @@ export const BAR_ID = "nfh-oc-bar";
 const CHIP_CLASS = "nfh-oc-min";
 const TAG_CLASS = "nfh-oc-tag";
 const PICK_CLASS = "nfh-oc-pick";
+const FLAGS_CLASS = "nfh-oc-flags";
+
+// Each kind of flag gets its own symbol as well as its own colour, so they
+// can be told apart without relying on colour.
+const FLAG_SYMBOLS = { [Flag.Unqualified]: "\u2716", [Flag.Unproductive]: "\u23F3", [Flag.UnderLevel]: "\u2B07" };
 
 const CHIP_STATES = ["ok", "below", "filled"];
 
@@ -64,6 +70,69 @@ export function renderMinimum(rated) {
   if (!existing) slot.headerEl.insertAdjacentElement("afterend", element);
 }
 
+// The flags under a filled slot (staff only). An empty list removes them.
+export function renderFlags(slot, flags) {
+  const existing = slot.el.querySelector(`:scope > .${FLAGS_CLASS}`);
+  if (flags.length === 0) {
+    if (existing) existing.remove();
+    return;
+  }
+
+  const html = flags
+    .map(
+      (flag) =>
+        `<span class="nfh-oc-flag nfh-oc-flag--${flag.flag}" title="${escapeHtml(`${FLAG_LABELS[flag.flag]}: ${flag.title}`)}">` +
+        `<span aria-hidden="true">${FLAG_SYMBOLS[flag.flag]}</span> ${escapeHtml(flag.text)}</span>`,
+    )
+    .join("");
+
+  const element = existing || document.createElement("div");
+  if (element.dataset.nfhHtml !== html) {
+    element.dataset.nfhHtml = html;
+    element.innerHTML = html;
+  }
+  if (!existing) {
+    element.className = FLAGS_CLASS;
+    const anchor = slot.el.querySelector(`:scope > .${CHIP_CLASS}`) || slot.headerEl;
+    anchor.insertAdjacentElement("afterend", element);
+  }
+}
+
+// The staff part of the bar: how many of each flag are on the page, and the
+// settings for which to show. `staff` is { counts, prefs, limits, open }.
+export function staffHtml(staff) {
+  const kinds = [Flag.Unqualified, Flag.Unproductive, Flag.UnderLevel];
+  const shown = kinds.filter((kind) => staff.prefs.show[kind]);
+  const summary =
+    shown.length === 0
+      ? "all hidden"
+      : shown.map((kind) => `${staff.counts[kind] || 0} ${FLAG_LABELS[kind].toLowerCase()}`).join(", ");
+
+  let panel = "";
+  if (staff.open) {
+    const toggles = kinds
+      .map(
+        (kind) =>
+          `<label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-flag="${kind}"${staff.prefs.show[kind] ? " checked" : ""}> ` +
+          `<span class="nfh-oc-flag nfh-oc-flag--${kind}"><span aria-hidden="true">${FLAG_SYMBOLS[kind]}</span> ${FLAG_LABELS[kind]}</span></label>`,
+      )
+      .join("");
+    const override = (name, label, value, fallback) =>
+      `<label class="nfh-oc-staff-option">${label} ` +
+      `<input type="number" min="1" class="nfh-oc-staff-number" data-nfh-oc-limit="${name}" value="${escapeHtml(value ?? "")}" placeholder="${escapeHtml(fallback)}"></label>`;
+    panel =
+      `<div class="nfh-oc-staff-panel">${toggles}` +
+      override("thresholdHours", "Not productive after (hours)", staff.prefs.thresholdHours, staff.factionLimits.thresholdHours) +
+      override("levelGap", "Under-levelled from (levels below)", staff.prefs.levelGap, staff.factionLimits.levelGap) +
+      '<span class="nfh-oc-bar-muted">Leave a number blank to use your faction\'s. These choices are yours alone.</span></div>';
+  }
+
+  return (
+    `<span class="nfh-oc-staff"><span class="nfh-oc-bar-muted">Staff flags on this page:</span> ${escapeHtml(summary)} ` +
+    `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-staff-toggle aria-expanded="${staff.open ? "true" : "false"}">Flag settings</button></span>${panel}`
+  );
+}
+
 const TAG_TEXT = { [Rank.Best]: "Best for you", [Rank.Good]: "Good for you" };
 
 function waitSentence(suggestion) {
@@ -106,7 +175,9 @@ export function renderSuggestions(root, suggestions) {
 }
 
 // One line above the crime list saying where to go. `state` is one of:
-//   { kind: "best", suggestions }  there is a slot to recommend
+//   { kind: "best", suggestions, warning }  there is a slot to recommend;
+//                                  `warning` (optional) is what is wrong with
+//                                  the slot the member already sits in
 //   { kind: "none" }               open slots, but none the member qualifies for
 //   { kind: "blocked" }            Torn is not letting the member join anything
 //   { kind: "full" }               no open slot is loaded
@@ -131,8 +202,11 @@ export function barHtml(state) {
     const late = best.productive
       ? ""
       : ' <span class="nfh-oc-bar-muted">Nothing open would start you sooner.</span>';
+    const lead = state.warning
+      ? `<strong class="nfh-oc-bar-warning">${escapeHtml(state.warning)}</strong> A better slot: `
+      : "Best slot for you: ";
     return (
-      `${label}<span class="nfh-oc-bar-text">Best slot for you: ` +
+      `${label}<span class="nfh-oc-bar-text">${lead}` +
       `<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), ` +
       `<strong>${escapeHtml(slot.name)}</strong>. ` +
       `Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ` +
@@ -178,13 +252,16 @@ export function removeBar() {
 export function clearAll(root) {
   removeBar();
   renderSuggestions(root, []);
-  for (const chip of root.querySelectorAll(`.${CHIP_CLASS}`)) chip.remove();
+  for (const ours of root.querySelectorAll(`.${CHIP_CLASS}, .${FLAGS_CLASS}`)) ours.remove();
 }
 
 // True for an element this feature injected.
 export function isOwnElement(node) {
   return (
     node.nodeType === Node.ELEMENT_NODE &&
-    (node.classList.contains(CHIP_CLASS) || node.classList.contains(TAG_CLASS) || node.id === BAR_ID)
+    (node.classList.contains(CHIP_CLASS) ||
+      node.classList.contains(TAG_CLASS) ||
+      node.classList.contains(FLAGS_CLASS) ||
+      node.id === BAR_ID)
   );
 }
