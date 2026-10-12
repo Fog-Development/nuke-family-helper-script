@@ -7,7 +7,7 @@ import { getPrefs, PACES } from "./prefs.js";
 const FLASH_ID = "nfh-chain-flash";
 const BEEP_MS = 400;
 const BEEP_HZ = 440;
-// A chain has to be past this many hits before its timer is worth an alert:
+// A chain has to reach this many hits before its timer is worth an alert:
 // the first hits of a chain are thrown away all the time and nobody is
 // watching them.
 export const MIN_CHAIN_HITS = 25;
@@ -95,7 +95,7 @@ export function updateAlert({ timer, armed, test = false }) {
     !!timer &&
     timer.active &&
     // An unreadable hit count must not silence the alert.
-    (timer.hits === null || timer.hits > MIN_CHAIN_HITS) &&
+    (timer.hits === null || timer.hits >= MIN_CHAIN_HITS) &&
     timer.seconds !== null &&
     timer.seconds > 0 &&
     timer.seconds < prefs.alertSeconds;

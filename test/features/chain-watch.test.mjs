@@ -411,14 +411,14 @@ describe("chain timer alert", () => {
     }
   });
 
-  it("ignores a chain that is not past 25 hits", async () => {
+  it("ignores a chain until it reaches 25 hits", async () => {
     const { page, close } = await openFaction();
     try {
-      await setChain(page, "Chain active", "01:00", "25");
+      await setChain(page, "Chain active", "01:00", "24");
       await page.waitForTimeout(1300);
       assert.equal(await page.locator("#nfh-chain-flash").count(), 0);
 
-      await setChain(page, "Chain active", "01:00", "26");
+      await setChain(page, "Chain active", "01:00", "25");
       await page.waitForSelector("#nfh-chain-flash", { state: "attached" });
     } finally {
       await close();

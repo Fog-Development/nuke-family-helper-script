@@ -166,7 +166,7 @@ function barState(board, summary, now) {
 
 function alertChip(prefs, armed) {
   let label = `Alert ${formatAlertTime(prefs.alertSeconds)}`;
-  let title = `Flashes the page when an active chain of more than ${MIN_CHAIN_HITS} hits drops below ${formatAlertTime(prefs.alertSeconds)}. Click for settings.`;
+  let title = `Flashes the page when an active chain of at least ${MIN_CHAIN_HITS} hits drops below ${formatAlertTime(prefs.alertSeconds)}. Click for settings.`;
   if (prefs.alertMode === AlertMode.Off) {
     label = "Alert off";
     title = "Chain timer alert is off. Click for settings.";
@@ -494,7 +494,7 @@ export function renderSettings({ prefs, legacyScript }) {
     `<div class="nfh-cw-muted nfh-cw-help">${ALERT_MODE_HELP[prefs.alertMode]}` +
     (prefs.alertMode === AlertMode.Off
       ? ""
-      : ` Chains of ${MIN_CHAIN_HITS} hits or fewer never alert.`) +
+      : ` Chains under ${MIN_CHAIN_HITS} hits never alert.`) +
     "</div>" +
     (legacyScript
       ? '<div class="nfh-cw-need">The old "Chain watcher" script is still running. This replaces it, so you can remove it (otherwise both will alert).</div>'

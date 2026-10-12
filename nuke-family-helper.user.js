@@ -1563,7 +1563,7 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
   function updateAlert({ timer, armed, test = false }) {
     const prefs2 = getPrefs();
     const low = armed && !!timer && timer.active && // An unreadable hit count must not silence the alert.
-    (timer.hits === null || timer.hits > MIN_CHAIN_HITS) && timer.seconds !== null && timer.seconds > 0 && timer.seconds < prefs2.alertSeconds;
+    (timer.hits === null || timer.hits >= MIN_CHAIN_HITS) && timer.seconds !== null && timer.seconds > 0 && timer.seconds < prefs2.alertSeconds;
     const alerting = low || test;
     setFlashing(alerting);
     if (alerting && prefs2.beep) {
@@ -1882,7 +1882,7 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
   }
   function alertChip(prefs2, armed) {
     let label = `Alert ${formatAlertTime(prefs2.alertSeconds)}`;
-    let title = `Flashes the page when an active chain of more than ${MIN_CHAIN_HITS} hits drops below ${formatAlertTime(prefs2.alertSeconds)}. Click for settings.`;
+    let title = `Flashes the page when an active chain of at least ${MIN_CHAIN_HITS} hits drops below ${formatAlertTime(prefs2.alertSeconds)}. Click for settings.`;
     if (prefs2.alertMode === AlertMode.Off) {
       label = "Alert off";
       title = "Chain timer alert is off. Click for settings.";
@@ -2019,7 +2019,7 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
   };
   function renderSettings({ prefs: prefs2, legacyScript }) {
     const option = (value, label, current) => `<option value="${value}"${value === current ? " selected" : ""}>${label}</option>`;
-    return `<div class="nfh-cw-settings-row"><label>Chain timer alert <select data-pref="alertMode">` + option(AlertMode.Always, "Any active chain", prefs2.alertMode) + option(AlertMode.Watch, "Only chains with a chain watch", prefs2.alertMode) + option(AlertMode.CheckedIn, "Only while I'm checked in", prefs2.alertMode) + option(AlertMode.Off, "Off", prefs2.alertMode) + `</select></label><label>Alert below <input type="text" class="nfh-cw-input nfh-cw-time" data-pref="alertSeconds" value="${formatAlertTime(prefs2.alertSeconds)}" maxlength="4" title="m:ss, up to 4:59"></label><label>Pace <select data-pref="pace">` + option("fast", "Fast", prefs2.pace) + option("normal", "Normal", prefs2.pace) + option("slow", "Slow", prefs2.pace) + `</select></label><label>Colour <input type="color" data-pref="color" value="${escapeHtml(prefs2.color)}"></label><label>Strength <input type="range" data-pref="opacity" min="5" max="100" value="${Math.round(prefs2.opacity * 100)}"></label><label><input type="checkbox" data-pref="beep"${prefs2.beep ? " checked" : ""}> Beep</label><label>Volume <input type="range" data-pref="volume" min="1" max="100" value="${Math.round(prefs2.volume * 100)}"></label>` + button("test-alert", "Test", { title: "Preview the alert for a few seconds" }) + `<label title="On territory war walls: strike through your own members and highlight enemies"><input type="checkbox" data-pref="markWall"${prefs2.markWall ? " checked" : ""}> Mark wall targets</label></div><div class="nfh-cw-muted nfh-cw-help">${ALERT_MODE_HELP[prefs2.alertMode]}` + (prefs2.alertMode === AlertMode.Off ? "" : ` Chains of ${MIN_CHAIN_HITS} hits or fewer never alert.`) + "</div>" + (legacyScript ? '<div class="nfh-cw-need">The old "Chain watcher" script is still running. This replaces it, so you can remove it (otherwise both will alert).</div>' : "");
+    return `<div class="nfh-cw-settings-row"><label>Chain timer alert <select data-pref="alertMode">` + option(AlertMode.Always, "Any active chain", prefs2.alertMode) + option(AlertMode.Watch, "Only chains with a chain watch", prefs2.alertMode) + option(AlertMode.CheckedIn, "Only while I'm checked in", prefs2.alertMode) + option(AlertMode.Off, "Off", prefs2.alertMode) + `</select></label><label>Alert below <input type="text" class="nfh-cw-input nfh-cw-time" data-pref="alertSeconds" value="${formatAlertTime(prefs2.alertSeconds)}" maxlength="4" title="m:ss, up to 4:59"></label><label>Pace <select data-pref="pace">` + option("fast", "Fast", prefs2.pace) + option("normal", "Normal", prefs2.pace) + option("slow", "Slow", prefs2.pace) + `</select></label><label>Colour <input type="color" data-pref="color" value="${escapeHtml(prefs2.color)}"></label><label>Strength <input type="range" data-pref="opacity" min="5" max="100" value="${Math.round(prefs2.opacity * 100)}"></label><label><input type="checkbox" data-pref="beep"${prefs2.beep ? " checked" : ""}> Beep</label><label>Volume <input type="range" data-pref="volume" min="1" max="100" value="${Math.round(prefs2.volume * 100)}"></label>` + button("test-alert", "Test", { title: "Preview the alert for a few seconds" }) + `<label title="On territory war walls: strike through your own members and highlight enemies"><input type="checkbox" data-pref="markWall"${prefs2.markWall ? " checked" : ""}> Mark wall targets</label></div><div class="nfh-cw-muted nfh-cw-help">${ALERT_MODE_HELP[prefs2.alertMode]}` + (prefs2.alertMode === AlertMode.Off ? "" : ` Chains under ${MIN_CHAIN_HITS} hits never alert.`) + "</div>" + (legacyScript ? '<div class="nfh-cw-need">The old "Chain watcher" script is still running. This replaces it, so you can remove it (otherwise both will alert).</div>' : "");
   }
 
   // src/features/chain-watch/index.js

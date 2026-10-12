@@ -77,7 +77,7 @@ The automated tests stub the nuke.family API, so every item here needs a real
 - [ ] Chain timer alert: with it set to "Any active chain" (the default), the page
       flashes (and beeps, if enabled, after you have clicked the page once)
       while an active chain's timer is below the threshold, and stops when the
-      chain is hit. A chain of 25 hits or fewer never alerts. With "Only chains with a chain watch" it stays quiet unless the faction
+      chain is hit. A chain under 25 hits never alerts. With "Only chains with a chain watch" it stays quiet unless the faction
       has a watch on nuke.family; with "Only while I'm checked in" it also needs you checked
       in. The "Test" button previews it. Flashing never blocks clicks.
 - [ ] With a chain watch running, an active chain and the alert armed, but not
