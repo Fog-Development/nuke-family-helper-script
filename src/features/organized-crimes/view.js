@@ -16,10 +16,14 @@ const PICK_CLASS = "nfh-oc-pick";
 const CHIP_STATES = ["ok", "below", "filled"];
 
 function chipFor(rated) {
-  const { slot, minCpr, weight, status } = rated;
+  const { slot, minCpr, weight, status, assumed } = rated;
   if (minCpr === null) return null;
 
-  const weightNote = weight === null ? "" : ` This role carries ${weight.toFixed(1)}% of the crime's outcome.`;
+  const weightNote =
+    (weight === null
+      ? " How much this role matters is not known yet."
+      : ` This role carries ${weight.toFixed(1)}% of the crime's outcome.`) +
+    (assumed ? " Your faction has not set a minimum for it, so this is the usual one for the crime's level." : "");
   switch (status) {
     case SlotStatus.Eligible:
       return {
@@ -69,7 +73,12 @@ function waitSentence(suggestion) {
 // Outline and tag the suggested slots, and clear the marks from any slot that
 // is no longer suggested.
 export function renderSuggestions(root, suggestions) {
-  const wanted = new Map(suggestions.map((suggestion) => [suggestion.rated.slot.el, suggestion]));
+  // A suggestion for a crime Torn has not loaded yet has no element to mark.
+  const wanted = new Map(
+    suggestions
+      .filter((suggestion) => suggestion.rated.slot.el)
+      .map((suggestion) => [suggestion.rated.slot.el, suggestion]),
+  );
 
   for (const marked of root.querySelectorAll(`.${PICK_CLASS}`)) {
     if (wanted.has(marked)) continue;
@@ -105,12 +114,20 @@ export function barHtml(state) {
   const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
 
   if (state.kind === "best") {
-    const [best, ...others] = state.suggestions;
+    const [best, ...rest] = state.suggestions;
     const { slot, minCpr } = best.rated;
+    const others = rest.filter((suggestion) => !suggestion.crime.offPage);
     const more =
       others.length > 0
         ? ` <span class="nfh-oc-bar-muted">${others.length} other good slot${others.length === 1 ? " is" : "s are"} marked below.</span>`
         : "";
+    const unweighted =
+      best.rated.weight === null
+        ? ' <span class="nfh-oc-bar-muted">This crime is too new to have role weights, so this goes on your CPR and its level alone.</span>'
+        : "";
+    const offPage = best.crime.offPage
+      ? ' <span class="nfh-oc-bar-muted">It is further down the list and may have been taken in the last few minutes.</span>'
+      : "";
     const late = best.productive
       ? ""
       : ' <span class="nfh-oc-bar-muted">Nothing open would start you sooner.</span>';
@@ -119,8 +136,8 @@ export function barHtml(state) {
       `<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), ` +
       `<strong>${escapeHtml(slot.name)}</strong>. ` +
       `Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ` +
-      `${escapeHtml(waitSentence(best))}${late}${more}</span>` +
-      '<button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>Show me</button>'
+      `${escapeHtml(waitSentence(best))}${late}${unweighted}${offPage}${more}</span>` +
+      `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`
     );
   }
 

@@ -9,6 +9,7 @@
     "data": {
       "faction_id": 5678,
       "settings": {"productive_threshold_hours": 12, "under_level_gap": 2, "band_role_percent": 50, "spawn_requests_enabled": true, "spawn_request_min_level": 6},
+      "fallback_min_cpr": { "default": 65, "7": 60, "8": 60, "9": 60, "10": 60 },
       "weights_synced_at": 1900000000,
       "crimes": [
         { "key": "gaslighttheway", "name": "Gaslight the Way", "level": 3, "roles": [
@@ -85,6 +86,8 @@
       ]
     }
   },
+  "GET /oc/board": { "data": { "synced_at": 1900000000, "crimes": [], "me": { "player_id": 1, "level": null, "cprs": {} } } },
+  "POST /oc/cpr": { "stored": 0 },
   "GET /user/get-own-roles": { "role": "leader" },
   "GET /user/get-own-permissions": { "permissions": [] },
   "GET /reputation/1234": { "paid_revives_90d": 7, "window_days": 90 },

@@ -106,6 +106,14 @@ The automated tests stub the nuke.family API, so every item here needs a real
       the suggestion updates if one of them is better. Nothing flickers.
 - [ ] Join or leave a slot, or watch someone else take the suggested one: the
       tags move without a reload.
+- [ ] A crime with no role weights yet (a newly released one) still gets
+      "Min CPR" lines and can be tagged; when it is the best slot the bar says
+      it goes on CPR and level alone.
+- [ ] First visit to Recruiting sends one `POST /oc/cpr` a few seconds in
+      (network tab); reloading without your CPRs changing sends none.
+- [ ] With a better slot in a crime further down than Torn has loaded, the
+      bar names it and offers "Scroll down"; once it loads it is tagged, or
+      the suggestion moves on if the slot was taken meanwhile.
 - [ ] Planning: lines on every slot, no bar and no tags. Completed: nothing odd.
 - [ ] Change a minimum on nuke.family (Organized Crimes → OC Assistant): within
       about five minutes and a page reload the line shows the new number.

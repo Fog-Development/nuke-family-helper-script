@@ -13,6 +13,7 @@ const role = (name, weight, minCpr) => ({ key: keyFor(name), name, weight, min_c
 
 const config = {
   settings: { productive_threshold_hours: 12, under_level_gap: 2 },
+  fallback_min_cpr: { default: 65, 8: 60 },
   crimes: [
     {
       key: "breakthebank", name: "Break the Bank", level: 8,
@@ -72,9 +73,46 @@ describe("slot rating", () => {
         ["Thief #1", SlotStatus.Filled, 50],
         ["Muscle #1", SlotStatus.Eligible, 63],
         ["Muscle #3", SlotStatus.Below, 72],
-        ["Driver", SlotStatus.Unrated, null],
+        ["Driver", SlotStatus.Eligible, 60],
       ],
     );
+    assert.equal(crimes[0].slots[3].assumed, true, "a role the site does not list goes on the level's fallback");
+    assert.equal(crimes[0].slots[1].assumed, false);
+  });
+
+  it("still suggests a crime too new to have weights, on CPR and level alone", () => {
+    const shipHappens = crime(9, "Ship Happens", 8, [open("Spy", 73), open("Engineer", 78), open("Hustler", 55)]);
+
+    // On its own: the role the member is best at, since no role is known to matter more.
+    let { crimes, suggestions } = rateCrimes([shipHappens], config);
+    assert.deepEqual(crimes[0].slots.map((rated) => rated.status), [SlotStatus.Eligible, SlotStatus.Eligible, SlotStatus.Below]);
+    assert.equal(suggestions[0].rated.slot.name, "Engineer");
+    assert.equal(suggestions[0].rated.weight, null);
+    assert.equal(suggestions[0].rated.minCpr, 60);
+
+    // Beside an equal crime we have weights for: suggested, but after it.
+    ({ suggestions } = rateCrimes([shipHappens, crime(3, "Break the Bank", 8, [filled("Thief #1", 0.75), open("Muscle #1", 80)])], config));
+    assert.deepEqual(suggestions.map((s) => [s.crime.id, s.rank]), [[3, Rank.Best], [9, Rank.Good]]);
+
+    // Its level still counts: it beats a lower-level crime we know everything about.
+    ({ suggestions } = rateCrimes([crime(1, "Blast from the Past", 7, [open("Hacker", 80)]), shipHappens], config));
+    assert.deepEqual(suggestions.map((s) => s.crime.id), [9, 1]);
+  });
+
+  it("uses a weight for a new crime once the site has one", () => {
+    const withWeights = structuredClone(config);
+    withWeights.crimes.push({
+      key: "shiphappens", name: "Ship Happens", level: 8,
+      roles: [{ ...role("Spy", 45, 70), weight_source: "manual" }, role("Engineer", null, 60)],
+    });
+    const { suggestions } = rateCrimes([crime(9, "Ship Happens", 8, [open("Spy", 73), open("Engineer", 78)])], withWeights);
+    assert.equal(suggestions[0].rated.slot.name, "Spy");
+  });
+
+  it("leaves a slot unrated when the member's CPR for it is not known", () => {
+    const { crimes, suggestions } = rateCrimes([crime(1, "Break the Bank", 8, [open("Muscle #1", null)])], config);
+    assert.equal(crimes[0].slots[0].status, SlotStatus.Unrated);
+    assert.deepEqual(suggestions, []);
   });
 
   it("suggests the heaviest role the member qualifies for", () => {
@@ -140,7 +178,7 @@ describe("slot rating", () => {
 
   it("suggests nothing when the member qualifies for no open slot", () => {
     const { suggestions } = rateCrimes(
-      [crime(1, "Break the Bank", 8, [open("Muscle #3", 60)]), crime(2, "Ship Happens", 8, [open("Spy", 99)])],
+      [crime(1, "Break the Bank", 8, [open("Muscle #3", 60)]), crime(2, "Ship Happens", 8, [open("Spy", 59)])],
       config,
     );
     assert.deepEqual(suggestions, []);

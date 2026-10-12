@@ -88,8 +88,13 @@ describe("OC Assistant on the Recruiting tab", () => {
           ["Thief #1", "Min CPR 50", "ok"],
         ]);
 
-        // "Ship Happens" is not in the site's catalog: nothing is claimed.
-        assert.ok((await chipsOf(page, "2294630")).every(([, chip]) => chip === null));
+        // "Ship Happens" is too new for the site's catalog: its slots go on
+        // the level's fallback minimum, and it ranks after the level 8 crimes
+        // whose weights are known, so it is not among the three marked.
+        assert.deepEqual((await chipsOf(page, "2294630")).slice(3), [
+          ["Engineer", "Min CPR 60", "ok"],
+          ["Interrogator", "Min CPR 60", "ok"],
+        ]);
 
         for (const selector of [
           `${BAR} .nfh-oc-bar-text`,
@@ -133,6 +138,7 @@ describe("OC Assistant on the Recruiting tab", () => {
     for (const crime of config.data.crimes) {
       for (const role of crime.roles) role.min_cpr = 99;
     }
+    for (const level of Object.keys(config.data.fallback_min_cpr)) config.data.fallback_min_cpr[level] = 99;
     const { page, close } = await openRecruiting({ api: { "GET /oc/config": config } });
     try {
       assert.match(await page.locator(BAR).innerText(), /None of the open slots loaded so far meets/);
@@ -156,7 +162,10 @@ describe("OC Assistant on the Recruiting tab", () => {
       await page.waitForFunction(
         () => !document.querySelector('[data-oc-id="2305593"] .nfh-oc-pick'),
       );
-      assert.equal((await picksOf(page))[0][0], "2294628");
+      assert.deepEqual(
+        (await picksOf(page)).find(([, , tag]) => tag === "Best for you"),
+        ["2294628", "Muscle #1", "Best for you"],
+      );
       assert.match(await page.locator(BAR).innerText(), /Best slot for you: Break the Bank/);
 
       // Torn lazy-loads another crime at the bottom of the list.
@@ -173,6 +182,101 @@ describe("OC Assistant on the Recruiting tab", () => {
         await page.evaluate(() => new Set([...document.querySelectorAll(".nfh-oc-min")].map((chip) => chip.parentElement)).size),
         "no slot gets two chips",
       );
+      assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+
+  it("suggests a crime too new to have weights when it is the best on offer", async () => {
+    const routes = loadApiFixture();
+    const config = structuredClone(routes["GET /oc/config"]);
+    // Every other level 7+ crime is out of the viewer's reach.
+    for (const crime of config.data.crimes) {
+      if (crime.level >= 7) for (const role of crime.roles) role.min_cpr = 99;
+    }
+    const { page, errors, close } = await openRecruiting({ api: { "GET /oc/config": config } });
+    try {
+      assert.deepEqual((await picksOf(page))[0], ["2294630", "Interrogator", "Best for you"]);
+      const bar = await page.locator(BAR).innerText();
+      assert.match(bar, /Best slot for you: Ship Happens \(level 8\), Interrogator\./);
+      assert.match(bar, /too new to have role weights, so this goes on your CPR and its level alone/);
+      assert.deepEqual(errors, []);
+      await screenshot(page.locator('[data-oc-id="2294630"]'), "oc-recruiting-unweighted");
+    } finally {
+      await close();
+    }
+  });
+
+  it("names a better slot in a crime Torn has not loaded yet", async () => {
+    const board = {
+      data: {
+        synced_at: 1900000000,
+        me: { player_id: 1, level: 9, cprs: { hostiletakeover: { muscle: 80, hacker: 50 } } },
+        crimes: [
+          {
+            id: 7000001, name: "Hostile Takeover", key: "hostiletakeover", level: 9, status: "Recruiting",
+            slots: [
+              { role: "Engineer", role_key: "engineer", position_id: "P2", player_id: 4001, progress: 1, cpr: 70 },
+              { role: "Muscle", role_key: "muscle", position_id: "P5", player_id: null, progress: 0, cpr: null },
+              { role: "Hacker", role_key: "hacker", position_id: "P3", player_id: null, progress: 0, cpr: null },
+              { role: "Negotiator", role_key: "negotiator", position_id: "P6", player_id: null, progress: 0, cpr: null },
+            ],
+          },
+          // Already on the page: the page's own reading of it wins.
+          { id: 2305593, name: "Clinical Precision", key: "clinicalprecision", level: 8, status: "Recruiting", slots: [
+            { role: "Imitator", role_key: "imitator", position_id: "P1", player_id: null, progress: 0, cpr: null },
+          ] },
+          { id: 7000002, name: "Hostile Takeover", key: "hostiletakeover", level: 9, status: "Planning", slots: [
+            { role: "Muscle", role_key: "muscle", position_id: "P5", player_id: 4002, progress: 0.2, cpr: 75 },
+          ] },
+        ],
+      },
+    };
+    const { page, errors, apiCalls, close } = await openRecruiting({ api: { "GET /oc/board": board } });
+    try {
+      await page.waitForFunction(() => /Hostile Takeover/.test(document.querySelector("#nfh-oc-bar").innerText));
+      const bar = await page.locator(BAR).innerText();
+      // Level 9 with no minimum set falls back to 60; the viewer's known 80 as Muscle clears it,
+      // their 50 as Hacker does not, and their CPR as Negotiator is not known at all.
+      assert.match(bar, /Best slot for you: Hostile Takeover \(level 9\), Muscle\. Your CPR is 80 and the minimum is 60\./);
+      assert.match(bar, /further down the list and may have been taken in the last few minutes/);
+      assert.equal(await page.locator(`${BAR} [data-nfh-oc-show]`).innerText(), "Scroll down");
+      // Nothing on the page is "best"; the loaded crimes are the good alternatives.
+      assert.equal(await page.locator(".nfh-oc-pick--best").count(), 0);
+      assert.deepEqual((await picksOf(page)).map(([id]) => id), ["2305593", "2294628"]);
+      assert.equal(apiCalls.filter((call) => call.path === "/oc/board").length, 1);
+      assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+
+  it("sends the viewer's own CPRs to the site once", async () => {
+    const { page, apiCalls, errors, close } = await openRecruiting();
+    try {
+      await page.waitForFunction(() => {
+        const state = JSON.parse(localStorage.getItem("nfhOcCprs") || "null");
+        return state && Object.keys(state.sent).length > 0;
+      }, null, { timeout: 10000 });
+      const uploads = apiCalls.filter((call) => call.path === "/oc/cpr");
+      assert.equal(uploads.length, 1);
+      const sent = JSON.parse(uploads[0].data).cprs;
+      // Open slots only: a filled slot shows its occupant's CPR, not the viewer's.
+      assert.deepEqual(
+        sent.filter((entry) => entry.crime === "Clinical Precision"),
+        [
+          { crime: "Clinical Precision", role: "Assassin", cpr: 78 },
+          { crime: "Clinical Precision", role: "Cleaner", cpr: 78 },
+          { crime: "Clinical Precision", role: "Imitator", cpr: 77 },
+        ],
+      );
+      assert.ok(sent.some((entry) => entry.crime === "Ship Happens" && entry.role === "Engineer" && entry.cpr === 72));
+
+      // Nothing changed, so a re-render sends nothing more.
+      await page.evaluate(() => document.querySelector("#faction-crimes-root").append(document.createElement("div")));
+      await page.waitForTimeout(5000);
+      assert.equal(apiCalls.filter((call) => call.path === "/oc/cpr").length, 1);
       assert.deepEqual(errors, []);
     } finally {
       await close();

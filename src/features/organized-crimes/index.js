@@ -3,6 +3,7 @@ import { LogInfo } from "../../core/log.js";
 import { IsPage, PageType } from "../../core/pages.js";
 import { ocConfigStore } from "./data.js";
 import { activeSubTab, CRIMES_ROOT_SELECTOR, joinState, JoinState, readCrimes, SubTab } from "./page.js";
+import { cachedBoard, learnCprs, offPageCrimes, refreshBoard } from "./remote.js";
 import { rateCrimes } from "./scoring.js";
 import { barHtml, clearAll, isOwnElement, removeBar, renderBar, renderMinimum, renderSuggestions } from "./view.js";
 
@@ -12,8 +13,11 @@ import { barHtml, clearAll, isOwnElement, removeBar, renderBar, renderMinimum, r
 // nuke.family (see docs/oc-assistant-plan.md in the site's repository).
 //
 // Torn lazy-loads the crime list and re-renders it as members join, so the
-// page is re-read whenever the list changes. Everything is worked out from
-// what is on the page: no request is made here.
+// page is re-read whenever the list changes. The page is the truth for the
+// crimes on it; the site's board (up to five minutes old, cached a minute
+// here) only adds the recruiting crimes Torn has not loaded yet, so the best
+// slot can be named before the member scrolls to it. Once such a crime loads,
+// the page takes over and a slot that has gone is simply no longer suggested.
 
 const RENDER_DEBOUNCE_MS = 150;
 
@@ -37,19 +41,32 @@ function render() {
   }
 
   const crimes = readCrimes(root);
-  const result = rateCrimes(crimes, config);
+  const recruiting = activeSubTab(root) === SubTab.Recruiting;
+  const joining = joinState(crimes);
+  const suggesting = recruiting && crimes.length > 0 && joining === JoinState.Open;
+
+  if (recruiting) learnCprs(crimes);
+  if (suggesting) {
+    refreshBoard().then((fresh) => {
+      if (fresh) scheduleRender();
+    });
+  }
+
+  const cached = suggesting ? cachedBoard() : null;
+  const elsewhere = cached ? offPageCrimes(cached.board, crimes) : [];
+  const result = rateCrimes([...crimes, ...elsewhere], config);
   for (const crime of result.crimes) {
+    if (crime.crime.offPage) continue;
     for (const rated of crime.slots) renderMinimum(rated);
   }
 
-  if (activeSubTab(root) !== SubTab.Recruiting || crimes.length === 0) {
+  if (!recruiting || crimes.length === 0) {
     renderSuggestions(root, []);
     removeBar();
     return;
   }
 
-  const joining = joinState(crimes);
-  const suggestions = joining === JoinState.Open ? result.suggestions : [];
+  const suggestions = suggesting ? result.suggestions : [];
   renderSuggestions(root, suggestions);
 
   let state;
@@ -64,7 +81,14 @@ function render() {
     bar.addEventListener("click", (event) => {
       if (!event.target.closest("[data-nfh-oc-show]")) return;
       const best = document.querySelector(`${CRIMES_ROOT_SELECTOR} .nfh-oc-pick--best`);
-      if (best) best.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (best) {
+        best.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+      // The best slot is in a crime Torn has not loaded: go to the end of
+      // the list, which is what makes Torn load more.
+      const list = document.querySelector(CRIMES_ROOT_SELECTOR);
+      if (list) list.scrollIntoView({ behavior: "smooth", block: "end" });
     });
   }
 }

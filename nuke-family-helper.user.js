@@ -1488,20 +1488,20 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
   }
   function hasUpdateGracePeriodElapsed(githubVersion) {
     const now = Date.now();
-    let pending = null;
+    let pending2 = null;
     try {
-      pending = JSON.parse(localStorage.getItem("nfhPendingUpdate"));
+      pending2 = JSON.parse(localStorage.getItem("nfhPendingUpdate"));
     } catch (e) {
-      pending = null;
+      pending2 = null;
     }
-    if (!pending || pending.version !== githubVersion) {
+    if (!pending2 || pending2.version !== githubVersion) {
       localStorage.setItem(
         "nfhPendingUpdate",
         JSON.stringify({ version: githubVersion, firstSeen: now })
       );
       return false;
     }
-    return now - pending.firstSeen >= UPDATE_NOTIFY_GRACE_PERIOD;
+    return now - pending2.firstSeen >= UPDATE_NOTIFY_GRACE_PERIOD;
   }
   function isVersionNewer(v1, v2) {
     const v1Parts = v1.split(".").map(Number);
@@ -3276,6 +3276,108 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
     return (crime.roles || []).find((role) => role.key === roleKey) || null;
   }
 
+  // src/features/organized-crimes/remote.js
+  var CPR_KEY = "nfhOcCprs";
+  var BOARD_KEY2 = "nfhOcBoard";
+  var UPLOAD_DELAY_MS = 4e3;
+  var BOARD_FRESH_MS2 = 60 * 1e3;
+  var BOARD_RETRY_MS = 30 * 1e3;
+  function readJson2(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || "null");
+    } catch (e) {
+      return null;
+    }
+  }
+  function cprState() {
+    const state2 = readJson2(CPR_KEY);
+    return state2 && state2.known && state2.sent ? state2 : { known: {}, sent: {} };
+  }
+  var pending = /* @__PURE__ */ new Map();
+  var uploadTimer = null;
+  async function upload() {
+    uploadTimer = null;
+    const batch = [...pending.entries()];
+    pending = /* @__PURE__ */ new Map();
+    if (batch.length === 0) return;
+    try {
+      await api("/oc/cpr", { method: "POST", data: { cprs: batch.map(([, entry]) => entry) } });
+      const state2 = cprState();
+      for (const [key, entry] of batch) state2.sent[key] = entry.cpr;
+      localStorage.setItem(CPR_KEY, JSON.stringify(state2));
+      LogInfo(`OC Assistant sent ${batch.length} CPRs`);
+    } catch (error) {
+      console.error("[NFH] Could not send CPRs to nuke.family:", error);
+    }
+  }
+  function learnCprs(crimes) {
+    const state2 = cprState();
+    let changed = false;
+    for (const crime of crimes) {
+      for (const slot of crime.slots) {
+        if (slot.occupied || slot.cpr === null) continue;
+        const key = `${keyFor(crime.name)}|${keyFor(slot.name)}`;
+        if (state2.known[key] !== slot.cpr) {
+          state2.known[key] = slot.cpr;
+          changed = true;
+        }
+        if (state2.sent[key] !== slot.cpr) {
+          pending.set(key, { crime: crime.name, role: slot.name, cpr: slot.cpr });
+        }
+      }
+    }
+    if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state2));
+    if (pending.size > 0 && !uploadTimer) uploadTimer = setTimeout(upload, UPLOAD_DELAY_MS);
+  }
+  function knownCpr(board, crimeName2, roleName) {
+    const crimeKey = keyFor(crimeName2);
+    const roleKey = keyFor(roleName);
+    const local = cprState().known[`${crimeKey}|${roleKey}`];
+    if (local !== void 0) return local;
+    const remote = board && board.me && board.me.cprs && board.me.cprs[crimeKey];
+    return remote && remote[roleKey] !== void 0 ? remote[roleKey] : null;
+  }
+  function cachedBoard2() {
+    const cached = readJson2(BOARD_KEY2);
+    return cached && cached.board ? cached : null;
+  }
+  var boardRequest = null;
+  var lastBoardAttempt = 0;
+  function refreshBoard2() {
+    const cached = cachedBoard2();
+    const now = Date.now();
+    if (cached && now - cached.fetchedAt < BOARD_FRESH_MS2) return Promise.resolve(false);
+    if (boardRequest) return boardRequest;
+    if (now - lastBoardAttempt < BOARD_RETRY_MS) return Promise.resolve(false);
+    lastBoardAttempt = now;
+    boardRequest = api("/oc/board").then((response) => {
+      localStorage.setItem(BOARD_KEY2, JSON.stringify({ board: response.data, fetchedAt: Date.now() }));
+      return true;
+    }).catch((error) => {
+      console.error("[NFH] Could not load the OC board from nuke.family:", error);
+      return false;
+    }).finally(() => {
+      boardRequest = null;
+    });
+    return boardRequest;
+  }
+  function offPageCrimes(board, pageCrimes) {
+    if (!board || !Array.isArray(board.crimes)) return [];
+    const onPage = new Set(pageCrimes.map((crime) => String(crime.id)));
+    return board.crimes.filter((crime) => crime.status === "Recruiting" && !onPage.has(String(crime.id))).filter((crime) => crime.slots.some((slot) => slot.player_id === null)).map((crime) => ({
+      id: String(crime.id),
+      name: crime.name,
+      level: crime.level,
+      offPage: true,
+      slots: crime.slots.map((slot) => ({
+        name: slot.role,
+        occupied: slot.player_id !== null,
+        progress: slot.progress || 0,
+        cpr: slot.player_id !== null ? slot.cpr : knownCpr(board, crime.name, slot.role)
+      }))
+    }));
+  }
+
   // src/features/organized-crimes/scoring.js
   var PLANNING_HOURS = 24;
   var SlotStatus = {
@@ -3286,22 +3388,27 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
     Below: "below",
     // open, but the viewer's CPR is under the minimum
     Unrated: "unrated"
-    // open, but the site has no minimum for it
+    // open, but the viewer's CPR for it is not known
   };
   var Rank = { Best: "best", Good: "good" };
   var GOOD_SLOTS = 2;
   function hoursUntilPlanning(crime) {
     return crime.slots.filter((slot) => slot.occupied).reduce((hours, slot) => hours + (1 - (slot.progress || 0)) * PLANNING_HOURS, 0);
   }
+  function fallbackMinimum(config, level) {
+    const fallbacks = config && config.fallback_min_cpr;
+    if (!fallbacks) return null;
+    return fallbacks[level] ?? fallbacks.default ?? null;
+  }
   function rateSlot(slot, crime, config) {
     const role = findRole(config, crime.name, slot.name);
-    const minCpr = role ? role.min_cpr : null;
+    const minCpr = role ? role.min_cpr : fallbackMinimum(config, crime.level);
     const weight = role && role.weight !== null && role.weight !== void 0 ? role.weight : null;
     let status;
     if (slot.occupied) status = SlotStatus.Filled;
     else if (minCpr === null || slot.cpr === null) status = SlotStatus.Unrated;
     else status = slot.cpr >= minCpr ? SlotStatus.Eligible : SlotStatus.Below;
-    return { slot, minCpr, weight, status };
+    return { slot, minCpr, weight, status, assumed: !role && minCpr !== null };
   }
   function pickSlot(ratedSlots) {
     return ratedSlots.filter((rated) => rated.status === SlotStatus.Eligible).sort((a, b) => (b.weight ?? -1) - (a.weight ?? -1) || b.slot.cpr - a.slot.cpr)[0] || null;
@@ -3320,7 +3427,7 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
       };
     });
     const candidates = rated.map((entry) => ({ ...entry, pick: pickSlot(entry.slots) })).filter((entry) => entry.pick).sort(
-      (a, b) => Number(b.productive) - Number(a.productive) || (b.crime.level ?? 0) - (a.crime.level ?? 0) || a.waitHours - b.waitHours || (b.pick.weight ?? -1) - (a.pick.weight ?? -1)
+      (a, b) => Number(b.productive) - Number(a.productive) || (b.crime.level ?? 0) - (a.crime.level ?? 0) || Number(b.pick.weight !== null) - Number(a.pick.weight !== null) || a.waitHours - b.waitHours || (b.pick.weight ?? -1) - (a.pick.weight ?? -1)
     );
     const suggestions = [];
     const best = candidates[0];
@@ -3362,9 +3469,9 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
   var PICK_CLASS = "nfh-oc-pick";
   var CHIP_STATES = ["ok", "below", "filled"];
   function chipFor(rated) {
-    const { slot, minCpr, weight, status } = rated;
+    const { slot, minCpr, weight, status, assumed } = rated;
     if (minCpr === null) return null;
-    const weightNote = weight === null ? "" : ` This role carries ${weight.toFixed(1)}% of the crime's outcome.`;
+    const weightNote = (weight === null ? " How much this role matters is not known yet." : ` This role carries ${weight.toFixed(1)}% of the crime's outcome.`) + (assumed ? " Your faction has not set a minimum for it, so this is the usual one for the crime's level." : "");
     switch (status) {
       case SlotStatus.Eligible:
         return {
@@ -3405,7 +3512,9 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
     return `Your planning would start ${describeWait(suggestion2.waitHours)}.`;
   }
   function renderSuggestions(root2, suggestions) {
-    const wanted = new Map(suggestions.map((suggestion2) => [suggestion2.rated.slot.el, suggestion2]));
+    const wanted = new Map(
+      suggestions.filter((suggestion2) => suggestion2.rated.slot.el).map((suggestion2) => [suggestion2.rated.slot.el, suggestion2])
+    );
     for (const marked of root2.querySelectorAll(`.${PICK_CLASS}`)) {
       if (wanted.has(marked)) continue;
       marked.classList.remove(PICK_CLASS, `${PICK_CLASS}--best`, `${PICK_CLASS}--good`);
@@ -3431,11 +3540,14 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
   function barHtml(state2) {
     const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
     if (state2.kind === "best") {
-      const [best, ...others] = state2.suggestions;
+      const [best, ...rest] = state2.suggestions;
       const { slot, minCpr } = best.rated;
+      const others = rest.filter((suggestion2) => !suggestion2.crime.offPage);
       const more = others.length > 0 ? ` <span class="nfh-oc-bar-muted">${others.length} other good slot${others.length === 1 ? " is" : "s are"} marked below.</span>` : "";
+      const unweighted = best.rated.weight === null ? ' <span class="nfh-oc-bar-muted">This crime is too new to have role weights, so this goes on your CPR and its level alone.</span>' : "";
+      const offPage = best.crime.offPage ? ' <span class="nfh-oc-bar-muted">It is further down the list and may have been taken in the last few minutes.</span>' : "";
       const late = best.productive ? "" : ' <span class="nfh-oc-bar-muted">Nothing open would start you sooner.</span>';
-      return `${label}<span class="nfh-oc-bar-text">Best slot for you: <strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${escapeHtml(waitSentence(best))}${late}${more}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>Show me</button>`;
+      return `${label}<span class="nfh-oc-bar-text">Best slot for you: <strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${escapeHtml(waitSentence(best))}${late}${unweighted}${offPage}${more}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
     }
     const messages = {
       none: "None of the open slots loaded so far meets your faction's minimum CPR for you. Scroll down to load more crimes.",
@@ -3489,17 +3601,28 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
       return;
     }
     const crimes = readCrimes(root2);
-    const result = rateCrimes(crimes, config);
+    const recruiting = activeSubTab(root2) === SubTab.Recruiting;
+    const joining = joinState(crimes);
+    const suggesting = recruiting && crimes.length > 0 && joining === JoinState.Open;
+    if (recruiting) learnCprs(crimes);
+    if (suggesting) {
+      refreshBoard2().then((fresh) => {
+        if (fresh) scheduleRender();
+      });
+    }
+    const cached = suggesting ? cachedBoard2() : null;
+    const elsewhere = cached ? offPageCrimes(cached.board, crimes) : [];
+    const result = rateCrimes([...crimes, ...elsewhere], config);
     for (const crime of result.crimes) {
+      if (crime.crime.offPage) continue;
       for (const rated of crime.slots) renderMinimum(rated);
     }
-    if (activeSubTab(root2) !== SubTab.Recruiting || crimes.length === 0) {
+    if (!recruiting || crimes.length === 0) {
       renderSuggestions(root2, []);
       removeBar();
       return;
     }
-    const joining = joinState(crimes);
-    const suggestions = joining === JoinState.Open ? result.suggestions : [];
+    const suggestions = suggesting ? result.suggestions : [];
     renderSuggestions(root2, suggestions);
     let state2;
     if (joining === JoinState.Blocked) state2 = { kind: "blocked" };
@@ -3512,7 +3635,12 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
       bar.addEventListener("click", (event) => {
         if (!event.target.closest("[data-nfh-oc-show]")) return;
         const best = document.querySelector(`${CRIMES_ROOT_SELECTOR} .nfh-oc-pick--best`);
-        if (best) best.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (best) {
+          best.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+        const list = document.querySelector(CRIMES_ROOT_SELECTOR);
+        if (list) list.scrollIntoView({ behavior: "smooth", block: "end" });
       });
     }
   }

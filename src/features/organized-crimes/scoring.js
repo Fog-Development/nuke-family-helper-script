@@ -11,7 +11,7 @@ export const SlotStatus = {
   Filled: "filled", // someone is in it
   Eligible: "eligible", // open, and the viewer meets the minimum
   Below: "below", // open, but the viewer's CPR is under the minimum
-  Unrated: "unrated", // open, but the site has no minimum for it
+  Unrated: "unrated", // open, but the viewer's CPR for it is not known
 };
 
 export const Rank = { Best: "best", Good: "good" };
@@ -28,9 +28,18 @@ export function hoursUntilPlanning(crime) {
     .reduce((hours, slot) => hours + (1 - (slot.progress || 0)) * PLANNING_HOURS, 0);
 }
 
+// The minimum to assume for a role of a crime the site has no entry for yet
+// (one released so recently that no faction has spawned it): the site's
+// per-level fallback. Null when even that is missing.
+function fallbackMinimum(config, level) {
+  const fallbacks = config && config.fallback_min_cpr;
+  if (!fallbacks) return null;
+  return fallbacks[level] ?? fallbacks.default ?? null;
+}
+
 function rateSlot(slot, crime, config) {
   const role = findRole(config, crime.name, slot.name);
-  const minCpr = role ? role.min_cpr : null;
+  const minCpr = role ? role.min_cpr : fallbackMinimum(config, crime.level);
   const weight = role && role.weight !== null && role.weight !== undefined ? role.weight : null;
 
   let status;
@@ -38,12 +47,14 @@ function rateSlot(slot, crime, config) {
   else if (minCpr === null || slot.cpr === null) status = SlotStatus.Unrated;
   else status = slot.cpr >= minCpr ? SlotStatus.Eligible : SlotStatus.Below;
 
-  return { slot, minCpr, weight, status };
+  // `assumed`: nobody has set this minimum; it is only the level's fallback.
+  return { slot, minCpr, weight, status, assumed: !role && minCpr !== null };
 }
 
 // The one slot of a crime worth recommending: the heaviest role the member
 // qualifies for. Role minimums rise with weight, so this leaves the light
-// roles for members who cannot fill the heavy ones.
+// roles for members who cannot fill the heavy ones. A crime too new to have
+// weights falls back on the role the member is best at.
 function pickSlot(ratedSlots) {
   return ratedSlots
     .filter((rated) => rated.status === SlotStatus.Eligible)
@@ -56,8 +67,10 @@ function pickSlot(ratedSlots) {
 //           suggestions: [{ rank, crime, rated, waitHours, productive }] }
 // with `suggestions` best first. A candidate is one slot per crime; they are
 // ordered by: planning starts within the faction's productive threshold,
-// then crime level (highest first), then the wait (shortest first), then
-// role weight (heaviest first).
+// then crime level (highest first), then crimes whose role weights are known
+// before crimes too new to have any (those are judged on CPR and level
+// alone, so they are still suggested, just after an equal crime we know more
+// about), then the wait (shortest first), then role weight (heaviest first).
 export function rateCrimes(crimes, config) {
   const settings = (config && config.settings) || {};
   const threshold = settings.productive_threshold_hours ?? 12;
@@ -80,6 +93,7 @@ export function rateCrimes(crimes, config) {
       (a, b) =>
         Number(b.productive) - Number(a.productive) ||
         (b.crime.level ?? 0) - (a.crime.level ?? 0) ||
+        Number(b.pick.weight !== null) - Number(a.pick.weight !== null) ||
         a.waitHours - b.waitHours ||
         (b.pick.weight ?? -1) - (a.pick.weight ?? -1),
     );
