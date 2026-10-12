@@ -8,11 +8,14 @@
 import { build } from "esbuild";
 import { existsSync, readFileSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 import { makeBuildOptions } from "../../build-options.mjs";
 import { setTheme } from "./theme.js";
 
-const ROOT = new URL("../../", import.meta.url).pathname;
+// fileURLToPath (not .pathname) so this also works on Windows. ROOT ends with a
+// path separator; the forward slashes appended below are fine on every OS.
+const ROOT = fileURLToPath(new URL("../../", import.meta.url));
 const API_PREFIX = "https://nuke.family/api"; // production build (debug off)
 const SCREENSHOT_DIR = `${ROOT}test/screenshots`;
 

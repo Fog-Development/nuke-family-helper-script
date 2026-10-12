@@ -8,7 +8,8 @@ in both Torn themes.
 npm install
 npx playwright install chromium   # once
 npm run fixtures:css              # once (and after adding fixtures): downloads Torn's CSS
-npm test                          # runs test/**/*.test.mjs
+npm test                          # runs test/**/*.test.mjs (Node 20+, any OS)
+npm test -- hospital              # only test files whose path contains "hospital"
 ```
 
 Screenshots of each themed render are written to `test/screenshots/`

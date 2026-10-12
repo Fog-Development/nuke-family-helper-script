@@ -8,7 +8,7 @@
     "build": "node build.mjs",
     "watch": "node build.mjs --watch",
     "watch:debug": "node build.mjs --watch --debug",
-    "test": "node --test \"test/**/*.test.mjs\"",
+    "test": "node test/run.mjs",
     "fixtures:css": "node test/tools/fetch-torn-css.mjs",
     "fixtures:sanitize": "node test/tools/sanitize-captures.mjs"
   },
@@ -17,5 +17,8 @@
   "devDependencies": {
     "esbuild": "^0.28.1",
     "playwright": "^1.64.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
