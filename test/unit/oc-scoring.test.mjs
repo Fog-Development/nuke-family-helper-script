@@ -7,6 +7,8 @@ import {
   Rank,
   rateCrimes,
   SlotStatus,
+  spawnTierToRequest,
+  tierFor,
 } from "../../src/features/organized-crimes/scoring.js";
 
 const role = (name, weight, minCpr) => ({ key: keyFor(name), name, weight, min_cpr: minCpr });
@@ -182,5 +184,35 @@ describe("slot rating", () => {
       config,
     );
     assert.deepEqual(suggestions, []);
+  });
+});
+
+describe("asking staff for a crime", () => {
+  const settings = { ...config.settings, spawn_requests_enabled: true, spawn_request_min_level: 6 };
+  const allowed = { ...config, settings };
+  const best = (level, productive) => [{ crime: { level }, productive }];
+
+  it("maps levels onto Torn's spawn tiers", () => {
+    assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(tierFor), ["1-2", "1-2", "3-4", "3-4", "5-6", "5-6", "7-8", "7-8", "9-10", "9-10"]);
+  });
+
+  it("is offered when nothing decent is open at the member's level", () => {
+    assert.equal(spawnTierToRequest([], 8, allowed), "7-8", "no slot at all");
+    assert.equal(spawnTierToRequest(best(8, false), 8, allowed), "7-8", "the best would leave them waiting");
+    assert.equal(spawnTierToRequest(best(6, true), 8, allowed), "7-8", "the best is two levels too easy");
+    assert.equal(spawnTierToRequest(best(5, true), 9, allowed), "9-10");
+  });
+
+  it("is not offered when a decent slot exists", () => {
+    assert.equal(spawnTierToRequest(best(8, true), 8, allowed), null);
+    assert.equal(spawnTierToRequest(best(7, true), 8, allowed), null, "one level down is within the gap");
+    assert.equal(spawnTierToRequest(best(9, true), 8, allowed), null);
+  });
+
+  it("is never offered below the faction's minimum level, without a known level, or when switched off", () => {
+    assert.equal(spawnTierToRequest([], 5, allowed), null);
+    assert.equal(spawnTierToRequest([], null, allowed), null);
+    assert.equal(spawnTierToRequest([], 8, { ...config, settings: { ...settings, spawn_requests_enabled: false } }), null);
+    assert.equal(spawnTierToRequest([], 8, { ...config, settings: { ...settings, spawn_request_min_level: 9 } }), null);
   });
 });

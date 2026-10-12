@@ -122,6 +122,12 @@ The automated tests stub the nuke.family API, so every item here needs a real
       after" or "Under-levelled from" changes which slots are flagged for you
       only; blank goes back to the faction's. Survives a reload.
 - [ ] A normal member never sees flags or "Flag settings".
+- [ ] At or above the faction's request level, free to join, with nothing
+      decent open at your level: the bar offers "Ask staff for a level N crime".
+      Clicking it posts in the faction's Discord channel and the button gives
+      way to a confirmation; asking again within 30 minutes is refused with
+      the site's reason. With crime requests switched off on nuke.family the
+      button never appears.
 - [ ] In a slot staff would flag, with over 24 hours left on the crime:
       Recruiting shows a red "You are in ... but ..." line and tags better
       slots. With under 24 hours left, or in a fine slot, it does not.

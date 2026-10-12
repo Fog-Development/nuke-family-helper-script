@@ -126,6 +126,33 @@ function suggestion(rank, candidate) {
   };
 }
 
+// Torn spawns crimes in pairs of levels; staff pick the pair.
+export function tierFor(level) {
+  if (level <= 2) return "1-2";
+  if (level <= 4) return "3-4";
+  if (level <= 6) return "5-6";
+  if (level <= 8) return "7-8";
+  return "9-10";
+}
+
+// Whether to offer the member a "ask staff for a crime" button: their faction
+// allows it, they are at or above its minimum level, and the best slot on
+// offer (anywhere, loaded or not) is not a decent one for them. Decent means
+// it starts within the productive threshold and is not so far below their
+// level that staff would call it too easy. Returns the tier to ask for, or
+// null.
+export function spawnTierToRequest(suggestions, memberLevel, config) {
+  const settings = (config && config.settings) || {};
+  if (!settings.spawn_requests_enabled) return null;
+  if (memberLevel === null || memberLevel === undefined) return null;
+  if (memberLevel < (settings.spawn_request_min_level ?? 6)) return null;
+
+  const best = suggestions[0];
+  const lowestDecentLevel = memberLevel - ((settings.under_level_gap ?? 2) - 1);
+  const decent = best && best.productive && (best.crime.level ?? 0) >= lowestDecentLevel;
+  return decent ? null : tierFor(memberLevel);
+}
+
 // "now", "in about 3 hours", "in about 2 days".
 export function describeWait(hours) {
   if (hours < 0.5) return "now";

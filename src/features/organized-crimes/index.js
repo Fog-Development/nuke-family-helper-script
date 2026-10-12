@@ -6,8 +6,8 @@ import { ocConfigStore } from "./data.js";
 import { crimeHoursLeft, limitsFor, slotFlags } from "./flags.js";
 import { getStaffPrefs, parseOverride, setStaffPrefs } from "./prefs.js";
 import { activeSubTab, CRIMES_ROOT_SELECTOR, joinState, JoinState, readCrimes, SubTab } from "./page.js";
-import { cachedBoard, learnCprs, offPageCrimes, refreshBoard } from "./remote.js";
-import { rateCrimes } from "./scoring.js";
+import { cachedBoard, learnCprs, offPageCrimes, refreshBoard, requestSpawn, spawnAskedUntil } from "./remote.js";
+import { rateCrimes, spawnTierToRequest } from "./scoring.js";
 import {
   barHtml,
   clearAll,
@@ -17,6 +17,7 @@ import {
   renderFlags,
   renderMinimum,
   renderSuggestions,
+  spawnHtml,
   staffHtml,
 } from "./view.js";
 
@@ -38,6 +39,8 @@ const RENDER_DEBOUNCE_MS = 150;
 const MOVE_WORTHWHILE_HOURS = 24;
 
 let staffPanelOpen = false;
+// The "ask staff for a crime" button: a request in flight, and its outcome.
+const spawnState = { busy: false, message: null, error: false };
 
 // What is wrong with the slot the viewer sits in, judged by the faction's own
 // thresholds (never a staff member's), or null. Looks on the page first, then
@@ -156,6 +159,16 @@ function render() {
     else if (joining === JoinState.Full) state = { kind: "full" };
     else state = { kind: "none" };
     memberPart = barHtml(state);
+
+    // Free to join, but nothing decent at their level anywhere: offer to ask
+    // staff for a crime (only if the faction has that switched on).
+    const tier =
+      joining === JoinState.Open && board && board.me
+        ? spawnTierToRequest(result.suggestions, board.me.level, config)
+        : null;
+    if (tier || spawnState.message) {
+      memberPart += spawnHtml({ tier, asked: spawnAskedUntil() > 0, ...spawnState });
+    }
   } else if (staffPart) {
     memberPart = '<span class="nfh-oc-bar-label">OC Assistant</span>';
   }
@@ -184,6 +197,18 @@ function render() {
       if (event.target.closest("[data-nfh-oc-staff-toggle]")) {
         staffPanelOpen = !staffPanelOpen;
         scheduleRender();
+        return;
+      }
+      if (event.target.closest("[data-nfh-oc-spawn]")) {
+        if (spawnState.busy) return;
+        spawnState.busy = true;
+        scheduleRender();
+        requestSpawn().then((outcome) => {
+          spawnState.busy = false;
+          spawnState.message = outcome.message;
+          spawnState.error = !outcome.ok;
+          scheduleRender();
+        });
         return;
       }
       if (!event.target.closest("[data-nfh-oc-show]")) return;

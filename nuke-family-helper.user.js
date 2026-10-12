@@ -1145,6 +1145,19 @@ body.dark-mode .nfh-oc-bar-warning {\r
     color: var(--nfh-text);\r
     font: inherit;\r
 }\r
+
+.nfh-oc-spawn {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.nfh-oc-bar-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
 `;
 
   // src/core/config.js
@@ -3341,6 +3354,23 @@ body.dark-mode .nfh-oc-bar-warning {\r
       productive: candidate.productive
     };
   }
+  function tierFor(level) {
+    if (level <= 2) return "1-2";
+    if (level <= 4) return "3-4";
+    if (level <= 6) return "5-6";
+    if (level <= 8) return "7-8";
+    return "9-10";
+  }
+  function spawnTierToRequest(suggestions, memberLevel, config) {
+    const settings = config && config.settings || {};
+    if (!settings.spawn_requests_enabled) return null;
+    if (memberLevel === null || memberLevel === void 0) return null;
+    if (memberLevel < (settings.spawn_request_min_level ?? 6)) return null;
+    const best = suggestions[0];
+    const lowestDecentLevel = memberLevel - ((settings.under_level_gap ?? 2) - 1);
+    const decent = best && best.productive && (best.crime.level ?? 0) >= lowestDecentLevel;
+    return decent ? null : tierFor(memberLevel);
+  }
   function describeWait(hours) {
     if (hours < 0.5) return "now";
     if (hours < 36) {
@@ -3595,6 +3625,25 @@ body.dark-mode .nfh-oc-bar-warning {\r
     const remote = board && board.me && board.me.cprs && board.me.cprs[crimeKey];
     return remote && remote[roleKey] !== void 0 ? remote[roleKey] : null;
   }
+  var SPAWN_KEY = "nfhOcSpawnAsked";
+  function spawnAskedUntil() {
+    const saved = readJson2(SPAWN_KEY);
+    return saved && saved.until > Date.now() ? saved.until : 0;
+  }
+  async function requestSpawn() {
+    try {
+      const response = await api("/oc/spawn-request", { method: "POST", data: {} });
+      const minutes = response.cooldown_minutes || 30;
+      localStorage.setItem(SPAWN_KEY, JSON.stringify({ until: Date.now() + minutes * 60 * 1e3 }));
+      return { ok: true, message: `Staff have been asked for a level ${response.tier} crime.` };
+    } catch (error) {
+      const reason = error && error.body && error.body.error;
+      if (error && error.status === 429) {
+        localStorage.setItem(SPAWN_KEY, JSON.stringify({ until: Date.now() + 30 * 60 * 1e3 }));
+      }
+      return { ok: false, message: reason || "Could not reach nuke.family. Try again in a minute." };
+    }
+  }
   function cachedBoard2() {
     const cached = readJson2(BOARD_KEY2);
     return cached && cached.board ? cached : null;
@@ -3747,6 +3796,15 @@ body.dark-mode .nfh-oc-bar-warning {\r
       if (tag.title !== title) tag.title = title;
     }
   }
+  function spawnHtml(spawn) {
+    if (spawn.message) {
+      return `<span class="nfh-oc-spawn${spawn.error ? " nfh-oc-bar-warning" : ""}">${escapeHtml(spawn.message)}</span>`;
+    }
+    if (spawn.asked) {
+      return '<span class="nfh-oc-spawn nfh-oc-bar-muted">You have asked staff for a crime. You can ask again later.</span>';
+    }
+    return `<span class="nfh-oc-spawn"><span class="nfh-oc-bar-muted">Nothing decent is open at your level.</span> <button type="button" class="nfh-oc-bar-button" data-nfh-oc-spawn${spawn.busy ? " disabled" : ""}>${spawn.busy ? "Asking..." : `Ask staff for a level ${escapeHtml(spawn.tier)} crime`}</button></span>`;
+  }
   function barHtml(state2) {
     const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
     if (state2.kind === "best") {
@@ -3798,6 +3856,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
   var RENDER_DEBOUNCE_MS = 150;
   var MOVE_WORTHWHILE_HOURS = 24;
   var staffPanelOpen = false;
+  var spawnState = { busy: false, message: null, error: false };
   function ownSlotWarning(pageCrimes, board, config, rate) {
     const me = String(getUserscriptUsersPlayerId() || "");
     if (!me) return null;
@@ -3887,6 +3946,10 @@ body.dark-mode .nfh-oc-bar-warning {\r
       else if (joining === JoinState.Full) state2 = { kind: "full" };
       else state2 = { kind: "none" };
       memberPart = barHtml(state2);
+      const tier = joining === JoinState.Open && board && board.me ? spawnTierToRequest(result.suggestions, board.me.level, config) : null;
+      if (tier || spawnState.message) {
+        memberPart += spawnHtml({ tier, asked: spawnAskedUntil() > 0, ...spawnState });
+      }
     } else if (staffPart) {
       memberPart = '<span class="nfh-oc-bar-label">OC Assistant</span>';
     }
@@ -3913,6 +3976,18 @@ body.dark-mode .nfh-oc-bar-warning {\r
         if (event.target.closest("[data-nfh-oc-staff-toggle]")) {
           staffPanelOpen = !staffPanelOpen;
           scheduleRender();
+          return;
+        }
+        if (event.target.closest("[data-nfh-oc-spawn]")) {
+          if (spawnState.busy) return;
+          spawnState.busy = true;
+          scheduleRender();
+          requestSpawn().then((outcome) => {
+            spawnState.busy = false;
+            spawnState.message = outcome.message;
+            spawnState.error = !outcome.ok;
+            scheduleRender();
+          });
           return;
         }
         if (!event.target.closest("[data-nfh-oc-show]")) return;

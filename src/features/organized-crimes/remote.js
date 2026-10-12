@@ -90,6 +90,32 @@ export function knownCpr(board, crimeName, roleName) {
   return remote && remote[roleKey] !== undefined ? remote[roleKey] : null;
 }
 
+const SPAWN_KEY = "nfhOcSpawnAsked";
+
+// When the member may next ask for a crime (ms), or 0 if they may ask now.
+export function spawnAskedUntil() {
+  const saved = readJson(SPAWN_KEY);
+  return saved && saved.until > Date.now() ? saved.until : 0;
+}
+
+// Ask staff, through nuke.family and Discord, to spawn a crime. Resolves with
+// { ok, message } for the bar; never throws.
+export async function requestSpawn() {
+  try {
+    const response = await api("/oc/spawn-request", { method: "POST", data: {} });
+    const minutes = response.cooldown_minutes || 30;
+    localStorage.setItem(SPAWN_KEY, JSON.stringify({ until: Date.now() + minutes * 60 * 1000 }));
+    return { ok: true, message: `Staff have been asked for a level ${response.tier} crime.` };
+  } catch (error) {
+    const reason = error && error.body && error.body.error;
+    if (error && error.status === 429) {
+      // Already asked (perhaps from another device): stop offering for a while.
+      localStorage.setItem(SPAWN_KEY, JSON.stringify({ until: Date.now() + 30 * 60 * 1000 }));
+    }
+    return { ok: false, message: reason || "Could not reach nuke.family. Try again in a minute." };
+  }
+}
+
 export function cachedBoard() {
   const cached = readJson(BOARD_KEY);
   return cached && cached.board ? cached : null;

@@ -174,6 +174,22 @@ export function renderSuggestions(root, suggestions) {
   }
 }
 
+// The "ask staff for a crime" part of the bar. `spawn` is
+// { tier, asked, busy, message, error }.
+export function spawnHtml(spawn) {
+  if (spawn.message) {
+    return `<span class="nfh-oc-spawn${spawn.error ? " nfh-oc-bar-warning" : ""}">${escapeHtml(spawn.message)}</span>`;
+  }
+  if (spawn.asked) {
+    return '<span class="nfh-oc-spawn nfh-oc-bar-muted">You have asked staff for a crime. You can ask again later.</span>';
+  }
+  return (
+    '<span class="nfh-oc-spawn"><span class="nfh-oc-bar-muted">Nothing decent is open at your level.</span> ' +
+    `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-spawn${spawn.busy ? " disabled" : ""}>` +
+    `${spawn.busy ? "Asking..." : `Ask staff for a level ${escapeHtml(spawn.tier)} crime`}</button></span>`
+  );
+}
+
 // One line above the crime list saying where to go. `state` is one of:
 //   { kind: "best", suggestions, warning }  there is a slot to recommend;
 //                                  `warning` (optional) is what is wrong with

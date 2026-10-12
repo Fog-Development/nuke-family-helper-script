@@ -336,6 +336,76 @@ const staffBoard = (extra = {}) => ({
   },
 });
 
+describe("OC Assistant crime requests", () => {
+  // A level 9 member: nothing on this page is level 8 or above with weights
+  // they qualify for once level 8 minimums are out of reach.
+  const levelNine = { data: { synced_at: 1900000000, crimes: [], me: { player_id: 1, level: 9, cprs: {} } } };
+  const outOfReach = () => {
+    const config = structuredClone(loadApiFixture()["GET /oc/config"]);
+    for (const crime of config.data.crimes) {
+      if (crime.level >= 7) for (const role of crime.roles) role.min_cpr = 99;
+    }
+    config.data.fallback_min_cpr = { default: 99 };
+    return config;
+  };
+
+  it("offers to ask staff when nothing decent is open at the member's level", async () => {
+    const { page, apiCalls, errors, close } = await openRecruiting({
+      api: { "GET /oc/board": levelNine, "GET /oc/config": outOfReach() },
+    });
+    try {
+      const button = page.locator(`${BAR} [data-nfh-oc-spawn]`);
+      await button.waitFor();
+      assert.equal(await button.innerText(), "Ask staff for a level 9-10 crime");
+      assert.match(await page.locator(BAR).innerText(), /Nothing decent is open at your level\./);
+      await screenshot(page.locator(BAR), "oc-spawn-offer");
+
+      await button.click();
+      await page.waitForFunction(() => /Staff have been asked for a level 9-10 crime\./.test(document.querySelector("#nfh-oc-bar").innerText));
+      assert.equal(apiCalls.filter((call) => call.method === "POST" && call.path === "/oc/spawn-request").length, 1);
+      assert.equal(await page.locator(`${BAR} [data-nfh-oc-spawn]`).count(), 0);
+      assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+
+  it("shows the site's reason when the request is refused", async () => {
+    const { page, close } = await openRecruiting({
+      api: {
+        "GET /oc/board": levelNine,
+        "GET /oc/config": outOfReach(),
+        "POST /oc/spawn-request": respond(429, { error: "You have already asked in the last 30 minutes." }),
+      },
+    });
+    try {
+      await page.locator(`${BAR} [data-nfh-oc-spawn]`).click();
+      await page.waitForFunction(() => /You have already asked in the last 30 minutes\./.test(document.querySelector("#nfh-oc-bar").innerText));
+    } finally {
+      await close();
+    }
+  });
+
+  it("is not offered when a decent slot exists, the faction has it off, or the member is below the level", async () => {
+    const off = outOfReach();
+    off.data.settings.spawn_requests_enabled = false;
+    for (const api of [
+      { "GET /oc/board": { data: { ...levelNine.data, me: { player_id: 1, level: 8, cprs: {} } } } },
+      { "GET /oc/board": levelNine, "GET /oc/config": off },
+      { "GET /oc/board": { data: { ...levelNine.data, me: { player_id: 1, level: 5, cprs: {} } } }, "GET /oc/config": outOfReach() },
+      { "GET /oc/config": outOfReach() },
+    ]) {
+      const { page, close } = await openRecruiting({ api });
+      try {
+        await page.waitForTimeout(700);
+        assert.equal(await page.locator(`${BAR} [data-nfh-oc-spawn]`).count(), 0, JSON.stringify(Object.keys(api)));
+      } finally {
+        await close();
+      }
+    }
+  });
+});
+
 describe("OC Assistant staff flags", () => {
   for (const theme of THEMES) {
     it(`marks each kind of problem differently on the Planning tab (${theme})`, async () => {
