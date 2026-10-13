@@ -135,6 +135,33 @@ The automated tests stub the nuke.family API, so every item here needs a real
       about five minutes and a page reload the line shows the new number.
 - [ ] Another faction's crimes tab is untouched.
 
+## Ranked war board (`factions.php?step=your#/war/rank`, during a ranked war)
+
+Needs a ranked war on (or matched to start within a day) and nuke.family
+having synced it (every 15 minutes). The automated tests build the member lists
+by hand, so this pass is the only check against Torn's real markup.
+
+- [ ] A "War board" bar appears above the war list, reading "Live" within a
+      few seconds; it appears on no other faction tab and on no other war type.
+- [ ] Members in hospital show a countdown in place of "Hospital"; it ticks
+      every second and matches their profile. Travellers show where they are
+      ("MX") or which way they are flying ("► JP", "◄ SA").
+- [ ] With "Hospital" selected both lists read: okay first, then hospital by
+      time left, then travellers. A stay under five minutes is tinted green.
+- [ ] Hospitalise or revive someone: their row moves within a second or two,
+      and a revived member is tinted orange at the top for ten seconds.
+- [ ] If the faction has a Torn Stats key on nuke.family: opponents show a
+      stat estimate next to their name, "Stats ▲" / "Stats ▼" sort by it, and
+      "Show stats" hides it. Without a key those controls are absent.
+- [ ] "Torn's order" stops the sorting (Torn's column headers work again) and
+      keeps the countdowns. The choice survives a reload.
+- [ ] The stat estimate does not cover the name or the attack link, on desktop
+      and in TornPDA.
+- [ ] Leave the war view (another tab, or back to the war list): the bar and
+      every label go. Network tab: `/war/board` is asked about every five
+      seconds while the view is open and visible, never otherwise.
+- [ ] With no war on, the bar says so and `/war/board` is asked once.
+
 ## Faction controls (`factions.php` → controls tab)
 
 - [ ] "Change Nuke Family Key" and "Check NFH Updates" buttons appear.

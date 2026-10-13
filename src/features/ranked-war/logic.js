@@ -1,0 +1,207 @@
+// The pure rules of the ranked war board: what a member's row should say and
+// where it belongs in the list. Unit tested in test/unit/, so this must not
+// import anything that needs the browser or the build defines.
+//
+// Two sources describe a member. Torn's own status cell is live but only says
+// "Hospital" or "Traveling"; the site's copy of Torn's API (a few seconds old)
+// says until when and where to. They disagree for a few seconds after someone
+// is hospitalised, revived or lands, and the page is always the newer one.
+
+// Sort groups, in the order a status sort lists them.
+export const Group = {
+  Out: 0, // the page says okay while the API still has them in hospital or flying
+  Okay: 1,
+  Hospital: 2,
+  Incoming: 3, // flying back to Torn
+  Abroad: 4,
+  Outgoing: 5,
+  Traveling: 6,
+  Away: 7, // federal jail, fallen
+};
+
+export const SortMode = {
+  Off: "off",
+  Status: "status",
+  StatsAsc: "stats-asc",
+  StatsDesc: "stats-desc",
+};
+
+// A hospital stay ending within this many seconds is worth getting ready for.
+export const SOON_SECONDS = 300;
+// How long a member who left hospital early stays highlighted.
+export const OUT_HIGHLIGHT_MS = 10000;
+// The API's "until" may run out a moment before the page catches up.
+const EXPIRY_TOLERANCE_SECONDS = 2;
+
+const PLACE_CODES = {
+  mexico: "MX",
+  "cayman islands": "CI",
+  canada: "CA",
+  hawaii: "HI",
+  "united kingdom": "UK",
+  argentina: "AR",
+  switzerland: "SW",
+  japan: "JP",
+  china: "CN",
+  uae: "UAE",
+  "south africa": "SA",
+  torn: "TC",
+};
+
+function placeCode(place) {
+  const name = String(place).trim();
+  return PLACE_CODES[name.toLowerCase()] || name;
+}
+
+// { from, to } as short codes, or null for a description that is not a flight.
+export function parseRoute(description) {
+  const text = String(description || "");
+  let match = text.match(/^Traveling from (.+) to (.+)$/);
+  if (match) return { from: placeCode(match[1]), to: placeCode(match[2]) };
+  match = text.match(/^Returning to Torn from (.+)$/);
+  if (match) return { from: placeCode(match[1]), to: "TC" };
+  match = text.match(/^Traveling to (.+)$/);
+  if (match) return { from: "TC", to: placeCode(match[1]) };
+  return null;
+}
+
+// 3725 -> "1:02:05", 185 -> "3:05"
+export function formatCountdown(seconds) {
+  const total = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const rest = String(total % 60).padStart(2, "0");
+  return hours > 0
+    ? `${hours}:${String(minutes).padStart(2, "0")}:${rest}`
+    : `${minutes}:${rest}`;
+}
+
+// 2500000000 -> "2.5b"
+export function formatStats(total) {
+  const units = [
+    [1e12, "t"],
+    [1e9, "b"],
+    [1e6, "m"],
+    [1e3, "k"],
+  ];
+  for (const [size, suffix] of units) {
+    if (total >= size) {
+      const value = total / size;
+      return `${value >= 100 ? Math.round(value) : Math.round(value * 10) / 10}${suffix}`;
+    }
+  }
+  return String(Math.round(total));
+}
+
+// What one row should show.
+//
+//   member   { s: state, u: until (unix seconds), d: description } from the
+//            site, or undefined when the site has nothing for this player
+//   pageKind what Torn's status cell says: "okay" | "hospital" | "travel" | "other"
+//   memo     { outSince, okaySince } (ms) remembered for this player between
+//            calls; pass {} the first time
+//
+// Returns { group, label, until, soon, out, memo }. `label` replaces the
+// status cell's text when it is not null; `until` orders the hospital group.
+export function classify(member, pageKind, nowMs, memo = {}) {
+  const base = { label: null, until: 0, soon: false, out: false };
+  const carried = { outSince: memo.outSince || 0, okaySince: memo.okaySince || 0 };
+  const settled = { outSince: 0, okaySince: 0 };
+
+  // Okay, as far as anyone can tell: whoever left hospital early stays "out"
+  // (and highlighted for a moment) until the API agrees.
+  const okay = (next) => ({
+    ...base,
+    group: next.outSince ? Group.Out : Group.Okay,
+    out: !!next.outSince && nowMs - next.outSince < OUT_HIGHLIGHT_MS,
+    memo: next,
+  });
+
+  if (!member) {
+    if (pageKind === "hospital") return { ...base, group: Group.Hospital, memo: settled };
+    if (pageKind === "travel") return { ...base, group: Group.Traveling, memo: settled };
+    return okay(carried);
+  }
+
+  if (member.s === "Hospital" || member.s === "Jail") {
+    const remaining = member.u - nowMs / 1000;
+    if (pageKind === "hospital") {
+      return {
+        ...base,
+        group: Group.Hospital,
+        label: remaining > 0 ? formatCountdown(remaining) : null,
+        until: member.u,
+        soon: remaining > 0 && remaining < SOON_SECONDS,
+        memo: settled,
+      };
+    }
+    if (pageKind === "okay" && remaining > EXPIRY_TOLERANCE_SECONDS) {
+      // Revived, or took a med: out before the API noticed.
+      return okay({ outSince: carried.outSince || nowMs, okaySince: carried.okaySince || nowMs });
+    }
+    return okay({ outSince: 0, okaySince: carried.okaySince || member.u * 1000 });
+  }
+
+  if (member.s === "Traveling" || member.s === "Abroad") {
+    if (pageKind === "okay") {
+      // Landed before the API noticed.
+      return okay({ outSince: carried.outSince || nowMs, okaySince: carried.okaySince || nowMs });
+    }
+    if (pageKind !== "travel") return okay(carried);
+
+    const abroad = String(member.d || "").match(/^In (.+)$/);
+    if (abroad) {
+      return { ...base, group: Group.Abroad, label: placeCode(abroad[1]), memo: settled };
+    }
+    const route = parseRoute(member.d);
+    if (route && route.to === "TC") {
+      return { ...base, group: Group.Incoming, label: `◄ ${route.from}`, memo: settled };
+    }
+    if (route) {
+      return { ...base, group: Group.Outgoing, label: `► ${route.to}`, memo: settled };
+    }
+    return { ...base, group: Group.Traveling, memo: settled };
+  }
+
+  if (member.s !== "Okay") {
+    return { ...base, group: Group.Away, memo: settled };
+  }
+
+  // The API says okay. The page knows sooner when that stopped being true.
+  if (pageKind === "hospital") return { ...base, group: Group.Hospital, memo: settled };
+  if (pageKind === "travel") return { ...base, group: Group.Traveling, memo: settled };
+  return okay({ outSince: 0, okaySince: carried.okaySince });
+}
+
+// Order two rows by status: who can be hit now (just out of hospital first),
+// then who leaves hospital next, then the travellers.
+export function compareStatus(a, b) {
+  if (a.group !== b.group) return a.group - b.group;
+  switch (a.group) {
+    case Group.Out:
+      return b.memo.outSince - a.memo.outSince;
+    case Group.Okay:
+      if (a.memo.okaySince !== b.memo.okaySince) return b.memo.okaySince - a.memo.okaySince;
+      return (a.stats || Infinity) - (b.stats || Infinity);
+    case Group.Hospital:
+      return (a.until || Infinity) - (b.until || Infinity);
+    default:
+      return String(a.label || "").localeCompare(String(b.label || ""));
+  }
+}
+
+// The comparator for a sort mode, or null when the list is left as Torn has
+// it. Rows without a stat estimate come after the ones with, by status.
+export function comparatorFor(mode) {
+  if (mode === SortMode.Status) return compareStatus;
+  if (mode !== SortMode.StatsAsc && mode !== SortMode.StatsDesc) return null;
+
+  const direction = mode === SortMode.StatsAsc ? 1 : -1;
+  return (a, b) => {
+    if (a.stats && b.stats) {
+      return a.stats === b.stats ? compareStatus(a, b) : direction * (a.stats - b.stats);
+    }
+    if (a.stats || b.stats) return a.stats ? -1 : 1;
+    return compareStatus(a, b);
+  };
+}

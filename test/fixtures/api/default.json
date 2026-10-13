@@ -5,6 +5,8 @@
     "contracts_cache_last_update": 1900000000,
     "oc_config_cache_last_update": 1900000000
   },
+  "GET /war/board": { "data": { "war": null, "recheck_seconds": 600 } },
+  "GET /war/board?stats=1": { "data": { "war": null, "recheck_seconds": 600 } },
   "GET /oc/config": {
     "data": {
       "faction_id": 5678,

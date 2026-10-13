@@ -747,6 +747,83 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     }
 }
 
+/* ---- Ranked war board (own faction's ranked war view) ---- */
+
+.nfh-war-bar {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.nfh-war-bar .nfh-cw-bar {
+    flex-wrap: wrap;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.nfh-war-bar label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.nfh-war-bar .nfh-cw-status {
+    text-align: right;
+}
+
+/* The status cell's own text stays in the DOM (Torn keeps rewriting it); ours
+   is drawn over it from an attribute, so the two never fight. */
+.faction-war .members-list [data-nfh-war] {
+    position: relative !important;
+    color: transparent !important;
+}
+
+.faction-war .members-list [data-nfh-war]::after {
+    content: attr(data-nfh-war);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% - 10px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    color: var(--user-status-red-color, #d83500);
+}
+
+.faction-war .members-list [data-nfh-war][data-nfh-war-tone="travel"]::after {
+    color: var(--user-status-blue-color, #2f7fb5);
+}
+
+.faction-war .members-list li[data-nfh-war-row="soon"] {
+    background-color: rgba(76, 175, 80, 0.3) !important;
+}
+
+.faction-war .members-list li[data-nfh-war-row="out"] {
+    background-color: rgba(255, 152, 0, 0.32) !important;
+}
+
+.faction-war .members-list [data-nfh-war-stats] {
+    position: relative !important;
+}
+
+.faction-war .members-list [data-nfh-war-stats]::after {
+    content: attr(data-nfh-war-stats);
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 4px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font-size: 10px;
+    line-height: 15px;
+    pointer-events: none;
+}
+
 /* ---- OC Assistant (faction crimes page) ---- */
 
 .nfh-oc-bar {

@@ -19,6 +19,7 @@ import factionButtons from "./features/faction-buttons.js";
 import hospital from "./features/hospital.js";
 import organizedCrimes from "./features/organized-crimes/index.js";
 import { ocConfigStore } from "./features/organized-crimes/data.js";
+import rankedWar from "./features/ranked-war/index.js";
 import reputation from "./features/reputation.js";
 import { categoriesStore, shitlistStore } from "./features/shitlist/data.js";
 import shitlistProfile from "./features/shitlist/profile.js";
@@ -36,6 +37,7 @@ const features = [
   hospital,
   factionButtons,
   chainWatch,
+  rankedWar,
   organizedCrimes,
 ];
 
