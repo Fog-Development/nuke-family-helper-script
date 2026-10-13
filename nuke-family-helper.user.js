@@ -3922,15 +3922,22 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   function pickSlot(ratedSlots) {
     return ratedSlots.filter((rated) => rated.status === SlotStatus.Eligible).sort((a, b) => (b.weight ?? -1) - (a.weight ?? -1) || b.slot.cpr - a.slot.cpr)[0] || null;
   }
+  var HIGHEST_SPAWNABLE_LEVEL = 8;
+  function heldLevel(memberLevel) {
+    if (memberLevel === null || memberLevel === void 0) return null;
+    return Math.min(memberLevel, HIGHEST_SPAWNABLE_LEVEL);
+  }
   function belowMemberLevel(crime, memberLevel, levelGap) {
-    if (memberLevel === null || memberLevel === void 0) return false;
+    const held = heldLevel(memberLevel);
+    if (held === null) return false;
     if (crime.level === null || crime.level === void 0) return false;
-    return memberLevel - crime.level >= levelGap;
+    return held - crime.level >= levelGap;
   }
   function belowOwnLevel(crime, memberLevel, config) {
-    if (memberLevel === null || memberLevel === void 0) return false;
+    const held = heldLevel(memberLevel);
+    if (held === null) return false;
     const settings = config && config.settings || {};
-    const gap = memberLevel >= productiveFromLevel(config) ? 1 : settings.under_level_gap ?? 2;
+    const gap = held >= productiveFromLevel(config) ? 1 : settings.under_level_gap ?? 2;
     return belowMemberLevel(crime, memberLevel, gap);
   }
   function canAskForCrime(memberLevel, config) {
@@ -3970,6 +3977,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const candidates = qualifying.filter((entry) => !holdBack || !entry.tooLow).sort(
       (a, b) => Number(b.productive) - Number(a.productive) || (b.crime.level ?? 0) - (a.crime.level ?? 0) || Number(b.pick.weight !== null) - Number(a.pick.weight !== null) || (a.pooled || b.pooled ? 0 : a.openSlots - b.openSlots) || a.waitHours - b.waitHours || (b.pick.weight ?? -1) - (a.pick.weight ?? -1)
     );
+    const ownLevelsSuit = memberLevel > HIGHEST_SPAWNABLE_LEVEL && candidates.some((entry) => entry.productive && (entry.crime.level ?? 0) > HIGHEST_SPAWNABLE_LEVEL);
     const suggestions = [];
     const best = candidates[0];
     if (best) {
@@ -3978,6 +3986,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       for (const candidate of candidates.slice(1)) {
         if (suggestions.length > GOOD_SLOTS) break;
         if (candidate.belowLevel) continue;
+        if (ownLevelsSuit && (candidate.crime.level ?? 0) <= HIGHEST_SPAWNABLE_LEVEL) continue;
         if (candidate.productive !== best.productive) continue;
         if ((candidate.crime.level ?? 0) < lowestGoodLevel) continue;
         suggestions.push(suggestion(Rank.Good, candidate));
@@ -4002,8 +4011,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     if (level <= 2) return "1-2";
     if (level <= 4) return "3-4";
     if (level <= 6) return "5-6";
-    if (level <= 8) return "7-8";
-    return "9-10";
+    return "7-8";
   }
   function spawnTierToRequest(suggestions, memberLevel, config) {
     if (!canAskForCrime(memberLevel, config)) return null;
@@ -4594,7 +4602,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         title: `Planning for this slot starts ${describeWait(wait2)}, later than the ${limits.thresholdHours} hour threshold.`
       });
     }
-    if (memberLevel !== null && memberLevel !== void 0 && crime.level !== null && memberLevel - crime.level >= limits.levelGap) {
+    if (belowMemberLevel(crime, memberLevel, limits.levelGap)) {
       flags.push({
         flag: Flag.UnderLevel,
         text: `Level ${memberLevel} member`,

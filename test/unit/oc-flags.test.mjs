@@ -46,6 +46,17 @@ describe("OC slot flags", () => {
     assert.deepEqual(slotFlags(easy, 0, { minCpr: 63 }, 6, { ...limits, levelGap: 1 }).length, 1);
   });
 
+  it("does not flag a level 9 or 10 member for being in a level 8 crime", () => {
+    for (const level of [9, 10]) {
+      assert.deepEqual(slotFlags({ ...crime, level: 8 }, 0, { minCpr: 63 }, level, { ...limits, levelGap: 1 }), []);
+      assert.deepEqual(slotFlags({ ...crime, level: 7 }, 0, { minCpr: 63 }, level, limits), []);
+      // Two below level 8 is still too easy for them, and says who they are.
+      const flags = slotFlags({ ...crime, level: 6 }, 0, { minCpr: 63 }, level, limits);
+      assert.deepEqual(kinds(flags), [Flag.UnderLevel]);
+      assert.equal(flags[0].text, `Level ${level} member`);
+    }
+  });
+
   it("can raise several flags on one slot, and none on an empty one", () => {
     const flags = slotFlags({ ...crime, level: 5 }, 3, { minCpr: 90 }, 9, limits);
     assert.deepEqual(kinds(flags), [Flag.Unqualified, Flag.Unproductive, Flag.UnderLevel]);

@@ -139,6 +139,11 @@ The automated tests stub the nuke.family API, so every item here needs a real
       best open slot one level below you: it is tagged "Best available" with a
       blue "Below your level" line, the bar says so in red, nothing else is
       tagged, and the request button is offered.
+- [ ] As a level 9 or 10 member with no level 9-10 crime that starts in time:
+      a level 8 slot is "Best for you" with no "Below your level" line and no
+      request button; with one that does, no level 8 is tagged. With nothing
+      suitable at 8 either, the button reads "Ask staff for a level 7-8 crime".
+      Staff see no under-levelled flag on a level 9/10 member in a level 8.
 - [ ] With only crimes two or more levels below you open (the "too low level"
       gap on nuke.family) and crime requests available to you: no slot is
       tagged, and the bar says the open slots are below your level and offers

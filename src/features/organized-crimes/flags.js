@@ -1,4 +1,4 @@
-import { countsProductiveDays, describeWait, PLANNING_HOURS, productiveFromLevel } from "./scoring.js";
+import { belowMemberLevel, countsProductiveDays, describeWait, PLANNING_HOURS, productiveFromLevel } from "./scoring.js";
 
 // Pure rules for what is wrong with a member's slot. Staff see these on every
 // filled slot; a member is warned about their own. No DOM and no storage, so
@@ -62,7 +62,9 @@ export function slotFlags(crime, index, rated, memberLevel, limits) {
     });
   }
 
-  if (memberLevel !== null && memberLevel !== undefined && crime.level !== null && memberLevel - crime.level >= limits.levelGap) {
+  // Judged by the level the member is held to: a level 9 or 10 member in a
+  // level 8 crime had no crime of their own level to ask for.
+  if (belowMemberLevel(crime, memberLevel, limits.levelGap)) {
     flags.push({
       flag: Flag.UnderLevel,
       text: `Level ${memberLevel} member`,

@@ -97,23 +97,41 @@ function pickSlot(ratedSlots) {
     .sort((a, b) => (b.weight ?? -1) - (a.weight ?? -1) || b.slot.cpr - a.slot.cpr)[0] || null;
 }
 
+// The highest level a crime can be spawned at. Level 9 and 10 crimes are not
+// spawned directly: they are the later stages of a chain that starts lower,
+// so there is not always one to join, and none can be asked for.
+export const HIGHEST_SPAWNABLE_LEVEL = 8;
+
+// The level a member is held to by the "below your level" rules. A level 9 or
+// 10 member is held to level 8: with no crime of their own level to join, a
+// level 8 one is where they belong, not a step down.
+export function heldLevel(memberLevel) {
+  if (memberLevel === null || memberLevel === undefined) return null;
+  return Math.min(memberLevel, HIGHEST_SPAWNABLE_LEVEL);
+}
+
 // Whether a crime is so far below a member's level that staff would flag them
 // for sitting in it (the same rule as the under-levelled flag). Never, when
 // either level is not known.
 export function belowMemberLevel(crime, memberLevel, levelGap) {
-  if (memberLevel === null || memberLevel === undefined) return false;
+  const held = heldLevel(memberLevel);
+  if (held === null) return false;
   if (crime.level === null || crime.level === undefined) return false;
-  return memberLevel - crime.level >= levelGap;
+  return held - crime.level >= levelGap;
 }
 
 // Whether a crime is below what the member should be joining. A member whose
 // own level is one the faction counts productive days at is held to that
 // level exactly: anything under it costs the faction, so it is only ever a
 // last resort. Below that level the looser under-level gap applies.
+//
+// The level in question is the one the member is held to (`heldLevel`), so a
+// level 9 or 10 member is not below their level in a level 8 crime.
 export function belowOwnLevel(crime, memberLevel, config) {
-  if (memberLevel === null || memberLevel === undefined) return false;
+  const held = heldLevel(memberLevel);
+  if (held === null) return false;
   const settings = (config && config.settings) || {};
-  const gap = memberLevel >= productiveFromLevel(config) ? 1 : settings.under_level_gap ?? 2;
+  const gap = held >= productiveFromLevel(config) ? 1 : settings.under_level_gap ?? 2;
   return belowMemberLevel(crime, memberLevel, gap);
 }
 
@@ -195,6 +213,13 @@ export function rateCrimes(crimes, config, member = null) {
         (b.pick.weight ?? -1) - (a.pick.weight ?? -1),
     );
 
+  // A level 9 or 10 member drops to a level 8 crime only when no crime of
+  // their own levels suits them: with one that does, a level 8 is not also
+  // offered as a good alternative.
+  const ownLevelsSuit =
+    memberLevel > HIGHEST_SPAWNABLE_LEVEL &&
+    candidates.some((entry) => entry.productive && (entry.crime.level ?? 0) > HIGHEST_SPAWNABLE_LEVEL);
+
   const suggestions = [];
   const best = candidates[0];
   if (best) {
@@ -205,6 +230,7 @@ export function rateCrimes(crimes, config, member = null) {
     for (const candidate of candidates.slice(1)) {
       if (suggestions.length > GOOD_SLOTS) break;
       if (candidate.belowLevel) continue;
+      if (ownLevelsSuit && (candidate.crime.level ?? 0) <= HIGHEST_SPAWNABLE_LEVEL) continue;
       if (candidate.productive !== best.productive) continue;
       if ((candidate.crime.level ?? 0) < lowestGoodLevel) continue;
       suggestions.push(suggestion(Rank.Good, candidate));
@@ -228,13 +254,14 @@ function suggestion(rank, candidate) {
   };
 }
 
-// Torn spawns crimes in pairs of levels; staff pick the pair.
+// Torn spawns crimes in pairs of levels; staff pick the pair. There is no
+// asking for "9-10" (see HIGHEST_SPAWNABLE_LEVEL): a level 9 or 10 member with
+// nothing to join asks for a 7-8.
 export function tierFor(level) {
   if (level <= 2) return "1-2";
   if (level <= 4) return "3-4";
   if (level <= 6) return "5-6";
-  if (level <= 8) return "7-8";
-  return "9-10";
+  return "7-8";
 }
 
 // Whether to offer the member a "ask staff for a crime" button: their faction

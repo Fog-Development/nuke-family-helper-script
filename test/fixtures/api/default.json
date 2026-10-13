@@ -90,7 +90,7 @@
   },
   "GET /oc/board": { "data": { "synced_at": 1900000000, "crimes": [], "me": { "player_id": 1, "level": null, "cprs": {} } } },
   "POST /oc/cpr": { "stored": 0 },
-  "POST /oc/spawn-request": { "status": "sent", "level": 9, "tier": "9-10", "cooldown_minutes": 30 },
+  "POST /oc/spawn-request": { "status": "sent", "level": 9, "tier": "7-8", "cooldown_minutes": 30 },
   "POST /script/debug-report": { "reference": "K7QM2X" },
   "GET /user/get-own-roles": { "role": "leader" },
   "GET /user/get-own-permissions": { "permissions": [] },

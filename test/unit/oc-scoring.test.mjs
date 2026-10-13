@@ -273,6 +273,7 @@ describe("crimes below the member's level", () => {
   const seven = crime(2, "Blast from the Past", 7, [open("Hacker", 80)]);
   const five = crime(3, "Honey Trap", 5, [open("Enforcer", 80)]);
   const other = crime(4, "Guardian \u00c1ngels", 5, [open("Hustler", 80)]);
+  const eightNow = crime(5, "Break the Bank", 8, [open("Muscle #1", 80)]);
   const picks = (crimes, member) =>
     rateCrimes(crimes, config, member).suggestions.map((s) => [s.crime.id, s.rank, s.belowLevel]);
 
@@ -316,12 +317,46 @@ describe("crimes below the member's level", () => {
     assert.deepEqual(picks([five, other], { level: 8, canAsk: false }), [[4, Rank.Best, true]]);
     assert.equal(rateCrimes([five, other], config, { level: 8, canAsk: false }).withheld, 0);
     // A good slot must be in range of the member as well as of the best crime.
-    assert.deepEqual(picks([crime(5, "Break the Bank", 8, [open("Muscle #1", 80)]), seven], { level: 9, canAsk: false }), [
-      [5, Rank.Best, true],
+    assert.deepEqual(picks([crime(5, "Break the Bank", 8, [open("Muscle #1", 80)]), seven], { level: 8, canAsk: true }), [
+      [5, Rank.Best, false],
     ]);
     assert.deepEqual(picks([crime(5, "Break the Bank", 8, [open("Muscle #1", 80)]), seven], { level: 8, canAsk: false }), [
       [5, Rank.Best, false],
     ]);
+  });
+
+  describe("for a level 9 or 10 member, who has no crime of their own level to ask for", () => {
+    const nine = crime(6, "Hostile Takeover", 9, [open("Muscle #1", 80)]);
+    const lateNine = crime(7, "Hostile Takeover", 9, [filled("Hacker", 0), open("Muscle #1", 80)]);
+
+    it("does not count a level 8 crime as below their level, but anything under it still is", () => {
+      for (const level of [9, 10]) {
+        assert.equal(belowOwnLevel({ level: 8 }, level, config), false);
+        assert.equal(belowOwnLevel({ level: 7 }, level, config), true);
+        assert.equal(belowMemberLevel({ level: 7 }, level, 2), false);
+        assert.equal(belowMemberLevel({ level: 6 }, level, 2), true);
+      }
+      assert.equal(belowOwnLevel({ level: 9 }, 10, config), false);
+    });
+
+    it("suggests a level 8 crime, unflagged, when no level 9 or 10 one suits them", () => {
+      for (const level of [9, 10]) {
+        assert.deepEqual(picks([eightNow, seven], { level, canAsk: true }), [[5, Rank.Best, false]]);
+        // A level 9 crime that would leave them waiting does not suit them.
+        assert.deepEqual(picks([lateNine, eightNow], { level, canAsk: true })[0], [5, Rank.Best, false]);
+      }
+    });
+
+    it("keeps to their own levels when one does suit them", () => {
+      assert.deepEqual(picks([eightNow, nine], { level: 9, canAsk: true }), [[6, Rank.Best, false]]);
+      assert.deepEqual(picks([eightNow, nine], { level: 10, canAsk: true }), [[6, Rank.Best, false]]);
+      // A level 8 member is offered both, as before.
+      assert.deepEqual(picks([eightNow, nine], { level: 8, canAsk: true }), [[6, Rank.Best, false], [5, Rank.Good, false]]);
+    });
+
+    it("still flags a level 7 crime as a last resort", () => {
+      assert.deepEqual(picks([seven], { level: 10, canAsk: true }), [[2, Rank.Best, true]]);
+    });
   });
 
   it("leave an unproductive crime at the member's level as the one suggested when they can ask", () => {
@@ -342,14 +377,18 @@ describe("asking staff for a crime", () => {
   const best = (level, productive) => [{ crime: { level }, productive }];
 
   it("maps levels onto Torn's spawn tiers", () => {
-    assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(tierFor), ["1-2", "1-2", "3-4", "3-4", "5-6", "5-6", "7-8", "7-8", "9-10", "9-10"]);
+    // There is no asking for a level 9-10 crime: they are not spawned directly.
+    assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(tierFor), ["1-2", "1-2", "3-4", "3-4", "5-6", "5-6", "7-8", "7-8", "7-8", "7-8"]);
   });
 
   it("is offered when nothing decent is open at the member's level", () => {
     assert.equal(spawnTierToRequest([], 8, allowed), "7-8", "no slot at all");
     assert.equal(spawnTierToRequest(best(8, false), 8, allowed), "7-8", "the best would leave them waiting");
     assert.equal(spawnTierToRequest(best(6, true), 8, allowed), "7-8", "the best is two levels too easy");
-    assert.equal(spawnTierToRequest(best(5, true), 9, allowed), "9-10");
+    assert.equal(spawnTierToRequest(best(5, true), 9, allowed), "7-8");
+    assert.equal(spawnTierToRequest([], 10, allowed), "7-8");
+    assert.equal(spawnTierToRequest(best(7, true), 10, allowed), "7-8", "level 7 is still below a level 10 member");
+    assert.equal(spawnTierToRequest(best(8, false), 9, allowed), "7-8");
   });
 
   it("is not offered when a decent slot exists", () => {
@@ -359,6 +398,9 @@ describe("asking staff for a crime", () => {
     assert.equal(spawnTierToRequest(best(7, true), 8, never), null, "one level down is within the gap where they never count");
     assert.equal(spawnTierToRequest(best(6, true), 8, never), "7-8");
     assert.equal(spawnTierToRequest(best(9, true), 8, allowed), null);
+    assert.equal(spawnTierToRequest(best(8, true), 9, allowed), null, "a level 8 slot is decent for a level 9 member");
+    assert.equal(spawnTierToRequest(best(8, true), 10, allowed), null);
+    assert.equal(spawnTierToRequest(best(10, true), 10, allowed), null);
   });
 
   it("is never offered below the faction's minimum level, without a known level, or when switched off", () => {
