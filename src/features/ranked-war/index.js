@@ -10,6 +10,7 @@ import {
   SortMode,
   Source,
   SOURCES,
+  Then,
 } from "./logic.js";
 import { getPrefs, setPrefs } from "./prefs.js";
 
@@ -174,6 +175,12 @@ function pageEstimatesOf(row) {
   return found;
 }
 
+// The war score Torn shows for the member ("1,231.03").
+function scoreOf(row) {
+  const cell = cellOf(row, "points");
+  return (cell && Number(cell.textContent.replace(/,/g, ""))) || 0;
+}
+
 // Queue what the page shows and nuke.family lacks. Nothing is queued before
 // the site has said what it holds, so most page views send nothing at all.
 function noteForUpload(id, onPage) {
@@ -244,7 +251,7 @@ function decorate(lists) {
   const prefs = getPrefs();
   const live = hasData();
   const now = Date.now() + state.clockOffset;
-  const compare = live ? comparatorFor(prefs.sort) : null;
+  const compare = live ? comparatorFor(prefs.sort, prefs.then) : null;
   let anyStats = false;
   let heldShown = false;
   const sources = new Set();
@@ -271,6 +278,7 @@ function decorate(lists) {
         if (onPage[source] || held[source]) sources.add(source);
       }
       entry.stats = estimate.total;
+      entry.score = scoreOf(row);
       // BSP and FF Scouter draw their own; ours is only for what they do not show.
       const badge = estimate.total > 0 && !estimate.fromPage;
       anyStats = anyStats || estimate.total > 0;
@@ -320,6 +328,27 @@ function statusText() {
   return age < 15 ? "Live" : `Updated ${age}s ago`;
 }
 
+// How members with the same status are ordered. The stat choices are only
+// offered when there are estimates to sort by.
+function thenSelect(prefs) {
+  const options = [
+    ...(state.anyStats ? [[Then.StatsAsc, "lowest stats"], [Then.StatsDesc, "highest stats"]] : []),
+    [Then.ScoreDesc, "highest score"],
+    [Then.ScoreAsc, "lowest score"],
+    [Then.Recent, "latest out of hospital"],
+  ];
+  // Without estimates the stat orders leave Torn's order as it is.
+  const chosen = options.some(([value]) => value === prefs.then) ? prefs.then : "";
+  return (
+    '<label title="How members with the same status are ordered">then <select data-pref="then">' +
+    (chosen === "" ? '<option value="" selected>Torn\'s order</option>' : "") +
+    options
+      .map(([value, label]) => `<option value="${value}"${value === chosen ? " selected" : ""}>${label}</option>`)
+      .join("") +
+    "</select></label>"
+  );
+}
+
 function renderBar() {
   const prefs = getPrefs();
   const chip = (mode, label, title) =>
@@ -336,6 +365,7 @@ function renderBar() {
             chip(SortMode.StatsDesc, "Stats ▼", "Highest battle stat estimate first")
           : "") +
         chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them (or BSP / FF Scouter, if you sort with theirs)") +
+        (prefs.sort === SortMode.Status ? thenSelect(prefs) : "") +
         (state.sources.size > 1
           ? '<label title="Whose estimate to use when both are known">Estimates <select data-pref="source">' +
             `<option value="${Source.Bsp}"${prefs.source === Source.Bsp ? " selected" : ""}>BSP</option>` +
@@ -385,6 +415,9 @@ function onChange(event) {
     setPrefs({ showStats: event.target.checked });
   } else if (pref === "source") {
     setPrefs({ source: event.target.value });
+  } else if (pref === "then") {
+    if (!event.target.value) return;
+    setPrefs({ then: event.target.value });
   } else {
     return;
   }

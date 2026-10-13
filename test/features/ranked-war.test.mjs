@@ -25,11 +25,16 @@ after(async () => {
 // Torn in October 2026): the same nesting, and the same plain plus build-hashed
 // class on every element Torn's war stylesheet styles.
 const ENEMIES = [
-  { id: 501, name: "Foe-Okay", status: "okay ok", text: "Okay" },
+  { id: 501, name: "Foe-Okay", status: "okay ok", text: "Okay", score: "1,231.03" },
   { id: 502, name: "Foe-LongHosp", status: "hospital not-ok", text: "Hospital" },
   { id: 503, name: "Foe-Abroad", status: "abroad not-ok", text: "Abroad" },
   { id: 504, name: "Foe-ShortHosp", status: "hospital not-ok", text: "Hospital" },
   { id: 505, name: "Foe-Revived", status: "okay ok", text: "Okay" },
+];
+// Two more opponents who are okay, for ordering within a status.
+const MORE_OKAY = [
+  { id: 506, name: "Foe-Scorer", status: "okay ok", text: "Okay", score: "56.64" },
+  { id: 507, name: "Foe-Idle", status: "okay ok", text: "Okay" },
 ];
 const FRIENDS = [
   { id: 601, name: "Ally-Hosp", status: "hospital not-ok", text: "Hospital" },
@@ -51,7 +56,7 @@ function listHtml(side, members) {
         `<a class="linkWrap___oVXBN flexCenter___k97k4" href="/profiles.php?XID=${member.id}"><span class="honorName___s2vRc">${member.name}</span></a>` +
         "</div></div></div>" +
         '<div class="level left level___pwbgk">50</div>' +
-        '<div class="points left points___LV5Ar">12.50</div>' +
+        `<div class="points left points___LV5Ar">${member.score || "0.00"}</div>` +
         `<div class="status left prevColumn___UOKmY status___BLAOt ${member.status}">${member.text}</div>` +
         '<div class="attack left attack___naVWZ"><a class="t-blue h c-pointer" href="#">Attack</a></div>' +
         '<div class="clear"></div>' +
@@ -73,7 +78,7 @@ function listHtml(side, members) {
   );
 }
 
-async function addWar(page) {
+async function addWar(page, enemies = ENEMIES) {
   await page.evaluate(
     ({ enemies, friends }) => {
       const holder = document.createElement("li");
@@ -83,7 +88,7 @@ async function addWar(page) {
         `<div class="faction-war membersWrap___DiCDz">${enemies}${friends}<div class="clear"></div></div>`;
       document.querySelector("#faction_war_list_id").appendChild(holder);
     },
-    { enemies: listHtml("enemy", ENEMIES), friends: listHtml("your", FRIENDS) },
+    { enemies: listHtml("enemy", enemies), friends: listHtml("your", FRIENDS) },
   );
 }
 
@@ -104,6 +109,8 @@ function board(over = {}) {
         505: { s: "Hospital", u: now + 900, d: "In hospital for 15 mins" },
         601: { s: "Hospital", u: now + 600, d: "In hospital for 10 mins" },
         602: { s: "Okay", u: 0, d: "" },
+        506: { s: "Okay", u: 0, d: "" },
+        507: { s: "Okay", u: 0, d: "" },
       },
       ...over,
     },
@@ -226,8 +233,38 @@ describe("ranked war board", () => {
       assert.equal(await page.locator(".faction-war [data-nfh-war-stats]").count(), 0);
 
       const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("nfhRankedWar")));
-      assert.deepEqual(saved, { sort: "off", showStats: false, source: "bsp" });
+      assert.deepEqual(saved, { sort: "off", then: "stats-asc", showStats: false, source: "bsp" });
       assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+
+  it("orders members with the same status by score when asked", async () => {
+    const { page, errors, close } = await openWar({ before: (page) => addWar(page, [...ENEMIES, ...MORE_OKAY]) });
+    try {
+      await page.waitForSelector(".faction-war [data-nfh-war]");
+      const okay = async () => (await enemyOrder(page)).filter((name) => /Okay|Scorer|Idle/.test(name));
+
+      // Default: lowest stat estimate first, the unknown after.
+      assert.deepEqual(await okay(), ["Foe-Okay", "Foe-Scorer", "Foe-Idle"]);
+
+      await page.selectOption(`${BAR} [data-pref="then"]`, "score-desc");
+      assert.deepEqual(await okay(), ["Foe-Okay", "Foe-Scorer", "Foe-Idle"]);
+      await page.selectOption(`${BAR} [data-pref="then"]`, "score-asc");
+      assert.deepEqual(await okay(), ["Foe-Idle", "Foe-Scorer", "Foe-Okay"]);
+      // Status still comes first.
+      assert.deepEqual((await enemyOrder(page)).slice(-3), ["Foe-ShortHosp", "Foe-LongHosp", "Foe-Abroad"]);
+
+      const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("nfhRankedWar")));
+      assert.equal(saved.then, "score-asc");
+
+      // Only offered with the status sort.
+      await page.click(`${BAR} [data-sort="stats-asc"]`);
+      assert.equal(await page.locator(`${BAR} [data-pref="then"]`).count(), 0);
+      assert.deepEqual(errors, []);
+      await page.click(`${BAR} [data-sort="status"]`);
+      await screenshot(page.locator(BAR), "ranked-war-bar-then");
     } finally {
       await close();
     }

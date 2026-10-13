@@ -10,6 +10,7 @@ import {
   parseStatText,
   pickEstimate,
   SortMode,
+  Then,
 } from "../../src/features/ranked-war/logic.js";
 
 const NOW = 1_800_000_000_000;
@@ -118,24 +119,44 @@ describe("ranked war: stat estimates", () => {
 });
 
 describe("ranked war: sorting", () => {
-  const row = (name, member, pageKind, extra = {}) => ({ name, ...classify(member, pageKind, NOW, extra.memo), stats: extra.stats || 0 });
-  const names = (rows, mode) => [...rows].sort(comparatorFor(mode)).map((entry) => entry.name);
+  const row = (name, member, pageKind, extra = {}) => ({
+    name,
+    ...classify(member, pageKind, NOW, extra.memo),
+    stats: extra.stats || 0,
+    score: extra.score || 0,
+  });
+  const names = (rows, mode, then) => [...rows].sort(comparatorFor(mode, then)).map((entry) => entry.name);
 
   const rows = [
     row("abroad", { s: "Abroad", u: 0, d: "In Mexico" }, "travel", { stats: 5e9 }),
     row("hosp-long", hospital(3000), "hospital", { stats: 1e9 }),
-    row("okay-old", okay, "okay", { stats: 3e9 }),
+    row("okay-old", okay, "okay", { stats: 3e9, score: 12.5 }),
     row("hosp-unknown", okay, "hospital"),
     row("just-out", hospital(900), "okay", { stats: 9e9 }),
     row("hosp-short", hospital(60), "hospital", { stats: 2e9 }),
-    row("okay-recent", okay, "okay", { memo: { okaySince: NOW - 5000 } }),
+    row("okay-recent", okay, "okay", { memo: { okaySince: NOW - 5000 }, score: 80 }),
     row("returning", { s: "Traveling", u: 0, d: "Returning to Torn from Japan" }, "travel"),
   ];
 
   it("lists who can be hit now, then who leaves hospital next, then travellers", () => {
     assert.deepEqual(names(rows, SortMode.Status), [
-      "just-out", "okay-recent", "okay-old", "hosp-short", "hosp-long", "hosp-unknown", "returning", "abroad",
+      "just-out", "okay-old", "okay-recent", "hosp-short", "hosp-long", "hosp-unknown", "returning", "abroad",
     ]);
+  });
+
+  it("orders members with the same status by the chosen second sort", () => {
+    const okays = (then) => names(rows, SortMode.Status, then).slice(1, 3);
+    assert.deepEqual(okays(Then.StatsAsc), ["okay-old", "okay-recent"]);
+    assert.deepEqual(okays(Then.StatsDesc), ["okay-old", "okay-recent"]);
+    assert.deepEqual(okays(Then.ScoreDesc), ["okay-recent", "okay-old"]);
+    assert.deepEqual(okays(Then.ScoreAsc), ["okay-old", "okay-recent"]);
+    assert.deepEqual(okays(Then.Recent), ["okay-recent", "okay-old"]);
+    // Status always comes first, and hospital stays go by time left.
+    for (const then of Object.values(Then)) {
+      const sorted = names(rows, SortMode.Status, then);
+      assert.equal(sorted[0], "just-out");
+      assert.deepEqual(sorted.slice(3), ["hosp-short", "hosp-long", "hosp-unknown", "returning", "abroad"]);
+    }
   });
 
   it("sorts by stat estimate either way, with the unknown last by status", () => {

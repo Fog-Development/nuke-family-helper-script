@@ -26,6 +26,15 @@ export const SortMode = {
   StatsDesc: "stats-desc",
 };
 
+// How members with the same status are ordered among themselves.
+export const Then = {
+  StatsAsc: "stats-asc",
+  StatsDesc: "stats-desc",
+  ScoreDesc: "score-desc",
+  ScoreAsc: "score-asc",
+  Recent: "recent", // whoever became okay most recently first
+};
+
 // A hospital stay ending within this many seconds is worth getting ready for.
 export const SOON_SECONDS = 300;
 // How long a member who left hospital early stays highlighted.
@@ -201,35 +210,58 @@ export function classify(member, pageKind, nowMs, memo = {}) {
   return okay({ outSince: 0, okaySince: carried.okaySince });
 }
 
+// Order two rows of the same status by the member's choice. Rows without a
+// stat estimate come after the ones with, whichever way stats are sorted.
+function compareThen(a, b, then) {
+  switch (then) {
+    case Then.StatsAsc:
+      return (a.stats || Infinity) - (b.stats || Infinity);
+    case Then.StatsDesc:
+      return (b.stats || 0) - (a.stats || 0);
+    case Then.ScoreDesc:
+      return (b.score || 0) - (a.score || 0);
+    case Then.ScoreAsc:
+      return (a.score || 0) - (b.score || 0);
+    default:
+      return (b.memo.okaySince || 0) - (a.memo.okaySince || 0);
+  }
+}
+
 // Order two rows by status: who can be hit now (just out of hospital first),
-// then who leaves hospital next, then the travellers.
-export function compareStatus(a, b) {
+// then who leaves hospital next, then the travellers. `then` orders the
+// members who are okay, and breaks ties everywhere else.
+export function compareStatus(a, b, then = Then.StatsAsc) {
   if (a.group !== b.group) return a.group - b.group;
+  let order = 0;
   switch (a.group) {
     case Group.Out:
-      return b.memo.outSince - a.memo.outSince;
+      order = b.memo.outSince - a.memo.outSince;
+      break;
     case Group.Okay:
-      if (a.memo.okaySince !== b.memo.okaySince) return b.memo.okaySince - a.memo.okaySince;
-      return (a.stats || Infinity) - (b.stats || Infinity);
+      break;
     case Group.Hospital:
-      return (a.until || Infinity) - (b.until || Infinity);
+      order = (a.until || Infinity) - (b.until || Infinity);
+      break;
     default:
-      return String(a.label || "").localeCompare(String(b.label || ""));
+      order = String(a.label || "").localeCompare(String(b.label || ""));
   }
+  // Infinity - Infinity (two hospital rows with no time yet) is not a tie-break.
+  return order || compareThen(a, b, then) || 0;
 }
 
 // The comparator for a sort mode, or null when the list is left as Torn has
 // it. Rows without a stat estimate come after the ones with, by status.
-export function comparatorFor(mode) {
-  if (mode === SortMode.Status) return compareStatus;
+export function comparatorFor(mode, then = Then.StatsAsc) {
+  const byStatus = (a, b) => compareStatus(a, b, then);
+  if (mode === SortMode.Status) return byStatus;
   if (mode !== SortMode.StatsAsc && mode !== SortMode.StatsDesc) return null;
 
   const direction = mode === SortMode.StatsAsc ? 1 : -1;
   return (a, b) => {
     if (a.stats && b.stats) {
-      return a.stats === b.stats ? compareStatus(a, b) : direction * (a.stats - b.stats);
+      return a.stats === b.stats ? byStatus(a, b) : direction * (a.stats - b.stats);
     }
     if (a.stats || b.stats) return a.stats ? -1 : 1;
-    return compareStatus(a, b);
+    return byStatus(a, b);
   };
 }

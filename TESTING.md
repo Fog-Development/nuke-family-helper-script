@@ -150,6 +150,10 @@ two would keep undoing each other.
       ("MX") or which way they are flying ("► JP", "◄ SA").
 - [ ] With "Hospital" selected both lists read: okay first, then hospital by
       time left, then travellers. A stay under five minutes is tinted green.
+- [ ] With "Hospital" selected, the "then" select reorders the okay members:
+      lowest or highest stats, highest or lowest score (the Score column), or
+      latest out of hospital. Hospital rows stay in order of time left. The
+      choice survives a reload, and the select is absent for the other sorts.
 - [ ] Hospitalise or revive someone: their row moves within a second or two,
       and a revived member is tinted orange at the top for ten seconds.
 - [ ] With BSP or FF Scouter installed: "Stats ▲" / "Stats ▼" sort by the
