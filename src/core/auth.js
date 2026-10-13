@@ -1,13 +1,15 @@
-import { TOKEN_GENERATION_URL } from "./config.js";
 import { getValue, setValue } from "./storage.js";
 
 // The nuke.family API token, kept in the userscript manager's storage so it
 // survives across pages and (unlike localStorage) is not accessible to the
 // Torn page itself; in TornPDA, in the app's own store (see storage.js).
+//
+// How the script gets one is in features/connect.js. This module only holds
+// it, and knows whether it is working.
 let apiToken = "";
 
-// The Torn page to send the user back to once the token-generation page has
-// captured their key (GM storage, so it's readable from nuke.family).
+// The Torn page to send the user back to once nuke.family's token-generation
+// page has captured their key (the older way of connecting; still honoured).
 const RETURN_URL_KEY = "nfhTokenReturnUrl";
 
 export function initAuth() {
@@ -21,74 +23,77 @@ export function getApiToken() {
 export function setApiToken(token) {
   apiToken = token;
   setValue("apiToken", token);
+  rejected = false;
+  noAnswers = 0;
+  notify();
 }
 
-// First-run flow: if no token is stored yet, walk the user through generating
-// one on nuke.family (first visit offers to take them to the token page, later
-// visits fall back to a manual prompt).
-//
-// This navigates the current tab rather than opening a new one: window.open()
-// outside a click handler is blocked by popup blockers (an alert/confirm
-// dismissal doesn't count as a user gesture), and TornPDA has no tabs anyway.
-// The token-capture page sends the user back here once the key is saved.
-export function ensureApiToken() {
-  if (apiToken) return;
+// Whether the script can talk to nuke.family as this member, as far as this
+// page load has seen. The script used to fail silently when it could not;
+// everything that tells the member so hangs off this.
+export const Connection = {
+  Connected: "connected",
+  // No key stored: never connected, or storage was wiped.
+  Missing: "missing",
+  // nuke.family answered a call made with the key with "not logged in".
+  Rejected: "rejected",
+  // Calls are getting no answer at all, and none has got through.
+  Unreachable: "unreachable",
+};
 
-  if (!getValue("apiTokenFirstTime", false)) {
-    setValue("apiTokenFirstTime", true);
-    const goNow = confirm(
-      "No Nuke.Family API key set yet. You need a https://nuke.family account " +
-        "(create one if needed) and a key.\n\n" +
-        "Press OK to go to nuke.family now. Your key will be saved " +
-        "automatically and you'll be brought back to this page.",
-    );
-    if (goNow) {
-      setValue(RETURN_URL_KEY, window.location.href);
-      window.location.href = TOKEN_GENERATION_URL;
-    }
-  } else {
-    const maybeApiToken = prompt(
-      "Please enter your Nuke API key from Fogest's site (https://nuke.family/user)",
-    );
-    // If the user cancels, maybeApiToken could be null
-    if (maybeApiToken && maybeApiToken.length < 30) {
-      alert(
-        "That key is too short. Please ensure you are using your Nuke.Family " +
-          "key (around 50 characters), NOT your Torn API key!",
-      );
-    } else if (maybeApiToken) {
-      // Only store if the token is valid length
-      setApiToken(maybeApiToken);
+const UNREACHABLE_AFTER = 2;
+
+let rejected = false;
+let answers = 0;
+let noAnswers = 0;
+const listeners = [];
+
+export function connectionState() {
+  if (!apiToken) return Connection.Missing;
+  if (rejected) return Connection.Rejected;
+  if (answers === 0 && noAnswers >= UNREACHABLE_AFTER) return Connection.Unreachable;
+  return Connection.Connected;
+}
+
+export function onConnectionChange(listener) {
+  listeners.push(listener);
+}
+
+let lastState = null;
+function notify() {
+  const state = connectionState();
+  if (state === lastState) return;
+  lastState = state;
+  for (const listener of listeners) {
+    try {
+      listener(state);
+    } catch (error) {
+      console.error("[NFH] Connection listener failed:", error);
     }
   }
 }
 
-// Consume the Torn URL stored by the first-run flow. Returns it once (then
-// clears it), or null if the user reached the token page some other way.
+// Reported by api(): how each call made with the stored key went.
+export function noteAnswer() {
+  answers += 1;
+  notify();
+}
+
+export function noteKeyRejected() {
+  rejected = true;
+  notify();
+}
+
+export function noteNoAnswer() {
+  noAnswers += 1;
+  notify();
+}
+
+// Consume the Torn URL stored before a trip to the token-generation page.
+// Returns it once (then clears it), or null if the user got there another way.
 export function takeTokenReturnUrl() {
   const url = getValue(RETURN_URL_KEY, "");
   if (!url) return null;
   setValue(RETURN_URL_KEY, "");
   return url.startsWith("https://www.torn.com/") ? url : null;
-}
-
-// Prompt the user for a replacement API key. Returns the new key, or null if
-// the user cancelled or the key failed validation.
-export function promptForNewApiKey() {
-  const newKey = prompt(
-    "Enter the new Nuke.Family API key (should be ~50 characters).",
-  );
-
-  if (!newKey) {
-    return null;
-  }
-  if (newKey.length < 30) {
-    alert(
-      "That key is too short. Please ensure you are using your Nuke.Family " +
-        "key, NOT your Torn API key!",
-    );
-    return null;
-  }
-  setApiToken(newKey);
-  return newKey;
 }

@@ -72,14 +72,14 @@
       function __GM_notification(...args) {
         if (typeof args[0] === "object") {
           const { text, title, onclick, ondone } = args[0];
-          notify(text, title, onclick, ondone);
+          notify2(text, title, onclick, ondone);
         } else if (typeof args[0] === "string") {
           const [text, title, , onclick] = args;
-          notify(text, title, onclick);
+          notify2(text, title, onclick);
         }
         return { remove: () => {
         } };
-        function notify(text, title, onclick, ondone) {
+        function notify2(text, title, onclick, ondone) {
           if (!text)
             throw new TypeError(
               "No notification text supplied to GM_notification"
@@ -1326,18 +1326,90 @@ body.dark-mode .nfh-oc-bar-warning {
     opacity: 0.6;
     cursor: default;
 }
+
+/* Connection banner and notes (features/connect.js) */
+.nfh-connect-banner {
+    position: relative;
+    z-index: 99999;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 10px;
+    padding: 8px 34px 8px 12px;
+    border-bottom: 2px solid #b26a00;
+    background-color: #3a2a08;
+    color: #ffe2a8;
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+body:not(.dark-mode) .nfh-connect-banner {
+    background-color: #fff3d6;
+    color: #5a3b00;
+}
+
+.nfh-connect-banner--ok,
+body:not(.dark-mode) .nfh-connect-banner--ok {
+    border-bottom-color: #2e7d32;
+    background-color: #173a1a;
+    color: #d5f5d7;
+}
+
+.nfh-connect-text {
+    flex: 0 1 auto;
+}
+
+.nfh-connect-error {
+    display: block;
+    font-weight: bold;
+}
+
+.nfh-connect-banner .torn-btn,
+.nfh-connect-banner a.torn-btn {
+    flex: 0 0 auto;
+    text-decoration: none;
+}
+
+.nfh-connect-manual,
+.nfh-connect-note-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.nfh-connect-dismiss {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    padding: 0 4px;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.nfh-connect-note {
+    margin: 6px 0;
+    padding: 6px 10px;
+    border-left: 3px solid #b26a00;
+    border-radius: 3px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font-size: 12px;
+    line-height: 1.4;
+}
 `;
 
-  // src/core/config.js
-  var DEBUG = false;
-  var DEFAULT_VERSION = "2.18.1";
-  var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : DEFAULT_VERSION;
-  var API_URL = DEBUG ? "http://nuke.test/api" : "https://nuke.family/api";
-  var TOKEN_GENERATION_URL = DEBUG ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
-  var GITHUB_URL = "https://github.com/Fog-Development/nuke-family-helper-script/raw/master/nuke-family-helper.user.js";
-
   // src/core/storage.js
-  var MANAGER_KEYS = ["apiToken", "apiTokenFirstTime", "nfhTokenReturnUrl"];
+  var MANAGER_KEYS = ["apiToken", "apiTokenFirstTime", "nfhTokenReturnUrl", "nfhConnectPending"];
   var LOCAL_KEYS = [
     "hiddenShitlistCategories",
     "nfhShowReputation",
@@ -1511,30 +1583,57 @@ body.dark-mode .nfh-oc-bar-warning {
   function setApiToken(token) {
     apiToken = token;
     setValue("apiToken", token);
+    rejected = false;
+    noAnswers = 0;
+    notify();
   }
-  function ensureApiToken() {
-    if (apiToken) return;
-    if (!getValue("apiTokenFirstTime", false)) {
-      setValue("apiTokenFirstTime", true);
-      const goNow = confirm(
-        "No Nuke.Family API key set yet. You need a https://nuke.family account (create one if needed) and a key.\n\nPress OK to go to nuke.family now. Your key will be saved automatically and you'll be brought back to this page."
-      );
-      if (goNow) {
-        setValue(RETURN_URL_KEY, window.location.href);
-        window.location.href = TOKEN_GENERATION_URL;
-      }
-    } else {
-      const maybeApiToken = prompt(
-        "Please enter your Nuke API key from Fogest's site (https://nuke.family/user)"
-      );
-      if (maybeApiToken && maybeApiToken.length < 30) {
-        alert(
-          "That key is too short. Please ensure you are using your Nuke.Family key (around 50 characters), NOT your Torn API key!"
-        );
-      } else if (maybeApiToken) {
-        setApiToken(maybeApiToken);
+  var Connection = {
+    Connected: "connected",
+    // No key stored: never connected, or storage was wiped.
+    Missing: "missing",
+    // nuke.family answered a call made with the key with "not logged in".
+    Rejected: "rejected",
+    // Calls are getting no answer at all, and none has got through.
+    Unreachable: "unreachable"
+  };
+  var UNREACHABLE_AFTER = 2;
+  var rejected = false;
+  var answers = 0;
+  var noAnswers = 0;
+  var listeners = [];
+  function connectionState() {
+    if (!apiToken) return Connection.Missing;
+    if (rejected) return Connection.Rejected;
+    if (answers === 0 && noAnswers >= UNREACHABLE_AFTER) return Connection.Unreachable;
+    return Connection.Connected;
+  }
+  function onConnectionChange(listener) {
+    listeners.push(listener);
+  }
+  var lastState = null;
+  function notify() {
+    const state3 = connectionState();
+    if (state3 === lastState) return;
+    lastState = state3;
+    for (const listener of listeners) {
+      try {
+        listener(state3);
+      } catch (error) {
+        console.error("[NFH] Connection listener failed:", error);
       }
     }
+  }
+  function noteAnswer() {
+    answers += 1;
+    notify();
+  }
+  function noteKeyRejected() {
+    rejected = true;
+    notify();
+  }
+  function noteNoAnswer() {
+    noAnswers += 1;
+    notify();
   }
   function takeTokenReturnUrl() {
     const url = getValue(RETURN_URL_KEY, "");
@@ -1542,22 +1641,14 @@ body.dark-mode .nfh-oc-bar-warning {
     setValue(RETURN_URL_KEY, "");
     return url.startsWith("https://www.torn.com/") ? url : null;
   }
-  function promptForNewApiKey() {
-    const newKey = prompt(
-      "Enter the new Nuke.Family API key (should be ~50 characters)."
-    );
-    if (!newKey) {
-      return null;
-    }
-    if (newKey.length < 30) {
-      alert(
-        "That key is too short. Please ensure you are using your Nuke.Family key, NOT your Torn API key!"
-      );
-      return null;
-    }
-    setApiToken(newKey);
-    return newKey;
-  }
+
+  // src/core/config.js
+  var DEBUG = false;
+  var DEFAULT_VERSION = "2.18.1";
+  var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : DEFAULT_VERSION;
+  var API_URL = DEBUG ? "http://nuke.test/api" : "https://nuke.family/api";
+  var TOKEN_GENERATION_URL = DEBUG ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
+  var GITHUB_URL = "https://github.com/Fog-Development/nuke-family-helper-script/raw/master/nuke-family-helper.user.js";
 
   // src/core/api.js
   var SNIPPET_LENGTH = 200;
@@ -1597,21 +1688,39 @@ body.dark-mode .nfh-oc-bar-warning {
       this.raw = raw;
     }
   };
-  async function api(path, { method = "GET", data = void 0 } = {}) {
-    const headers = {
-      Accept: "application/json",
-      Authorization: "Bearer " + getApiToken()
-    };
+  async function api(path, { method = "GET", data = void 0, token = void 0 } = {}) {
+    const stored = token === void 0;
+    const key = stored ? getApiToken() : token;
+    const headers = { Accept: "application/json" };
+    if (key) headers.Authorization = "Bearer " + key;
     if (data !== void 0) {
       headers["Content-Type"] = "application/json";
     }
-    const response = await request({
-      method,
-      url: API_URL + path,
-      headers,
-      data: data !== void 0 ? JSON.stringify(data) : void 0
-    });
+    let response;
+    try {
+      response = await request({
+        method,
+        url: API_URL + path,
+        headers,
+        data: data !== void 0 ? JSON.stringify(data) : void 0
+      });
+    } catch (error) {
+      if (stored && key) noteNoAnswer();
+      throw error;
+    }
+    if (stored && key && response && typeof response.status === "number") {
+      if (response.status === 401) noteKeyRejected();
+      else noteAnswer();
+    }
     return readReply(response, method, path);
+  }
+  async function publicApi(path, options = {}) {
+    try {
+      return await api(path, { ...options, token: "" });
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      return pageRequest(path, options);
+    }
   }
   function readReply(response, method, path) {
     if (!response || typeof response.status !== "number") {
@@ -1967,20 +2076,20 @@ body.dark-mode .nfh-oc-bar-warning {
   }
   function hasUpdateGracePeriodElapsed(githubVersion) {
     const now = Date.now();
-    let pending3 = null;
+    let pending4 = null;
     try {
-      pending3 = JSON.parse(localStorage.getItem("nfhPendingUpdate"));
+      pending4 = JSON.parse(localStorage.getItem("nfhPendingUpdate"));
     } catch (e) {
-      pending3 = null;
+      pending4 = null;
     }
-    if (!pending3 || pending3.version !== githubVersion) {
+    if (!pending4 || pending4.version !== githubVersion) {
       localStorage.setItem(
         "nfhPendingUpdate",
         JSON.stringify({ version: githubVersion, firstSeen: now })
       );
       return false;
     }
-    return now - pending3.firstSeen >= UPDATE_NOTIFY_GRACE_PERIOD;
+    return now - pending4.firstSeen >= UPDATE_NOTIFY_GRACE_PERIOD;
   }
   function isVersionNewer(v1, v2) {
     const v1Parts = v1.split(".").map(Number);
@@ -2327,7 +2436,7 @@ body.dark-mode .nfh-oc-bar-warning {
   }
   function errorMessage(error, fallback) {
     if (error && error.status === 401) {
-      return "Your Nuke Family key was rejected. Set a new one on the faction controls tab.";
+      return "nuke.family no longer accepts this device's key. Press Connect in the bar at the top of the page.";
     }
     if (error && error.body && typeof error.body.error === "string") {
       return error.body.error;
@@ -2439,17 +2548,17 @@ body.dark-mode .nfh-oc-bar-warning {
       };
     }
     if (myNext) {
-      const wait = slotStart(myNext) - now;
-      if (wait <= SOON_MS) {
+      const wait2 = slotStart(myNext) - now;
+      if (wait2 <= SOON_MS) {
         return {
           tone: "attn",
-          text: `Your slot starts in ${duration(wait)}`,
+          text: `Your slot starts in ${duration(wait2)}`,
           actions: checkInButton(true)
         };
       }
       return {
         tone: "",
-        text: `Your next slot: ${slotLabel(slotStart(myNext))} TCT \xB7 in ${duration(wait)}`,
+        text: `Your next slot: ${slotLabel(slotStart(myNext))} TCT \xB7 in ${duration(wait2)}`,
         actions: summary.started ? checkInButton(false) : ""
       };
     }
@@ -3082,80 +3191,6 @@ body.dark-mode .nfh-oc-bar-warning {
     init
   };
 
-  // src/core/synced-store.js
-  function createSyncedStore({
-    storageKey,
-    dataField,
-    emptyValue,
-    serverField,
-    fallbackTtlMs,
-    fetcher
-  }) {
-    let data = emptyValue;
-    let timestamp = 0;
-    const listeners = [];
-    const store = {
-      storageKey,
-      serverField,
-      fallbackTtlMs,
-      get data() {
-        return data;
-      },
-      get timestamp() {
-        return timestamp;
-      },
-      // Register a callback invoked with the fresh data after every successful
-      // refresh. Several features can listen to one store (e.g. the profile
-      // page and hospital rows both render the shitlist); registering after
-      // construction avoids circular imports between data and UI modules.
-      subscribe(listener) {
-        listeners.push(listener);
-      },
-      // Load previously cached data from localStorage. Corrupt entries are
-      // discarded (the next refresh repopulates them) instead of alerting.
-      load() {
-        try {
-          const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
-          if (saved && typeof saved === "object") {
-            data = saved[dataField] ?? emptyValue;
-            timestamp = saved.timestamp || 0;
-          }
-        } catch (error) {
-          console.error(`Error loading cached ${storageKey}:`, error);
-          localStorage.removeItem(storageKey);
-        }
-        LogInfo(`Loaded ${storageKey} from cache:`, data);
-      },
-      isStale(now = Date.now()) {
-        return !timestamp || now - timestamp > fallbackTtlMs;
-      },
-      // Fetch fresh data. When triggered by a server timestamp mismatch the
-      // server's timestamp (seconds) is stored so future comparisons line up;
-      // otherwise the current time is used (time-based fallback).
-      async refresh(serverTimestampSec = null) {
-        try {
-          data = await fetcher();
-          timestamp = serverTimestampSec ? serverTimestampSec * 1e3 : Date.now();
-          localStorage.setItem(
-            storageKey,
-            JSON.stringify({ [dataField]: data, timestamp })
-          );
-          LogInfo(`${storageKey} updated and stored with timestamp:`, timestamp);
-          for (const listener of listeners) {
-            try {
-              listener(data);
-            } catch (error) {
-              console.error(`Listener for ${storageKey} failed:`, error);
-            }
-          }
-        } catch (error) {
-          console.error(`Error refreshing ${storageKey}:`, error);
-        }
-      }
-    };
-    return store;
-  }
-
   // src/core/torn-page.js
   function getCookie(name) {
     const match = document.cookie.match(
@@ -3209,6 +3244,346 @@ body.dark-mode .nfh-oc-bar-warning {
     if (data && data.user) {
       return data.user.name;
     }
+  }
+
+  // src/features/connect.js
+  var BANNER_ID = "nfh-connect-banner";
+  var NOTE_CLASS = "nfh-connect-note";
+  var PENDING_KEY = "nfhConnectPending";
+  var HIDDEN_KEY = "nfhConnectBannerHidden";
+  var HIDE_FOR_MS = 24 * 60 * 60 * 1e3;
+  var POLL_MS = 4e3;
+  var RELOAD_AFTER_MS = 1500;
+  var NOTE_HOSTS = [
+    { selector: "#faction-crimes-root", place: "beforebegin" },
+    { selector: "#nfh-chain-watch", place: "afterend" },
+    { selector: "#nfh-war-bar", place: "afterend" },
+    { selector: ".nfh-shitlist-profile", place: "beforeend" }
+  ];
+  var phase = null;
+  var pollTimer = null;
+  var STATE_TEXT = {
+    [Connection.Missing]: "<strong>Nuke Family Helper is not connected</strong> to nuke.family, so most of it is switched off.",
+    [Connection.Rejected]: "<strong>Nuke Family Helper has been disconnected:</strong> nuke.family no longer accepts this device's key, so most of it is switched off.",
+    [Connection.Unreachable]: "<strong>Nuke Family Helper cannot reach nuke.family</strong> right now, so what it shows may be missing or out of date."
+  };
+  var NOTE_TEXT = {
+    [Connection.Missing]: "Nuke Family Helper is not connected to nuke.family, so this may be missing or out of date.",
+    [Connection.Rejected]: "Nuke Family Helper has been disconnected from nuke.family, so this may be missing or out of date.",
+    [Connection.Unreachable]: "Nuke Family Helper cannot reach nuke.family right now: this may be missing or out of date."
+  };
+  var canConnect = (state3) => state3 === Connection.Missing || state3 === Connection.Rejected;
+  function pending() {
+    const saved = getValue(PENDING_KEY, null);
+    if (!saved || typeof saved !== "object" || !saved.secret || !saved.url) return null;
+    return saved.expires > Date.now() ? saved : null;
+  }
+  function isHidden(state3) {
+    try {
+      const hidden = JSON.parse(localStorage.getItem(HIDDEN_KEY) || "null");
+      return Boolean(hidden) && hidden.state === state3 && Date.now() - hidden.at < HIDE_FOR_MS;
+    } catch (e) {
+      return false;
+    }
+  }
+  function bannerHtml(state3) {
+    const button2 = (attribute, label) => `<button type="button" class="torn-btn" ${attribute}>${label}</button>`;
+    const dismiss = '<button type="button" class="nfh-connect-dismiss" data-nfh-connect-dismiss aria-label="Hide" title="Hide for a day">&times;</button>';
+    if (phase && phase.kind === "connected") {
+      const who = phase.name ? ` as <strong>${escapeHtml(phase.name)}</strong>` : "";
+      return `<span class="nfh-connect-text">Nuke Family Helper is connected${who}. Reloading the page...</span>`;
+    }
+    if (phase && phase.kind === "starting") {
+      return '<span class="nfh-connect-text">Asking nuke.family for a connection...</span>';
+    }
+    if (phase && phase.kind === "waiting") {
+      return `<span class="nfh-connect-text"><strong>Finish connecting on nuke.family.</strong> Approve there, then come back: this page picks it up by itself.</span><a class="torn-btn nfh-connect-link" href="${escapeHtml(phase.url)}" target="_blank" rel="noopener" data-nfh-connect-open>Open nuke.family</a>` + button2("data-nfh-connect-cancel", "Cancel");
+    }
+    const failed = phase && phase.kind === "failed" ? ` <span class="nfh-connect-error">${escapeHtml(phase.message)}</span>` : "";
+    const actions = canConnect(state3) ? button2("data-nfh-connect", state3 === Connection.Rejected ? "Reconnect" : "Connect") + '<button type="button" class="nfh-connect-manual" data-nfh-connect-manual>Enter a key instead</button>' : "";
+    return `<span class="nfh-connect-text">${STATE_TEXT[state3]}${failed}</span>${actions}${dismiss}`;
+  }
+  function renderBanner() {
+    const state3 = connectionState();
+    const busy = phase !== null && phase.kind !== "failed";
+    const show = busy || state3 !== Connection.Connected && !isHidden(state3);
+    let banner = document.getElementById(BANNER_ID);
+    if (!show) {
+      if (banner) banner.remove();
+      return;
+    }
+    if (!banner) {
+      banner = document.createElement("div");
+      banner.id = BANNER_ID;
+      banner.className = "nfh-connect-banner";
+      banner.setAttribute("role", "status");
+      document.body.prepend(banner);
+    }
+    const html = bannerHtml(state3);
+    if (banner.__nfhHtml !== html) {
+      banner.innerHTML = html;
+      banner.__nfhHtml = html;
+    }
+    banner.classList.toggle("nfh-connect-banner--ok", Boolean(phase && phase.kind === "connected"));
+  }
+  function renderNotes() {
+    const state3 = connectionState();
+    const text = NOTE_TEXT[state3];
+    for (const host of NOTE_HOSTS) {
+      const element = document.querySelector(host.selector);
+      if (!element) continue;
+      const sibling = host.place === "beforebegin" ? element.previousElementSibling : host.place === "afterend" ? element.nextElementSibling : null;
+      let note = host.place === "beforeend" ? element.querySelector(`:scope > .${NOTE_CLASS}`) : sibling && sibling.classList.contains(NOTE_CLASS) ? sibling : null;
+      if (!text) {
+        if (note) note.remove();
+        continue;
+      }
+      if (!note) {
+        note = document.createElement("div");
+        note.className = NOTE_CLASS;
+        element.insertAdjacentElement(host.place, note);
+      }
+      const html = `<span>${text}</span>` + (canConnect(state3) ? ' <button type="button" class="nfh-connect-note-link" data-nfh-connect>Connect</button>' : "");
+      if (note.__nfhHtml !== html) {
+        note.innerHTML = html;
+        note.__nfhHtml = html;
+      }
+    }
+  }
+  function render2() {
+    renderBanner();
+    renderNotes();
+  }
+  function renderSoon() {
+    render2();
+    for (const delay of [800, 2500, 6e3]) setTimeout(renderNotes, delay);
+  }
+  function stopPolling() {
+    clearTimeout(pollTimer);
+    pollTimer = null;
+  }
+  function fail(message) {
+    stopPolling();
+    setValue(PENDING_KEY, null);
+    phase = { kind: "failed", message };
+    render2();
+  }
+  function schedulePoll() {
+    stopPolling();
+    if (!document.hidden) pollTimer = setTimeout(poll, POLL_MS);
+  }
+  var polling = false;
+  async function poll() {
+    const waiting = pending();
+    if (!waiting) {
+      if (phase && phase.kind === "waiting") fail("That attempt ran out of time. Press Connect to try again.");
+      return;
+    }
+    if (polling) return;
+    polling = true;
+    try {
+      const reply = await publicApi("/script/connect/token", { method: "POST", data: { secret: waiting.secret } });
+      if (reply && reply.status === "connected" && reply.token) {
+        stopPolling();
+        setValue(PENDING_KEY, null);
+        phase = { kind: "connected", name: reply.player && reply.player.name };
+        setApiToken(reply.token);
+        render2();
+        setTimeout(() => window.location.reload(), RELOAD_AFTER_MS);
+        return;
+      }
+      schedulePoll();
+    } catch (error) {
+      if (error instanceof ApiError && (error.status === 404 || error.status === 410)) {
+        fail(error.body && error.body.error || "That attempt can no longer be used. Press Connect to try again.");
+      } else {
+        schedulePoll();
+      }
+    } finally {
+      polling = false;
+    }
+  }
+  function wait(connection) {
+    phase = { kind: "waiting", url: connection.url };
+    render2();
+    schedulePoll();
+  }
+  async function startConnect() {
+    if (phase && (phase.kind === "starting" || phase.kind === "connected")) return;
+    let tab = null;
+    if (!isPda) {
+      try {
+        tab = window.open("", "_blank");
+      } catch (e) {
+        tab = null;
+      }
+    }
+    phase = { kind: "starting" };
+    render2();
+    try {
+      const playerId = Number(getUserscriptUsersPlayerId()) || null;
+      const reply = await publicApi("/script/connect", {
+        method: "POST",
+        data: { client: isPda ? "TornPDA" : "browser", player_id: playerId }
+      });
+      if (!reply || !reply.secret || !reply.url) throw new Error("unexpected reply");
+      const connection = { secret: reply.secret, url: reply.url, expires: Date.now() + (reply.expires_in || 900) * 1e3 };
+      setValue(PENDING_KEY, connection);
+      if (tab) tab.location.href = connection.url;
+      wait(connection);
+    } catch (error) {
+      if (tab) tab.close();
+      const busy = error instanceof ApiError && error.status === 429;
+      fail(
+        busy ? "Too many attempts from here. Wait a few minutes and try again." : "Could not reach nuke.family to start. Check your connection and try again."
+      );
+    }
+  }
+  async function enterKeyByHand() {
+    const typed = prompt(
+      "Paste your Nuke Family key (about 50 characters, made on nuke.family under your user settings).\n\nThis is NOT your Torn API key."
+    );
+    const key = (typed || "").trim();
+    if (!key) return false;
+    if (/^[A-Za-z0-9]{16}$/.test(key)) {
+      alert(
+        "That looks like a Torn API key. The script needs a Nuke Family key here, which is much longer.\n\nThe easy way: press Connect instead. nuke.family will ask for your Torn key there and connect the script for you."
+      );
+      return false;
+    }
+    try {
+      await api("/user/get-own-roles", { token: key });
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        alert("nuke.family did not accept that key, so it was not saved. Check you copied all of it, or press Connect instead.");
+        return false;
+      }
+      alert("nuke.family could not be reached to check that key. It has been saved; if things still do not load, press Connect instead.");
+      setApiToken(key);
+      return true;
+    }
+    setApiToken(key);
+    alert("Nuke Family key saved. Reload the page to load everything with it.");
+    return true;
+  }
+  function onClick2(event) {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target.closest("[data-nfh-connect]")) {
+      event.preventDefault();
+      startConnect();
+    } else if (target.closest("[data-nfh-connect-manual]")) {
+      enterKeyByHand().then((saved) => {
+        if (saved) window.location.reload();
+      });
+    } else if (target.closest("[data-nfh-connect-cancel]")) {
+      stopPolling();
+      setValue(PENDING_KEY, null);
+      phase = null;
+      render2();
+    } else if (target.closest("[data-nfh-connect-open]")) {
+      setTimeout(poll, 1e3);
+    } else if (target.closest("[data-nfh-connect-dismiss]")) {
+      try {
+        localStorage.setItem(HIDDEN_KEY, JSON.stringify({ state: connectionState(), at: Date.now() }));
+      } catch (e) {
+      }
+      phase = null;
+      render2();
+    }
+  }
+  var started = false;
+  function initConnect() {
+    if (started || window.top !== window.self) return;
+    started = true;
+    document.addEventListener("click", onClick2);
+    onConnectionChange(render2);
+    onNavigate(renderSoon);
+    const resume = () => {
+      if (!document.hidden && pending() && connectionState() !== Connection.Connected) poll();
+    };
+    document.addEventListener("visibilitychange", resume);
+    window.addEventListener("focus", resume);
+    const waiting = canConnect(connectionState()) ? pending() : null;
+    if (waiting) {
+      wait(waiting);
+      poll();
+    }
+    renderSoon();
+  }
+
+  // src/core/synced-store.js
+  function createSyncedStore({
+    storageKey,
+    dataField,
+    emptyValue,
+    serverField,
+    fallbackTtlMs,
+    fetcher
+  }) {
+    let data = emptyValue;
+    let timestamp = 0;
+    const listeners2 = [];
+    const store = {
+      storageKey,
+      serverField,
+      fallbackTtlMs,
+      get data() {
+        return data;
+      },
+      get timestamp() {
+        return timestamp;
+      },
+      // Register a callback invoked with the fresh data after every successful
+      // refresh. Several features can listen to one store (e.g. the profile
+      // page and hospital rows both render the shitlist); registering after
+      // construction avoids circular imports between data and UI modules.
+      subscribe(listener) {
+        listeners2.push(listener);
+      },
+      // Load previously cached data from localStorage. Corrupt entries are
+      // discarded (the next refresh repopulates them) instead of alerting.
+      load() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+          if (saved && typeof saved === "object") {
+            data = saved[dataField] ?? emptyValue;
+            timestamp = saved.timestamp || 0;
+          }
+        } catch (error) {
+          console.error(`Error loading cached ${storageKey}:`, error);
+          localStorage.removeItem(storageKey);
+        }
+        LogInfo(`Loaded ${storageKey} from cache:`, data);
+      },
+      isStale(now = Date.now()) {
+        return !timestamp || now - timestamp > fallbackTtlMs;
+      },
+      // Fetch fresh data. When triggered by a server timestamp mismatch the
+      // server's timestamp (seconds) is stored so future comparisons line up;
+      // otherwise the current time is used (time-based fallback).
+      async refresh(serverTimestampSec = null) {
+        try {
+          data = await fetcher();
+          timestamp = serverTimestampSec ? serverTimestampSec * 1e3 : Date.now();
+          localStorage.setItem(
+            storageKey,
+            JSON.stringify({ [dataField]: data, timestamp })
+          );
+          LogInfo(`${storageKey} updated and stored with timestamp:`, timestamp);
+          for (const listener of listeners2) {
+            try {
+              listener(data);
+            } catch (error) {
+              console.error(`Listener for ${storageKey} failed:`, error);
+            }
+          }
+        } catch (error) {
+          console.error(`Error refreshing ${storageKey}:`, error);
+        }
+      }
+    };
+    return store;
   }
 
   // src/features/contracts.js
@@ -3386,12 +3761,12 @@ body.dark-mode .nfh-oc-bar-warning {
     const state3 = readJson2(CPR_KEY);
     return state3 && state3.known && state3.sent ? state3 : { known: {}, sent: {} };
   }
-  var pending = /* @__PURE__ */ new Map();
+  var pending2 = /* @__PURE__ */ new Map();
   var uploadTimer = null;
   async function upload() {
     uploadTimer = null;
-    const batch = [...pending.entries()];
-    pending = /* @__PURE__ */ new Map();
+    const batch = [...pending2.entries()];
+    pending2 = /* @__PURE__ */ new Map();
     if (batch.length === 0) return;
     try {
       await api("/oc/cpr", { method: "POST", data: { cprs: batch.map(([, entry]) => entry) } });
@@ -3415,12 +3790,12 @@ body.dark-mode .nfh-oc-bar-warning {
           changed = true;
         }
         if (state3.sent[key] !== slot.cpr) {
-          pending.set(key, { crime: crime.name, role: slot.name, cpr: slot.cpr });
+          pending2.set(key, { crime: crime.name, role: slot.name, cpr: slot.cpr });
         }
       }
     }
     if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state3));
-    if (pending.size > 0 && !uploadTimer) uploadTimer = setTimeout(upload, UPLOAD_DELAY_MS);
+    if (pending2.size > 0 && !uploadTimer) uploadTimer = setTimeout(upload, UPLOAD_DELAY_MS);
   }
   function knownCpr(board, crimeName2, roleName) {
     const crimeKey = keyFor(crimeName2);
@@ -3862,12 +4237,10 @@ body.dark-mode .nfh-oc-bar-warning {
     btn.id = CHANGE_KEY_ID;
     btn.innerHTML = "Change Nuke Family Key";
     btn.classList.add("torn-btn");
-    btn.addEventListener("click", function() {
-      const newKey = promptForNewApiKey();
-      if (newKey) {
+    btn.addEventListener("click", async function() {
+      if (await enterKeyByHand()) {
         refreshUserRole();
         refreshPermissions();
-        alert("Nuke Family key updated. It will be used for all future requests.");
       }
     });
     return btn;
@@ -4213,12 +4586,12 @@ body.dark-mode .nfh-oc-bar-warning {
         title: `CPR ${slot.cpr} is below the faction's minimum of ${rated.minCpr} for this role.`
       });
     }
-    const wait = hoursUntilTurn(crime, index);
-    if (countsProductiveDays(crime, limits.productiveFromLevel ?? 1) && wait > limits.thresholdHours) {
+    const wait2 = hoursUntilTurn(crime, index);
+    if (countsProductiveDays(crime, limits.productiveFromLevel ?? 1) && wait2 > limits.thresholdHours) {
       flags.push({
         flag: Flag.Unproductive,
-        text: `Idle ${Math.round(wait)}h`,
-        title: `Planning for this slot starts ${describeWait(wait)}, later than the ${limits.thresholdHours} hour threshold.`
+        text: `Idle ${Math.round(wait2)}h`,
+        title: `Planning for this slot starts ${describeWait(wait2)}, later than the ${limits.thresholdHours} hour threshold.`
       });
     }
     if (memberLevel !== null && memberLevel !== void 0 && crime.level !== null && memberLevel - crime.level >= limits.levelGap) {
@@ -4622,7 +4995,7 @@ body.dark-mode .nfh-oc-bar-warning {
   function isOwnFactionCrimesTab() {
     return window.location.search.includes("step=your") && IsPage(PageType.FactionCrimes);
   }
-  function render2() {
+  function render3() {
     const root2 = document.querySelector(CRIMES_ROOT_SELECTOR);
     if (!root2 || !isOwnFactionCrimesTab()) return;
     const config = ocConfigStore.data;
@@ -4753,7 +5126,7 @@ body.dark-mode .nfh-oc-bar-warning {
     renderTimer = setTimeout(() => {
       renderTimer = null;
       try {
-        render2();
+        render3();
       } catch (error) {
         console.error("[NFH] OC Assistant failed to render:", error);
       }
@@ -5074,7 +5447,7 @@ body.dark-mode .nfh-oc-bar-warning {
   };
   var memos = /* @__PURE__ */ new Map();
   var written = /* @__PURE__ */ new WeakMap();
-  var pending2 = { bsp: /* @__PURE__ */ new Map(), ffscouter: /* @__PURE__ */ new Map() };
+  var pending3 = { bsp: /* @__PURE__ */ new Map(), ffscouter: /* @__PURE__ */ new Map() };
   var ticker2 = null;
   var uploadTimer2 = null;
   var barHtml2 = "";
@@ -5093,7 +5466,7 @@ body.dark-mode .nfh-oc-bar-warning {
     for (const source of SOURCES) {
       state2.held[source] = {};
       state2.fresh[source] = /* @__PURE__ */ new Set();
-      pending2[source].clear();
+      pending3[source].clear();
     }
     state2.statsAt = 0;
     state2.uploadAfter = 0;
@@ -5152,8 +5525,8 @@ body.dark-mode .nfh-oc-bar-warning {
   function noteForUpload(id, onPage) {
     if (state2.statsAt === 0 || Date.now() < state2.uploadAfter) return;
     for (const source of SOURCES) {
-      if (!onPage[source] || state2.fresh[source].has(id) || pending2[source].has(id)) continue;
-      pending2[source].set(id, onPage[source]);
+      if (!onPage[source] || state2.fresh[source].has(id) || pending3[source].has(id)) continue;
+      pending3[source].set(id, onPage[source]);
       clearTimeout(uploadTimer2);
       uploadTimer2 = setTimeout(upload2, UPLOAD_DELAY_MS2);
     }
@@ -5162,9 +5535,9 @@ body.dark-mode .nfh-oc-bar-warning {
     uploadTimer2 = null;
     const target = state2.target;
     for (const source of SOURCES) {
-      const batch = [...pending2[source].entries()].slice(0, UPLOAD_MAX);
+      const batch = [...pending3[source].entries()].slice(0, UPLOAD_MAX);
       if (batch.length === 0) continue;
-      pending2[source].clear();
+      pending3[source].clear();
       try {
         await api("/war/estimates", {
           method: "POST",
@@ -5294,7 +5667,7 @@ body.dark-mode .nfh-oc-bar-warning {
       bar = document.createElement("div");
       bar.id = BAR_ID2;
       bar.className = "nfh-cw nfh-war-bar";
-      bar.addEventListener("click", onClick2);
+      bar.addEventListener("click", onClick3);
       bar.addEventListener("change", onChange2);
       anchor.insertAdjacentElement("beforebegin", bar);
       barHtml2 = "";
@@ -5305,7 +5678,7 @@ body.dark-mode .nfh-oc-bar-warning {
       bar.innerHTML = html;
     }
   }
-  function onClick2(event) {
+  function onClick3(event) {
     const button2 = event.target.closest("[data-sort]");
     if (!button2) return;
     setPrefs2({ sort: button2.dataset.sort });
@@ -5332,7 +5705,7 @@ body.dark-mode .nfh-oc-bar-warning {
       ensureBar();
     }
   }
-  async function poll() {
+  async function poll2() {
     const wantStats = Date.now() - state2.statsAt > STATS_REFRESH_MS;
     const target = state2.target;
     const query = [target ? `faction_id=${target}` : "", wantStats ? "stats=1" : ""].filter(Boolean).join("&");
@@ -5382,7 +5755,7 @@ body.dark-mode .nfh-oc-bar-warning {
     decorate(lists);
     ensureBar();
     if (!state2.loading && Date.now() >= state2.nextPollAt) {
-      poll();
+      poll2();
     }
   }
   function stop2() {
@@ -5394,7 +5767,7 @@ body.dark-mode .nfh-oc-bar-warning {
     memos.clear();
     clearTimeout(uploadTimer2);
     uploadTimer2 = null;
-    for (const source of SOURCES) pending2[source].clear();
+    for (const source of SOURCES) pending3[source].clear();
     LogInfo("War board stopped");
   }
   function init5() {
@@ -6196,7 +6569,7 @@ body.dark-mode .nfh-oc-bar-warning {
       registerSyncedStore(store);
     }
     initAuth();
-    ensureApiToken();
+    initConnect();
     dispatchFeatures();
     onNavigate(dispatchFeatures);
     checkCacheUpdates();

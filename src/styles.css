@@ -1115,3 +1115,83 @@ body.dark-mode .nfh-oc-bar-warning {
     opacity: 0.6;
     cursor: default;
 }
+
+/* Connection banner and notes (features/connect.js) */
+.nfh-connect-banner {
+    position: relative;
+    z-index: 99999;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 10px;
+    padding: 8px 34px 8px 12px;
+    border-bottom: 2px solid #b26a00;
+    background-color: #3a2a08;
+    color: #ffe2a8;
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+body:not(.dark-mode) .nfh-connect-banner {
+    background-color: #fff3d6;
+    color: #5a3b00;
+}
+
+.nfh-connect-banner--ok,
+body:not(.dark-mode) .nfh-connect-banner--ok {
+    border-bottom-color: #2e7d32;
+    background-color: #173a1a;
+    color: #d5f5d7;
+}
+
+.nfh-connect-text {
+    flex: 0 1 auto;
+}
+
+.nfh-connect-error {
+    display: block;
+    font-weight: bold;
+}
+
+.nfh-connect-banner .torn-btn,
+.nfh-connect-banner a.torn-btn {
+    flex: 0 0 auto;
+    text-decoration: none;
+}
+
+.nfh-connect-manual,
+.nfh-connect-note-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.nfh-connect-dismiss {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    padding: 0 4px;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.nfh-connect-note {
+    margin: 6px 0;
+    padding: 6px 10px;
+    border-left: 3px solid #b26a00;
+    border-radius: 3px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font-size: 12px;
+    line-height: 1.4;
+}

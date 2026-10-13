@@ -26,7 +26,7 @@
 // page load.
 
 // Kept in the userscript manager's storage. Any JSON value.
-const MANAGER_KEYS = ["apiToken", "apiTokenFirstTime", "nfhTokenReturnUrl"];
+const MANAGER_KEYS = ["apiToken", "apiTokenFirstTime", "nfhTokenReturnUrl", "nfhConnectPending"];
 
 // Kept in localStorage, as the strings the script has always stored there.
 const LOCAL_KEYS = [

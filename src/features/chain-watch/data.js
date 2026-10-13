@@ -189,7 +189,7 @@ export function sendTestDm(watchId) {
 // A message fit for showing to the user from a failed call.
 export function errorMessage(error, fallback) {
   if (error && error.status === 401) {
-    return "Your Nuke Family key was rejected. Set a new one on the faction controls tab.";
+    return "nuke.family no longer accepts this device's key. Press Connect in the bar at the top of the page.";
   }
   if (error && error.body && typeof error.body.error === "string") {
     return error.body.error;

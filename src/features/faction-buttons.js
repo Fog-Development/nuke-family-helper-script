@@ -1,4 +1,3 @@
-import { promptForNewApiKey } from "../core/auth.js";
 import { refreshAllCaches } from "../core/cache-sync.js";
 import { ensureInjected } from "../core/dom.js";
 import { LogInfo } from "../core/log.js";
@@ -6,11 +5,13 @@ import { PageType } from "../core/pages.js";
 import { checkForUpdates } from "../core/update-checker.js";
 import { refreshPermissions, refreshUserRole } from "../core/user.js";
 import { clearChainWatchCache } from "./chain-watch/data.js";
+import { enterKeyByHand } from "./connect.js";
 import { collectDebugInfo, showDebugInfo } from "./debug-info.js";
 
 // "Change Nuke Family Key", "Check NFH Updates" and "NFH Debug Info" buttons
 // on the faction controls page. This is the script's only settings surface outside the
-// profile-page cog, so the first-run token alert points users here.
+// profile-page cog. Connecting normally needs no key typed anywhere (see connect.js);
+// "Change Nuke Family Key" is the by-hand way, for when that does not work.
 const CONTAINER_SELECTOR = "#faction-controls > hr";
 const CHANGE_KEY_ID = "nfh-change-key-btn";
 const CHECK_UPDATES_ID = "nfh-check-updates-btn";
@@ -21,12 +22,10 @@ function buildChangeKeyButton() {
   btn.id = CHANGE_KEY_ID;
   btn.innerHTML = "Change Nuke Family Key";
   btn.classList.add("torn-btn");
-  btn.addEventListener("click", function () {
-    const newKey = promptForNewApiKey();
-    if (newKey) {
+  btn.addEventListener("click", async function () {
+    if (await enterKeyByHand()) {
       refreshUserRole();
       refreshPermissions();
-      alert("Nuke Family key updated. It will be used for all future requests.");
     }
   });
   return btn;

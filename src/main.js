@@ -3,7 +3,7 @@
 import "./core/pda-polyfill.js";
 
 import styles from "./styles.css";
-import { initAuth, ensureApiToken } from "./core/auth.js";
+import { initAuth } from "./core/auth.js";
 import {
   checkCacheUpdates,
   registerSyncedStore,
@@ -15,6 +15,7 @@ import { hasNativeStorage, initStorage } from "./core/storage.js";
 import { checkForUpdates } from "./core/update-checker.js";
 
 import chainWatch from "./features/chain-watch/index.js";
+import { initConnect } from "./features/connect.js";
 import contracts, { contractsStore } from "./features/contracts.js";
 import factionButtons from "./features/faction-buttons.js";
 import hospital from "./features/hospital.js";
@@ -89,9 +90,10 @@ function start() {
     registerSyncedStore(store);
   }
 
-  // API token: load it, and walk the user through generating one if missing
+  // The nuke.family key, and the bar that says so (with a Connect button)
+  // when there is none or it is not working.
   initAuth();
-  ensureApiToken();
+  initConnect();
 
   // Run features for the current page, and re-dispatch on SPA navigation
   // (Torn's faction page switches tabs via the location hash).

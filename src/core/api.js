@@ -1,5 +1,5 @@
 import { API_URL } from "./config.js";
-import { getApiToken } from "./auth.js";
+import { getApiToken, noteAnswer, noteKeyRejected, noteNoAnswer } from "./auth.js";
 
 // How much of an unreadable reply is kept for a debug report.
 const SNIPPET_LENGTH = 200;
@@ -63,23 +63,48 @@ export class ApiError extends Error {
 //
 // The userscript manager makes the request, not the page, so it is not bound
 // by the page's cross-origin rules. `pageRequest()` below is the other way.
-export async function api(path, { method = "GET", data = undefined } = {}) {
-  const headers = {
-    Accept: "application/json",
-    Authorization: "Bearer " + getApiToken(),
-  };
+//
+// `token` sends another key than the stored one ("" for none, on the routes
+// that need none). Only calls made with the stored key count towards whether
+// the script is connected (see auth.js).
+export async function api(path, { method = "GET", data = undefined, token = undefined } = {}) {
+  const stored = token === undefined;
+  const key = stored ? getApiToken() : token;
+  const headers = { Accept: "application/json" };
+  if (key) headers.Authorization = "Bearer " + key;
   if (data !== undefined) {
     headers["Content-Type"] = "application/json";
   }
 
-  const response = await request({
-    method,
-    url: API_URL + path,
-    headers,
-    data: data !== undefined ? JSON.stringify(data) : undefined,
-  });
+  let response;
+  try {
+    response = await request({
+      method,
+      url: API_URL + path,
+      headers,
+      data: data !== undefined ? JSON.stringify(data) : undefined,
+    });
+  } catch (error) {
+    if (stored && key) noteNoAnswer();
+    throw error;
+  }
 
+  if (stored && key && response && typeof response.status === "number") {
+    if (response.status === 401) noteKeyRejected();
+    else noteAnswer();
+  }
   return readReply(response, method, path);
+}
+
+// A call to a route that needs no key, tried through the userscript manager
+// and, when that gets no answer, from the page itself.
+export async function publicApi(path, options = {}) {
+  try {
+    return await api(path, { ...options, token: "" });
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    return pageRequest(path, options);
+  }
 }
 
 function readReply(response, method, path) {

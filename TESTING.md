@@ -272,3 +272,33 @@ outside the app.
       store on nuke.family as on Torn, which is not known).
 - [ ] Rename-proofing: note what the store is keyed on (name, URL?) before
       ever renaming the script.
+
+## Connecting to nuke.family
+
+Do each of these in a desktop browser and in TornPDA. To start from scratch,
+delete the script's stored `apiToken` (userscript manager storage; in TornPDA,
+the script's storage in DevTools).
+
+- [ ] Already connected (the normal case after updating): no bar, no dialog,
+      everything loads as before.
+- [ ] No key: no dialog on page load. A bar at the top says the script is not
+      connected, and the OC, chain watch, war and profile areas each carry a
+      one-line note.
+- [ ] Connect, logged in to nuke.family: a tab opens on the connect page naming
+      you; Approve; back on Torn the bar says connected and the page reloads
+      with everything working. Nothing was copied or pasted.
+- [ ] Connect, logged out, with a Torn API key only: the page takes the key,
+      says connected, and Torn picks it up. On nuke.family there is now an
+      account with no email (visible in the roles admin as "script only").
+- [ ] That script-only member registers on nuke.family with an email and
+      password: same account, the script stays connected, and they can log in.
+- [ ] TornPDA: "Open nuke.family" works whether the app opens it in a new tab
+      or in the same view; coming back to Torn (even to a reloaded page)
+      finishes the connection.
+- [ ] A popup blocker set to strict: the bar still shows "Open nuke.family".
+- [ ] Delete the key's token on nuke.family (user settings), reload Torn: the
+      bar says the script was disconnected and offers Reconnect.
+- [ ] "Enter a key instead" with a Torn key: refused with an explanation. With
+      a made-up 50 character key: refused. With a real nuke.family key: saved.
+- [ ] Offline (or nuke.family blocked): the bar says it cannot reach
+      nuke.family and does not offer Connect.
