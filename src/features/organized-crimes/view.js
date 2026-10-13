@@ -142,8 +142,32 @@ export function staffHtml(staff) {
 }
 
 const TAG_TEXT = { [Rank.Best]: "Best for you", [Rank.Good]: "Good for you" };
-// The best slot there is, in a crime below the member's level.
-const TAG_TEXT_BELOW_LEVEL = "Best available";
+// A slot with something wrong with it is the best there is, not a good one.
+const TAG_TEXT_FLAWED = { [Rank.Best]: "Best available", [Rank.Good]: "Also available" };
+
+// What is wrong with a suggested slot, as the flags staff would put on a
+// member who took it: [{ flag, text, title }]. Empty for a slot with nothing
+// against it.
+export function suggestionCaveats(suggestion) {
+  const caveats = [];
+  if (!suggestion.productive) {
+    caveats.push({
+      flag: Flag.Unproductive,
+      text: `${Math.round(suggestion.waitHours)}h wait`,
+      title:
+        `Your planning would start ${describeWait(suggestion.waitHours)}, later than the ` +
+        `${suggestion.thresholdHours} hours that count as productive.`,
+    });
+  }
+  if (suggestion.belowLevel) {
+    caveats.push({
+      flag: Flag.UnderLevel,
+      text: "Below your level",
+      title: "This crime is below your level, but nothing at your level is open to you.",
+    });
+  }
+  return caveats;
+}
 
 function waitSentence(suggestion) {
   return `Your planning would start ${describeWait(suggestion.waitHours)}.`;
@@ -152,11 +176,11 @@ function waitSentence(suggestion) {
 // Why a slot is tagged. Where productive days do not count, the wait is
 // beside the point.
 function tagTitle(suggestion) {
-  const why =
-    suggestion.pooled === false
-      ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full."
-      : waitSentence(suggestion);
-  return suggestion.belowLevel ? `This crime is below your level, but nothing at your level is open to you. ${why}` : why;
+  const caveats = suggestionCaveats(suggestion);
+  if (caveats.length > 0) return caveats.map((caveat) => caveat.title).join(" ");
+  return suggestion.pooled === false
+    ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full."
+    : waitSentence(suggestion);
 }
 
 // Outline and tag the suggested slots, and clear the marks from any slot that
@@ -187,8 +211,19 @@ export function renderSuggestions(root, suggestions) {
       tag.className = TAG_CLASS;
       slotEl.prepend(tag);
     }
-    const text = suggestion.belowLevel ? TAG_TEXT_BELOW_LEVEL : TAG_TEXT[suggestion.rank];
-    if (tag.textContent !== text) tag.textContent = text;
+    const caveats = suggestionCaveats(suggestion);
+    const html =
+      escapeHtml((caveats.length > 0 ? TAG_TEXT_FLAWED : TAG_TEXT)[suggestion.rank]) +
+      caveats
+        .map(
+          (caveat) =>
+            `<span class="nfh-oc-flag nfh-oc-flag--${caveat.flag}"><span aria-hidden="true">${FLAG_SYMBOLS[caveat.flag]}</span> ${escapeHtml(caveat.text)}</span>`,
+        )
+        .join("");
+    if (tag.dataset.nfhHtml !== html) {
+      tag.dataset.nfhHtml = html;
+      tag.innerHTML = html;
+    }
     const title = tagTitle(suggestion);
     if (tag.title !== title) tag.title = title;
   }
@@ -229,9 +264,10 @@ export function barHtml(state) {
     const [best, ...rest] = state.suggestions;
     const { slot, minCpr } = best.rated;
     const others = rest.filter((suggestion) => !suggestion.crime.offPage);
+    const flawed = suggestionCaveats(best).length > 0;
     const more =
       others.length > 0
-        ? ` <span class="nfh-oc-bar-muted">${others.length} other good slot${others.length === 1 ? " is" : "s are"} marked below.</span>`
+        ? ` <span class="nfh-oc-bar-muted">${others.length} other ${flawed ? "" : "good "}slot${others.length === 1 ? " is" : "s are"} marked below.</span>`
         : "";
     const unweighted =
       best.rated.weight === null
@@ -242,13 +278,14 @@ export function barHtml(state) {
       : "";
     const late = best.productive
       ? ""
-      : ' <span class="nfh-oc-bar-muted">Nothing open would start you sooner.</span>';
+      : ` <strong class="nfh-oc-bar-warning">That is later than the ${escapeHtml(best.thresholdHours)} hours that count as productive,</strong>` +
+        ' <span class="nfh-oc-bar-muted">but nothing open would start you sooner.</span>';
     const belowLevel = best.belowLevel
       ? ' <span class="nfh-oc-bar-muted">This crime is below your level, but nothing at your level is open to you.</span>'
       : "";
-    let lead = best.belowLevel ? "Best slot available: " : "Best slot for you: ";
+    let lead = flawed ? "Best slot available: " : "Best slot for you: ";
     if (state.warning) {
-      lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state.warning)}</strong> ${best.belowLevel ? "The best slot available: " : "A better slot: "}`;
+      lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
     }
     return (
       `${label}<span class="nfh-oc-bar-text">${lead}` +

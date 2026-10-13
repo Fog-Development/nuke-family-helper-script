@@ -933,6 +933,11 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     background-color: #1565c0;
 }
 
+/* What is wrong with a suggested slot, under its tag's text */
+.nfh-oc-tag > .nfh-oc-flag {
+    margin: 2px -6px -2px;
+}
+
 /* Staff flags under a filled slot: one colour and one symbol per kind */
 .nfh-oc-flags {
     display: flex;

@@ -180,6 +180,7 @@ describe("slot rating", () => {
     );
     assert.equal(suggestions[0].rank, Rank.Best);
     assert.equal(suggestions[0].productive, false);
+    assert.equal(suggestions[0].thresholdHours, 12);
   });
 
   it("suggests nothing when the member qualifies for no open slot", () => {

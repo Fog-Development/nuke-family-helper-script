@@ -123,7 +123,7 @@ export function canAskForCrime(memberLevel, config) {
 // cannot, it may still come first, marked `belowLevel`, as the best there is.
 //
 // Returns { crimes: [{ crime, waitHours, pooled, productive, slots: [rated] }],
-//           suggestions: [{ rank, crime, rated, waitHours, pooled, productive, belowLevel }],
+//           suggestions: [{ rank, crime, rated, waitHours, pooled, productive, thresholdHours, belowLevel }],
 //           withheld }
 // with `suggestions` best first. A candidate is one slot per crime; they are
 // ordered by: planning starts within the faction's productive threshold,
@@ -162,6 +162,7 @@ export function rateCrimes(crimes, config, member = null) {
     .map((entry) => ({
       ...entry,
       pick: pickSlot(entry.slots),
+      thresholdHours: threshold,
       belowLevel: belowMemberLevel(entry.crime, memberLevel, levelGap),
     }))
     .filter((entry) => entry.pick);
@@ -206,6 +207,7 @@ function suggestion(rank, candidate) {
     waitHours: candidate.waitHours,
     pooled: candidate.pooled,
     productive: candidate.productive,
+    thresholdHours: candidate.thresholdHours,
     belowLevel: candidate.belowLevel,
   };
 }

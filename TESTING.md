@@ -136,6 +136,10 @@ The automated tests stub the nuke.family API, so every item here needs a real
       tagged, and the bar says the open slots are below your level and offers
       the request button. With crime requests off (or you under their minimum
       level): the best of them is tagged "Best available", never "Good for you".
+- [ ] With nothing open that would start you within the productive threshold:
+      the best slot is tagged "Best available" (others "Also available") with
+      an amber "Nh wait" line under the tag, and the bar says the start is
+      later than the hours that count as productive.
 - [ ] In a slot staff would flag, with over 24 hours left on the crime:
       Recruiting shows a red "You are in ... but ..." line and tags better
       slots. With under 24 hours left, or in a fine slot, it does not.

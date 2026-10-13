@@ -120,6 +120,37 @@ describe("OC Assistant on the Recruiting tab", () => {
     });
   }
 
+  for (const theme of THEMES) {
+    it(`says what is wrong with the best slot when nothing would start in time (${theme})`, async () => {
+      const config = structuredClone(loadApiFixture()["GET /oc/config"]);
+      config.data.settings.productive_threshold_hours = 1;
+      // Only the level 8 crimes stay within reach, and each has members ahead.
+      for (const crime of config.data.crimes) {
+        if (crime.level < 8) for (const role of crime.roles) role.min_cpr = 99;
+      }
+      const { page, errors, close } = await openRecruiting({ theme, api: { "GET /oc/config": config } });
+      try {
+        // Best first: the tags come back in page order.
+        const picks = (await picksOf(page)).sort((a, b) => b[2].localeCompare(a[2]));
+        assert.match(picks[0][2], /^Best available⏳ \d+h wait$/);
+        for (const pick of picks.slice(1)) assert.match(pick[2], /^Also available⏳ \d+h wait$/);
+
+        const bar = await page.locator(BAR).innerText();
+        assert.match(bar, /Best slot available: /);
+        assert.match(bar, /That is later than the 1 hours that count as productive, but nothing open would start you sooner\./);
+        assert.doesNotMatch(bar, /good slot/);
+
+        const { ratio } = await measureContrast(page, ".nfh-oc-pick--best > .nfh-oc-tag > .nfh-oc-flag");
+        assert.ok(ratio >= 4.5, `caveat contrast ${ratio.toFixed(2)} in ${theme}`);
+        assert.deepEqual(errors, []);
+        await screenshot(page.locator(`[data-oc-id="${picks[0][0]}"]`), `oc-recruiting-late-${theme}`);
+        await screenshot(page.locator(BAR), `oc-recruiting-late-bar-${theme}`);
+      } finally {
+        await close();
+      }
+    });
+  }
+
   it("suggests nothing while Torn has every Join button disabled", async () => {
     const { page, errors, close } = await openRecruiting({ before: undefined });
     try {
@@ -379,7 +410,7 @@ describe("OC Assistant crime requests", () => {
     try {
       await page.waitForFunction(() => /Best slot available:/.test(document.querySelector("#nfh-oc-bar").innerText));
       const picks = await picksOf(page);
-      assert.deepEqual(picks.map((pick) => pick[2]), ["Best available"]);
+      assert.deepEqual(picks.map((pick) => pick[2]), ["Best available\u2B07 Below your level"]);
       assert.match(await page.locator(BAR).innerText(), /This crime is below your level, but nothing at your level is open to you\./);
       assert.equal(await page.locator(`${BAR} [data-nfh-oc-spawn]`).count(), 0);
       assert.deepEqual(errors, []);

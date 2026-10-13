@@ -1143,6 +1143,11 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     background-color: #1565c0;
 }
 
+/* What is wrong with a suggested slot, under its tag's text */
+.nfh-oc-tag > .nfh-oc-flag {
+    margin: 2px -6px -2px;
+}
+
 /* Staff flags under a filled slot: one colour and one symbol per kind */
 .nfh-oc-flags {
     display: flex;
@@ -3456,6 +3461,7 @@ body.dark-mode .nfh-oc-bar-warning {
     const qualifying = rated.map((entry) => ({
       ...entry,
       pick: pickSlot(entry.slots),
+      thresholdHours: threshold,
       belowLevel: belowMemberLevel(entry.crime, memberLevel, levelGap)
     })).filter((entry) => entry.pick);
     const withheld = holdBack ? qualifying.filter((entry) => entry.belowLevel).length : 0;
@@ -3485,6 +3491,7 @@ body.dark-mode .nfh-oc-bar-warning {
       waitHours: candidate.waitHours,
       pooled: candidate.pooled,
       productive: candidate.productive,
+      thresholdHours: candidate.thresholdHours,
       belowLevel: candidate.belowLevel
     };
   }
@@ -3906,13 +3913,32 @@ body.dark-mode .nfh-oc-bar-warning {
     return `<span class="nfh-oc-staff"><span class="nfh-oc-bar-muted">Staff flags on this page:</span> ${escapeHtml(summary)} <button type="button" class="nfh-oc-bar-button" data-nfh-oc-staff-toggle aria-expanded="${staff.open ? "true" : "false"}">Flag settings</button></span>${panel}`;
   }
   var TAG_TEXT = { [Rank.Best]: "Best for you", [Rank.Good]: "Good for you" };
-  var TAG_TEXT_BELOW_LEVEL = "Best available";
+  var TAG_TEXT_FLAWED = { [Rank.Best]: "Best available", [Rank.Good]: "Also available" };
+  function suggestionCaveats(suggestion2) {
+    const caveats = [];
+    if (!suggestion2.productive) {
+      caveats.push({
+        flag: Flag.Unproductive,
+        text: `${Math.round(suggestion2.waitHours)}h wait`,
+        title: `Your planning would start ${describeWait(suggestion2.waitHours)}, later than the ${suggestion2.thresholdHours} hours that count as productive.`
+      });
+    }
+    if (suggestion2.belowLevel) {
+      caveats.push({
+        flag: Flag.UnderLevel,
+        text: "Below your level",
+        title: "This crime is below your level, but nothing at your level is open to you."
+      });
+    }
+    return caveats;
+  }
   function waitSentence(suggestion2) {
     return `Your planning would start ${describeWait(suggestion2.waitHours)}.`;
   }
   function tagTitle(suggestion2) {
-    const why = suggestion2.pooled === false ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full." : waitSentence(suggestion2);
-    return suggestion2.belowLevel ? `This crime is below your level, but nothing at your level is open to you. ${why}` : why;
+    const caveats = suggestionCaveats(suggestion2);
+    if (caveats.length > 0) return caveats.map((caveat) => caveat.title).join(" ");
+    return suggestion2.pooled === false ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full." : waitSentence(suggestion2);
   }
   function renderSuggestions(root2, suggestions) {
     const wanted = new Map(
@@ -3934,8 +3960,14 @@ body.dark-mode .nfh-oc-bar-warning {
         tag.className = TAG_CLASS;
         slotEl.prepend(tag);
       }
-      const text = suggestion2.belowLevel ? TAG_TEXT_BELOW_LEVEL : TAG_TEXT[suggestion2.rank];
-      if (tag.textContent !== text) tag.textContent = text;
+      const caveats = suggestionCaveats(suggestion2);
+      const html = escapeHtml((caveats.length > 0 ? TAG_TEXT_FLAWED : TAG_TEXT)[suggestion2.rank]) + caveats.map(
+        (caveat) => `<span class="nfh-oc-flag nfh-oc-flag--${caveat.flag}"><span aria-hidden="true">${FLAG_SYMBOLS[caveat.flag]}</span> ${escapeHtml(caveat.text)}</span>`
+      ).join("");
+      if (tag.dataset.nfhHtml !== html) {
+        tag.dataset.nfhHtml = html;
+        tag.innerHTML = html;
+      }
       const title = tagTitle(suggestion2);
       if (tag.title !== title) tag.title = title;
     }
@@ -3955,14 +3987,15 @@ body.dark-mode .nfh-oc-bar-warning {
       const [best, ...rest] = state3.suggestions;
       const { slot, minCpr } = best.rated;
       const others = rest.filter((suggestion2) => !suggestion2.crime.offPage);
-      const more = others.length > 0 ? ` <span class="nfh-oc-bar-muted">${others.length} other good slot${others.length === 1 ? " is" : "s are"} marked below.</span>` : "";
+      const flawed = suggestionCaveats(best).length > 0;
+      const more = others.length > 0 ? ` <span class="nfh-oc-bar-muted">${others.length} other ${flawed ? "" : "good "}slot${others.length === 1 ? " is" : "s are"} marked below.</span>` : "";
       const unweighted = best.rated.weight === null ? ' <span class="nfh-oc-bar-muted">This crime is too new to have role weights, so this goes on your CPR and its level alone.</span>' : "";
       const offPage = best.crime.offPage ? ' <span class="nfh-oc-bar-muted">It is further down the list and may have been taken in the last few minutes.</span>' : "";
-      const late = best.productive ? "" : ' <span class="nfh-oc-bar-muted">Nothing open would start you sooner.</span>';
+      const late = best.productive ? "" : ` <strong class="nfh-oc-bar-warning">That is later than the ${escapeHtml(best.thresholdHours)} hours that count as productive,</strong> <span class="nfh-oc-bar-muted">but nothing open would start you sooner.</span>`;
       const belowLevel = best.belowLevel ? ' <span class="nfh-oc-bar-muted">This crime is below your level, but nothing at your level is open to you.</span>' : "";
-      let lead = best.belowLevel ? "Best slot available: " : "Best slot for you: ";
+      let lead = flawed ? "Best slot available: " : "Best slot for you: ";
       if (state3.warning) {
-        lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state3.warning)}</strong> ${best.belowLevel ? "The best slot available: " : "A better slot: "}`;
+        lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state3.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
       }
       return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
     }
