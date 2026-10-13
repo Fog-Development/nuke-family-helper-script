@@ -1,4 +1,4 @@
-import { describeWait, PLANNING_HOURS } from "./scoring.js";
+import { countsProductiveDays, describeWait, PLANNING_HOURS, productiveFromLevel } from "./scoring.js";
 
 // Pure rules for what is wrong with a member's slot. Staff see these on every
 // filled slot; a member is warned about their own. No DOM and no storage, so
@@ -37,7 +37,9 @@ export function crimeHoursLeft(crime) {
 //
 // `rated` is the slot as scoring.js rated it (its `minCpr`), `memberLevel` the
 // level the site places the occupant at (null when it does not know), and
-// `limits` the thresholds to judge by: { thresholdHours, levelGap }.
+// `limits` the thresholds to judge by: { thresholdHours, levelGap,
+// productiveFromLevel }. Nobody is "not productive" in a crime below the
+// level the faction counts productive days from.
 export function slotFlags(crime, index, rated, memberLevel, limits) {
   const slot = crime.slots[index];
   if (!slot || !slot.occupied) return [];
@@ -52,7 +54,7 @@ export function slotFlags(crime, index, rated, memberLevel, limits) {
   }
 
   const wait = hoursUntilTurn(crime, index);
-  if (wait > limits.thresholdHours) {
+  if (countsProductiveDays(crime, limits.productiveFromLevel ?? 1) && wait > limits.thresholdHours) {
     flags.push({
       flag: Flag.Unproductive,
       text: `Idle ${Math.round(wait)}h`,
@@ -78,5 +80,7 @@ export function limitsFor(config, prefs = null) {
   return {
     thresholdHours: (prefs && prefs.thresholdHours) ?? settings.productive_threshold_hours ?? 12,
     levelGap: (prefs && prefs.levelGap) ?? settings.under_level_gap ?? 2,
+    // The faction's alone: where its pay is pooled is not a matter of taste.
+    productiveFromLevel: productiveFromLevel(config),
   };
 }

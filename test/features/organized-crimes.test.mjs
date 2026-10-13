@@ -577,6 +577,235 @@ describe("OC Assistant warning about your own slot", () => {
   });
 });
 
+describe("OC Assistant with parts switched off by the faction", () => {
+  const configWith = (settings) => {
+    const config = structuredClone(loadApiFixture()["GET /oc/config"]);
+    Object.assign(config.data.settings, settings);
+    return config;
+  };
+  const slot = (role, playerId, progress, cpr) => ({ role, role_key: role, position_id: "P1", player_id: playerId, progress, cpr });
+  // The viewer sits last in a level 5 crime, with a CPR under its minimum.
+  const badSlot = {
+    data: {
+      synced_at: 1900000000,
+      me: { player_id: 1, level: 8, cprs: {} },
+      crimes: [
+        {
+          id: 7000009, name: "Honey Trap", key: "honeytrap", level: 5, status: "Planning",
+          slots: [slot("Enforcer", 4001, 0.1, 80), slot("Muscle #1", 4002, 0, 80), slot("Muscle #2", 1, 0, 60)],
+        },
+      ],
+    },
+  };
+  const weightChips = [
+    ["Thief #2", "Weight 29.1%", "weight"],
+    ["Robber", "Weight 12.7%", "weight"],
+    ["Muscle #1", "Weight 13.5%", "weight"],
+    ["Muscle #2", "Weight 10.1%", "weight"],
+    ["Muscle #3", "Weight 31.7%", "weight"],
+    ["Thief #1", "Weight 2.9%", "weight"],
+  ];
+
+  for (const theme of THEMES) {
+    it(`shows only each role's weight when the assistant is off (${theme})`, async () => {
+      const { page, apiCalls, errors, close } = await openTornPage(browser, {
+        page: "factions-crimes-recruiting",
+        theme,
+        before: enableJoining,
+        api: { "GET /oc/config": configWith({ assistant_enabled: false }) },
+      });
+      try {
+        await page.waitForSelector(`${ROOT} .nfh-oc-min`);
+        assert.equal(await page.locator(BAR).count(), 0);
+        assert.deepEqual(await picksOf(page), []);
+        assert.deepEqual(await chipsOf(page, "2302842"), weightChips);
+        // "Ship Happens" has no weights yet, so there is nothing to show on it.
+        assert.deepEqual((await chipsOf(page, "2294630")).map(([, text]) => text), Array(5).fill(null));
+        assert.equal(await page.locator(".nfh-oc-min--ok, .nfh-oc-min--below, .nfh-oc-min--filled").count(), 0);
+
+        const { ratio } = await measureContrast(page, ".nfh-oc-min--weight");
+        assert.ok(ratio >= 4.5, `weight contrast ${ratio.toFixed(2)} in ${theme}`);
+
+        // The viewer's CPRs still go to the site, for staff and for later.
+        await page.waitForFunction(() => {
+          const state = JSON.parse(localStorage.getItem("nfhOcCprs") || "null");
+          return state && Object.keys(state.sent).length > 0;
+        }, null, { timeout: 10000 });
+        assert.equal(apiCalls.filter((call) => call.path === "/oc/cpr").length, 1);
+        assert.deepEqual(errors, []);
+        await screenshot(page.locator('[data-oc-id="2302842"]'), `oc-weights-only-${theme}`);
+      } finally {
+        await close();
+      }
+    });
+  }
+
+  it("leaves staff their flags when the assistant is off", async () => {
+    const { page, close } = await openTornPage(browser, {
+      page: "factions-crimes-planning",
+      api: { "GET /oc/board": staffBoard(), "GET /oc/config": configWith({ assistant_enabled: false }) },
+    });
+    try {
+      await page.waitForSelector(".nfh-oc-flag");
+      assert.deepEqual((await flagsOf(page, "2265157")).filter(([, flags]) => flags.length), [["Muscle", ["CPR 69 < 77"]]]);
+      assert.match(await page.locator(BAR).innerText(), /Staff flags on this page:/);
+      assert.equal(await page.locator(".nfh-oc-min--weight").count() > 0, true);
+    } finally {
+      await close();
+    }
+  });
+
+  it("never offers a crime request when the assistant is off", async () => {
+    const config = configWith({ assistant_enabled: false });
+    for (const crime of config.data.crimes) {
+      if (crime.level >= 7) for (const role of crime.roles) role.min_cpr = 99;
+    }
+    config.data.fallback_min_cpr = { default: 99 };
+    const board = { data: { synced_at: 1900000000, crimes: [], me: { player_id: 1, level: 9, cprs: {} } } };
+    const { page, close } = await openTornPage(browser, {
+      page: "factions-crimes-recruiting",
+      before: enableJoining,
+      api: { "GET /oc/board": board, "GET /oc/config": config },
+    });
+    try {
+      await page.waitForSelector(`${ROOT} .nfh-oc-min`);
+      await page.waitForTimeout(700);
+      assert.equal(await page.locator(BAR).count(), 0);
+    } finally {
+      await close();
+    }
+  });
+
+  it("keeps minimums and warnings but marks no slot when suggestions are off", async () => {
+    const config = configWith({ suggest_slots: false });
+    const free = await openTornPage(browser, {
+      page: "factions-crimes-recruiting",
+      before: enableJoining,
+      api: { "GET /oc/config": config },
+    });
+    try {
+      await free.page.waitForSelector(`${ROOT} .nfh-oc-min`);
+      await free.page.waitForTimeout(700);
+      assert.equal(await free.page.locator(BAR).count(), 0, "nothing to say to a member free to join");
+      assert.deepEqual(await picksOf(free.page), []);
+      assert.deepEqual((await chipsOf(free.page, "2302842"))[4], ["Muscle #3", "Min CPR 72", "below"]);
+    } finally {
+      await free.close();
+    }
+
+    const { page, errors, close } = await openRecruiting({ before: undefined, api: { "GET /oc/board": badSlot, "GET /oc/config": config } });
+    try {
+      await page.waitForFunction(() => /You are in Honey Trap/.test(document.querySelector("#nfh-oc-bar").innerText));
+      const bar = await page.locator(BAR).innerText();
+      assert.match(bar, /You are in Honey Trap as Muscle #2, but: CPR 60 is below the faction's minimum of 72 for this role\./);
+      assert.doesNotMatch(bar, /A better slot|Best slot for you|Show me/);
+      assert.deepEqual(await picksOf(page), []);
+      assert.deepEqual(errors, []);
+      await screenshot(page.locator(BAR), "oc-warning-without-suggestions");
+    } finally {
+      await close();
+    }
+  });
+
+  it("still asks staff for a crime when suggestions are off", async () => {
+    const config = configWith({ suggest_slots: false });
+    for (const crime of config.data.crimes) {
+      if (crime.level >= 7) for (const role of crime.roles) role.min_cpr = 99;
+    }
+    config.data.fallback_min_cpr = { default: 99 };
+    const board = { data: { synced_at: 1900000000, crimes: [], me: { player_id: 1, level: 9, cprs: {} } } };
+    const { page, close } = await openRecruiting({ api: { "GET /oc/board": board, "GET /oc/config": config } });
+    try {
+      const button = page.locator(`${BAR} [data-nfh-oc-spawn]`);
+      await button.waitFor();
+      assert.equal(await button.innerText(), "Ask staff for a level 9-10 crime");
+      assert.doesNotMatch(await page.locator(BAR).innerText(), /None of the open slots|Best slot for you/);
+    } finally {
+      await close();
+    }
+  });
+
+  it("does not warn a member about their own slot when warnings are off", async () => {
+    const { page, close } = await openRecruiting({
+      before: undefined,
+      api: { "GET /oc/board": badSlot, "GET /oc/config": configWith({ warn_poor_slot: false }) },
+    });
+    try {
+      await page.waitForTimeout(700);
+      assert.match(await page.locator(BAR).innerText(), /Torn is not letting you join a crime right now/);
+      assert.deepEqual(await picksOf(page), []);
+    } finally {
+      await close();
+    }
+  });
+
+  it("shows weights in place of minimums only when nothing is suggested or warned about", async () => {
+    const hidden = await openTornPage(browser, {
+      page: "factions-crimes-recruiting",
+      before: enableJoining,
+      api: { "GET /oc/config": configWith({ show_min_cpr: false, suggest_slots: false, warn_poor_slot: false }) },
+    });
+    try {
+      await hidden.page.waitForSelector(`${ROOT} .nfh-oc-min`);
+      assert.deepEqual(await chipsOf(hidden.page, "2302842"), weightChips);
+    } finally {
+      await hidden.close();
+    }
+
+    const { page, close } = await openRecruiting({ api: { "GET /oc/config": configWith({ show_min_cpr: false }) } });
+    try {
+      assert.deepEqual((await chipsOf(page, "2302842"))[4], ["Muscle #3", "Min CPR 72", "below"]);
+      assert.equal((await picksOf(page)).length, 3);
+    } finally {
+      await close();
+    }
+  });
+});
+
+describe("OC Assistant below the level productive days count from", () => {
+  const configFrom = (level) => {
+    const config = structuredClone(loadApiFixture()["GET /oc/config"]);
+    config.data.settings.productive_from_level = level;
+    return config;
+  };
+
+  it("flags nobody as not productive there, for staff", async () => {
+    const { page, close } = await openTornPage(browser, {
+      page: "factions-crimes-planning",
+      api: { "GET /oc/board": staffBoard(), "GET /oc/config": configFrom(7) },
+    });
+    try {
+      await page.waitForSelector(".nfh-oc-flag");
+      // Honey Trap is level 5: the 36 hour wait no longer counts, the level 8 member still does.
+      assert.deepEqual(await flagsOf(page, "2275218"), [
+        ["Enforcer", []],
+        ["Muscle #1", ["Level 8 member"]],
+        ["Muscle #2", []],
+      ]);
+      // Blast from the Past is level 7, where the rest still applies.
+      assert.deepEqual((await flagsOf(page, "2265157")).filter(([, flags]) => flags.length), [["Muscle", ["CPR 69 < 77"]]]);
+    } finally {
+      await close();
+    }
+  });
+
+  it("leaves the wait out of a suggestion when the faction never counts productive days", async () => {
+    const { page, errors, close } = await openRecruiting({ api: { "GET /oc/config": configFrom(null) } });
+    try {
+      const bar = await page.locator(BAR).innerText();
+      assert.match(bar, /Best slot for you: /);
+      assert.doesNotMatch(bar, /Your planning would start|Nothing open would start you sooner/);
+      assert.match(
+        await page.locator(".nfh-oc-pick--best > .nfh-oc-tag").getAttribute("title"),
+        /Productive days do not count at this level/,
+      );
+      assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+});
+
 describe("OC Assistant on the Planning tab", () => {
   for (const theme of THEMES) {
     it(`shows minimums but suggests nothing (${theme})`, async () => {

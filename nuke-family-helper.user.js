@@ -1106,7 +1106,8 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
     background-color: #c62828;\r
 }\r
 \r
-.nfh-oc-min--filled {\r
+.nfh-oc-min--filled,\r
+.nfh-oc-min--weight {\r
     background-color: #5f6368;\r
 }\r
 \r
@@ -3379,6 +3380,28 @@ body.dark-mode .nfh-oc-bar-warning {\r
   };
   var Rank = { Best: "best", Good: "good" };
   var GOOD_SLOTS = 2;
+  function memberFeatures(config) {
+    const settings = config && config.settings || {};
+    const enabled = settings.assistant_enabled !== false;
+    const suggest = enabled && settings.suggest_slots !== false;
+    const warn = enabled && settings.warn_poor_slot !== false;
+    return {
+      enabled,
+      suggest,
+      warn,
+      minimums: enabled && (suggest || warn || settings.show_min_cpr !== false),
+      spawn: enabled && Boolean(settings.spawn_requests_enabled)
+    };
+  }
+  var HIGHEST_LEVEL = 10;
+  function productiveFromLevel(config) {
+    const from = (config && config.settings || {}).productive_from_level;
+    if (from === void 0) return 1;
+    return from === null ? HIGHEST_LEVEL + 1 : from;
+  }
+  function countsProductiveDays(crime, fromLevel) {
+    return (crime.level ?? HIGHEST_LEVEL) >= fromLevel;
+  }
   function hoursUntilPlanning(crime) {
     return crime.slots.filter((slot) => slot.occupied).reduce((hours, slot) => hours + (1 - (slot.progress || 0)) * PLANNING_HOURS, 0);
   }
@@ -3404,17 +3427,21 @@ body.dark-mode .nfh-oc-bar-warning {\r
     const settings = config && config.settings || {};
     const threshold = settings.productive_threshold_hours ?? 12;
     const levelGap = settings.under_level_gap ?? 2;
+    const fromLevel = productiveFromLevel(config);
     const rated = crimes.map((crime) => {
       const waitHours = hoursUntilPlanning(crime);
+      const pooled = countsProductiveDays(crime, fromLevel);
       return {
         crime,
         waitHours,
-        productive: waitHours <= threshold,
+        pooled,
+        productive: !pooled || waitHours <= threshold,
+        openSlots: crime.slots.filter((slot) => !slot.occupied).length,
         slots: crime.slots.map((slot) => rateSlot(slot, crime, config))
       };
     });
     const candidates = rated.map((entry) => ({ ...entry, pick: pickSlot(entry.slots) })).filter((entry) => entry.pick).sort(
-      (a, b) => Number(b.productive) - Number(a.productive) || (b.crime.level ?? 0) - (a.crime.level ?? 0) || Number(b.pick.weight !== null) - Number(a.pick.weight !== null) || a.waitHours - b.waitHours || (b.pick.weight ?? -1) - (a.pick.weight ?? -1)
+      (a, b) => Number(b.productive) - Number(a.productive) || (b.crime.level ?? 0) - (a.crime.level ?? 0) || Number(b.pick.weight !== null) - Number(a.pick.weight !== null) || (a.pooled || b.pooled ? 0 : a.openSlots - b.openSlots) || a.waitHours - b.waitHours || (b.pick.weight ?? -1) - (a.pick.weight ?? -1)
     );
     const suggestions = [];
     const best = candidates[0];
@@ -3436,6 +3463,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
       crime: candidate.crime,
       rated: candidate.pick,
       waitHours: candidate.waitHours,
+      pooled: candidate.pooled,
       productive: candidate.productive
     };
   }
@@ -3448,7 +3476,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
   }
   function spawnTierToRequest(suggestions, memberLevel, config) {
     const settings = config && config.settings || {};
-    if (!settings.spawn_requests_enabled) return null;
+    if (!memberFeatures(config).spawn) return null;
     if (memberLevel === null || memberLevel === void 0) return null;
     if (memberLevel < (settings.spawn_request_min_level ?? 6)) return null;
     const best = suggestions[0];
@@ -3501,7 +3529,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
       });
     }
     const wait = hoursUntilTurn(crime, index);
-    if (wait > limits.thresholdHours) {
+    if (countsProductiveDays(crime, limits.productiveFromLevel ?? 1) && wait > limits.thresholdHours) {
       flags.push({
         flag: Flag.Unproductive,
         text: `Idle ${Math.round(wait)}h`,
@@ -3521,7 +3549,9 @@ body.dark-mode .nfh-oc-bar-warning {\r
     const settings = config && config.settings || {};
     return {
       thresholdHours: (prefs3 && prefs3.thresholdHours) ?? settings.productive_threshold_hours ?? 12,
-      levelGap: (prefs3 && prefs3.levelGap) ?? settings.under_level_gap ?? 2
+      levelGap: (prefs3 && prefs3.levelGap) ?? settings.under_level_gap ?? 2,
+      // The faction's alone: where its pay is pooled is not a matter of taste.
+      productiveFromLevel: productiveFromLevel(config)
     };
   }
 
@@ -3777,7 +3807,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
   var PICK_CLASS = "nfh-oc-pick";
   var FLAGS_CLASS = "nfh-oc-flags";
   var FLAG_SYMBOLS = { [Flag.Unqualified]: "\u2716", [Flag.Unproductive]: "\u23F3", [Flag.UnderLevel]: "\u2B07" };
-  var CHIP_STATES = ["ok", "below", "filled"];
+  var CHIP_STATES = ["ok", "below", "filled", "weight"];
   function chipFor(rated) {
     const { slot, minCpr, weight, status, assumed } = rated;
     if (minCpr === null) return null;
@@ -3799,16 +3829,21 @@ body.dark-mode .nfh-oc-bar-warning {\r
         return null;
     }
   }
-  function renderMinimum(rated) {
+  function weightChipFor(rated) {
+    if (rated.weight === null) return null;
+    const weight = `${rated.weight.toFixed(1)}%`;
+    return { state: "weight", text: `Weight ${weight}`, title: `This role carries ${weight} of the crime's outcome.` };
+  }
+  function renderMinimum(rated, showMinimum = true) {
     const { slot, minCpr } = rated;
     const existing = slot.el.querySelector(`:scope > .${CHIP_CLASS}`);
-    const chip = chipFor(rated);
+    const chip = showMinimum ? chipFor(rated) : weightChipFor(rated);
     if (!chip) {
       if (existing) existing.remove();
       return;
     }
     const element = existing || document.createElement("div");
-    const text = `Min CPR ${minCpr}`;
+    const text = chip.text || `Min CPR ${minCpr}`;
     if (element.textContent !== text) element.textContent = text;
     if (element.title !== chip.title) element.title = chip.title;
     element.classList.add(CHIP_CLASS);
@@ -3855,6 +3890,9 @@ body.dark-mode .nfh-oc-bar-warning {\r
   function waitSentence(suggestion2) {
     return `Your planning would start ${describeWait(suggestion2.waitHours)}.`;
   }
+  function tagTitle(suggestion2) {
+    return suggestion2.pooled === false ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full." : waitSentence(suggestion2);
+  }
   function renderSuggestions(root2, suggestions) {
     const wanted = new Map(
       suggestions.filter((suggestion2) => suggestion2.rated.slot.el).map((suggestion2) => [suggestion2.rated.slot.el, suggestion2])
@@ -3877,7 +3915,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
       }
       const text = TAG_TEXT[suggestion2.rank];
       if (tag.textContent !== text) tag.textContent = text;
-      const title = waitSentence(suggestion2);
+      const title = tagTitle(suggestion2);
       if (tag.title !== title) tag.title = title;
     }
   }
@@ -3901,7 +3939,10 @@ body.dark-mode .nfh-oc-bar-warning {\r
       const offPage = best.crime.offPage ? ' <span class="nfh-oc-bar-muted">It is further down the list and may have been taken in the last few minutes.</span>' : "";
       const late = best.productive ? "" : ' <span class="nfh-oc-bar-muted">Nothing open would start you sooner.</span>';
       const lead = state3.warning ? `<strong class="nfh-oc-bar-warning">${escapeHtml(state3.warning)}</strong> A better slot: ` : "Best slot for you: ";
-      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${escapeHtml(waitSentence(best))}${late}${unweighted}${offPage}${more}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
+      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false ? "" : escapeHtml(waitSentence(best))}${late}${unweighted}${offPage}${more}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
+    }
+    if (state3.kind === "warning") {
+      return `${label}<span class="nfh-oc-bar-text"><strong class="nfh-oc-bar-warning">${escapeHtml(state3.warning)}</strong></span>`;
     }
     const messages = {
       none: "None of the open slots loaded so far meets your faction's minimum CPR for you. Scroll down to load more crimes.",
@@ -3997,9 +4038,11 @@ body.dark-mode .nfh-oc-bar-warning {\r
     }
     const cached = active ? cachedBoard2() : null;
     const board = cached ? cached.board : null;
-    const warning = recruiting && joining === JoinState.Blocked ? ownSlotWarning(crimes, board, config, rateCrimes) : null;
-    const suggesting = recruiting && crimes.length > 0 && (joining === JoinState.Open || warning !== null);
-    const elsewhere = suggesting && board ? offPageCrimes(board, crimes) : [];
+    const features2 = memberFeatures(config);
+    const warning = features2.warn && recruiting && joining === JoinState.Blocked ? ownSlotWarning(crimes, board, config, rateCrimes) : null;
+    const ranking = features2.enabled && recruiting && crimes.length > 0 && (joining === JoinState.Open || warning !== null);
+    const suggesting = ranking && features2.suggest;
+    const elsewhere = ranking && board ? offPageCrimes(board, crimes) : [];
     const result = rateCrimes([...crimes, ...elsewhere], config);
     const members = board && board.members ? board.members : null;
     const prefs3 = members ? getStaffPrefs() : null;
@@ -4008,7 +4051,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
     for (const crime of result.crimes) {
       if (crime.crime.offPage) continue;
       crime.slots.forEach((rated, index) => {
-        renderMinimum(rated);
+        renderMinimum(rated, features2.minimums);
         let flags = [];
         if (members && active && rated.slot.occupied) {
           const member = members[rated.slot.playerId];
@@ -4023,21 +4066,25 @@ body.dark-mode .nfh-oc-bar-warning {\r
     const suggestions = suggesting ? result.suggestions : [];
     renderSuggestions(root2, suggestions);
     const staffPart = members && active ? staffHtml({ counts, prefs: prefs3, factionLimits: limitsFor(config), open: staffPanelOpen }) : "";
+    const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
     let memberPart = "";
-    if (recruiting && crimes.length > 0) {
-      let state3;
-      if (suggestions.length > 0) state3 = { kind: "best", suggestions, warning };
-      else if (joining === JoinState.Blocked) state3 = { kind: "blocked" };
-      else if (joining === JoinState.Full) state3 = { kind: "full" };
-      else state3 = { kind: "none" };
-      memberPart = barHtml(state3);
+    if (features2.enabled && recruiting && crimes.length > 0) {
+      if (features2.suggest) {
+        let state3;
+        if (suggestions.length > 0) state3 = { kind: "best", suggestions, warning };
+        else if (joining === JoinState.Blocked) state3 = { kind: "blocked" };
+        else if (joining === JoinState.Full) state3 = { kind: "full" };
+        else state3 = { kind: "none" };
+        memberPart = barHtml(state3);
+      } else if (warning) {
+        memberPart = barHtml({ kind: "warning", warning });
+      }
       const tier = joining === JoinState.Open && board && board.me ? spawnTierToRequest(result.suggestions, board.me.level, config) : null;
       if (tier || spawnState.message) {
-        memberPart += spawnHtml({ tier, asked: spawnAskedUntil() > 0, ...spawnState });
+        memberPart = (memberPart || label) + spawnHtml({ tier, asked: spawnAskedUntil() > 0, ...spawnState });
       }
-    } else if (staffPart) {
-      memberPart = '<span class="nfh-oc-bar-label">OC Assistant</span>';
     }
+    if (!memberPart && staffPart) memberPart = label;
     if (!memberPart) {
       removeBar();
       return;

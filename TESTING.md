@@ -136,6 +136,24 @@ The automated tests stub the nuke.family API, so every item here needs a real
       slots. With under 24 hours left, or in a fine slot, it does not.
 - [ ] Change a minimum on nuke.family (Organized Crimes → OC Assistant): within
       about five minutes and a page reload the line shows the new number.
+- [ ] On nuke.family (Organized Crimes → OC Assistant → "What members see in
+      the script"), within a few minutes of saving:
+  - "Use the OC Assistant" off: no bar, no tags, no crime request button;
+        every role of a known crime shows a grey "Weight N%" line. Staff still
+        get their flags and "Flag settings".
+  - "Suggest slots to join" off: no "Best for you" tags and no "Best slot
+        for you" line; minimums stay, and the crime request button is still
+        offered when nothing decent is open.
+  - "Warn members when their slot is a poor fit" off: in a slot staff would
+        flag, the bar only says Torn is not letting you join.
+  - Suggestions and warnings both off, then "Show the minimum CPR on each
+        role" off: "Weight N%" lines replace "Min CPR". The site does not let
+        that switch go off while either of the other two is on.
+- [ ] "Productive days count from level" set to 7: in a crime below level 7
+      nobody gets the "Idle Nh" staff flag, your own slot is not called
+      unproductive, and a suggested slot there says nothing about when
+      planning would start (it points at the crime closest to full). Level 7
+      and above behave as before. Set to "Never": the same at every level.
 - [ ] Another faction's crimes tab is untouched.
 
 ## Ranked war board (`factions.php?step=your#/war/rank`, during a ranked war; also other factions' war pages)

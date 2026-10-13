@@ -19,6 +19,42 @@ export const Rank = { Best: "best", Good: "good" };
 // How many "Good" slots are marked beside the best one.
 const GOOD_SLOTS = 2;
 
+// What the faction lets its members see. Staff flags are not among these: a
+// staff member switches those on and off for themselves. A site too old to
+// send a switch has everything on. Minimum CPRs cannot be hidden while slots
+// are suggested or warned about, since those are judged by them; with the
+// whole assistant off, a role shows its weight and nothing else.
+export function memberFeatures(config) {
+  const settings = (config && config.settings) || {};
+  const enabled = settings.assistant_enabled !== false;
+  const suggest = enabled && settings.suggest_slots !== false;
+  const warn = enabled && settings.warn_poor_slot !== false;
+  return {
+    enabled,
+    suggest,
+    warn,
+    minimums: enabled && (suggest || warn || settings.show_min_cpr !== false),
+    spawn: enabled && Boolean(settings.spawn_requests_enabled),
+  };
+}
+
+const HIGHEST_LEVEL = 10;
+
+// The lowest crime level at which the faction counts productive days (usually
+// the lowest it pools pay for). Below it, how soon a member starts planning
+// does not matter. A faction that never counts them gets a level no crime
+// reaches; a site too old to say counted them everywhere.
+export function productiveFromLevel(config) {
+  const from = ((config && config.settings) || {}).productive_from_level;
+  if (from === undefined) return 1;
+  return from === null ? HIGHEST_LEVEL + 1 : from;
+}
+
+// A crime whose level is not known is taken to be a new, high one.
+export function countsProductiveDays(crime, fromLevel) {
+  return (crime.level ?? HIGHEST_LEVEL) >= fromLevel;
+}
+
 // Hours until a member joining now would start planning: the planning still
 // owed by everyone already in the crime. Zero for an empty crime, and for
 // one whose members have all finished and which is only waiting on a slot.
@@ -63,25 +99,35 @@ function pickSlot(ratedSlots) {
 
 // Rate every slot and choose what to suggest.
 //
-// Returns { crimes: [{ crime, waitHours, productive, slots: [rated] }],
-//           suggestions: [{ rank, crime, rated, waitHours, productive }] }
+// Returns { crimes: [{ crime, waitHours, pooled, productive, slots: [rated] }],
+//           suggestions: [{ rank, crime, rated, waitHours, pooled, productive }] }
 // with `suggestions` best first. A candidate is one slot per crime; they are
 // ordered by: planning starts within the faction's productive threshold,
 // then crime level (highest first), then crimes whose role weights are known
 // before crimes too new to have any (those are judged on CPR and level
 // alone, so they are still suggested, just after an equal crime we know more
 // about), then the wait (shortest first), then role weight (heaviest first).
+//
+// `pooled` is whether productive days count at the crime's level. Where they
+// do not, no wait is too long (`productive` is always true) and, in place of
+// the shortest wait, the crime closest to full comes first: nothing is lost
+// by waiting there, and it gets crimes finished rather than several left
+// half filled.
 export function rateCrimes(crimes, config) {
   const settings = (config && config.settings) || {};
   const threshold = settings.productive_threshold_hours ?? 12;
   const levelGap = settings.under_level_gap ?? 2;
+  const fromLevel = productiveFromLevel(config);
 
   const rated = crimes.map((crime) => {
     const waitHours = hoursUntilPlanning(crime);
+    const pooled = countsProductiveDays(crime, fromLevel);
     return {
       crime,
       waitHours,
-      productive: waitHours <= threshold,
+      pooled,
+      productive: !pooled || waitHours <= threshold,
+      openSlots: crime.slots.filter((slot) => !slot.occupied).length,
       slots: crime.slots.map((slot) => rateSlot(slot, crime, config)),
     };
   });
@@ -94,6 +140,7 @@ export function rateCrimes(crimes, config) {
         Number(b.productive) - Number(a.productive) ||
         (b.crime.level ?? 0) - (a.crime.level ?? 0) ||
         Number(b.pick.weight !== null) - Number(a.pick.weight !== null) ||
+        (a.pooled || b.pooled ? 0 : a.openSlots - b.openSlots) ||
         a.waitHours - b.waitHours ||
         (b.pick.weight ?? -1) - (a.pick.weight ?? -1),
     );
@@ -122,6 +169,7 @@ function suggestion(rank, candidate) {
     crime: candidate.crime,
     rated: candidate.pick,
     waitHours: candidate.waitHours,
+    pooled: candidate.pooled,
     productive: candidate.productive,
   };
 }
@@ -136,14 +184,14 @@ export function tierFor(level) {
 }
 
 // Whether to offer the member a "ask staff for a crime" button: their faction
-// allows it, they are at or above its minimum level, and the best slot on
+// allows it (and has the assistant on), they are at or above its minimum level, and the best slot on
 // offer (anywhere, loaded or not) is not a decent one for them. Decent means
 // it starts within the productive threshold and is not so far below their
 // level that staff would call it too easy. Returns the tier to ask for, or
 // null.
 export function spawnTierToRequest(suggestions, memberLevel, config) {
   const settings = (config && config.settings) || {};
-  if (!settings.spawn_requests_enabled) return null;
+  if (!memberFeatures(config).spawn) return null;
   if (memberLevel === null || memberLevel === undefined) return null;
   if (memberLevel < (settings.spawn_request_min_level ?? 6)) return null;
 

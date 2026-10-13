@@ -7,7 +7,7 @@ import { crimeHoursLeft, limitsFor, slotFlags } from "./flags.js";
 import { getStaffPrefs, parseOverride, setStaffPrefs } from "./prefs.js";
 import { activeSubTab, CRIMES_ROOT_SELECTOR, joinState, JoinState, readCrimes, SubTab } from "./page.js";
 import { cachedBoard, learnCprs, offPageCrimes, refreshBoard, requestSpawn, spawnAskedUntil } from "./remote.js";
-import { rateCrimes, spawnTierToRequest } from "./scoring.js";
+import { memberFeatures, rateCrimes, spawnTierToRequest } from "./scoring.js";
 import {
   barHtml,
   clearAll,
@@ -25,6 +25,9 @@ import {
 // minimum CPR your faction asks for the role; on the Recruiting tab the slot
 // where you are most useful is marked, using the faction's settings from
 // nuke.family (see docs/oc-assistant-plan.md in the site's repository).
+// The faction chooses how much of this its members get (`memberFeatures`):
+// with all of it off a role shows its weight and nothing else, while staff
+// keep their flags and the viewer's CPRs are still sent to the site.
 //
 // Torn lazy-loads the crime list and re-renders it as members join, so the
 // page is re-read whenever the list changes. The page is the truth for the
@@ -115,10 +118,18 @@ function render() {
   // In a slot staff would flag, with long enough left to be worth moving:
   // the member is warned and shown better slots even though Torn has the
   // Join buttons disabled until they leave.
-  const warning = recruiting && joining === JoinState.Blocked ? ownSlotWarning(crimes, board, config, rateCrimes) : null;
-  const suggesting = recruiting && crimes.length > 0 && (joining === JoinState.Open || warning !== null);
+  const features = memberFeatures(config);
+  const warning =
+    features.warn && recruiting && joining === JoinState.Blocked
+      ? ownSlotWarning(crimes, board, config, rateCrimes)
+      : null;
+  // Slots are ranked whenever the member could act on it; whether the ranking
+  // is shown is the faction's choice, and the crime request needs it either way.
+  const ranking =
+    features.enabled && recruiting && crimes.length > 0 && (joining === JoinState.Open || warning !== null);
+  const suggesting = ranking && features.suggest;
 
-  const elsewhere = suggesting && board ? offPageCrimes(board, crimes) : [];
+  const elsewhere = ranking && board ? offPageCrimes(board, crimes) : [];
   const result = rateCrimes([...crimes, ...elsewhere], config);
 
   // Staff are whoever the site sends every member's level to.
@@ -130,7 +141,7 @@ function render() {
   for (const crime of result.crimes) {
     if (crime.crime.offPage) continue;
     crime.slots.forEach((rated, index) => {
-      renderMinimum(rated);
+      renderMinimum(rated, features.minimums);
       let flags = [];
       if (members && active && rated.slot.occupied) {
         const member = members[rated.slot.playerId];
@@ -151,14 +162,19 @@ function render() {
       ? staffHtml({ counts, prefs, factionLimits: limitsFor(config), open: staffPanelOpen })
       : "";
 
+  const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
   let memberPart = "";
-  if (recruiting && crimes.length > 0) {
-    let state;
-    if (suggestions.length > 0) state = { kind: "best", suggestions, warning };
-    else if (joining === JoinState.Blocked) state = { kind: "blocked" };
-    else if (joining === JoinState.Full) state = { kind: "full" };
-    else state = { kind: "none" };
-    memberPart = barHtml(state);
+  if (features.enabled && recruiting && crimes.length > 0) {
+    if (features.suggest) {
+      let state;
+      if (suggestions.length > 0) state = { kind: "best", suggestions, warning };
+      else if (joining === JoinState.Blocked) state = { kind: "blocked" };
+      else if (joining === JoinState.Full) state = { kind: "full" };
+      else state = { kind: "none" };
+      memberPart = barHtml(state);
+    } else if (warning) {
+      memberPart = barHtml({ kind: "warning", warning });
+    }
 
     // Free to join, but nothing decent at their level anywhere: offer to ask
     // staff for a crime (only if the faction has that switched on).
@@ -167,11 +183,10 @@ function render() {
         ? spawnTierToRequest(result.suggestions, board.me.level, config)
         : null;
     if (tier || spawnState.message) {
-      memberPart += spawnHtml({ tier, asked: spawnAskedUntil() > 0, ...spawnState });
+      memberPart = (memberPart || label) + spawnHtml({ tier, asked: spawnAskedUntil() > 0, ...spawnState });
     }
-  } else if (staffPart) {
-    memberPart = '<span class="nfh-oc-bar-label">OC Assistant</span>';
   }
+  if (!memberPart && staffPart) memberPart = label;
 
   if (!memberPart) {
     removeBar();

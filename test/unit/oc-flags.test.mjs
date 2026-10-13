@@ -54,8 +54,24 @@ describe("OC slot flags", () => {
 
   it("uses a staff member's own thresholds over the faction's, and the faction's for everyone else", () => {
     const config = { settings: { productive_threshold_hours: 8, under_level_gap: 3 } };
-    assert.deepEqual(limitsFor(config), { thresholdHours: 8, levelGap: 3 });
-    assert.deepEqual(limitsFor(config, { thresholdHours: 20, levelGap: null }), { thresholdHours: 20, levelGap: 3 });
-    assert.deepEqual(limitsFor(null), { thresholdHours: 12, levelGap: 2 });
+    assert.deepEqual(limitsFor(config), { thresholdHours: 8, levelGap: 3, productiveFromLevel: 1 });
+    assert.deepEqual(limitsFor(config, { thresholdHours: 20, levelGap: null }), { thresholdHours: 20, levelGap: 3, productiveFromLevel: 1 });
+    assert.deepEqual(limitsFor(null), { thresholdHours: 12, levelGap: 2, productiveFromLevel: 1 });
+  });
+
+  it("calls nobody unproductive below the level the faction counts productive days from", () => {
+    const from = (level) => limitsFor({ settings: { productive_from_level: level } });
+    assert.equal(from(7).productiveFromLevel, 7);
+    assert.equal(limitsFor({ settings: { productive_from_level: 7 } }, { thresholdHours: 1 }).productiveFromLevel, 7, "not a staff member's to override");
+
+    // Delta waits 36 hours in a level 8 crime.
+    assert.deepEqual(kinds(slotFlags(crime, 3, { minCpr: 63 }, null, from(8))), [Flag.Unproductive]);
+    assert.deepEqual(slotFlags(crime, 3, { minCpr: 63 }, null, from(9)), []);
+    assert.deepEqual(slotFlags(crime, 3, { minCpr: 63 }, null, from(null)), [], "never counted");
+    assert.deepEqual(slotFlags({ ...crime, level: 10 }, 3, { minCpr: 63 }, null, from(null)), []);
+    assert.deepEqual(kinds(slotFlags({ ...crime, level: null }, 3, { minCpr: 63 }, null, from(7))), [Flag.Unproductive], "an unknown level is taken as a high one");
+
+    // The other flags do not depend on it.
+    assert.deepEqual(kinds(slotFlags({ ...crime, level: 5 }, 3, { minCpr: 90 }, 9, from(7))), [Flag.Unqualified, Flag.UnderLevel]);
   });
 });

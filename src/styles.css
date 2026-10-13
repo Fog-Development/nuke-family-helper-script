@@ -896,7 +896,8 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     background-color: #c62828;
 }
 
-.nfh-oc-min--filled {
+.nfh-oc-min--filled,
+.nfh-oc-min--weight {
     background-color: #5f6368;
 }
 

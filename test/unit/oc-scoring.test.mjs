@@ -4,6 +4,8 @@ import { findRole, keyFor } from "../../src/features/organized-crimes/catalog.js
 import {
   describeWait,
   hoursUntilPlanning,
+  memberFeatures,
+  productiveFromLevel,
   Rank,
   rateCrimes,
   SlotStatus,
@@ -187,6 +189,81 @@ describe("slot rating", () => {
   });
 });
 
+describe("the level productive days count from", () => {
+  const from = (level) => ({ ...config, settings: { ...config.settings, productive_from_level: level } });
+
+  it("is everywhere for a site too old to say, and nowhere when the faction never counts them", () => {
+    assert.equal(productiveFromLevel(config), 1);
+    assert.equal(productiveFromLevel(null), 1);
+    assert.equal(productiveFromLevel(from(7)), 7);
+    assert.ok(productiveFromLevel(from(null)) > 10);
+  });
+
+  it("stops a long wait counting against a crime below it", () => {
+    // Honey Trap (5) is the only crime open, behind someone who has not started.
+    const crimes = [crime(1, "Honey Trap", 5, [filled("Muscle #1", 0), open("Enforcer", 80)])];
+    const counted = rateCrimes(crimes, from(5)).suggestions[0];
+    assert.deepEqual([counted.pooled, counted.productive, counted.waitHours], [true, false, 24]);
+    const notCounted = rateCrimes(crimes, from(7)).suggestions[0];
+    assert.deepEqual([notCounted.pooled, notCounted.productive], [false, true]);
+    assert.equal(rateCrimes(crimes, from(null)).suggestions[0].productive, true);
+  });
+
+  it("points at the crime closest to full below it, and the soonest start at or above it", () => {
+    const pair = (level, name, role) => [
+      crime(1, name, level, [open(role, 80), open("Spare", null), open("Other", null)]),
+      crime(2, name, level, [filled("Spare", 0), filled("Other", 0), open(role, 80)]),
+    ];
+    // Level 5, not counted: the crime with one slot left, despite its 48 hour queue.
+    assert.deepEqual(rateCrimes(pair(5, "Honey Trap", "Enforcer"), from(7)).suggestions.map((s) => s.crime.id), [2, 1]);
+    // Level 8, counted: the empty crime, where planning starts now.
+    assert.deepEqual(rateCrimes(pair(8, "Break the Bank", "Muscle #1"), from(7)).suggestions.map((s) => s.crime.id), [1]);
+    // Never counted: closest to full at every level.
+    assert.deepEqual(rateCrimes(pair(8, "Break the Bank", "Muscle #1"), from(null)).suggestions.map((s) => s.crime.id), [2, 1]);
+  });
+
+  it("still prefers the higher level, and a crime where days count that starts in time", () => {
+    const { suggestions } = rateCrimes(
+      [
+        crime(1, "Honey Trap", 5, [open("Enforcer", 80)]),
+        crime(2, "Blast from the Past", 7, [filled("Muscle", 0.75), open("Hacker", 80)]),
+        crime(3, "Break the Bank", 8, [filled("Thief #1", 0), open("Muscle #1", 80)]),
+      ],
+      from(7),
+    );
+    // Break the Bank would leave them idle a day, so it comes last.
+    assert.deepEqual(suggestions.map((s) => s.crime.id), [2]);
+    assert.equal(suggestions[0].pooled, true);
+  });
+});
+
+describe("what a faction lets its members see", () => {
+  const withSettings = (settings) => memberFeatures({ settings: { spawn_requests_enabled: true, ...settings } });
+  const all = { enabled: true, suggest: true, warn: true, minimums: true, spawn: true };
+
+  it("is everything for a site too old to send the switches", () => {
+    assert.deepEqual(withSettings({}), all);
+    assert.deepEqual(memberFeatures(null), { ...all, spawn: false });
+  });
+
+  it("switches each part off on its own", () => {
+    assert.deepEqual(withSettings({ suggest_slots: false }), { ...all, suggest: false });
+    assert.deepEqual(withSettings({ warn_poor_slot: false }), { ...all, warn: false });
+    assert.deepEqual(withSettings({ spawn_requests_enabled: false }), { ...all, spawn: false });
+  });
+
+  it("only hides minimum CPRs when nothing is suggested or warned about", () => {
+    assert.equal(withSettings({ show_min_cpr: false }).minimums, true);
+    assert.equal(withSettings({ show_min_cpr: false, suggest_slots: false }).minimums, true);
+    assert.equal(withSettings({ show_min_cpr: false, warn_poor_slot: false }).minimums, true);
+    assert.equal(withSettings({ show_min_cpr: false, suggest_slots: false, warn_poor_slot: false }).minimums, false);
+  });
+
+  it("switches all of it off with the assistant", () => {
+    assert.deepEqual(withSettings({ assistant_enabled: false }), { enabled: false, suggest: false, warn: false, minimums: false, spawn: false });
+  });
+});
+
 describe("asking staff for a crime", () => {
   const settings = { ...config.settings, spawn_requests_enabled: true, spawn_request_min_level: 6 };
   const allowed = { ...config, settings };
@@ -214,5 +291,6 @@ describe("asking staff for a crime", () => {
     assert.equal(spawnTierToRequest([], null, allowed), null);
     assert.equal(spawnTierToRequest([], 8, { ...config, settings: { ...settings, spawn_requests_enabled: false } }), null);
     assert.equal(spawnTierToRequest([], 8, { ...config, settings: { ...settings, spawn_request_min_level: 9 } }), null);
+    assert.equal(spawnTierToRequest([], 8, { ...config, settings: { ...settings, assistant_enabled: false } }), null);
   });
 });

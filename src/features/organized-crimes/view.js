@@ -19,7 +19,7 @@ const FLAGS_CLASS = "nfh-oc-flags";
 // can be told apart without relying on colour.
 const FLAG_SYMBOLS = { [Flag.Unqualified]: "\u2716", [Flag.Unproductive]: "\u23F3", [Flag.UnderLevel]: "\u2B07" };
 
-const CHIP_STATES = ["ok", "below", "filled"];
+const CHIP_STATES = ["ok", "below", "filled", "weight"];
 
 function chipFor(rated) {
   const { slot, minCpr, weight, status, assumed } = rated;
@@ -48,11 +48,19 @@ function chipFor(rated) {
   }
 }
 
-// The "Min CPR 63" line under a slot's header.
-export function renderMinimum(rated) {
+// What a faction that has minimum CPRs hidden gets in their place.
+function weightChipFor(rated) {
+  if (rated.weight === null) return null;
+  const weight = `${rated.weight.toFixed(1)}%`;
+  return { state: "weight", text: `Weight ${weight}`, title: `This role carries ${weight} of the crime's outcome.` };
+}
+
+// The "Min CPR 63" line under a slot's header, or "Weight 13.5%" when the
+// faction does not show its minimums.
+export function renderMinimum(rated, showMinimum = true) {
   const { slot, minCpr } = rated;
   const existing = slot.el.querySelector(`:scope > .${CHIP_CLASS}`);
-  const chip = chipFor(rated);
+  const chip = showMinimum ? chipFor(rated) : weightChipFor(rated);
 
   if (!chip) {
     if (existing) existing.remove();
@@ -60,7 +68,7 @@ export function renderMinimum(rated) {
   }
 
   const element = existing || document.createElement("div");
-  const text = `Min CPR ${minCpr}`;
+  const text = chip.text || `Min CPR ${minCpr}`;
   if (element.textContent !== text) element.textContent = text;
   if (element.title !== chip.title) element.title = chip.title;
   element.classList.add(CHIP_CLASS);
@@ -139,6 +147,14 @@ function waitSentence(suggestion) {
   return `Your planning would start ${describeWait(suggestion.waitHours)}.`;
 }
 
+// Why a slot is tagged. Where productive days do not count, the wait is
+// beside the point.
+function tagTitle(suggestion) {
+  return suggestion.pooled === false
+    ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full."
+    : waitSentence(suggestion);
+}
+
 // Outline and tag the suggested slots, and clear the marks from any slot that
 // is no longer suggested.
 export function renderSuggestions(root, suggestions) {
@@ -169,7 +185,7 @@ export function renderSuggestions(root, suggestions) {
     }
     const text = TAG_TEXT[suggestion.rank];
     if (tag.textContent !== text) tag.textContent = text;
-    const title = waitSentence(suggestion);
+    const title = tagTitle(suggestion);
     if (tag.title !== title) tag.title = title;
   }
 }
@@ -194,6 +210,8 @@ export function spawnHtml(spawn) {
 //   { kind: "best", suggestions, warning }  there is a slot to recommend;
 //                                  `warning` (optional) is what is wrong with
 //                                  the slot the member already sits in
+//   { kind: "warning", warning }   what is wrong with the member's own slot, for
+//                                  a faction that warns but does not suggest
 //   { kind: "none" }               open slots, but none the member qualifies for
 //   { kind: "blocked" }            Torn is not letting the member join anything
 //   { kind: "full" }               no open slot is loaded
@@ -226,9 +244,13 @@ export function barHtml(state) {
       `<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), ` +
       `<strong>${escapeHtml(slot.name)}</strong>. ` +
       `Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ` +
-      `${escapeHtml(waitSentence(best))}${late}${unweighted}${offPage}${more}</span>` +
+      `${best.pooled === false ? "" : escapeHtml(waitSentence(best))}${late}${unweighted}${offPage}${more}</span>` +
       `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`
     );
+  }
+
+  if (state.kind === "warning") {
+    return `${label}<span class="nfh-oc-bar-text"><strong class="nfh-oc-bar-warning">${escapeHtml(state.warning)}</strong></span>`;
   }
 
   const messages = {
