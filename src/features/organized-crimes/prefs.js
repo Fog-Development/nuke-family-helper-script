@@ -1,3 +1,4 @@
+import { getItem, setItem } from "../../core/storage.js";
 import { Flag } from "./flags.js";
 
 // A staff member's own choices for the OC flags: which kinds to show, and
@@ -15,7 +16,7 @@ const DEFAULTS = {
 export function getStaffPrefs() {
   let saved = null;
   try {
-    saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    saved = JSON.parse(getItem(KEY) || "null");
   } catch (e) {
     saved = null;
   }
@@ -28,7 +29,7 @@ export function getStaffPrefs() {
 
 export function setStaffPrefs(changes) {
   const next = { ...getStaffPrefs(), ...changes };
-  localStorage.setItem(KEY, JSON.stringify(next));
+  setItem(KEY, JSON.stringify(next));
   return next;
 }
 

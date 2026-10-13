@@ -1,12 +1,14 @@
 import { LogInfo } from "./log.js";
+import { getItem, setItem } from "./storage.js";
 
 // Settings manager for user preferences (shitlist category visibility,
-// reputation box visibility). Stored in localStorage.
+// reputation box visibility). Stored in localStorage, or TornPDA's own store
+// (see storage.js).
 export const SettingsManager = {
   getHiddenCategories: () => {
     try {
       return JSON.parse(
-        localStorage.getItem("hiddenShitlistCategories") || "[]",
+        getItem("hiddenShitlistCategories") || "[]",
       );
     } catch (e) {
       console.error("Error parsing hidden categories:", e);
@@ -15,7 +17,7 @@ export const SettingsManager = {
   },
 
   setHiddenCategories: (hiddenIds) => {
-    localStorage.setItem("hiddenShitlistCategories", JSON.stringify(hiddenIds));
+    setItem("hiddenShitlistCategories", JSON.stringify(hiddenIds));
   },
 
   isCategoryVisible: (categoryId, isFaction) => {
@@ -48,7 +50,7 @@ export const SettingsManager = {
 
   isReputationVisible: () => {
     try {
-      const stored = localStorage.getItem("nfhShowReputation");
+      const stored = getItem("nfhShowReputation");
       // Default to true (enabled) if not set
       return stored === null ? true : stored === "true";
     } catch (e) {
@@ -57,6 +59,6 @@ export const SettingsManager = {
   },
 
   setReputationVisible: (isVisible) => {
-    localStorage.setItem("nfhShowReputation", String(isVisible));
+    setItem("nfhShowReputation", String(isVisible));
   },
 };

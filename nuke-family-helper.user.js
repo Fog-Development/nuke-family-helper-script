@@ -1336,28 +1336,191 @@ body.dark-mode .nfh-oc-bar-warning {
   var TOKEN_GENERATION_URL = DEBUG ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
   var GITHUB_URL = "https://github.com/Fog-Development/nuke-family-helper-script/raw/master/nuke-family-helper.user.js";
 
+  // src/core/storage.js
+  var MANAGER_KEYS = ["apiToken", "apiTokenFirstTime", "nfhTokenReturnUrl"];
+  var LOCAL_KEYS = [
+    "hiddenShitlistCategories",
+    "nfhShowReputation",
+    "nfhChainWatch",
+    "nfhRankedWar",
+    "nfhOcStaffPrefs"
+  ];
+  var UNSAVED_KEY = "nfhNativeStorageUnsaved";
+  var LOAD_TIMEOUT_MS = 3e3;
+  var native = null;
+  var mirror = {};
+  var info = { backend: "default", present: false, migrated: [], restored: [], error: null, write_error: null };
+  function nativeStore() {
+    try {
+      const store = typeof PDA_storage !== "undefined" ? PDA_storage : null;
+      return store && typeof store.loadAll === "function" && typeof store.setMany === "function" ? store : null;
+    } catch (e) {
+      return null;
+    }
+  }
+  function hasNativeStorage() {
+    return nativeStore() !== null;
+  }
+  function isManagerKey(key) {
+    return MANAGER_KEYS.includes(key);
+  }
+  function legacyRead(key) {
+    try {
+      if (isManagerKey(key)) return GM_getValue(key, void 0);
+      const value = localStorage.getItem(key);
+      return value === null ? void 0 : value;
+    } catch (e) {
+      return void 0;
+    }
+  }
+  function legacyWrite(key, value) {
+    try {
+      if (isManagerKey(key)) GM_setValue(key, value);
+      else localStorage.setItem(key, value);
+    } catch (e) {
+    }
+  }
+  function unsavedKeys() {
+    try {
+      const keys = JSON.parse(localStorage.getItem(UNSAVED_KEY) || "[]");
+      return Array.isArray(keys) ? keys : [];
+    } catch (e) {
+      return [];
+    }
+  }
+  function setUnsaved(keys) {
+    try {
+      if (keys.length === 0) localStorage.removeItem(UNSAVED_KEY);
+      else localStorage.setItem(UNSAVED_KEY, JSON.stringify(keys));
+    } catch (e) {
+    }
+  }
+  function push(pairs) {
+    const keys = Object.keys(pairs);
+    if (!native || keys.length === 0) return Promise.resolve();
+    setUnsaved([.../* @__PURE__ */ new Set([...unsavedKeys(), ...keys])]);
+    return Promise.resolve().then(() => native.setMany(pairs)).then(() => {
+      setUnsaved(unsavedKeys().filter((key) => !keys.includes(key)));
+      info.write_error = null;
+    }).catch((error) => {
+      info.write_error = String(error && (error.code || error.message) || error);
+    });
+  }
+  function withTimeout(promise, ms) {
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("timed out")), ms);
+      Promise.resolve(promise).then(
+        (value) => {
+          clearTimeout(timer);
+          resolve(value);
+        },
+        (error) => {
+          clearTimeout(timer);
+          reject(error);
+        }
+      );
+    });
+  }
+  var same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  async function initStorage({ migrate = true } = {}) {
+    const store = nativeStore();
+    info.present = store !== null;
+    if (!store) return;
+    let stored;
+    try {
+      stored = await withTimeout(store.loadAll(), LOAD_TIMEOUT_MS) || {};
+    } catch (error) {
+      info.error = String(error && error.message || error);
+      return;
+    }
+    native = store;
+    mirror = {};
+    info.backend = "pda_storage";
+    const unsaved = migrate ? unsavedKeys() : [];
+    const toPush = {};
+    for (const key of [...MANAGER_KEYS, ...LOCAL_KEYS]) {
+      const inApp = stored[key] !== void 0 && stored[key] !== null;
+      const old = migrate ? legacyRead(key) : void 0;
+      if (old !== void 0 && (!inApp || unsaved.includes(key))) {
+        mirror[key] = old;
+        if (!inApp || !same(stored[key], old)) {
+          toPush[key] = old;
+          info.migrated.push(key);
+        }
+      } else if (inApp) {
+        mirror[key] = stored[key];
+        if (migrate && !same(old, stored[key])) {
+          legacyWrite(key, stored[key]);
+          info.restored.push(key);
+        }
+      }
+    }
+    if (Object.keys(toPush).length > 0) await push(toPush);
+    else if (unsaved.length > 0) setUnsaved([]);
+  }
+  function read(key, fallback) {
+    if (native) return key in mirror ? mirror[key] : fallback;
+    const value = legacyRead(key);
+    return value === void 0 ? fallback : value;
+  }
+  function write(key, value) {
+    legacyWrite(key, value);
+    if (native) {
+      mirror[key] = value;
+      push({ [key]: value });
+    }
+  }
+  function getValue(key, fallback) {
+    return read(key, fallback);
+  }
+  function setValue(key, value) {
+    write(key, value);
+  }
+  function getItem(key) {
+    const value = read(key, null);
+    return value === null || value === void 0 ? null : String(value);
+  }
+  function setItem(key, value) {
+    write(key, String(value));
+  }
+  async function storageInfo() {
+    const report = {
+      ...info,
+      keys: native ? Object.keys(mirror) : void 0,
+      unsaved: info.present ? unsavedKeys() : void 0
+    };
+    if (native && typeof native.usage === "function") {
+      try {
+        report.usage = await withTimeout(native.usage(), LOAD_TIMEOUT_MS);
+      } catch (e) {
+        report.usage = null;
+      }
+    }
+    return report;
+  }
+
   // src/core/auth.js
   var apiToken = "";
   var RETURN_URL_KEY = "nfhTokenReturnUrl";
   function initAuth() {
-    apiToken = GM_getValue("apiToken", "");
+    apiToken = getValue("apiToken", "");
   }
   function getApiToken() {
     return apiToken;
   }
   function setApiToken(token) {
     apiToken = token;
-    GM_setValue("apiToken", token);
+    setValue("apiToken", token);
   }
   function ensureApiToken() {
     if (apiToken) return;
-    if (!GM_getValue("apiTokenFirstTime", false)) {
-      GM_setValue("apiTokenFirstTime", true);
+    if (!getValue("apiTokenFirstTime", false)) {
+      setValue("apiTokenFirstTime", true);
       const goNow = confirm(
         "No Nuke.Family API key set yet. You need a https://nuke.family account (create one if needed) and a key.\n\nPress OK to go to nuke.family now. Your key will be saved automatically and you'll be brought back to this page."
       );
       if (goNow) {
-        GM_setValue(RETURN_URL_KEY, window.location.href);
+        setValue(RETURN_URL_KEY, window.location.href);
         window.location.href = TOKEN_GENERATION_URL;
       }
     } else {
@@ -1374,9 +1537,9 @@ body.dark-mode .nfh-oc-bar-warning {
     }
   }
   function takeTokenReturnUrl() {
-    const url = GM_getValue(RETURN_URL_KEY, "");
+    const url = getValue(RETURN_URL_KEY, "");
     if (!url) return null;
-    GM_setValue(RETURN_URL_KEY, "");
+    setValue(RETURN_URL_KEY, "");
     return url.startsWith("https://www.torn.com/") ? url : null;
   }
   function promptForNewApiKey() {
@@ -1905,7 +2068,7 @@ body.dark-mode .nfh-oc-bar-warning {
     if (prefs) return prefs;
     let stored = null;
     try {
-      stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      stored = JSON.parse(getItem(STORAGE_KEY) || "null");
     } catch (e) {
     }
     prefs = sanitize(stored || importLegacy());
@@ -1913,7 +2076,7 @@ body.dark-mode .nfh-oc-bar-warning {
   }
   function setPrefs(patch) {
     prefs = sanitize({ ...getPrefs(), ...patch });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+    setItem(STORAGE_KEY, JSON.stringify(prefs));
     return prefs;
   }
   function formatAlertTime(seconds) {
@@ -2291,10 +2454,10 @@ body.dark-mode .nfh-oc-bar-warning {
       };
     }
     if (!summary.started) {
-      const start = Date.parse(board.start_time);
+      const start2 = Date.parse(board.start_time);
       return {
         tone: "",
-        text: `Starts ${slotLabel(start)} TCT \xB7 in ${duration(start - now)}`,
+        text: `Starts ${slotLabel(start2)} TCT \xB7 in ${duration(start2 - now)}`,
         actions: ""
       };
     }
@@ -2394,7 +2557,7 @@ body.dark-mode .nfh-oc-bar-warning {
     return slot.paid_count < slot.cap ? "short" : "full";
   }
   function slotDetail(slot, busy) {
-    const start = slotStart(slot);
+    const start2 = slotStart(slot);
     const isMine = slot.signups.some((signup) => signup.is_me);
     const waitlist = slot.total_count - slot.paid_count;
     const names = slot.signups.map(
@@ -2402,7 +2565,7 @@ body.dark-mode .nfh-oc-bar-warning {
     ).join("");
     const paid = slot.rate > 0;
     const unpaidWarning = !isMine && slot.paid_count >= slot.cap ? paid ? '<span class="nfh-cw-need">Paid spots are full: you would be unpaid unless staff approve it.</span>' : '<span class="nfh-cw-muted">This hour is covered: extra watchers are welcome.</span>' : "";
-    return `<div class="nfh-cw-detail"><div><strong>${slotLabel(start)}\u2013${hourLabel(start + HOUR_MS)} TCT</strong> <span class="nfh-cw-muted">(${escapeHtml(localTime(start))} your time)</span>` + (paid ? ` \xB7 ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " \u2605" : ""}` : "") + (slot.range_label ? ` \xB7 ${escapeHtml(slot.range_label)}` : "") + ` \xB7 ${escapeHtml(fillText(slot))}` + (waitlist > 0 ? ` (+${waitlist} ${paid ? "unpaid" : "extra"})` : "") + `</div><div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div><div class="nfh-cw-detail-actions${busy ? " is-busy" : ""}">` + (isMine ? button("leave", "Leave this slot", { data: { slot: slot.slot_start_iso } }) : button("signup", "Sign up", { primary: true, data: { slot: slot.slot_start_iso } })) + unpaidWarning + "</div></div>";
+    return `<div class="nfh-cw-detail"><div><strong>${slotLabel(start2)}\u2013${hourLabel(start2 + HOUR_MS)} TCT</strong> <span class="nfh-cw-muted">(${escapeHtml(localTime(start2))} your time)</span>` + (paid ? ` \xB7 ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " \u2605" : ""}` : "") + (slot.range_label ? ` \xB7 ${escapeHtml(slot.range_label)}` : "") + ` \xB7 ${escapeHtml(fillText(slot))}` + (waitlist > 0 ? ` (+${waitlist} ${paid ? "unpaid" : "extra"})` : "") + `</div><div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div><div class="nfh-cw-detail-actions${busy ? " is-busy" : ""}">` + (isMine ? button("leave", "Leave this slot", { data: { slot: slot.slot_start_iso } }) : button("signup", "Sign up", { primary: true, data: { slot: slot.slot_start_iso } })) + unpaidWarning + "</div></div>";
   }
   function slotsSection(summary, ui, busy) {
     const { slots } = summary;
@@ -3559,9 +3722,10 @@ body.dark-mode .nfh-oc-bar-warning {
   }
   async function collectDebugInfo() {
     const token = getApiToken() || "";
-    const info = typeof GM_info !== "undefined" && GM_info ? GM_info : {};
+    const info2 = typeof GM_info !== "undefined" && GM_info ? GM_info : {};
     const board = cachedBoard2();
-    const [fromPage, roles, permissions, lastUpdates, ocConfig, ocBoard] = await Promise.all([
+    const [storage, fromPage, roles, permissions, lastUpdates, ocConfig, ocBoard] = await Promise.all([
+      storageInfo(),
       probeFromPage(),
       probe("/user/get-own-roles", (body) => ({ role: body.role ?? null })),
       probe("/user/get-own-permissions", (body) => ({ permissions: body.permissions || [] })),
@@ -3575,7 +3739,7 @@ body.dark-mode .nfh-oc-bar-warning {
         version: CURRENT_VERSION,
         debug_build: DEBUG,
         api_url: API_URL,
-        manager: info.scriptHandler ? `${info.scriptHandler} ${info.version || ""}`.trim() : null,
+        manager: info2.scriptHandler ? `${info2.scriptHandler} ${info2.version || ""}`.trim() : null,
         torn_pda: isPda
       },
       browser: { user_agent: navigator.userAgent, page: window.location.href },
@@ -3589,6 +3753,7 @@ body.dark-mode .nfh-oc-bar-warning {
         "/oc/board": ocBoard
       },
       site_from_page: fromPage,
+      storage,
       stored: {
         role: getUserRole() || null,
         stores: Object.fromEntries(
@@ -3772,7 +3937,7 @@ body.dark-mode .nfh-oc-bar-warning {
     getHiddenCategories: () => {
       try {
         return JSON.parse(
-          localStorage.getItem("hiddenShitlistCategories") || "[]"
+          getItem("hiddenShitlistCategories") || "[]"
         );
       } catch (e) {
         console.error("Error parsing hidden categories:", e);
@@ -3780,7 +3945,7 @@ body.dark-mode .nfh-oc-bar-warning {
       }
     },
     setHiddenCategories: (hiddenIds) => {
-      localStorage.setItem("hiddenShitlistCategories", JSON.stringify(hiddenIds));
+      setItem("hiddenShitlistCategories", JSON.stringify(hiddenIds));
     },
     isCategoryVisible: (categoryId, isFaction) => {
       if (isFaction) return true;
@@ -3804,14 +3969,14 @@ body.dark-mode .nfh-oc-bar-warning {
     },
     isReputationVisible: () => {
       try {
-        const stored = localStorage.getItem("nfhShowReputation");
+        const stored = getItem("nfhShowReputation");
         return stored === null ? true : stored === "true";
       } catch (e) {
         return true;
       }
     },
     setReputationVisible: (isVisible) => {
-      localStorage.setItem("nfhShowReputation", String(isVisible));
+      setItem("nfhShowReputation", String(isVisible));
     }
   };
 
@@ -4085,7 +4250,7 @@ body.dark-mode .nfh-oc-bar-warning {
   function getStaffPrefs() {
     let saved = null;
     try {
-      saved = JSON.parse(localStorage.getItem(KEY) || "null");
+      saved = JSON.parse(getItem(KEY) || "null");
     } catch (e) {
       saved = null;
     }
@@ -4097,7 +4262,7 @@ body.dark-mode .nfh-oc-bar-warning {
   }
   function setStaffPrefs(changes) {
     const next = { ...getStaffPrefs(), ...changes };
-    localStorage.setItem(KEY, JSON.stringify(next));
+    setItem(KEY, JSON.stringify(next));
     return next;
   }
   function parseOverride(value, min, max) {
@@ -4852,7 +5017,7 @@ body.dark-mode .nfh-oc-bar-warning {
     if (prefs2) return prefs2;
     let stored = null;
     try {
-      stored = JSON.parse(localStorage.getItem(STORAGE_KEY2) || "null");
+      stored = JSON.parse(getItem(STORAGE_KEY2) || "null");
     } catch (e) {
     }
     prefs2 = sanitize2(stored);
@@ -4860,7 +5025,7 @@ body.dark-mode .nfh-oc-bar-warning {
   }
   function setPrefs2(patch) {
     prefs2 = sanitize2({ ...getPrefs2(), ...patch });
-    localStorage.setItem(STORAGE_KEY2, JSON.stringify(prefs2));
+    setItem(STORAGE_KEY2, JSON.stringify(prefs2));
     return prefs2;
   }
 
@@ -6015,9 +6180,14 @@ body.dark-mode .nfh-oc-bar-warning {
   }
   function main() {
     if (IsPage(PageType.NukeFamily3rdParty)) {
-      initTokenCapture();
+      if (hasNativeStorage()) initStorage({ migrate: false }).then(initTokenCapture);
+      else initTokenCapture();
       return;
     }
+    if (hasNativeStorage()) initStorage().then(start);
+    else start();
+  }
+  function start() {
     addStyle(styles_default);
     LogInfo("Nuke Family Helper Script Loaded");
     checkForUpdates();

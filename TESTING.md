@@ -252,3 +252,23 @@ two would keep undoing each other.
 - [ ] Light and dark Torn themes both render the sections legibly.
 - [ ] (If available) TornPDA: script loads and the profile shitlist section
       renders.
+
+## TornPDA storage
+
+Needs a TornPDA version with `PDA_storage` (script storage). Cannot be checked
+outside the app.
+
+- [ ] Existing install, already connected: after updating, everything still
+      works with no prompt. "NFH Debug Info" shows `storage.backend:
+      "pda_storage"`, `apiToken` under `storage.migrated` the first time only,
+      and `script.torn_pda: true`. The script shows a storage badge in
+      TornPDA's script list.
+- [ ] Change a setting (a ranked war sort, a hidden shitlist category), reload:
+      it is kept.
+- [ ] Clear the browser cache in TornPDA, reload Torn: no key prompt, features
+      still load, and the report lists `apiToken` under `storage.restored`.
+- [ ] Fresh install through the nuke.family token page: on returning to Torn
+      the key is there (this only works if the app gives the script the same
+      store on nuke.family as on Torn, which is not known).
+- [ ] Rename-proofing: note what the store is keyed on (name, URL?) before
+      ever renaming the script.

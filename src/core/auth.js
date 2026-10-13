@@ -1,7 +1,9 @@
 import { TOKEN_GENERATION_URL } from "./config.js";
+import { getValue, setValue } from "./storage.js";
 
-// The nuke.family API token, kept in GM storage so it survives across pages
-// and (unlike localStorage) is not accessible to the Torn page itself.
+// The nuke.family API token, kept in the userscript manager's storage so it
+// survives across pages and (unlike localStorage) is not accessible to the
+// Torn page itself; in TornPDA, in the app's own store (see storage.js).
 let apiToken = "";
 
 // The Torn page to send the user back to once the token-generation page has
@@ -9,7 +11,7 @@ let apiToken = "";
 const RETURN_URL_KEY = "nfhTokenReturnUrl";
 
 export function initAuth() {
-  apiToken = GM_getValue("apiToken", "");
+  apiToken = getValue("apiToken", "");
 }
 
 export function getApiToken() {
@@ -18,7 +20,7 @@ export function getApiToken() {
 
 export function setApiToken(token) {
   apiToken = token;
-  GM_setValue("apiToken", token);
+  setValue("apiToken", token);
 }
 
 // First-run flow: if no token is stored yet, walk the user through generating
@@ -32,8 +34,8 @@ export function setApiToken(token) {
 export function ensureApiToken() {
   if (apiToken) return;
 
-  if (!GM_getValue("apiTokenFirstTime", false)) {
-    GM_setValue("apiTokenFirstTime", true);
+  if (!getValue("apiTokenFirstTime", false)) {
+    setValue("apiTokenFirstTime", true);
     const goNow = confirm(
       "No Nuke.Family API key set yet. You need a https://nuke.family account " +
         "(create one if needed) and a key.\n\n" +
@@ -41,7 +43,7 @@ export function ensureApiToken() {
         "automatically and you'll be brought back to this page.",
     );
     if (goNow) {
-      GM_setValue(RETURN_URL_KEY, window.location.href);
+      setValue(RETURN_URL_KEY, window.location.href);
       window.location.href = TOKEN_GENERATION_URL;
     }
   } else {
@@ -64,9 +66,9 @@ export function ensureApiToken() {
 // Consume the Torn URL stored by the first-run flow. Returns it once (then
 // clears it), or null if the user reached the token page some other way.
 export function takeTokenReturnUrl() {
-  const url = GM_getValue(RETURN_URL_KEY, "");
+  const url = getValue(RETURN_URL_KEY, "");
   if (!url) return null;
-  GM_setValue(RETURN_URL_KEY, "");
+  setValue(RETURN_URL_KEY, "");
   return url.startsWith("https://www.torn.com/") ? url : null;
 }
 

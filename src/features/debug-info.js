@@ -3,6 +3,7 @@ import { getApiToken } from "../core/auth.js";
 import { registeredStores } from "../core/cache-sync.js";
 import { API_URL, CURRENT_VERSION, DEBUG } from "../core/config.js";
 import { isPda } from "../core/pda-polyfill.js";
+import { storageInfo } from "../core/storage.js";
 import { getUserscriptUsersPlayerId } from "../core/torn-page.js";
 import { getUserRole } from "../core/user.js";
 import { ocConfigStore } from "./organized-crimes/data.js";
@@ -116,7 +117,8 @@ export async function collectDebugInfo() {
   const info = typeof GM_info !== "undefined" && GM_info ? GM_info : {};
   const board = cachedBoard();
 
-  const [fromPage, roles, permissions, lastUpdates, ocConfig, ocBoard] = await Promise.all([
+  const [storage, fromPage, roles, permissions, lastUpdates, ocConfig, ocBoard] = await Promise.all([
+    storageInfo(),
     probeFromPage(),
     probe("/user/get-own-roles", (body) => ({ role: body.role ?? null })),
     probe("/user/get-own-permissions", (body) => ({ permissions: body.permissions || [] })),
@@ -145,6 +147,7 @@ export async function collectDebugInfo() {
       "/oc/board": ocBoard,
     },
     site_from_page: fromPage,
+    storage,
     stored: {
       role: getUserRole() || null,
       stores: Object.fromEntries(

@@ -1,3 +1,4 @@
+import { getItem, setItem } from "../../core/storage.js";
 import { SortMode, Source, SOURCES, Then } from "./logic.js";
 
 // Preferences for the ranked war board, kept in localStorage as one JSON
@@ -31,7 +32,7 @@ export function getPrefs() {
 
   let stored = null;
   try {
-    stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    stored = JSON.parse(getItem(STORAGE_KEY) || "null");
   } catch (e) {
     // Corrupt entry: fall back to defaults.
   }
@@ -41,6 +42,6 @@ export function getPrefs() {
 
 export function setPrefs(patch) {
   prefs = sanitize({ ...getPrefs(), ...patch });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+  setItem(STORAGE_KEY, JSON.stringify(prefs));
   return prefs;
 }

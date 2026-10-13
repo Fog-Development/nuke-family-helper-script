@@ -171,6 +171,61 @@ describe("faction controls buttons", () => {
     }
   });
 
+  describe("in TornPDA, with the app's own store", () => {
+    // PDA_storage as the app injects it: async, and slow enough that a script
+    // which did not wait for it would start without the key.
+    const withAppStore = (initial) => (page) =>
+      page.evaluate((data) => {
+        const store = { ...data };
+        const later = (value) => new Promise((resolve) => setTimeout(() => resolve(value), 50));
+        window.__pdaStore = store;
+        window.PDA_storage = {
+          loadAll: () => later({ ...store }),
+          setMany: (pairs) => later(Object.assign(store, pairs)),
+          usage: () => later({ used: 123, quota: 10485760 }),
+        };
+      }, initial);
+
+    it("moves an existing key across without asking the member anything", async () => {
+      const { page, dialogs, errors, close } = await openTornPage(browser, {
+        page: "factions-controls",
+        before: withAppStore({}),
+      });
+      try {
+        await page.waitForSelector("#nfh-debug-info-btn");
+        const token = await page.evaluate(() => GM_getValue("apiToken", ""));
+        assert.equal(await page.evaluate(() => window.__pdaStore.apiToken), token);
+
+        await page.locator("#nfh-debug-info-btn").click();
+        const report = JSON.parse(await page.locator("#nfh-debug-dialog textarea").inputValue());
+        assert.equal(report.storage.backend, "pda_storage");
+        assert.ok(report.storage.migrated.includes("apiToken"));
+        assert.deepEqual(report.storage.usage, { used: 123, quota: 10485760 });
+        assert.equal(report.key.accepted, true);
+        assert.deepEqual(dialogs, []);
+        assert.deepEqual(errors, []);
+      } finally {
+        await close();
+      }
+    });
+
+    it("still has the key after the page's own storage was wiped", async () => {
+      const { page, dialogs, close } = await openTornPage(browser, {
+        page: "factions-controls",
+        gmValues: {},
+        before: withAppStore({ apiToken: "k".repeat(50), apiTokenFirstTime: true }),
+      });
+      try {
+        await page.waitForSelector("#nfh-debug-info-btn");
+        // No "enter your key" prompt, and the key is back where it was.
+        assert.deepEqual(dialogs, []);
+        assert.equal(await page.evaluate(() => GM_getValue("apiToken", "")), "k".repeat(50));
+      } finally {
+        await close();
+      }
+    });
+  });
+
   it("are repaired after Torn rebuilds the panel", async () => {
     const { page, close } = await openTornPage(browser, { page: "factions-controls" });
     try {

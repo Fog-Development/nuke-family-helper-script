@@ -1,3 +1,5 @@
+import { getItem, setItem } from "../../core/storage.js";
+
 // Preferences for the chain watch bar and the chain timer alert, kept in
 // localStorage as one JSON object.
 
@@ -93,7 +95,7 @@ export function getPrefs() {
 
   let stored = null;
   try {
-    stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    stored = JSON.parse(getItem(STORAGE_KEY) || "null");
   } catch (e) {
     // Corrupt entry: fall back to defaults.
   }
@@ -103,7 +105,7 @@ export function getPrefs() {
 
 export function setPrefs(patch) {
   prefs = sanitize({ ...getPrefs(), ...patch });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+  setItem(STORAGE_KEY, JSON.stringify(prefs));
   return prefs;
 }
 

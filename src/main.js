@@ -11,6 +11,7 @@ import {
 import { addStyle } from "./core/dom.js";
 import { LogInfo } from "./core/log.js";
 import { IsPage, onNavigate, PageType } from "./core/pages.js";
+import { hasNativeStorage, initStorage } from "./core/storage.js";
 import { checkForUpdates } from "./core/update-checker.js";
 
 import chainWatch from "./features/chain-watch/index.js";
@@ -58,11 +59,24 @@ function main() {
   // token. None of the Torn-side bootstrap belongs there: the first-run prompt
   // would fire on the very page it points to, and the update nag and cache
   // sync would run against nuke.family's own localStorage.
+  //
+  // TornPDA's own store is read first (never migrated from here: this is
+  // nuke.family's localStorage), so a key captured here is saved where the
+  // Torn side will find it.
   if (IsPage(PageType.NukeFamily3rdParty)) {
-    initTokenCapture();
+    if (hasNativeStorage()) initStorage({ migrate: false }).then(initTokenCapture);
+    else initTokenCapture();
     return;
   }
 
+  // In TornPDA the key and settings come from the app's own store, which can
+  // only be read asynchronously: wait for it before anything reads them.
+  // Everywhere else the script starts at once, as it always has.
+  if (hasNativeStorage()) initStorage().then(start);
+  else start();
+}
+
+function start() {
   addStyle(styles);
   LogInfo("Nuke Family Helper Script Loaded");
 
