@@ -984,8 +984,29 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     resize: vertical;
 }
 
+.nfh-debug-sent {
+    font-weight: 700;
+}
+
+.nfh-debug-reference {
+    width: 90px;
+    padding: 3px 6px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 4px;
+    background-color: var(--nfh-bg) !important;
+    color: var(--nfh-text) !important;
+    -webkit-text-fill-color: var(--nfh-text);
+    opacity: 1;
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
 .nfh-debug-actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
     gap: 8px;

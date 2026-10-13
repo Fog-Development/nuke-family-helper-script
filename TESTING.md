@@ -218,8 +218,12 @@ two would keep undoing each other.
       buttons appear.
 - [ ] "NFH Debug Info" opens a box with a report (script version, whether the
       key is accepted, role, permissions, what the site answers for the OC
-      config and board, what is cached). "Copy" puts it on the clipboard. The
-      key itself is nowhere in it.
+      config and board, what is cached). "Copy report" puts it on the
+      clipboard. The key itself is nowhere in it.
+- [ ] "Send to developer" answers with a six character reference and a "Copy
+      reference" button; the report then shows on nuke.family under Admin →
+      Helper Script Debug Reports. Try it with a wrong key set too (and in
+      TornPDA): it must still send.
 - [ ] **Tab navigation:** browse to a different faction section (e.g. armoury)
       and back to controls — the buttons reappear **without a full page
       reload**, and are not duplicated. Repeat a few times.

@@ -36,7 +36,7 @@ describe("faction controls buttons", () => {
 
   for (const theme of THEMES) {
     it(`show a debug report the member can copy, without their key (${theme})`, async () => {
-      const { page, errors, close } = await openTornPage(browser, {
+      const { page, apiCalls, errors, close } = await openTornPage(browser, {
         page: "factions-controls",
         theme,
         api: { "GET /oc/config": respond(403, { error: "Your faction is not part of the Nuke Family." }) },
@@ -64,6 +64,15 @@ describe("faction controls buttons", () => {
         assert.deepEqual(errors, []);
         await screenshot(page.locator(".nfh-debug-dialog"), `debug-info-${theme}`);
 
+        // Sending it swaps the long report for a reference short enough to pass on.
+        await page.locator("[data-nfh-debug-send]").click();
+        await page.locator(".nfh-debug-sent").waitFor();
+        assert.equal(await page.locator(".nfh-debug-reference").inputValue(), "K7QM2X");
+        assert.equal(await page.locator("[data-nfh-debug-send]").count(), 0);
+        const posted = apiCalls.find((call) => call.method === "POST" && call.path === "/script/debug-report");
+        assert.ok(posted, "the report was posted");
+        await screenshot(page.locator(".nfh-debug-dialog"), `debug-info-sent-${theme}`);
+
         await page.locator("[data-nfh-debug-close]").click();
         assert.equal(await page.locator("#nfh-debug-dialog").count(), 0);
       } finally {
@@ -71,6 +80,22 @@ describe("faction controls buttons", () => {
       }
     });
   }
+
+  it("say so when the report could not be sent, and still let it be copied", async () => {
+    const { page, close } = await openTornPage(browser, {
+      page: "factions-controls",
+      api: { "POST /script/debug-report": respond(429, { message: "Too Many Attempts." }) },
+    });
+    try {
+      await page.locator("#nfh-debug-info-btn").click();
+      await page.locator("[data-nfh-debug-send]").click();
+      await page.waitForFunction(() => /Too many reports sent from here/.test(document.querySelector(".nfh-debug-status").textContent));
+      assert.equal(await page.locator(".nfh-debug-sent").isVisible(), false);
+      assert.equal(await page.locator("[data-nfh-debug-send]").isEnabled(), true);
+    } finally {
+      await close();
+    }
+  });
 
   it("are repaired after Torn rebuilds the panel", async () => {
     const { page, close } = await openTornPage(browser, { page: "factions-controls" });

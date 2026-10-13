@@ -13,6 +13,10 @@ import { memberFeatures } from "./organized-crimes/scoring.js";
 // them: what the script has stored, and what nuke.family answers to this
 // member's key right now. It never holds the key itself, nor anything about
 // other members.
+//
+// It is too long for a Discord message, so it can also be sent to nuke.family
+// (`POST /script/debug-report`, which needs no key, since a bad key may be
+// the problem) in exchange for a short reference to pass on instead.
 
 const DIALOG_ID = "nfh-debug-dialog";
 
@@ -120,18 +124,33 @@ export async function collectDebugInfo() {
   };
 }
 
-async function copyText(text, textarea) {
+async function copyText(text, field) {
   try {
     await navigator.clipboard.writeText(text);
     return true;
   } catch (error) {
     // Older browsers and some in-app views: copy the selection instead.
-    textarea.select();
+    field.select();
     try {
       return document.execCommand("copy");
     } catch (e) {
       return false;
     }
+  }
+}
+
+// Send the report to nuke.family. Resolves with { reference } or { error }.
+export async function sendDebugInfo(report) {
+  try {
+    const response = await api("/script/debug-report", { method: "POST", data: { report } });
+    return { reference: response.reference };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      if (error.status === 429) return { error: "Too many reports sent from here. Try again in a few minutes." };
+      const reason = error.body && (error.body.error || error.body.message);
+      return { error: reason || `nuke.family refused it (status ${error.status}).` };
+    }
+    return { error: "Could not reach nuke.family." };
   }
 }
 
@@ -147,17 +166,24 @@ export function showDebugInfo(report) {
   overlay.innerHTML =
     '<div class="nfh-debug-dialog" role="dialog" aria-modal="true" aria-label="Nuke Family Helper debug info">' +
     '<div class="nfh-debug-title">Nuke Family Helper debug info</div>' +
-    '<p class="nfh-debug-note">Copy this and send it to whoever is helping you. It does not contain your key.</p>' +
+    '<p class="nfh-debug-note">Send this to the developer and pass on the short reference you get back, ' +
+    "or copy the whole report. It does not contain your key.</p>" +
     '<textarea class="nfh-debug-text" readonly spellcheck="false"></textarea>' +
+    '<div class="nfh-debug-sent" hidden>Sent. Your reference is ' +
+    '<input type="text" class="nfh-debug-reference" readonly aria-label="Reference"> ' +
+    '<button type="button" class="torn-btn" data-nfh-debug-copy-reference>Copy reference</button></div>' +
     '<div class="nfh-debug-actions">' +
     '<span class="nfh-debug-status" role="status"></span>' +
-    '<button type="button" class="torn-btn" data-nfh-debug-copy>Copy</button>' +
+    '<button type="button" class="torn-btn" data-nfh-debug-send>Send to developer</button>' +
+    '<button type="button" class="torn-btn" data-nfh-debug-copy>Copy report</button>' +
     '<button type="button" class="torn-btn" data-nfh-debug-close>Close</button>' +
     "</div></div>";
 
   const textarea = overlay.querySelector("textarea");
   textarea.value = text;
   const status = overlay.querySelector(".nfh-debug-status");
+  const sent = overlay.querySelector(".nfh-debug-sent");
+  const reference = overlay.querySelector(".nfh-debug-reference");
 
   overlay.addEventListener("click", async (event) => {
     if (event.target === overlay || event.target.closest("[data-nfh-debug-close]")) {
@@ -165,7 +191,27 @@ export function showDebugInfo(report) {
       return;
     }
     if (event.target.closest("[data-nfh-debug-copy]")) {
-      status.textContent = (await copyText(text, textarea)) ? "Copied." : "Could not copy: select the text and copy it yourself.";
+      status.textContent = (await copyText(text, textarea)) ? "Report copied." : "Could not copy: select the text and copy it yourself.";
+      return;
+    }
+    if (event.target.closest("[data-nfh-debug-copy-reference]")) {
+      status.textContent = (await copyText(reference.value, reference)) ? "Reference copied." : "Could not copy: type it out instead.";
+      return;
+    }
+    const send = event.target.closest("[data-nfh-debug-send]");
+    if (send && !send.disabled) {
+      send.disabled = true;
+      status.textContent = "Sending...";
+      const outcome = await sendDebugInfo(report);
+      if (outcome.reference) {
+        reference.value = outcome.reference;
+        sent.hidden = false;
+        status.textContent = "";
+        send.remove();
+      } else {
+        status.textContent = `${outcome.error} You can still copy the report.`;
+        send.disabled = false;
+      }
     }
   });
 
