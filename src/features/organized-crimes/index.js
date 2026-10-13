@@ -7,7 +7,7 @@ import { crimeHoursLeft, limitsFor, slotFlags } from "./flags.js";
 import { getStaffPrefs, parseOverride, setStaffPrefs } from "./prefs.js";
 import { activeSubTab, CRIMES_ROOT_SELECTOR, joinState, JoinState, readCrimes, SubTab } from "./page.js";
 import { cachedBoard, learnCprs, offPageCrimes, refreshBoard, requestSpawn, spawnAskedUntil } from "./remote.js";
-import { memberFeatures, rateCrimes, spawnTierToRequest } from "./scoring.js";
+import { canAskForCrime, memberFeatures, rateCrimes, spawnTierToRequest } from "./scoring.js";
 import {
   barHtml,
   clearAll,
@@ -130,7 +130,13 @@ function render() {
   const suggesting = ranking && features.suggest;
 
   const elsewhere = ranking && board ? offPageCrimes(board, crimes) : [];
-  const result = rateCrimes([...crimes, ...elsewhere], config);
+  // The viewer's level, once the board has said: it keeps crimes too far below
+  // them from being suggested.
+  const myLevel = board && board.me ? board.me.level : null;
+  const result = rateCrimes([...crimes, ...elsewhere], config, {
+    level: myLevel,
+    canAsk: canAskForCrime(myLevel, config),
+  });
 
   // Staff are whoever the site sends every member's level to.
   const members = board && board.members ? board.members : null;
@@ -168,7 +174,9 @@ function render() {
     if (features.suggest) {
       let state;
       if (suggestions.length > 0) state = { kind: "best", suggestions, warning };
+      else if (warning) state = { kind: "warning", warning };
       else if (joining === JoinState.Blocked) state = { kind: "blocked" };
+      else if (joining === JoinState.Open && result.withheld > 0) state = { kind: "low" };
       else if (joining === JoinState.Full) state = { kind: "full" };
       else state = { kind: "none" };
       memberPart = barHtml(state);
@@ -183,7 +191,8 @@ function render() {
         ? spawnTierToRequest(result.suggestions, board.me.level, config)
         : null;
     if (tier || spawnState.message) {
-      memberPart = (memberPart || label) + spawnHtml({ tier, asked: spawnAskedUntil() > 0, ...spawnState });
+      const quiet = features.suggest && suggestions.length === 0 && result.withheld > 0;
+      memberPart = (memberPart || label) + spawnHtml({ tier, asked: spawnAskedUntil() > 0, quiet, ...spawnState });
     }
   }
   if (!memberPart && staffPart) memberPart = label;

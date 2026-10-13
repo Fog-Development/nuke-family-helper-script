@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { findRole, keyFor } from "../../src/features/organized-crimes/catalog.js";
 import {
+  belowMemberLevel,
+  canAskForCrime,
   describeWait,
   hoursUntilPlanning,
   memberFeatures,
@@ -264,6 +266,50 @@ describe("what a faction lets its members see", () => {
   });
 });
 
+describe("crimes below the member's level", () => {
+  const eight = crime(1, "Break the Bank", 8, [filled("Thief #1", 0), open("Muscle #1", 80)]);
+  const seven = crime(2, "Blast from the Past", 7, [open("Hacker", 80)]);
+  const five = crime(3, "Honey Trap", 5, [open("Enforcer", 80)]);
+  const other = crime(4, "Guardian \u00c1ngels", 5, [open("Hustler", 80)]);
+  const picks = (crimes, member) =>
+    rateCrimes(crimes, config, member).suggestions.map((s) => [s.crime.id, s.rank, s.belowLevel]);
+
+  it("uses the under-levelled gap, and nothing when a level is not known", () => {
+    assert.equal(belowMemberLevel({ level: 6 }, 8, 2), true);
+    assert.equal(belowMemberLevel({ level: 7 }, 8, 2), false);
+    assert.equal(belowMemberLevel({ level: 6 }, null, 2), false);
+    assert.equal(belowMemberLevel({ level: null }, 8, 2), false);
+  });
+
+  it("are not suggested to a member who can ask staff for a crime", () => {
+    const result = rateCrimes([five, other], config, { level: 8, canAsk: true });
+    assert.deepEqual(result.suggestions, []);
+    assert.equal(result.withheld, 2);
+    // Within the gap is still fine.
+    assert.deepEqual(picks([seven, five], { level: 8, canAsk: true }), [[2, Rank.Best, false]]);
+  });
+
+  it("are the best available, and never good, for a member who cannot ask", () => {
+    assert.deepEqual(picks([five, other], { level: 8, canAsk: false }), [[4, Rank.Best, true]]);
+    assert.equal(rateCrimes([five, other], config, { level: 8, canAsk: false }).withheld, 0);
+    // A good slot must be in range of the member as well as of the best crime.
+    assert.deepEqual(picks([crime(5, "Break the Bank", 8, [open("Muscle #1", 80)]), seven], { level: 9, canAsk: false }), [
+      [5, Rank.Best, false],
+    ]);
+  });
+
+  it("leave an unproductive crime at the member's level as the one suggested when they can ask", () => {
+    // Break the Bank starts in 24 hours; Honey Trap now, but it is level 5.
+    assert.deepEqual(picks([eight, five], { level: 8, canAsk: true }), [[1, Rank.Best, false]]);
+    assert.deepEqual(picks([eight, five], { level: 8, canAsk: false }), [[3, Rank.Best, true]]);
+  });
+
+  it("change nothing while the member's level is not known", () => {
+    assert.deepEqual(picks([five, other], { level: null, canAsk: false }), [[4, Rank.Best, false], [3, Rank.Good, false]]);
+    assert.deepEqual(picks([five, other], null), [[4, Rank.Best, false], [3, Rank.Good, false]]);
+  });
+});
+
 describe("asking staff for a crime", () => {
   const settings = { ...config.settings, spawn_requests_enabled: true, spawn_request_min_level: 6 };
   const allowed = { ...config, settings };
@@ -288,6 +334,10 @@ describe("asking staff for a crime", () => {
 
   it("is never offered below the faction's minimum level, without a known level, or when switched off", () => {
     assert.equal(spawnTierToRequest([], 5, allowed), null);
+    assert.equal(canAskForCrime(8, allowed), true);
+    assert.equal(canAskForCrime(5, allowed), false);
+    assert.equal(canAskForCrime(null, allowed), false);
+    assert.equal(canAskForCrime(8, config), false);
     assert.equal(spawnTierToRequest([], null, allowed), null);
     assert.equal(spawnTierToRequest([], 8, { ...config, settings: { ...settings, spawn_requests_enabled: false } }), null);
     assert.equal(spawnTierToRequest([], 8, { ...config, settings: { ...settings, spawn_request_min_level: 9 } }), null);

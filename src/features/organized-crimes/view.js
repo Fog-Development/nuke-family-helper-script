@@ -142,6 +142,8 @@ export function staffHtml(staff) {
 }
 
 const TAG_TEXT = { [Rank.Best]: "Best for you", [Rank.Good]: "Good for you" };
+// The best slot there is, in a crime below the member's level.
+const TAG_TEXT_BELOW_LEVEL = "Best available";
 
 function waitSentence(suggestion) {
   return `Your planning would start ${describeWait(suggestion.waitHours)}.`;
@@ -150,9 +152,11 @@ function waitSentence(suggestion) {
 // Why a slot is tagged. Where productive days do not count, the wait is
 // beside the point.
 function tagTitle(suggestion) {
-  return suggestion.pooled === false
-    ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full."
-    : waitSentence(suggestion);
+  const why =
+    suggestion.pooled === false
+      ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full."
+      : waitSentence(suggestion);
+  return suggestion.belowLevel ? `This crime is below your level, but nothing at your level is open to you. ${why}` : why;
 }
 
 // Outline and tag the suggested slots, and clear the marks from any slot that
@@ -183,7 +187,7 @@ export function renderSuggestions(root, suggestions) {
       tag.className = TAG_CLASS;
       slotEl.prepend(tag);
     }
-    const text = TAG_TEXT[suggestion.rank];
+    const text = suggestion.belowLevel ? TAG_TEXT_BELOW_LEVEL : TAG_TEXT[suggestion.rank];
     if (tag.textContent !== text) tag.textContent = text;
     const title = tagTitle(suggestion);
     if (tag.title !== title) tag.title = title;
@@ -191,7 +195,8 @@ export function renderSuggestions(root, suggestions) {
 }
 
 // The "ask staff for a crime" part of the bar. `spawn` is
-// { tier, asked, busy, message, error }.
+// { tier, asked, busy, message, error, quiet }; `quiet` leaves out the reason,
+// for when the bar has just given it.
 export function spawnHtml(spawn) {
   if (spawn.message) {
     return `<span class="nfh-oc-spawn${spawn.error ? " nfh-oc-bar-warning" : ""}">${escapeHtml(spawn.message)}</span>`;
@@ -200,7 +205,7 @@ export function spawnHtml(spawn) {
     return '<span class="nfh-oc-spawn nfh-oc-bar-muted">You have asked staff for a crime. You can ask again later.</span>';
   }
   return (
-    '<span class="nfh-oc-spawn"><span class="nfh-oc-bar-muted">Nothing decent is open at your level.</span> ' +
+    `<span class="nfh-oc-spawn">${spawn.quiet ? "" : '<span class="nfh-oc-bar-muted">Nothing decent is open at your level.</span> '}` +
     `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-spawn${spawn.busy ? " disabled" : ""}>` +
     `${spawn.busy ? "Asking..." : `Ask staff for a level ${escapeHtml(spawn.tier)} crime`}</button></span>`
   );
@@ -213,6 +218,8 @@ export function spawnHtml(spawn) {
 //   { kind: "warning", warning }   what is wrong with the member's own slot, for
 //                                  a faction that warns but does not suggest
 //   { kind: "none" }               open slots, but none the member qualifies for
+//   { kind: "low" }                the member qualifies only for slots in crimes
+//                                  below their level, and can ask staff for one
 //   { kind: "blocked" }            Torn is not letting the member join anything
 //   { kind: "full" }               no open slot is loaded
 export function barHtml(state) {
@@ -236,15 +243,19 @@ export function barHtml(state) {
     const late = best.productive
       ? ""
       : ' <span class="nfh-oc-bar-muted">Nothing open would start you sooner.</span>';
-    const lead = state.warning
-      ? `<strong class="nfh-oc-bar-warning">${escapeHtml(state.warning)}</strong> A better slot: `
-      : "Best slot for you: ";
+    const belowLevel = best.belowLevel
+      ? ' <span class="nfh-oc-bar-muted">This crime is below your level, but nothing at your level is open to you.</span>'
+      : "";
+    let lead = best.belowLevel ? "Best slot available: " : "Best slot for you: ";
+    if (state.warning) {
+      lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state.warning)}</strong> ${best.belowLevel ? "The best slot available: " : "A better slot: "}`;
+    }
     return (
       `${label}<span class="nfh-oc-bar-text">${lead}` +
       `<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), ` +
       `<strong>${escapeHtml(slot.name)}</strong>. ` +
       `Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ` +
-      `${best.pooled === false ? "" : escapeHtml(waitSentence(best))}${late}${unweighted}${offPage}${more}</span>` +
+      `${best.pooled === false ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}</span>` +
       `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`
     );
   }
@@ -261,6 +272,7 @@ export function barHtml(state) {
       "Torn is not letting you join a crime right now (you are probably already in one), " +
       "so no slot is suggested.",
     full: "No open slot is loaded yet. Scroll down to load more crimes.",
+    low: "The open slots you qualify for are all in crimes below your level, so none is suggested.",
   };
   return `${label}<span class="nfh-oc-bar-text">${messages[state.kind]}</span>`;
 }

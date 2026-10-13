@@ -357,7 +357,9 @@ describe("OC Assistant crime requests", () => {
       const button = page.locator(`${BAR} [data-nfh-oc-spawn]`);
       await button.waitFor();
       assert.equal(await button.innerText(), "Ask staff for a level 9-10 crime");
-      assert.match(await page.locator(BAR).innerText(), /Nothing decent is open at your level\./);
+      // What they do qualify for is level 6 and under: none of it is marked.
+      assert.match(await page.locator(BAR).innerText(), /The open slots you qualify for are all in crimes below your level, so none is suggested\./);
+      assert.deepEqual(await picksOf(page), []);
       await screenshot(page.locator(BAR), "oc-spawn-offer");
 
       await button.click();
@@ -365,6 +367,23 @@ describe("OC Assistant crime requests", () => {
       assert.equal(apiCalls.filter((call) => call.method === "POST" && call.path === "/oc/spawn-request").length, 1);
       assert.equal(await page.locator(`${BAR} [data-nfh-oc-spawn]`).count(), 0);
       assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+
+  it("marks the best lower crime as only available when the member cannot ask", async () => {
+    const off = outOfReach();
+    off.data.settings.spawn_requests_enabled = false;
+    const { page, errors, close } = await openRecruiting({ api: { "GET /oc/board": levelNine, "GET /oc/config": off } });
+    try {
+      await page.waitForFunction(() => /Best slot available:/.test(document.querySelector("#nfh-oc-bar").innerText));
+      const picks = await picksOf(page);
+      assert.deepEqual(picks.map((pick) => pick[2]), ["Best available"]);
+      assert.match(await page.locator(BAR).innerText(), /This crime is below your level, but nothing at your level is open to you\./);
+      assert.equal(await page.locator(`${BAR} [data-nfh-oc-spawn]`).count(), 0);
+      assert.deepEqual(errors, []);
+      await screenshot(page.locator(BAR), "oc-best-available");
     } finally {
       await close();
     }

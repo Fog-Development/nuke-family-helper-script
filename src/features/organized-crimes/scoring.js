@@ -97,10 +97,34 @@ function pickSlot(ratedSlots) {
     .sort((a, b) => (b.weight ?? -1) - (a.weight ?? -1) || b.slot.cpr - a.slot.cpr)[0] || null;
 }
 
+// Whether a crime is so far below a member's level that staff would flag them
+// for sitting in it (the same rule as the under-levelled flag). Never, when
+// either level is not known.
+export function belowMemberLevel(crime, memberLevel, levelGap) {
+  if (memberLevel === null || memberLevel === undefined) return false;
+  if (crime.level === null || crime.level === undefined) return false;
+  return memberLevel - crime.level >= levelGap;
+}
+
+// Whether the member may ask staff for a crime at all: their faction allows it
+// (and has the assistant on) and they are at or above its minimum level.
+export function canAskForCrime(memberLevel, config) {
+  const settings = (config && config.settings) || {};
+  if (!memberFeatures(config).spawn) return false;
+  if (memberLevel === null || memberLevel === undefined) return false;
+  return memberLevel >= (settings.spawn_request_min_level ?? 6);
+}
+
 // Rate every slot and choose what to suggest.
 //
+// `member` is the viewer, when the site has said: { level, canAsk }. A crime
+// too far below their level is never "good for them". If they can ask staff
+// for a crime it is not suggested at all (`withheld` counts those); if they
+// cannot, it may still come first, marked `belowLevel`, as the best there is.
+//
 // Returns { crimes: [{ crime, waitHours, pooled, productive, slots: [rated] }],
-//           suggestions: [{ rank, crime, rated, waitHours, pooled, productive }] }
+//           suggestions: [{ rank, crime, rated, waitHours, pooled, productive, belowLevel }],
+//           withheld }
 // with `suggestions` best first. A candidate is one slot per crime; they are
 // ordered by: planning starts within the faction's productive threshold,
 // then crime level (highest first), then crimes whose role weights are known
@@ -113,11 +137,13 @@ function pickSlot(ratedSlots) {
 // the shortest wait, the crime closest to full comes first: nothing is lost
 // by waiting there, and it gets crimes finished rather than several left
 // half filled.
-export function rateCrimes(crimes, config) {
+export function rateCrimes(crimes, config, member = null) {
   const settings = (config && config.settings) || {};
   const threshold = settings.productive_threshold_hours ?? 12;
   const levelGap = settings.under_level_gap ?? 2;
   const fromLevel = productiveFromLevel(config);
+  const memberLevel = member ? member.level : null;
+  const holdBack = Boolean(member && member.canAsk);
 
   const rated = crimes.map((crime) => {
     const waitHours = hoursUntilPlanning(crime);
@@ -132,9 +158,17 @@ export function rateCrimes(crimes, config) {
     };
   });
 
-  const candidates = rated
-    .map((entry) => ({ ...entry, pick: pickSlot(entry.slots) }))
-    .filter((entry) => entry.pick)
+  const qualifying = rated
+    .map((entry) => ({
+      ...entry,
+      pick: pickSlot(entry.slots),
+      belowLevel: belowMemberLevel(entry.crime, memberLevel, levelGap),
+    }))
+    .filter((entry) => entry.pick);
+  const withheld = holdBack ? qualifying.filter((entry) => entry.belowLevel).length : 0;
+
+  const candidates = qualifying
+    .filter((entry) => !holdBack || !entry.belowLevel)
     .sort(
       (a, b) =>
         Number(b.productive) - Number(a.productive) ||
@@ -154,13 +188,14 @@ export function rateCrimes(crimes, config) {
     const lowestGoodLevel = (best.crime.level ?? 0) - (levelGap - 1);
     for (const candidate of candidates.slice(1)) {
       if (suggestions.length > GOOD_SLOTS) break;
+      if (candidate.belowLevel) continue;
       if (candidate.productive !== best.productive) continue;
       if ((candidate.crime.level ?? 0) < lowestGoodLevel) continue;
       suggestions.push(suggestion(Rank.Good, candidate));
     }
   }
 
-  return { crimes: rated, suggestions };
+  return { crimes: rated, suggestions, withheld };
 }
 
 function suggestion(rank, candidate) {
@@ -171,6 +206,7 @@ function suggestion(rank, candidate) {
     waitHours: candidate.waitHours,
     pooled: candidate.pooled,
     productive: candidate.productive,
+    belowLevel: candidate.belowLevel,
   };
 }
 
@@ -191,9 +227,7 @@ export function tierFor(level) {
 // null.
 export function spawnTierToRequest(suggestions, memberLevel, config) {
   const settings = (config && config.settings) || {};
-  if (!memberFeatures(config).spawn) return null;
-  if (memberLevel === null || memberLevel === undefined) return null;
-  if (memberLevel < (settings.spawn_request_min_level ?? 6)) return null;
+  if (!canAskForCrime(memberLevel, config)) return null;
 
   const best = suggestions[0];
   const lowestDecentLevel = memberLevel - ((settings.under_level_gap ?? 2) - 1);
