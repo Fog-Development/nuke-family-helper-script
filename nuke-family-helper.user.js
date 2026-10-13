@@ -3621,9 +3621,9 @@ body.dark-mode .nfh-oc-bar-warning {\r
     const crimeKey = keyFor(crimeName2);
     const roleKey = keyFor(roleName);
     const local = cprState().known[`${crimeKey}|${roleKey}`];
-    if (local !== void 0) return local;
     const remote = board && board.me && board.me.cprs && board.me.cprs[crimeKey];
-    return remote && remote[roleKey] !== void 0 ? remote[roleKey] : null;
+    const known = [local, remote ? remote[roleKey] : void 0].filter((cpr) => typeof cpr === "number");
+    return known.length > 0 ? Math.max(...known) : null;
   }
   var SPAWN_KEY = "nfhOcSpawnAsked";
   function spawnAskedUntil() {

@@ -79,15 +79,16 @@ export function learnCprs(crimes) {
   if (pending.size > 0 && !uploadTimer) uploadTimer = setTimeout(upload, UPLOAD_DELAY_MS);
 }
 
-// The viewer's CPR for a role they are not looking at: what this browser has
-// seen before, else what the site holds (seen on another device).
+// The viewer's CPR for a role they are not looking at: the higher of what this
+// browser has seen and what the site holds (seen on another device, or read
+// from Torn Stats). A CPR only climbs, so the higher one is the newer one.
 export function knownCpr(board, crimeName, roleName) {
   const crimeKey = keyFor(crimeName);
   const roleKey = keyFor(roleName);
   const local = cprState().known[`${crimeKey}|${roleKey}`];
-  if (local !== undefined) return local;
   const remote = board && board.me && board.me.cprs && board.me.cprs[crimeKey];
-  return remote && remote[roleKey] !== undefined ? remote[roleKey] : null;
+  const known = [local, remote ? remote[roleKey] : undefined].filter((cpr) => typeof cpr === "number");
+  return known.length > 0 ? Math.max(...known) : null;
 }
 
 const SPAWN_KEY = "nfhOcSpawnAsked";
