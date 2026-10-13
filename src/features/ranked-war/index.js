@@ -143,9 +143,10 @@ function pageEstimatesOf(row) {
   const found = {};
   const scouter = Number(row.dataset.estValue);
   if (scouter > 0) found[Source.FfScouter] = Math.round(scouter);
+  // BSP keeps the exact figure on its box; the text ("4.3b") is the fallback.
   const box = row.querySelector(BSP_BOX_SELECTOR);
-  const predicted = box && parseStatText(box.textContent);
-  if (predicted) found[Source.Bsp] = predicted;
+  const predicted = box && (Math.round(Number(box.dataset.bspStats)) || parseStatText(box.textContent));
+  if (predicted > 0) found[Source.Bsp] = predicted;
   return found;
 }
 

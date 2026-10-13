@@ -139,7 +139,9 @@ The automated tests stub the nuke.family API, so every item here needs a real
 
 Needs a ranked war on (or matched to start within a day) and nuke.family
 having synced it (every 15 minutes). The automated tests build the member lists
-by hand, so this pass is the only check against Torn's real markup.
+from a capture of a real war, but only this pass sees Torn redraw them live.
+Switch off "Torn War Stuff Enhanced" first: it sorts the same lists and the
+two would keep undoing each other.
 
 - [ ] A "War board" bar appears above the war list, reading "Live" within a
       few seconds; it appears on no other faction tab and on no other war type.

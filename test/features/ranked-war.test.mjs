@@ -17,34 +17,56 @@ after(async () => {
 });
 
 // The faction fixture was captured with no war open, so the two member lists
-// are built here with the class names Torn's own war stylesheet uses (a plain
-// class plus a build-hashed one per cell).
+// are built here, following the markup of a real ranked war (captured from
+// Torn in October 2026): the same nesting, and the same plain plus build-hashed
+// class on every element Torn's war stylesheet styles.
 const ENEMIES = [
-  { id: 501, name: "Foe-Okay", status: "ok", text: "Okay" },
+  { id: 501, name: "Foe-Okay", status: "okay ok", text: "Okay" },
   { id: 502, name: "Foe-LongHosp", status: "hospital not-ok", text: "Hospital" },
-  { id: 503, name: "Foe-Abroad", status: "abroad", text: "Abroad" },
+  { id: 503, name: "Foe-Abroad", status: "abroad not-ok", text: "Abroad" },
   { id: 504, name: "Foe-ShortHosp", status: "hospital not-ok", text: "Hospital" },
-  { id: 505, name: "Foe-Revived", status: "ok", text: "Okay" },
+  { id: 505, name: "Foe-Revived", status: "okay ok", text: "Okay" },
 ];
 const FRIENDS = [
   { id: 601, name: "Ally-Hosp", status: "hospital not-ok", text: "Hospital" },
-  { id: 602, name: "Ally-Okay", status: "ok", text: "Okay" },
+  { id: 602, name: "Ally-Okay", status: "okay ok", text: "Okay" },
 ];
+
+const SIDE_CLASS = { enemy: "enemy enemy___dUgtm", your: "your your___jlrqu" };
 
 function listHtml(side, members) {
   const rows = members
     .map(
       (member) =>
-        `<li class="${side} ${side}___x1">` +
-        `<div class="member member___tEskU"><a href="/profiles.php?XID=${member.id}">${member.name}</a></div>` +
-        '<div class="level level___pwbgk">50</div>' +
-        '<div class="points points___LV5Ar">0</div>' +
-        `<div class="status status___BLAOt ${member.status}">${member.text}</div>` +
-        '<div class="attack attack___naVWZ"><a href="#">Attack</a></div>' +
+        `<li class="${SIDE_CLASS[side]}">` +
+        '<div class="member icons left member___tEskU">' +
+        '<div class="userInfoBox___SpD9F rowSection___wdqaD flexCenter___k97k4 userInfoBoxSmall___GAqwx">' +
+        '<div class="factionWrap___jmwRK flexCenter___k97k4 textWrap___Y7pQD customBlockWrap___Oe2Et">' +
+        '<a class="linkWrap___oVXBN flexCenter___k97k4" href="/factions.php?step=profile&ID=4242"><span class="factionName___UsSLF">XX</span></a></div>' +
+        '<div class="honorWrap___HZmuX flexCenter___k97k4 honorWrapSmall___jqYOv textWrap___Y7pQD customBlockWrap___Oe2Et">' +
+        `<a class="linkWrap___oVXBN flexCenter___k97k4" href="/profiles.php?XID=${member.id}"><span class="honorName___s2vRc">${member.name}</span></a>` +
+        "</div></div></div>" +
+        '<div class="level left level___pwbgk">50</div>' +
+        '<div class="points left points___LV5Ar">12.50</div>' +
+        `<div class="status left prevColumn___UOKmY status___BLAOt ${member.status}">${member.text}</div>` +
+        '<div class="attack left attack___naVWZ"><a class="t-blue h c-pointer" href="#">Attack</a></div>' +
+        '<div class="clear"></div>' +
         "</li>",
     )
     .join("");
-  return `<div class="members-cont"><ul class="members-list membersCont___jebcC">${rows}</ul></div>`;
+  const header =
+    '<div class="white-grad c-pointer">' +
+    '<div class="member left member___tEskU tab___uGxm5"><span>Members</span></div>' +
+    '<div class="level left level___pwbgk tab___uGxm5">Level</div>' +
+    '<div class="points left points___LV5Ar tab___uGxm5">Score</div>' +
+    '<div class="status left status___BLAOt tab___uGxm5">Status</div>' +
+    '<div class="attack left attack___naVWZ tab___uGxm5">Attack</div><div class="clear"></div></div>';
+  const which = side === "enemy" ? "enemy-faction left" : "your-faction right";
+  return (
+    `<div class="tab-menu-cont cont-gray bottom-round tabMenuCont___kXNgr ${which} profile-mode">` +
+    `<div class="members-cont membersCont___jebcC profileMode___u1CTV">${header}` +
+    `<ul class="members-list membersCont___jebcC">${rows}</ul></div></div>`
+  );
 }
 
 async function addWar(page) {
@@ -52,7 +74,9 @@ async function addWar(page) {
     ({ enemies, friends }) => {
       const holder = document.createElement("li");
       holder.className = "descriptions";
-      holder.innerHTML = `<div class="faction-war"><div class="tab-menu-cont">${enemies}${friends}</div></div>`;
+      holder.innerHTML =
+        '<div class="desc-wrap warDesc___SKwxb"></div>' +
+        `<div class="faction-war membersWrap___DiCDz">${enemies}${friends}<div class="clear"></div></div>`;
       document.querySelector("#faction_war_list_id").appendChild(holder);
     },
     { enemies: listHtml("enemy", ENEMIES), friends: listHtml("your", FRIENDS) },
@@ -97,11 +121,15 @@ async function addScripts(page, { bsp = {}, ffscouter = {} }) {
   await page.evaluate(
     ({ bsp, ffscouter }) => {
       for (const row of document.querySelectorAll(".faction-war .members-list li")) {
-        const id = row.querySelector("a[href*='XID=']").href.match(/XID=(\d+)/)[1];
+        const link = row.querySelector("a[href*='XID=']");
+        const id = link.href.match(/XID=(\d+)/)[1];
         if (bsp[id]) {
-          row.querySelector(".member").insertAdjacentHTML(
-            "afterbegin",
-            `<a href="/loader.php?sid=attack&user2ID=${id}"><div class="iconStats" style="background:#3af">${bsp[id]}</div></a>`,
+          // As BSP does: before the name, exact figure in data-bsp-stats.
+          link.insertAdjacentHTML(
+            "beforebegin",
+            `<a href="https://www.torn.com/page.php?sid=attack&user2ID=${id}" target="_blank">` +
+              '<div style="display: inline-block; margin-left:0px; margin-right:5px;">' +
+              `<div class="iconStats" data-bsp-stats="${bsp[id][0]}" style="background:#47A6FF">${bsp[id][1]}</div></div></a>`,
           );
         }
         if (ffscouter[id]) row.dataset.estValue = String(ffscouter[id]);
@@ -123,7 +151,7 @@ async function openWar({ api, ...options } = {}) {
 }
 
 const enemyOrder = (page) =>
-  page.locator(".faction-war .members-list").first().locator("li a[href*='XID=']").allInnerTexts();
+  page.locator(".faction-war ul.members-list").first().locator("li a[href*='XID=']").allInnerTexts();
 const statusLabel = (page, id) =>
   page.locator(`.faction-war li:has(a[href$="XID=${id}"]) .status`).getAttribute("data-nfh-war");
 const boardCalls = (apiCalls) => apiCalls.filter((call) => call.path.startsWith(BOARD));
@@ -143,7 +171,7 @@ describe("ranked war board", () => {
         assert.equal(await statusLabel(page, 503), "MX");
         assert.equal(await statusLabel(page, 501), null);
         assert.equal(await page.locator('.faction-war li[data-nfh-war-row="soon"]').count(), 1);
-        assert.equal(await page.locator('.faction-war li[data-nfh-war-row="out"] .member a').innerText(), "Foe-Revived");
+        assert.equal(await page.locator('.faction-war li[data-nfh-war-row="out"] a[href*="XID="]').innerText(), "Foe-Revived");
         assert.equal(
           await page.locator('.faction-war li:has(a[href$="XID=504"]) .member').getAttribute("data-nfh-war-stats"),
           "9.9b",
@@ -151,7 +179,7 @@ describe("ranked war board", () => {
 
         // Our own side is sorted too.
         assert.deepEqual(
-          await page.locator(".faction-war .members-list").nth(1).locator("li a[href*='XID=']").allInnerTexts(),
+          await page.locator(".faction-war ul.members-list").nth(1).locator("li a[href*='XID=']").allInnerTexts(),
           ["Ally-Okay", "Ally-Hosp"],
         );
 
@@ -217,7 +245,7 @@ describe("ranked war board", () => {
       await page.waitForFunction(
         () =>
           [...document.querySelectorAll(".faction-war .members-list")][0]
-            .querySelector("li a")
+            .querySelector("li a[href*=XID]")
             .textContent === "Foe-Revived",
       );
 
@@ -251,7 +279,7 @@ describe("ranked war board", () => {
         // Their BSP shows three opponents: one the site has differently (504)
         // and one it has nothing for (503). Their FF Scouter shows two.
         await addScripts(page, {
-          bsp: { 501: "4.2b", 504: "1.1b", 503: "371m" },
+          bsp: { 501: [4_234_567_890, "4.2b"], 504: [1_155_848_491, "1.1b"], 503: [0, "371m"] },
           ffscouter: { 501: 5_000_000_000, 502: 90_000_000 },
         });
       },
@@ -289,6 +317,7 @@ describe("ranked war board", () => {
       // Only what the site does not already hold is sent, once.
       await page.waitForTimeout(4600);
       const sent = Object.fromEntries(posts.map((post) => [post.source, post.estimates]));
+      // 503's box had no exact figure, so its text was read.
       assert.deepEqual(sent.bsp, [{ id: 503, total: 371_000_000 }]);
       assert.deepEqual(sent.ffscouter, [
         { id: 501, total: 5_000_000_000 },
@@ -298,6 +327,7 @@ describe("ranked war board", () => {
       assert.equal(apiCalls.filter((call) => call.path === "/war/estimates").length, 2);
       assert.deepEqual(errors, []);
       await screenshot(page.locator(BAR), "ranked-war-bar-both-sources");
+      await screenshot(page.locator(".faction-war"), "ranked-war-with-scripts");
     } finally {
       await close();
     }
