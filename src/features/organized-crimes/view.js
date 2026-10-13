@@ -163,7 +163,7 @@ export function suggestionCaveats(suggestion) {
     caveats.push({
       flag: Flag.UnderLevel,
       text: "Below your level",
-      title: "This crime is below your level, but nothing at your level is open to you.",
+      title: `This crime is below your level (${suggestion.memberLevel}).`,
     });
   }
   return caveats;
@@ -281,7 +281,7 @@ export function barHtml(state) {
       : ` <strong class="nfh-oc-bar-warning">That is later than the ${escapeHtml(best.thresholdHours)} hours that count as productive,</strong>` +
         ' <span class="nfh-oc-bar-muted">but nothing open would start you sooner.</span>';
     const belowLevel = best.belowLevel
-      ? ' <span class="nfh-oc-bar-muted">This crime is below your level, but nothing at your level is open to you.</span>'
+      ? ` <strong class="nfh-oc-bar-warning">This crime is below your level (${escapeHtml(best.memberLevel)}).</strong>`
       : "";
     let lead = flawed ? "Best slot available: " : "Best slot for you: ";
     if (state.warning) {

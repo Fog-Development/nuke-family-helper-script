@@ -131,6 +131,10 @@ The automated tests stub the nuke.family API, so every item here needs a real
       way to a confirmation; asking again within 30 minutes is refused with
       the site's reason. With crime requests switched off on nuke.family the
       button never appears.
+- [ ] At a level productive days count from (7 and up by default), with the
+      best open slot one level below you: it is tagged "Best available" with a
+      blue "Below your level" line, the bar says so in red, nothing else is
+      tagged, and the request button is offered.
 - [ ] With only crimes two or more levels below you open (the "too low level"
       gap on nuke.family) and crime requests available to you: no slot is
       tagged, and the bar says the open slots are below your level and offers

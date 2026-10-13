@@ -3345,6 +3345,12 @@ body.dark-mode .nfh-oc-bar-warning {
     if (crime.level === null || crime.level === void 0) return false;
     return memberLevel - crime.level >= levelGap;
   }
+  function belowOwnLevel(crime, memberLevel, config) {
+    if (memberLevel === null || memberLevel === void 0) return false;
+    const settings = config && config.settings || {};
+    const gap = memberLevel >= productiveFromLevel(config) ? 1 : settings.under_level_gap ?? 2;
+    return belowMemberLevel(crime, memberLevel, gap);
+  }
   function canAskForCrime(memberLevel, config) {
     const settings = config && config.settings || {};
     if (!memberFeatures(config).spawn) return false;
@@ -3374,10 +3380,12 @@ body.dark-mode .nfh-oc-bar-warning {
       ...entry,
       pick: pickSlot(entry.slots),
       thresholdHours: threshold,
-      belowLevel: belowMemberLevel(entry.crime, memberLevel, levelGap)
+      memberLevel,
+      belowLevel: belowOwnLevel(entry.crime, memberLevel, config),
+      tooLow: belowMemberLevel(entry.crime, memberLevel, levelGap)
     })).filter((entry) => entry.pick);
-    const withheld = holdBack ? qualifying.filter((entry) => entry.belowLevel).length : 0;
-    const candidates = qualifying.filter((entry) => !holdBack || !entry.belowLevel).sort(
+    const withheld = holdBack ? qualifying.filter((entry) => entry.tooLow).length : 0;
+    const candidates = qualifying.filter((entry) => !holdBack || !entry.tooLow).sort(
       (a, b) => Number(b.productive) - Number(a.productive) || (b.crime.level ?? 0) - (a.crime.level ?? 0) || Number(b.pick.weight !== null) - Number(a.pick.weight !== null) || (a.pooled || b.pooled ? 0 : a.openSlots - b.openSlots) || a.waitHours - b.waitHours || (b.pick.weight ?? -1) - (a.pick.weight ?? -1)
     );
     const suggestions = [];
@@ -3404,7 +3412,8 @@ body.dark-mode .nfh-oc-bar-warning {
       pooled: candidate.pooled,
       productive: candidate.productive,
       thresholdHours: candidate.thresholdHours,
-      belowLevel: candidate.belowLevel
+      belowLevel: candidate.belowLevel,
+      memberLevel: candidate.memberLevel
     };
   }
   function tierFor(level) {
@@ -3415,11 +3424,9 @@ body.dark-mode .nfh-oc-bar-warning {
     return "9-10";
   }
   function spawnTierToRequest(suggestions, memberLevel, config) {
-    const settings = config && config.settings || {};
     if (!canAskForCrime(memberLevel, config)) return null;
     const best = suggestions[0];
-    const lowestDecentLevel = memberLevel - ((settings.under_level_gap ?? 2) - 1);
-    const decent = best && best.productive && (best.crime.level ?? 0) >= lowestDecentLevel;
+    const decent = best && best.productive && !belowOwnLevel(best.crime, memberLevel, config);
     return decent ? null : tierFor(memberLevel);
   }
   function describeWait(hours) {
@@ -4212,7 +4219,7 @@ body.dark-mode .nfh-oc-bar-warning {
       caveats.push({
         flag: Flag.UnderLevel,
         text: "Below your level",
-        title: "This crime is below your level, but nothing at your level is open to you."
+        title: `This crime is below your level (${suggestion2.memberLevel}).`
       });
     }
     return caveats;
@@ -4277,7 +4284,7 @@ body.dark-mode .nfh-oc-bar-warning {
       const unweighted = best.rated.weight === null ? ' <span class="nfh-oc-bar-muted">This crime is too new to have role weights, so this goes on your CPR and its level alone.</span>' : "";
       const offPage = best.crime.offPage ? ' <span class="nfh-oc-bar-muted">It is further down the list and may have been taken in the last few minutes.</span>' : "";
       const late = best.productive ? "" : ` <strong class="nfh-oc-bar-warning">That is later than the ${escapeHtml(best.thresholdHours)} hours that count as productive,</strong> <span class="nfh-oc-bar-muted">but nothing open would start you sooner.</span>`;
-      const belowLevel = best.belowLevel ? ' <span class="nfh-oc-bar-muted">This crime is below your level, but nothing at your level is open to you.</span>' : "";
+      const belowLevel = best.belowLevel ? ` <strong class="nfh-oc-bar-warning">This crime is below your level (${escapeHtml(best.memberLevel)}).</strong>` : "";
       let lead = flawed ? "Best slot available: " : "Best slot for you: ";
       if (state3.warning) {
         lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state3.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;

@@ -106,6 +106,17 @@ export function belowMemberLevel(crime, memberLevel, levelGap) {
   return memberLevel - crime.level >= levelGap;
 }
 
+// Whether a crime is below what the member should be joining. A member whose
+// own level is one the faction counts productive days at is held to that
+// level exactly: anything under it costs the faction, so it is only ever a
+// last resort. Below that level the looser under-level gap applies.
+export function belowOwnLevel(crime, memberLevel, config) {
+  if (memberLevel === null || memberLevel === undefined) return false;
+  const settings = (config && config.settings) || {};
+  const gap = memberLevel >= productiveFromLevel(config) ? 1 : settings.under_level_gap ?? 2;
+  return belowMemberLevel(crime, memberLevel, gap);
+}
+
 // Whether the member may ask staff for a crime at all: their faction allows it
 // (and has the assistant on) and they are at or above its minimum level.
 export function canAskForCrime(memberLevel, config) {
@@ -118,12 +129,14 @@ export function canAskForCrime(memberLevel, config) {
 // Rate every slot and choose what to suggest.
 //
 // `member` is the viewer, when the site has said: { level, canAsk }. A crime
-// too far below their level is never "good for them". If they can ask staff
-// for a crime it is not suggested at all (`withheld` counts those); if they
-// cannot, it may still come first, marked `belowLevel`, as the best there is.
+// below their level (`belowOwnLevel`) is never "good for them": it may still
+// come first, marked `belowLevel`, as the best there is. One so far below
+// that staff would flag them in it is not suggested at all to a member who
+// can ask staff for a crime instead (`withheld` counts those).
 //
 // Returns { crimes: [{ crime, waitHours, pooled, productive, slots: [rated] }],
-//           suggestions: [{ rank, crime, rated, waitHours, pooled, productive, thresholdHours, belowLevel }],
+//           suggestions: [{ rank, crime, rated, waitHours, pooled, productive, thresholdHours,
+//                           belowLevel, memberLevel }],
 //           withheld }
 // with `suggestions` best first. A candidate is one slot per crime; they are
 // ordered by: planning starts within the faction's productive threshold,
@@ -163,13 +176,15 @@ export function rateCrimes(crimes, config, member = null) {
       ...entry,
       pick: pickSlot(entry.slots),
       thresholdHours: threshold,
-      belowLevel: belowMemberLevel(entry.crime, memberLevel, levelGap),
+      memberLevel,
+      belowLevel: belowOwnLevel(entry.crime, memberLevel, config),
+      tooLow: belowMemberLevel(entry.crime, memberLevel, levelGap),
     }))
     .filter((entry) => entry.pick);
-  const withheld = holdBack ? qualifying.filter((entry) => entry.belowLevel).length : 0;
+  const withheld = holdBack ? qualifying.filter((entry) => entry.tooLow).length : 0;
 
   const candidates = qualifying
-    .filter((entry) => !holdBack || !entry.belowLevel)
+    .filter((entry) => !holdBack || !entry.tooLow)
     .sort(
       (a, b) =>
         Number(b.productive) - Number(a.productive) ||
@@ -209,6 +224,7 @@ function suggestion(rank, candidate) {
     productive: candidate.productive,
     thresholdHours: candidate.thresholdHours,
     belowLevel: candidate.belowLevel,
+    memberLevel: candidate.memberLevel,
   };
 }
 
@@ -224,16 +240,13 @@ export function tierFor(level) {
 // Whether to offer the member a "ask staff for a crime" button: their faction
 // allows it (and has the assistant on), they are at or above its minimum level, and the best slot on
 // offer (anywhere, loaded or not) is not a decent one for them. Decent means
-// it starts within the productive threshold and is not so far below their
-// level that staff would call it too easy. Returns the tier to ask for, or
-// null.
+// it starts within the productive threshold and is not below what they
+// should be joining (`belowOwnLevel`). Returns the tier to ask for, or null.
 export function spawnTierToRequest(suggestions, memberLevel, config) {
-  const settings = (config && config.settings) || {};
   if (!canAskForCrime(memberLevel, config)) return null;
 
   const best = suggestions[0];
-  const lowestDecentLevel = memberLevel - ((settings.under_level_gap ?? 2) - 1);
-  const decent = best && best.productive && (best.crime.level ?? 0) >= lowestDecentLevel;
+  const decent = best && best.productive && !belowOwnLevel(best.crime, memberLevel, config);
   return decent ? null : tierFor(memberLevel);
 }
 

@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import { findRole, keyFor } from "../../src/features/organized-crimes/catalog.js";
 import {
   belowMemberLevel,
+  belowOwnLevel,
   canAskForCrime,
   describeWait,
   hoursUntilPlanning,
@@ -282,12 +283,33 @@ describe("crimes below the member's level", () => {
     assert.equal(belowMemberLevel({ level: null }, 8, 2), false);
   });
 
-  it("are not suggested to a member who can ask staff for a crime", () => {
+  it("holds a member to their own level where productive days count, and to the gap below that", () => {
+    const from = (level) => ({ ...config, settings: { ...config.settings, productive_from_level: level } });
+    assert.equal(belowOwnLevel({ level: 7 }, 8, from(7)), true);
+    assert.equal(belowOwnLevel({ level: 8 }, 8, from(7)), false);
+    assert.equal(belowOwnLevel({ level: 9 }, 8, from(7)), false);
+    // A level 6 member is below the cut-off: one level down is fine.
+    assert.equal(belowOwnLevel({ level: 5 }, 6, from(7)), false);
+    assert.equal(belowOwnLevel({ level: 4 }, 6, from(7)), true);
+    // A faction that never counts productive days only has the gap.
+    assert.equal(belowOwnLevel({ level: 7 }, 8, from(null)), false);
+    assert.equal(belowOwnLevel({ level: 7 }, null, from(7)), false);
+  });
+
+  it("are not suggested to a member who can ask staff for a crime, when far below", () => {
     const result = rateCrimes([five, other], config, { level: 8, canAsk: true });
     assert.deepEqual(result.suggestions, []);
     assert.equal(result.withheld, 2);
-    // Within the gap is still fine.
-    assert.deepEqual(picks([seven, five], { level: 8, canAsk: true }), [[2, Rank.Best, false]]);
+  });
+
+  it("are a flagged last resort when only just below, whether or not the member can ask", () => {
+    for (const canAsk of [true, false]) {
+      assert.deepEqual(picks([seven, five], { level: 8, canAsk }).slice(0, 1), [[2, Rank.Best, true]]);
+    }
+    assert.equal(rateCrimes([seven], config, { level: 8, canAsk: true }).suggestions[0].memberLevel, 8);
+    // Where productive days never count, one level down is as good as any.
+    const never = { ...config, settings: { ...config.settings, productive_from_level: null } };
+    assert.equal(rateCrimes([seven], never, { level: 8, canAsk: true }).suggestions[0].belowLevel, false);
   });
 
   it("are the best available, and never good, for a member who cannot ask", () => {
@@ -295,6 +317,9 @@ describe("crimes below the member's level", () => {
     assert.equal(rateCrimes([five, other], config, { level: 8, canAsk: false }).withheld, 0);
     // A good slot must be in range of the member as well as of the best crime.
     assert.deepEqual(picks([crime(5, "Break the Bank", 8, [open("Muscle #1", 80)]), seven], { level: 9, canAsk: false }), [
+      [5, Rank.Best, true],
+    ]);
+    assert.deepEqual(picks([crime(5, "Break the Bank", 8, [open("Muscle #1", 80)]), seven], { level: 8, canAsk: false }), [
       [5, Rank.Best, false],
     ]);
   });
@@ -329,7 +354,10 @@ describe("asking staff for a crime", () => {
 
   it("is not offered when a decent slot exists", () => {
     assert.equal(spawnTierToRequest(best(8, true), 8, allowed), null);
-    assert.equal(spawnTierToRequest(best(7, true), 8, allowed), null, "one level down is within the gap");
+    assert.equal(spawnTierToRequest(best(7, true), 8, allowed), "7-8", "one level down still costs productive days");
+    const never = { ...allowed, settings: { ...settings, productive_from_level: null } };
+    assert.equal(spawnTierToRequest(best(7, true), 8, never), null, "one level down is within the gap where they never count");
+    assert.equal(spawnTierToRequest(best(6, true), 8, never), "7-8");
     assert.equal(spawnTierToRequest(best(9, true), 8, allowed), null);
   });
 
