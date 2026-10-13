@@ -56,6 +56,9 @@ real-site pass; do each UI check in both Torn light and dark mode.
 The automated tests stub the nuke.family API, so every item here needs a real
 (or nuke.test) chain watch for your faction.
 
+- [ ] A watch set to 0 xanax/hr (the faction pays its own way) never mentions
+      xanax or pay: the bar says "this hour needs N more watchers", slots read
+      "1/2 filled", and signups past the cap are "(extra)".
 - [ ] With no chain watch for the faction: a single slim "Chain Watch · No
       chain watch scheduled" line sits under the war/chain boxes and cannot be
       expanded. Reloading within 10 minutes makes no `/chain-watch` request.

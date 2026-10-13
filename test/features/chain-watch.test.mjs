@@ -27,17 +27,18 @@ function signup(playerId, name, over = {}) {
 
 // A board as /chain-watch/{id} returns it, built around the current hour:
 // slot 0 is running. `signups` maps slot index -> signups on it.
-function makeBoard({ signups = {}, checkins = [], staff = false, startsInHours = -3 } = {}) {
+// `pays: false` is a watch whose faction rewards watchers its own way: every rate is 0.
+function makeBoard({ signups = {}, checkins = [], staff = false, startsInHours = -3, pays = true } = {}) {
   const base = thisHour();
   const first = startsInHours > 0 ? base + startsInHours * HOUR : base;
   const slots = Array.from({ length: 30 }, (_, index) => {
     const start = first + index * HOUR;
     const hour = new Date(start).getUTCHours();
-    const premium = hour >= 8 && hour < 12;
+    const premium = pays && hour >= 8 && hour < 12;
     const cap = 2;
     const list = signups[index] || [];
     return {
-      slot_start_iso: iso(start), hour, rate: premium ? 5 : 3, cap,
+      slot_start_iso: iso(start), hour, rate: !pays ? 0 : premium ? 5 : 3, cap,
       is_premium: premium, range_label: premium ? "Graveyard" : null,
       signups: list,
       paid_count: list.filter((s) => s.paid).length,
@@ -47,9 +48,9 @@ function makeBoard({ signups = {}, checkins = [], staff = false, startsInHours =
   return {
     id: WATCH_ID, title: "RW chain", faction_id: 5678, status: "active", is_finished: false,
     start_time: iso(base + startsInHours * HOUR), end_time: null,
-    signup_horizon_hours: 30, default_rate: 3, default_slot_cap: 2,
+    signup_horizon_hours: 30, default_rate: pays ? 3 : 0, default_slot_cap: 2, pays,
     window: { from: slots[0].slot_start_iso, to: slots[29].slot_start_iso },
-    ranges: [{ start_hour: 8, end_hour: 12, rate: 5, slot_cap: 2, label: "Graveyard" }],
+    ranges: pays ? [{ start_hour: 8, end_hour: 12, rate: 5, slot_cap: 2, label: "Graveyard" }] : [],
     slots,
     signup_url: "https://nuke.family/chain-watch/7",
     attendance_url: "https://nuke.family/chain-watch/7/attendance",
@@ -158,6 +159,41 @@ describe("chain watch bar", () => {
       }
     });
   }
+
+  it("leaves pay out of a watch that pays nothing", async () => {
+    const { api } = watchApi(
+      makeBoard({
+        pays: false,
+        signups: {
+          0: [signup(11, "Alpha")],
+          2: [signup(11, "Alpha"), signup(12, "Bravo"), signup(13, "Charlie", { paid: false })],
+        },
+      }),
+    );
+    const { page, errors, close } = await openFaction({ api });
+    try {
+      await page.waitForSelector(`${ROOT} .nfh-cw-title`);
+      assert.match(await page.locator(`${ROOT} .nfh-cw-status`).innerText(), /this hour needs 1 more watcher/);
+
+      await page.click(`${ROOT} .nfh-cw-toggle`);
+      await page.waitForSelector(`${ROOT} .nfh-cw-slot`);
+      assert.match(await page.locator(`${ROOT} .nfh-cw-panel`).innerText(), /2 watchers per slot/);
+      assert.match(await page.locator(`${ROOT} .nfh-cw-slot`).first().getAttribute("title"), /1\/2 filled$/);
+
+      await page.locator(`${ROOT} .nfh-cw-slot`).nth(2).click();
+      const detail = await page.locator(`${ROOT} .nfh-cw-detail`).innerText();
+      assert.match(detail, /2\/2 filled \(\+1 extra\)/);
+      assert.match(detail, /Charlie\s+\(extra\)/);
+      assert.match(detail, /This hour is covered: extra watchers are welcome\./);
+
+      const everything = await page.locator(ROOT).innerHTML();
+      assert.doesNotMatch(everything, /xanax|paid|pays more|★/i);
+      assert.deepEqual(errors, []);
+      await screenshot(page.locator(ROOT), "chain-watch-no-pay");
+    } finally {
+      await close();
+    }
+  });
 
   it("makes no request while the watch list cache is fresh", async () => {
     const { page, apiCalls, close } = await openFaction({

@@ -2157,7 +2157,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
     const open = current ? Math.max(0, current.cap - current.paid_count) : 0;
     return {
       tone: "",
-      text: `${watching} checked in` + (open > 0 ? ` \xB7 <span class="nfh-cw-need">this hour has ${open} open paid spot${open === 1 ? "" : "s"}</span>` : ""),
+      text: `${watching} checked in` + (open > 0 ? ` \xB7 <span class="nfh-cw-need">${current.rate > 0 ? `this hour has ${open} open paid spot${open === 1 ? "" : "s"}` : `this hour needs ${open} more watcher${open === 1 ? "" : "s"}`}</span>` : ""),
       actions: checkInButton(false)
     };
   }
@@ -2191,6 +2191,12 @@ body.dark-mode .nfh-oc-bar-warning {\r
       html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy ? " is-busy" : ""}">${state3.actions}</span>` + alertChip(prefs3, armed)
     };
   }
+  function overCapNote(slot) {
+    return ` <span class="nfh-cw-muted">(${slot.rate > 0 ? "unpaid" : "extra"})</span>`;
+  }
+  function fillText(slot) {
+    return `${slot.paid_count}/${slot.cap} ${slot.rate > 0 ? "paid" : "filled"}`;
+  }
   function rosterSection(summary, board, now) {
     const { slots } = summary;
     if (slots.length === 0) {
@@ -2206,7 +2212,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
           data: { player: signup.player_id },
           title: `Check ${playerName(signup)} in`
         }) : "";
-        return `<span class="nfh-cw-person${present ? " is-present" : ""}${signup.is_me ? " is-me" : ""}" title="${present ? "Checked in" : "Not checked in"}">` + playerLink(signup) + (signup.paid ? "" : ' <span class="nfh-cw-muted">(unpaid)</span>') + staffCheckIn + "</span>";
+        return `<span class="nfh-cw-person${present ? " is-present" : ""}${signup.is_me ? " is-me" : ""}" title="${present ? "Checked in" : "Not checked in"}">` + playerLink(signup) + (signup.paid ? "" : overCapNote(slot)) + staffCheckIn + "</span>";
       });
       return `<div class="nfh-cw-roster-row${running ? " is-now" : ""}"><span class="nfh-cw-roster-when">${heading}</span><span class="nfh-cw-roster-time">${slotLabel(slotStart(slot))}</span><span class="nfh-cw-people">${names.length ? names.join("") : '<span class="nfh-cw-need">nobody signed up</span>'}</span></div>`;
     });
@@ -2247,10 +2253,11 @@ body.dark-mode .nfh-oc-bar-warning {\r
     const isMine = slot.signups.some((signup) => signup.is_me);
     const waitlist = slot.total_count - slot.paid_count;
     const names = slot.signups.map(
-      (signup) => `<span class="nfh-cw-person nfh-cw-person--plain${signup.is_me ? " is-me" : ""}">${playerLink(signup)}${signup.paid ? "" : ' <span class="nfh-cw-muted">(unpaid)</span>'}</span>`
+      (signup) => `<span class="nfh-cw-person nfh-cw-person--plain${signup.is_me ? " is-me" : ""}">${playerLink(signup)}${signup.paid ? "" : overCapNote(slot)}</span>`
     ).join("");
-    const unpaidWarning = !isMine && slot.paid_count >= slot.cap ? '<span class="nfh-cw-need">Paid spots are full: you would be unpaid unless staff approve it.</span>' : "";
-    return `<div class="nfh-cw-detail"><div><strong>${slotLabel(start)}\u2013${hourLabel(start + HOUR_MS)} TCT</strong> <span class="nfh-cw-muted">(${escapeHtml(localTime(start))} your time)</span> \xB7 ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " \u2605" : ""}` + (slot.range_label ? ` \xB7 ${escapeHtml(slot.range_label)}` : "") + ` \xB7 ${escapeHtml(slot.paid_count)}/${escapeHtml(slot.cap)} paid` + (waitlist > 0 ? ` (+${waitlist} unpaid)` : "") + `</div><div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div><div class="nfh-cw-detail-actions${busy ? " is-busy" : ""}">` + (isMine ? button("leave", "Leave this slot", { data: { slot: slot.slot_start_iso } }) : button("signup", "Sign up", { primary: true, data: { slot: slot.slot_start_iso } })) + unpaidWarning + "</div></div>";
+    const paid = slot.rate > 0;
+    const unpaidWarning = !isMine && slot.paid_count >= slot.cap ? paid ? '<span class="nfh-cw-need">Paid spots are full: you would be unpaid unless staff approve it.</span>' : '<span class="nfh-cw-muted">This hour is covered: extra watchers are welcome.</span>' : "";
+    return `<div class="nfh-cw-detail"><div><strong>${slotLabel(start)}\u2013${hourLabel(start + HOUR_MS)} TCT</strong> <span class="nfh-cw-muted">(${escapeHtml(localTime(start))} your time)</span>` + (paid ? ` \xB7 ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " \u2605" : ""}` : "") + (slot.range_label ? ` \xB7 ${escapeHtml(slot.range_label)}` : "") + ` \xB7 ${escapeHtml(fillText(slot))}` + (waitlist > 0 ? ` (+${waitlist} ${paid ? "unpaid" : "extra"})` : "") + `</div><div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div><div class="nfh-cw-detail-actions${busy ? " is-busy" : ""}">` + (isMine ? button("leave", "Leave this slot", { data: { slot: slot.slot_start_iso } }) : button("signup", "Sign up", { primary: true, data: { slot: slot.slot_start_iso } })) + unpaidWarning + "</div></div>";
   }
   function slotsSection(summary, ui, busy) {
     const { slots } = summary;
@@ -2273,7 +2280,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
           slot === summary.current ? "is-now" : "",
           ui.selectedSlot === slot.slot_start_iso ? "is-selected" : ""
         ];
-        const tip = `${slotLabel(slotStart(slot))} TCT \xB7 ${slot.rate} xanax/hr \xB7 ${slot.paid_count}/${slot.cap} paid${isMine ? " \xB7 you are signed up" : ""}`;
+        const tip = `${slotLabel(slotStart(slot))} TCT \xB7 ${slot.rate > 0 ? `${slot.rate} xanax/hr \xB7 ` : ""}${fillText(slot)}${isMine ? " \xB7 you are signed up" : ""}`;
         return `<button type="button" class="${classes.filter(Boolean).join(" ")}" data-action="slot" data-slot="${escapeHtml(slot.slot_start_iso)}" title="${escapeHtml(tip)}"><span class="nfh-cw-slot-hour">${pad(new Date(slotStart(slot)).getUTCHours())}${slot.is_premium ? "\u2605" : ""}</span><span class="nfh-cw-slot-fill">${escapeHtml(slot.paid_count)}/${escapeHtml(slot.cap)}</span></button>`;
       }).join("") + "</div></div>"
     ).join("");
@@ -2286,9 +2293,10 @@ body.dark-mode .nfh-oc-bar-warning {\r
   }
   function renderPanel({ board, prefs: prefs3, ui, busy, now }) {
     const summary = summarize(board, now);
-    const pay = `${escapeHtml(board.default_rate)} xanax/hr \xB7 ${escapeHtml(board.default_slot_cap)} paid per slot`;
+    const pays = board.pays !== false;
+    const pay = (board.default_rate > 0 ? `${escapeHtml(board.default_rate)} xanax/hr \xB7 ${escapeHtml(board.default_slot_cap)} paid per slot` : `${escapeHtml(board.default_slot_cap)} watchers per slot`) + (pays ? " \xB7 \u2605 pays more" : "");
     return section("On watch", rosterSection(summary, board, now)) + section(`Checked in (${summary.checkins.length})`, checkinSection(summary, board, ui, now)) + section(
-      `Slots <span class="nfh-cw-muted">TCT \xB7 ${pay} \xB7 \u2605 pays more</span>`,
+      `Slots <span class="nfh-cw-muted">TCT \xB7 ${pay}</span>`,
       slotsSection(summary, ui, busy)
     ) + `<div class="nfh-cw-footer"><label title="Applies to slots you sign up for from here"><input type="checkbox" data-pref="dmReminder"${prefs3.dmReminder ? " checked" : ""}> Discord DM reminder before my slots</label>` + button("test-dm", "Test DM", { title: "Send yourself a test reminder on Discord" }) + button("refresh", "Refresh") + (/^https?:\/\//.test(board.signup_url || "") ? `<a class="nfh-cw-link" href="${escapeHtml(board.signup_url)}" target="_blank" rel="noopener">Open on nuke.family</a>` : "") + "</div>";
   }

@@ -158,7 +158,11 @@ function barState(board, summary, now) {
     text:
       `${watching} checked in` +
       (open > 0
-        ? ` · <span class="nfh-cw-need">this hour has ${open} open paid spot${open === 1 ? "" : "s"}</span>`
+        ? ` · <span class="nfh-cw-need">${
+            current.rate > 0
+              ? `this hour has ${open} open paid spot${open === 1 ? "" : "s"}`
+              : `this hour needs ${open} more watcher${open === 1 ? "" : "s"}`
+          }</span>`
         : ""),
     actions: checkInButton(false),
   };
@@ -236,6 +240,17 @@ export function renderBar({ board, watches, prefs, armed, chainActive, flash, bu
   };
 }
 
+// A faction that rewards watchers its own way sets the rate to 0. Such an hour
+// is only about being covered: its cap is how many watchers it wants, and a
+// signup past it is extra rather than unpaid.
+function overCapNote(slot) {
+  return ` <span class="nfh-cw-muted">(${slot.rate > 0 ? "unpaid" : "extra"})</span>`;
+}
+
+function fillText(slot) {
+  return `${slot.paid_count}/${slot.cap} ${slot.rate > 0 ? "paid" : "filled"}`;
+}
+
 function rosterSection(summary, board, now) {
   const { slots } = summary;
   if (slots.length === 0) {
@@ -261,7 +276,7 @@ function rosterSection(summary, board, now) {
         `<span class="nfh-cw-person${present ? " is-present" : ""}${signup.is_me ? " is-me" : ""}"` +
         ` title="${present ? "Checked in" : "Not checked in"}">` +
         playerLink(signup) +
-        (signup.paid ? "" : ' <span class="nfh-cw-muted">(unpaid)</span>') +
+        (signup.paid ? "" : overCapNote(slot)) +
         staffCheckIn +
         "</span>"
       );
@@ -345,22 +360,25 @@ function slotDetail(slot, busy) {
   const names = slot.signups
     .map(
       (signup) =>
-        `<span class="nfh-cw-person nfh-cw-person--plain${signup.is_me ? " is-me" : ""}">${playerLink(signup)}${signup.paid ? "" : ' <span class="nfh-cw-muted">(unpaid)</span>'}</span>`,
+        `<span class="nfh-cw-person nfh-cw-person--plain${signup.is_me ? " is-me" : ""}">${playerLink(signup)}${signup.paid ? "" : overCapNote(slot)}</span>`,
     )
     .join("");
+  const paid = slot.rate > 0;
   const unpaidWarning =
     !isMine && slot.paid_count >= slot.cap
-      ? '<span class="nfh-cw-need">Paid spots are full: you would be unpaid unless staff approve it.</span>'
+      ? paid
+        ? '<span class="nfh-cw-need">Paid spots are full: you would be unpaid unless staff approve it.</span>'
+        : '<span class="nfh-cw-muted">This hour is covered: extra watchers are welcome.</span>'
       : "";
 
   return (
     '<div class="nfh-cw-detail">' +
     `<div><strong>${slotLabel(start)}–${hourLabel(start + HOUR_MS)} TCT</strong>` +
     ` <span class="nfh-cw-muted">(${escapeHtml(localTime(start))} your time)</span>` +
-    ` · ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " ★" : ""}` +
+    (paid ? ` · ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " ★" : ""}` : "") +
     (slot.range_label ? ` · ${escapeHtml(slot.range_label)}` : "") +
-    ` · ${escapeHtml(slot.paid_count)}/${escapeHtml(slot.cap)} paid` +
-    (waitlist > 0 ? ` (+${waitlist} unpaid)` : "") +
+    ` · ${escapeHtml(fillText(slot))}` +
+    (waitlist > 0 ? ` (+${waitlist} ${paid ? "unpaid" : "extra"})` : "") +
     "</div>" +
     `<div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div>` +
     `<div class="nfh-cw-detail-actions${busy ? " is-busy" : ""}">` +
@@ -400,8 +418,8 @@ function slotsSection(summary, ui, busy) {
               ui.selectedSlot === slot.slot_start_iso ? "is-selected" : "",
             ];
             const tip =
-              `${slotLabel(slotStart(slot))} TCT · ${slot.rate} xanax/hr · ` +
-              `${slot.paid_count}/${slot.cap} paid${isMine ? " · you are signed up" : ""}`;
+              `${slotLabel(slotStart(slot))} TCT · ${slot.rate > 0 ? `${slot.rate} xanax/hr · ` : ""}` +
+              `${fillText(slot)}${isMine ? " · you are signed up" : ""}`;
             return (
               `<button type="button" class="${classes.filter(Boolean).join(" ")}" data-action="slot"` +
               ` data-slot="${escapeHtml(slot.slot_start_iso)}" title="${escapeHtml(tip)}">` +
@@ -434,13 +452,18 @@ function section(title, body) {
 // The expanded panel.
 export function renderPanel({ board, prefs, ui, busy, now }) {
   const summary = summarize(board, now);
-  const pay = `${escapeHtml(board.default_rate)} xanax/hr · ${escapeHtml(board.default_slot_cap)} paid per slot`;
+  // An older site does not say whether the watch pays, and every watch paid then.
+  const pays = board.pays !== false;
+  const pay =
+    (board.default_rate > 0
+      ? `${escapeHtml(board.default_rate)} xanax/hr · ${escapeHtml(board.default_slot_cap)} paid per slot`
+      : `${escapeHtml(board.default_slot_cap)} watchers per slot`) + (pays ? " · ★ pays more" : "");
 
   return (
     section("On watch", rosterSection(summary, board, now)) +
     section(`Checked in (${summary.checkins.length})`, checkinSection(summary, board, ui, now)) +
     section(
-      `Slots <span class="nfh-cw-muted">TCT · ${pay} · ★ pays more</span>`,
+      `Slots <span class="nfh-cw-muted">TCT · ${pay}</span>`,
       slotsSection(summary, ui, busy),
     ) +
     '<div class="nfh-cw-footer">' +
