@@ -1914,8 +1914,8 @@ body.dark-mode .nfh-oc-bar-warning {
     return date.getTime();
   }
   function usable(watches, now = Date.now()) {
-    return (Array.isArray(watches) ? watches : []).filter((watch2) => {
-      const end = toMs(watch2.end_time);
+    return (Array.isArray(watches) ? watches : []).filter((watch3) => {
+      const end = toMs(watch3.end_time);
       return end === null || end > now;
     }).sort((a, b) => toMs(a.start_time) - toMs(b.start_time));
   }
@@ -2184,7 +2184,7 @@ body.dark-mode .nfh-oc-bar-warning {
     const expandable = !!board;
     const expanded = expandable && prefs3.expanded;
     const picker = watches.length > 1 ? `<select class="nfh-cw-picker" data-role="watch-picker" title="Chain watch">${watches.map(
-      (watch2) => `<option value="${escapeHtml(watch2.id)}"${board && board.id === watch2.id ? " selected" : ""}>${escapeHtml(watch2.title || `Chain watch #${watch2.id}`)}</option>`
+      (watch3) => `<option value="${escapeHtml(watch3.id)}"${board && board.id === watch3.id ? " selected" : ""}>${escapeHtml(watch3.title || `Chain watch #${watch3.id}`)}</option>`
     ).join("")}</select>` : title;
     return {
       tone: state3.tone,
@@ -2446,7 +2446,7 @@ body.dark-mode .nfh-oc-bar-warning {
   async function load({ force = false } = {}) {
     state.lastListAt = Date.now();
     state.watches = await getActiveWatches({ force });
-    if (!state.watches.some((watch2) => watch2.id === state.watchId)) {
+    if (!state.watches.some((watch3) => watch3.id === state.watchId)) {
       state.watchId = state.watches.length ? state.watches[0].id : null;
       state.board = null;
     }
@@ -4348,6 +4348,8 @@ body.dark-mode .nfh-oc-bar-warning {
   var UPLOAD_MAX = 300;
   var STALE_MS = 60 * 1e3;
   var state2 = {
+    target: null,
+    // whose war is open: "" for your own faction's, else a faction id
     war: void 0,
     // undefined = not asked yet, null = the site knows of no war
     members: {},
@@ -4377,8 +4379,29 @@ body.dark-mode .nfh-oc-bar-warning {
   var ticker2 = null;
   var uploadTimer2 = null;
   var barHtml2 = "";
-  function isRankedWarView() {
-    return window.location.search.includes("step=your") && window.location.hash.startsWith("#/war/rank");
+  function viewedWar() {
+    if (!window.location.hash.startsWith("#/war/rank")) return null;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("step") === "your") return "";
+    const id = params.get("step") === "profile" && params.get("ID");
+    return id && /^\d+$/.test(id) ? id : null;
+  }
+  function watch2(target) {
+    if (state2.target === target) return;
+    state2.target = target;
+    state2.war = void 0;
+    state2.members = {};
+    for (const source of SOURCES) {
+      state2.held[source] = {};
+      state2.fresh[source] = /* @__PURE__ */ new Set();
+      pending2[source].clear();
+    }
+    state2.statsAt = 0;
+    state2.uploadAfter = 0;
+    state2.fetchedAt = 0;
+    state2.nextPollAt = 0;
+    state2.error = false;
+    memos.clear();
   }
   function setAttr(element, name, value) {
     let cache = written.get(element);
@@ -4434,6 +4457,7 @@ body.dark-mode .nfh-oc-bar-warning {
   }
   async function upload2() {
     uploadTimer2 = null;
+    const target = state2.target;
     for (const source of SOURCES) {
       const batch = [...pending2[source].entries()].slice(0, UPLOAD_MAX);
       if (batch.length === 0) continue;
@@ -4441,8 +4465,13 @@ body.dark-mode .nfh-oc-bar-warning {
       try {
         await api("/war/estimates", {
           method: "POST",
-          data: { source, estimates: batch.map(([id, total]) => ({ id: Number(id), total })) }
+          data: {
+            source,
+            ...target ? { faction_id: Number(target) } : {},
+            estimates: batch.map(([id, total]) => ({ id: Number(id), total }))
+          }
         });
+        if (state2.target !== target) return;
         for (const [id] of batch) state2.fresh[source].add(id);
         LogInfo(`War board sent ${batch.length} ${source} estimates`);
       } catch (error) {
@@ -4530,7 +4559,9 @@ body.dark-mode .nfh-oc-bar-warning {
     list.insertBefore(fragment, list.firstChild);
   }
   function statusText() {
-    if (state2.war === null) return "nuke.family has no ranked war on for your faction yet.";
+    if (state2.war === null) {
+      return state2.target ? "nuke.family found no ranked war on for this faction." : "nuke.family has no ranked war on for your faction yet.";
+    }
     if (state2.error && !hasData()) return "Could not reach nuke.family. Trying again shortly.";
     if (!hasData()) return "Loading statuses\u2026";
     const age = Math.round((Date.now() - state2.fetchedAt) / 1e3);
@@ -4586,9 +4617,12 @@ body.dark-mode .nfh-oc-bar-warning {
   }
   async function poll() {
     const wantStats = Date.now() - state2.statsAt > STATS_REFRESH_MS;
+    const target = state2.target;
+    const query = [target ? `faction_id=${target}` : "", wantStats ? "stats=1" : ""].filter(Boolean).join("&");
     state2.loading = true;
     try {
-      const response = await api("/war/board" + (wantStats ? "?stats=1" : ""));
+      const response = await api("/war/board" + (query ? `?${query}` : ""));
+      if (state2.target !== target) return;
       const data = response.data || {};
       state2.error = false;
       if (!data.war) {
@@ -4609,6 +4643,7 @@ body.dark-mode .nfh-oc-bar-warning {
         state2.statsAt = Date.now();
       }
     } catch (error) {
+      if (state2.target !== target) return;
       state2.error = true;
       state2.nextPollAt = Date.now() + ERROR_RETRY_MS;
       console.error("[NFH] Could not load the war board from nuke.family:", error);
@@ -4618,10 +4653,12 @@ body.dark-mode .nfh-oc-bar-warning {
     }
   }
   function tick2() {
-    if (!isRankedWarView()) {
+    const target = viewedWar();
+    if (target === null) {
       stop2();
       return;
     }
+    watch2(target);
     if (document.hidden) return;
     const lists = document.querySelectorAll(LIST_SELECTOR);
     if (lists.length === 0) return;
@@ -4644,7 +4681,7 @@ body.dark-mode .nfh-oc-bar-warning {
     LogInfo("War board stopped");
   }
   function init5() {
-    if (!isRankedWarView()) {
+    if (viewedWar() === null) {
       if (ticker2) stop2();
       return;
     }

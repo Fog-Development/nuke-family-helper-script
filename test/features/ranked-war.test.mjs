@@ -7,6 +7,10 @@ const BAR = "#nfh-war-bar";
 const WAR_URL = "https://www.torn.com/factions.php?step=your#/war/rank";
 const BOARD = "/war/board";
 const BOARD_WITH_STATS = "/war/board?stats=1";
+// Another faction's page, as Torn links to it.
+const OTHER_WAR_URL = "https://www.torn.com/factions.php?step=profile&ID=9524&referredFrom=1864837#/war/rank";
+const OTHER_BOARD = "/war/board?faction_id=9524";
+const OTHER_BOARD_WITH_STATS = "/war/board?faction_id=9524&stats=1";
 
 let browser;
 before(async () => {
@@ -145,8 +149,8 @@ async function openWar({ api, ...options } = {}) {
     page: "factions-faction",
     url: WAR_URL,
     before: addWar,
-    api: { [`GET ${BOARD}`]: board(), [`GET ${BOARD_WITH_STATS}`]: withStats, ...api },
     ...options,
+    api: { [`GET ${BOARD}`]: board(), [`GET ${BOARD_WITH_STATS}`]: withStats, ...api },
   });
 }
 
@@ -381,6 +385,62 @@ describe("ranked war board", () => {
       await page.waitForTimeout(1200);
       assert.equal(boardCalls(apiCalls).length, 1);
       assert.equal((await enemyOrder(page))[0], "Foe-Okay");
+    } finally {
+      await close();
+    }
+  });
+
+  it("works on another faction's war page, asking the site about that faction", async () => {
+    const posts = [];
+    const { page, errors, apiCalls, close } = await openWar({
+      url: OTHER_WAR_URL,
+      before: async (page) => {
+        await addWar(page);
+        await addScripts(page, { ffscouter: { 503: 371_000_000 } });
+      },
+      api: {
+        [`GET ${OTHER_BOARD}`]: board(),
+        [`GET ${OTHER_BOARD_WITH_STATS}`]: board(held()),
+        "POST /war/estimates": (details) => {
+          posts.push(JSON.parse(details.data));
+          return { stored: 1 };
+        },
+      },
+    });
+    try {
+      await page.waitForSelector(".faction-war [data-nfh-war]");
+
+      assert.deepEqual(await enemyOrder(page), [
+        "Foe-Revived", "Foe-Okay", "Foe-ShortHosp", "Foe-LongHosp", "Foe-Abroad",
+      ]);
+      assert.match(await statusLabel(page, 504), /^2:0\d$/);
+      assert.match(await page.locator(BAR).innerText(), /War board[\s\S]*Live/);
+
+      await page.waitForTimeout(5200);
+      assert.deepEqual(posts, [
+        { source: "ffscouter", faction_id: 9524, estimates: [{ id: 503, total: 371_000_000 }] },
+      ]);
+      // Never the member's own faction's board.
+      const asked = boardCalls(apiCalls).map((call) => call.path);
+      assert.equal(asked[0], OTHER_BOARD_WITH_STATS);
+      assert.ok(asked.every((path) => path === OTHER_BOARD_WITH_STATS || path === OTHER_BOARD), asked.join(" "));
+      assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+
+  it("says so when the other faction has no ranked war on", async () => {
+    const none = { data: { war: null, recheck_seconds: 600 } };
+    const { page, apiCalls, close } = await openWar({
+      url: OTHER_WAR_URL,
+      api: { [`GET ${OTHER_BOARD_WITH_STATS}`]: none },
+    });
+    try {
+      await page.waitForFunction(() => /no ranked war on for this faction/.test(document.querySelector("#nfh-war-bar")?.textContent || ""));
+      await page.waitForTimeout(1300);
+      assert.equal(boardCalls(apiCalls).length, 1);
+      assert.equal(await page.locator(".faction-war [data-nfh-war]").count(), 0);
     } finally {
       await close();
     }

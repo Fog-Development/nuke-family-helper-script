@@ -135,7 +135,7 @@ The automated tests stub the nuke.family API, so every item here needs a real
       about five minutes and a page reload the line shows the new number.
 - [ ] Another faction's crimes tab is untouched.
 
-## Ranked war board (`factions.php?step=your#/war/rank`, during a ranked war)
+## Ranked war board (`factions.php?step=your#/war/rank`, during a ranked war; also other factions' war pages)
 
 Needs a ranked war on (or matched to start within a day) and nuke.family
 having synced it (every 15 minutes). The automated tests build the member lists
@@ -171,6 +171,12 @@ two would keep undoing each other.
       every label go. Network tab: `/war/board` is asked about every five
       seconds while the view is open and visible, never otherwise.
 - [ ] With no war on, the bar says so and `/war/board` is asked once.
+- [ ] Another faction's war page (`factions.php?step=profile&ID=…#/war/rank`,
+      a faction in a ranked war that is not yours): the same bar, countdowns
+      and sorting within a few seconds, and `/war/board?faction_id=…` in the
+      Network tab. On the page of a faction with no ranked war the bar says so.
+      Going from one faction's war to another's shows the new war's statuses,
+      never the old one's.
 
 ## Faction controls (`factions.php` → controls tab)
 

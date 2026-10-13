@@ -13,10 +13,10 @@ import {
 } from "./logic.js";
 import { getPrefs, setPrefs } from "./prefs.js";
 
-// Ranked war board: on your own faction's ranked war view, every member's
-// status cell says when they leave hospital or where they are flying, and each
-// side's list can be kept sorted by who can be hit next or by battle stat
-// estimate.
+// Ranked war board: on a ranked war view (your own faction's, or any other
+// faction's from its page), every member's status cell says when they leave
+// hospital or where they are flying, and each side's list can be kept sorted
+// by who can be hit next or by battle stat estimate.
 //
 // The statuses come from nuke.family (`/war/board`), which reads them from
 // Torn once for everyone looking and knows whether the faction is at war at
@@ -60,6 +60,7 @@ const UPLOAD_MAX = 300;
 const STALE_MS = 60 * 1000;
 
 const state = {
+  target: null, // whose war is open: "" for your own faction's, else a faction id
   war: undefined, // undefined = not asked yet, null = the site knows of no war
   members: {},
   held: { bsp: {}, ffscouter: {} }, // estimates nuke.family holds, by source
@@ -90,11 +91,34 @@ let ticker = null;
 let uploadTimer = null;
 let barHtml = "";
 
-function isRankedWarView() {
-  return (
-    window.location.search.includes("step=your") &&
-    window.location.hash.startsWith("#/war/rank")
-  );
+// Whose ranked war the page is showing: "" for your own faction's
+// (`step=your`), the faction's id on another faction's page
+// (`step=profile&ID=…`), or null when this is not a ranked war view.
+function viewedWar() {
+  if (!window.location.hash.startsWith("#/war/rank")) return null;
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("step") === "your") return "";
+  const id = params.get("step") === "profile" && params.get("ID");
+  return id && /^\d+$/.test(id) ? id : null;
+}
+
+// Forget one war's statuses and estimates before showing another's.
+function watch(target) {
+  if (state.target === target) return;
+  state.target = target;
+  state.war = undefined;
+  state.members = {};
+  for (const source of SOURCES) {
+    state.held[source] = {};
+    state.fresh[source] = new Set();
+    pending[source].clear();
+  }
+  state.statsAt = 0;
+  state.uploadAfter = 0;
+  state.fetchedAt = 0;
+  state.nextPollAt = 0;
+  state.error = false;
+  memos.clear();
 }
 
 function setAttr(element, name, value) {
@@ -164,6 +188,7 @@ function noteForUpload(id, onPage) {
 
 async function upload() {
   uploadTimer = null;
+  const target = state.target;
   for (const source of SOURCES) {
     const batch = [...pending[source].entries()].slice(0, UPLOAD_MAX);
     if (batch.length === 0) continue;
@@ -172,8 +197,13 @@ async function upload() {
     try {
       await api("/war/estimates", {
         method: "POST",
-        data: { source, estimates: batch.map(([id, total]) => ({ id: Number(id), total })) },
+        data: {
+          source,
+          ...(target ? { faction_id: Number(target) } : {}),
+          estimates: batch.map(([id, total]) => ({ id: Number(id), total })),
+        },
       });
+      if (state.target !== target) return;
       for (const [id] of batch) state.fresh[source].add(id);
       LogInfo(`War board sent ${batch.length} ${source} estimates`);
     } catch (error) {
@@ -279,7 +309,11 @@ function reorder(list, entries, compare) {
 }
 
 function statusText() {
-  if (state.war === null) return "nuke.family has no ranked war on for your faction yet.";
+  if (state.war === null) {
+    return state.target
+      ? "nuke.family found no ranked war on for this faction."
+      : "nuke.family has no ranked war on for your faction yet.";
+  }
   if (state.error && !hasData()) return "Could not reach nuke.family. Trying again shortly.";
   if (!hasData()) return "Loading statuses…";
   const age = Math.round((Date.now() - state.fetchedAt) / 1000);
@@ -367,10 +401,14 @@ function refresh() {
 
 async function poll() {
   const wantStats = Date.now() - state.statsAt > STATS_REFRESH_MS;
+  const target = state.target;
+  const query = [target ? `faction_id=${target}` : "", wantStats ? "stats=1" : ""].filter(Boolean).join("&");
   state.loading = true;
 
   try {
-    const response = await api("/war/board" + (wantStats ? "?stats=1" : ""));
+    const response = await api("/war/board" + (query ? `?${query}` : ""));
+    // The answer to a war that is no longer the one on the page is dropped.
+    if (state.target !== target) return;
     const data = response.data || {};
     state.error = false;
 
@@ -393,6 +431,7 @@ async function poll() {
       state.statsAt = Date.now();
     }
   } catch (error) {
+    if (state.target !== target) return;
     // The last statuses stay up until they go stale; the bar says so.
     state.error = true;
     state.nextPollAt = Date.now() + ERROR_RETRY_MS;
@@ -404,10 +443,12 @@ async function poll() {
 }
 
 function tick() {
-  if (!isRankedWarView()) {
+  const target = viewedWar();
+  if (target === null) {
     stop();
     return;
   }
+  watch(target);
   // Nothing is fetched or redrawn for a tab nobody is looking at.
   if (document.hidden) return;
 
@@ -437,7 +478,7 @@ function stop() {
 }
 
 function init() {
-  if (!isRankedWarView()) {
+  if (viewedWar() === null) {
     if (ticker) stop();
     return;
   }
