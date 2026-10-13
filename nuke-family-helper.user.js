@@ -208,1034 +208,1034 @@ ${text}`) && onclick?.();
   }
 
   // src/styles.css
-  var styles_default = `/* Theme-aware CSS variables */\r
-:root {\r
-    --nfh-bg: #1a1a1a;\r
-    --nfh-text: #ffffff;\r
-    --nfh-section-bg: #2a2a2a;\r
-    --nfh-container-bg: #222;\r
-    --nfh-btn-bg: #333;\r
-    --nfh-btn-hover: #444;\r
-    --nfh-border: #444;\r
-    --nfh-list-key: #b0b0b0;\r
-    --nfh-hidden-count: #999;\r
-}\r
-\r
-/* Light theme overrides */\r
-body:not(.dark-mode) {\r
-    --nfh-bg: #f5f5f5;\r
-    --nfh-text: #333333;\r
-    --nfh-section-bg: #ffffff;\r
-    --nfh-container-bg: #eaeaea;\r
-    --nfh-btn-bg: #dddddd;\r
-    --nfh-btn-hover: #cccccc;\r
-    --nfh-border: #cccccc;\r
-    --nfh-list-key: #666666;\r
-    --nfh-hidden-count: #666666;\r
-}\r
-\r
-.nfh-section {\r
-    margin-top: 10px;\r
-    background-color: var(--nfh-bg);\r
-    border-radius: 5px;\r
-    overflow: hidden;\r
-    font-family: 'Roboto', sans-serif;\r
-}\r
-\r
-.nfh-section-title {\r
-    padding: 8px 12px;\r
-    font-weight: 600;\r
-    font-size: 14px;\r
-    background-color: var(--nfh-section-bg);\r
-    color: var(--nfh-text);\r
-}\r
-\r
-.nfh-section-container {\r
-    padding: 10px 12px !important;\r
-    background-color: var(--nfh-container-bg);\r
-}\r
-\r
-.nfh-section-list {\r
-    list-style-type: none;\r
-    padding-left: 0;\r
-    margin: 0;\r
-}\r
-\r
-.nfh-section-list li {\r
-    margin-bottom: 8px;\r
-    padding: 8px 10px 8px 20px;\r
-    background-color: var(--nfh-section-bg);\r
-    border-radius: 3px;\r
-    font-size: 13px;\r
-    line-height: 1.4;\r
-    color: var(--nfh-text);\r
-    position: relative;\r
-}\r
-\r
-.nfh-shitlist-entry-profile-container {\r
-  background-color: var(--nfh-container-bg) !important;\r
-  border-bottom: 0px !important;\r
-}\r
-\r
-.nfh-section-list li::before {\r
-    content: '\u25B6';\r
-    position: absolute;\r
-    left: 8px;\r
-    top: 11px;\r
-    color: #4caf50;\r
-    font-size: 10px;\r
-}\r
-\r
-.nfh-shitlist-profile-list li {\r
-  margin-bottom: 8px;\r
-    padding: 8px 10px 8px 20px;\r
-    background-color: var(--nfh-section-bg);\r
-    border-radius: 3px;\r
-    font-size: 13px;\r
-    line-height: 1.4;\r
-    color: var(--nfh-text);\r
-    position: relative;\r
-}\r
-\r
-.nfh-shitlist-profile-list li::before {\r
-    content: '\u25B6';\r
-    position: absolute;\r
-    left: 8px;\r
-    top: 11px;\r
-    color: #4caf50;\r
-    font-size: 10px;\r
-}\r
-\r
-.nfh-list-key {\r
-    font-weight: 600;\r
-    color: var(--nfh-list-key);\r
-    display: inline-block;\r
-    width: 100px;\r
-    vertical-align: top;\r
-}\r
-\r
-.nfh-list-value {\r
-    display: inline-block;\r
-    width: calc(100% - 105px);\r
-    vertical-align: top;\r
-}\r
-\r
-.nfh-shitlist-entry-container {\r
-    border-left: 3px solid #4caf50;\r
-    background-color: var(--nfh-container-bg);\r
-}\r
-\r
-.nfh-extra-shitlist-entry-condition {\r
-    font-size: 12px;\r
-    color: #4caf50;\r
-    margin-left: 5px;\r
-}\r
-\r
-.nfh-btn {\r
-    background-color: var(--nfh-btn-bg);\r
-    color: var(--nfh-text);\r
-    border: none;\r
-    padding: 6px 10px;\r
-    border-radius: 3px;\r
-    cursor: pointer;\r
-    transition: background-color 0.2s ease;\r
-    font-size: 13px;\r
-    font-weight: 500;\r
-    text-transform: uppercase;\r
-    letter-spacing: 0.5px;\r
-    margin-top: 8px;\r
-}\r
-\r
-.nfh-btn:hover {\r
-    background-color: var(--nfh-btn-hover);\r
-}\r
-\r
-.nfh-shitlist-entry-profile-container-friendly {\r
-  border-right: 3px solid #4caf50;\r
-}\r
-\r
-.nfh-shitlist-entry-container-friendly {\r
-  background-color: #00ff1466 !important;\r
-  border-left: 0px !important;\r
-}\r
-\r
-/* Hospital row highlight styles */\r
-.nfh-hospital-contract {\r
-  background-color: #20b2aa7d !important;\r
-}\r
-\r
-.nfh-hospital-friendly {\r
-  background-color: #009d0075 !important;\r
-}\r
-\r
-.nfh-hospital-shitlist {\r
-  background-color: #f933337d !important;\r
-}\r
-\r
-/* Settings panel styles */\r
-.nfh-shitlist-header {\r
-    display: flex;\r
-    justify-content: space-between;\r
-    align-items: center;\r
-    position: relative;\r
-}\r
-\r
-.nfh-settings-cog {\r
-    cursor: pointer;\r
-    color: var(--nfh-text);\r
-    font-size: 16px;\r
-    margin-right: 10px;\r
-    transition: transform 0.3s ease;\r
-}\r
-\r
-.nfh-settings-cog:hover {\r
-    color: #4caf50;\r
-    transform: rotate(90deg);\r
-}\r
-\r
-.nfh-settings-panel {\r
-    background-color: var(--nfh-section-bg);\r
-    border-radius: 5px;\r
-    padding: 15px;\r
-    border: 1px solid var(--nfh-border);\r
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);\r
-    position: fixed;\r
-    z-index: 9999;\r
-    width: 250px;\r
-    right: 20px;\r
-    bottom: 50px;\r
-    max-height: calc(100vh - 100px);\r
-    overflow-y: auto;\r
-    max-width: 95vw;\r
-    display: flex;\r
-    flex-direction: column;\r
-}\r
-\r
-.nfh-settings-title {\r
-    font-size: 14px;\r
-    font-weight: 600;\r
-    margin-bottom: 10px;\r
-    color: var(--nfh-text);\r
-    border-bottom: 1px solid var(--nfh-border);\r
-    padding-bottom: 5px;\r
-}\r
-\r
-.nfh-category-item {\r
-    display: flex;\r
-    align-items: center;\r
-    margin-bottom: 8px;\r
-    padding: 5px;\r
-    border-radius: 3px;\r
-    transition: background-color 0.2s;\r
-}\r
-\r
-.nfh-category-item:hover {\r
-    background-color: var(--nfh-btn-bg);\r
-}\r
-\r
-.nfh-category-item input[type="checkbox"] {\r
-    margin-right: 8px;\r
-}\r
-\r
-.nfh-category-item.faction-locked {\r
-    opacity: 0.8;\r
-    pointer-events: none;\r
-}\r
-\r
-.nfh-category-item.faction-locked input[type="checkbox"] {\r
-    cursor: not-allowed;\r
-}\r
-\r
-.nfh-hidden-count {\r
-    font-size: 11px;\r
-    color: var(--nfh-hidden-count);\r
-    margin-top: 5px;\r
-    font-style: italic;\r
-}\r
-\r
-.nfh-close-settings {\r
-    background-color: var(--nfh-btn-bg);\r
-    color: var(--nfh-text);\r
-    border: none;\r
-    padding: 5px 10px;\r
-    border-radius: 3px;\r
-    cursor: pointer;\r
-    font-size: 12px;\r
-    margin-top: 10px;\r
-    transition: background-color 0.2s;\r
-    width: 100%;\r
-}\r
-\r
-.nfh-close-settings:hover {\r
-    background-color: var(--nfh-btn-hover);\r
-}\r
-\r
-/* Chain watch bar (own faction page) */\r
-.nfh-cw {\r
-    --nfh-cw-accent: #4caf50;\r
-    --nfh-cw-warn: #f5a623;\r
-    --nfh-cw-muted: #9a9a9a;\r
-    --nfh-cw-empty: #c0392b;\r
-    clear: both;\r
-    margin-top: 10px;\r
-    border-radius: 5px;\r
-    border-left: 3px solid var(--nfh-border);\r
-    background-color: var(--nfh-section-bg);\r
-    color: var(--nfh-text);\r
-    font-size: 12px;\r
-    line-height: 1.4;\r
-    overflow: hidden;\r
-}\r
-\r
-body:not(.dark-mode) .nfh-cw {\r
-    --nfh-cw-accent: #256b29;\r
-    --nfh-cw-warn: #b26a00;\r
-    --nfh-cw-muted: #5c5c5c;\r
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);\r
-}\r
-\r
-.nfh-cw--in {\r
-    border-left-color: var(--nfh-cw-accent);\r
-}\r
-\r
-.nfh-cw--attn {\r
-    border-left-color: var(--nfh-cw-warn);\r
-}\r
-\r
-.nfh-cw [hidden] {\r
-    display: none !important;\r
-}\r
-\r
-.nfh-cw a {\r
-    color: inherit;\r
-    text-decoration: none;\r
-}\r
-\r
-.nfh-cw a:hover {\r
-    text-decoration: underline;\r
-}\r
-\r
-.nfh-cw-bar {\r
-    display: flex;\r
-    align-items: center;\r
-    gap: 8px;\r
-    min-height: 30px;\r
-    padding: 0 8px;\r
-}\r
-\r
-.nfh-cw-toggle {\r
-    display: inline-flex;\r
-    align-items: center;\r
-    gap: 5px;\r
-    padding: 0;\r
-    border: none;\r
-    background: none;\r
-    color: inherit;\r
-    font: inherit;\r
-    font-weight: 700;\r
-    white-space: nowrap;\r
-    cursor: pointer;\r
-}\r
-\r
-.nfh-cw-toggle:disabled {\r
-    cursor: default;\r
-}\r
-\r
-.nfh-cw-caret {\r
-    display: inline-block;\r
-    width: 9px;\r
-    color: var(--nfh-cw-muted);\r
-}\r
-\r
-.nfh-cw-title,\r
-.nfh-cw-muted {\r
-    color: var(--nfh-cw-muted);\r
-}\r
-\r
-.nfh-cw-title {\r
-    max-width: 180px;\r
-    overflow: hidden;\r
-    text-overflow: ellipsis;\r
-    white-space: nowrap;\r
-}\r
-\r
-.nfh-cw-status {\r
-    flex: 1;\r
-    min-width: 0;\r
-    overflow: hidden;\r
-    text-overflow: ellipsis;\r
-    white-space: nowrap;\r
-}\r
-\r
-.nfh-cw-status[data-action] {\r
-    cursor: pointer;\r
-}\r
-\r
-.nfh-cw--attn .nfh-cw-status {\r
-    color: var(--nfh-cw-warn);\r
-    font-weight: 700;\r
-}\r
-\r
-.nfh-cw-need,\r
-.nfh-cw-error {\r
-    color: var(--nfh-cw-warn);\r
-}\r
-\r
-.nfh-cw-ok {\r
-    color: var(--nfh-cw-accent);\r
-}\r
-\r
-.nfh-cw-actions,\r
-.nfh-cw-detail-actions {\r
-    display: inline-flex;\r
-    align-items: center;\r
-    gap: 6px;\r
-}\r
-\r
-.nfh-cw .is-busy {\r
-    opacity: 0.5;\r
-    pointer-events: none;\r
-}\r
-\r
-.nfh-cw-btn,\r
-.nfh-cw-chip {\r
-    padding: 3px 9px;\r
-    border: 1px solid var(--nfh-border);\r
-    border-radius: 3px;\r
-    background-color: var(--nfh-btn-bg);\r
-    color: var(--nfh-text);\r
-    font: inherit;\r
-    line-height: 1.3;\r
-    white-space: nowrap;\r
-    cursor: pointer;\r
-}\r
-\r
-.nfh-cw-btn:hover,\r
-.nfh-cw-chip:hover {\r
-    background-color: var(--nfh-btn-hover);\r
-}\r
-\r
-.nfh-cw-btn--primary {\r
-    border-color: var(--nfh-cw-accent);\r
-    background-color: var(--nfh-cw-accent);\r
-    color: #fff;\r
-    font-weight: 700;\r
-}\r
-\r
-.nfh-cw-btn--primary:hover {\r
-    background-color: var(--nfh-cw-accent);\r
-    filter: brightness(1.1);\r
-}\r
-\r
-.nfh-cw-chip {\r
-    border-radius: 10px;\r
-    background: none;\r
-    color: var(--nfh-cw-muted);\r
-}\r
-\r
-.nfh-cw-chip.is-armed {\r
-    border-color: var(--nfh-cw-accent);\r
-    color: var(--nfh-cw-accent);\r
-}\r
-\r
-.nfh-cw-picker,\r
-.nfh-cw-settings select,\r
-.nfh-cw-input {\r
-    padding: 2px 4px;\r
-    border: 1px solid var(--nfh-border);\r
-    border-radius: 3px;\r
-    background-color: var(--nfh-container-bg);\r
-    color: var(--nfh-text);\r
-    font: inherit;\r
-}\r
-\r
-.nfh-cw-picker {\r
-    max-width: 180px;\r
-}\r
-\r
-.nfh-cw-settings,\r
-.nfh-cw-panel {\r
-    padding: 8px 10px;\r
-    border-top: 1px solid var(--nfh-border);\r
-    background-color: var(--nfh-container-bg);\r
-}\r
-\r
-.nfh-cw-settings-row,\r
-.nfh-cw-footer {\r
-    display: flex;\r
-    flex-wrap: wrap;\r
-    align-items: center;\r
-    gap: 6px 14px;\r
-}\r
-\r
-.nfh-cw-settings label,\r
-.nfh-cw-footer label {\r
-    display: inline-flex;\r
-    align-items: center;\r
-    gap: 5px;\r
-    white-space: nowrap;\r
-}\r
-\r
-.nfh-cw-settings input[type="range"] {\r
-    width: 80px;\r
-}\r
-\r
-.nfh-cw-settings input[type="color"] {\r
-    width: 26px;\r
-    height: 20px;\r
-    padding: 0;\r
-    border: 1px solid var(--nfh-border);\r
-    background: none;\r
-}\r
-\r
-.nfh-cw-time {\r
-    width: 36px;\r
-    text-align: center;\r
-}\r
-\r
-.nfh-cw-input.is-invalid {\r
-    border-color: var(--nfh-cw-empty);\r
-}\r
-\r
-.nfh-cw-settings .nfh-cw-need,\r
-.nfh-cw-help {\r
-    margin-top: 6px;\r
-}\r
-\r
-.nfh-cw-section + .nfh-cw-section {\r
-    margin-top: 10px;\r
-}\r
-\r
-.nfh-cw-heading {\r
-    margin-bottom: 4px;\r
-    font-weight: 700;\r
-}\r
-\r
-.nfh-cw-heading .nfh-cw-muted {\r
-    margin-left: 6px;\r
-    font-weight: 400;\r
-}\r
-\r
-.nfh-cw-roster-row {\r
-    display: flex;\r
-    align-items: baseline;\r
-    gap: 8px;\r
-    padding: 2px 0;\r
-}\r
-\r
-.nfh-cw-roster-when {\r
-    width: 52px;\r
-    color: var(--nfh-cw-muted);\r
-}\r
-\r
-.nfh-cw-roster-row.is-now .nfh-cw-roster-when {\r
-    color: var(--nfh-cw-accent);\r
-    font-weight: 700;\r
-}\r
-\r
-.nfh-cw-roster-time {\r
-    width: 62px;\r
-    font-variant-numeric: tabular-nums;\r
-}\r
-\r
-.nfh-cw-people {\r
-    display: flex;\r
-    flex: 1;\r
-    flex-wrap: wrap;\r
-    align-items: center;\r
-    gap: 4px 12px;\r
-}\r
-\r
-.nfh-cw-person {\r
-    display: inline-flex;\r
-    align-items: center;\r
-    gap: 5px;\r
-}\r
-\r
-.nfh-cw-person::before {\r
-    content: "";\r
-    width: 6px;\r
-    height: 6px;\r
-    border: 1px solid var(--nfh-cw-muted);\r
-    border-radius: 50%;\r
-}\r
-\r
-.nfh-cw-person--plain::before {\r
-    content: none;\r
-}\r
-\r
-.nfh-cw-person.is-present::before {\r
-    border-color: var(--nfh-cw-accent);\r
-    background-color: var(--nfh-cw-accent);\r
-}\r
-\r
-.nfh-cw-person.is-me > a,\r
-.nfh-cw-person.is-me > span:first-child {\r
-    font-weight: 700;\r
-}\r
-\r
-.nfh-cw-person .nfh-cw-btn {\r
-    padding: 0 6px;\r
-    font-size: 11px;\r
-}\r
-\r
-.nfh-cw-tag {\r
-    padding: 0 5px;\r
-    border-radius: 3px;\r
-    background-color: var(--nfh-btn-bg);\r
-    font-size: 11px;\r
-}\r
-\r
-.nfh-cw-tag--scheduled {\r
-    color: var(--nfh-cw-accent);\r
-}\r
-\r
-.nfh-cw-tag--past_slot {\r
-    color: var(--nfh-cw-warn);\r
-}\r
-\r
-.nfh-cw-staff {\r
-    margin-top: 6px;\r
-}\r
-\r
-.nfh-cw-search {\r
-    width: 280px;\r
-    max-width: 100%;\r
-    margin-bottom: 4px;\r
-}\r
-\r
-.nfh-cw-mine {\r
-    margin-bottom: 6px;\r
-}\r
-\r
-.nfh-cw-day {\r
-    display: flex;\r
-    align-items: flex-start;\r
-    gap: 8px;\r
-    margin-bottom: 4px;\r
-}\r
-\r
-.nfh-cw-day-label {\r
-    width: 70px;\r
-    padding-top: 6px;\r
-    color: var(--nfh-cw-muted);\r
-    white-space: nowrap;\r
-}\r
-\r
-.nfh-cw-grid {\r
-    display: flex;\r
-    flex: 1;\r
-    flex-wrap: wrap;\r
-    gap: 4px;\r
-}\r
-\r
-.nfh-cw-slot {\r
-    display: flex;\r
-    flex-direction: column;\r
-    align-items: center;\r
-    width: 34px;\r
-    padding: 2px 0;\r
-    border: 1px solid var(--nfh-border);\r
-    border-radius: 4px;\r
-    background-color: var(--nfh-section-bg);\r
-    color: var(--nfh-text);\r
-    font: inherit;\r
-    line-height: 1.2;\r
-    cursor: pointer;\r
-}\r
-\r
-.nfh-cw-slot-hour {\r
-    font-weight: 700;\r
-}\r
-\r
-.nfh-cw-slot-fill {\r
-    font-size: 10px;\r
-    color: var(--nfh-cw-muted);\r
-}\r
-\r
-/* Fill level is carried by the count: open paid spots stand out, a full\r
-   hour fades back. */\r
-.nfh-cw-slot--empty .nfh-cw-slot-fill,\r
-.nfh-cw-slot--short .nfh-cw-slot-fill {\r
-    color: var(--nfh-cw-warn);\r
-}\r
-\r
-.nfh-cw-slot--full {\r
-    opacity: 0.6;\r
-}\r
-\r
-.nfh-cw-slot.is-now {\r
-    border-color: var(--nfh-cw-muted);\r
-}\r
-\r
-.nfh-cw-slot.is-mine {\r
-    border-color: var(--nfh-cw-accent);\r
-    background-color: var(--nfh-cw-accent);\r
-    color: #fff;\r
-    opacity: 1;\r
-}\r
-\r
-.nfh-cw-slot.is-mine .nfh-cw-slot-fill {\r
-    color: #fff;\r
-}\r
-\r
-.nfh-cw-slot.is-selected {\r
-    box-shadow: 0 0 0 2px var(--nfh-text);\r
-}\r
-\r
-.nfh-cw-slot:hover {\r
-    border-color: var(--nfh-text);\r
-}\r
-\r
-.nfh-cw-detail {\r
-    margin-top: 6px;\r
-    padding: 6px 8px;\r
-    border-radius: 4px;\r
-    background-color: var(--nfh-section-bg);\r
-}\r
-\r
-.nfh-cw-detail > div + div {\r
-    margin-top: 4px;\r
-}\r
-\r
-.nfh-cw-footer {\r
-    margin-top: 10px;\r
-    padding-top: 8px;\r
-    border-top: 1px solid var(--nfh-border);\r
-}\r
-\r
-.nfh-cw-link {\r
-    margin-left: auto;\r
-    color: var(--nfh-cw-muted) !important;\r
-}\r
-\r
-/* Chain timer alert: click-through flash over the whole page */\r
-#nfh-chain-flash {\r
-    position: fixed;\r
-    inset: 0;\r
-    z-index: 99999;\r
-    pointer-events: none;\r
-    animation: nfh-chain-flash 2s steps(1, end) infinite;\r
-}\r
-\r
-@keyframes nfh-chain-flash {\r
-    0% { opacity: 1; }\r
-    50% { opacity: 0; }\r
-}\r
-\r
-/* Territory war walls: who not to hit, and who to hit */\r
-body.nfh-mark-wall .faction-war .members-list .your .user.name {\r
-    text-decoration: line-through !important;\r
-    cursor: not-allowed !important;\r
-}\r
-\r
-body.nfh-mark-wall .faction-war .members-list .enemy .user.name {\r
-    color: #e53935 !important;\r
-}\r
-\r
-body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
-    display: inline-block;\r
-    animation: nfh-wall-ring 4s 0.7s ease-in-out infinite;\r
-}\r
-\r
-@keyframes nfh-wall-ring {\r
-    0%, 39%, 100% { transform: rotate(0); }\r
-    2% { transform: rotate(15deg); }\r
-    6% { transform: rotate(-15deg); color: #e53935; }\r
-    10% { transform: rotate(13deg); }\r
-    14% { transform: rotate(-12deg); }\r
-    18% { transform: rotate(10deg); }\r
-    22% { transform: rotate(-8deg); }\r
-    26% { transform: rotate(6deg); }\r
-    30% { transform: rotate(-4deg); }\r
-    34% { transform: rotate(2deg); }\r
-}\r
-\r
-@media (prefers-reduced-motion: reduce) {\r
-    body.nfh-mark-wall .faction-war .members-list .enemy .attack a {\r
-        animation: none;\r
-    }\r
-}\r
-\r
-/* ---- Ranked war board (own faction's ranked war view) ---- */\r
-\r
-.nfh-war-bar {\r
-    margin-top: 0;\r
-    margin-bottom: 10px;\r
-}\r
-\r
-.nfh-war-bar .nfh-cw-bar {\r
-    flex-wrap: wrap;\r
-    padding-top: 4px;\r
-    padding-bottom: 4px;\r
-}\r
-\r
-.nfh-war-bar label {\r
-    display: inline-flex;\r
-    align-items: center;\r
-    gap: 4px;\r
-    cursor: pointer;\r
-}\r
-\r
-.nfh-war-bar .nfh-cw-status {\r
-    text-align: right;\r
-}\r
-\r
-/* The status cell's own text stays in the DOM (Torn keeps rewriting it); ours\r
-   is drawn over it from an attribute, so the two never fight. */\r
-.faction-war .members-list [data-nfh-war] {\r
-    position: relative !important;\r
-    color: transparent !important;\r
-}\r
-\r
-.faction-war .members-list [data-nfh-war]::after {\r
-    content: attr(data-nfh-war);\r
-    position: absolute;\r
-    top: 0;\r
-    left: 0;\r
-    width: calc(100% - 10px);\r
-    height: 100%;\r
-    display: flex;\r
-    align-items: center;\r
-    justify-content: flex-end;\r
-    white-space: nowrap;\r
-    font-variant-numeric: tabular-nums;\r
-    color: var(--user-status-red-color, #d83500);\r
-}\r
-\r
-.faction-war .members-list [data-nfh-war][data-nfh-war-tone="travel"]::after {\r
-    color: var(--user-status-blue-color, #2f7fb5);\r
-}\r
-\r
-.faction-war .members-list li[data-nfh-war-row="soon"] {\r
-    background-color: rgba(76, 175, 80, 0.3) !important;\r
-}\r
-\r
-.faction-war .members-list li[data-nfh-war-row="out"] {\r
-    background-color: rgba(255, 152, 0, 0.32) !important;\r
-}\r
-\r
-.faction-war .members-list [data-nfh-war-stats] {\r
-    position: relative !important;\r
-}\r
-\r
-.faction-war .members-list [data-nfh-war-stats]::after {\r
-    content: attr(data-nfh-war-stats);\r
-    position: absolute;\r
-    right: 6px;\r
-    top: 50%;\r
-    transform: translateY(-50%);\r
-    padding: 0 4px;\r
-    border-radius: 3px;\r
-    background-color: rgba(0, 0, 0, 0.45);\r
-    color: #fff;\r
-    font-size: 10px;\r
-    line-height: 15px;\r
-    pointer-events: none;\r
-}\r
-\r
-/* ---- OC Assistant (faction crimes page) ---- */\r
-\r
-.nfh-oc-bar {\r
-    display: flex;\r
-    flex-wrap: wrap;\r
-    align-items: center;\r
-    gap: 6px 10px;\r
-    margin-bottom: 10px;\r
-    padding: 8px 10px;\r
-    border-left: 3px solid #7b3fb5;\r
-    border-radius: 5px;\r
-    background-color: var(--nfh-section-bg);\r
-    color: var(--nfh-text);\r
-    font-size: 13px;\r
-    line-height: 1.4;\r
-}\r
-\r
-.nfh-oc-bar-label {\r
-    flex: none;\r
-    padding: 1px 6px;\r
-    border-radius: 3px;\r
-    background-color: #6a1b9a;\r
-    color: #ffffff;\r
-    font-size: 11px;\r
-    font-weight: 700;\r
-    text-transform: uppercase;\r
-    letter-spacing: 0.03em;\r
-}\r
-\r
-.nfh-oc-bar-text {\r
-    flex: 1 1 260px;\r
-}\r
-\r
-.nfh-oc-bar-muted {\r
-    color: var(--nfh-list-key);\r
-}\r
-\r
-.nfh-oc-bar-button {\r
-    flex: none;\r
-    padding: 4px 10px;\r
-    border: 1px solid var(--nfh-border);\r
-    border-radius: 3px;\r
-    background-color: var(--nfh-btn-bg);\r
-    color: var(--nfh-text);\r
-    font: inherit;\r
-    font-weight: 600;\r
-    cursor: pointer;\r
-}\r
-\r
-.nfh-oc-bar-button:hover {\r
-    background-color: var(--nfh-btn-hover);\r
-}\r
-\r
-/* "Min CPR 63" under a slot's header */\r
-.nfh-oc-min {\r
-    padding: 0 4px;\r
-    color: #ffffff;\r
-    font-size: 10px;\r
-    font-weight: 700;\r
-    line-height: 14px;\r
-    text-align: center;\r
-    white-space: nowrap;\r
-}\r
-\r
-.nfh-oc-min--ok {\r
-    background-color: #2e7d32;\r
-}\r
-\r
-.nfh-oc-min--below {\r
-    background-color: #c62828;\r
-}\r
-\r
-.nfh-oc-min--filled,\r
-.nfh-oc-min--weight {\r
-    background-color: #5f6368;\r
-}\r
-\r
-/* Suggested slots */\r
-.nfh-oc-pick {\r
-    position: relative;\r
-    border-radius: 5px;\r
-}\r
-\r
-.nfh-oc-pick--best {\r
-    box-shadow: 0 0 0 2px #9c4dcc;\r
-}\r
-\r
-.nfh-oc-pick--good {\r
-    box-shadow: 0 0 0 2px #1976d2;\r
-}\r
-\r
-.nfh-oc-tag {\r
-    padding: 2px 6px;\r
-    border-radius: 3px 3px 0 0;\r
-    color: #ffffff;\r
-    font-size: 11px;\r
-    font-weight: 700;\r
-    line-height: 15px;\r
-    text-align: center;\r
-}\r
-\r
-.nfh-oc-pick--best > .nfh-oc-tag {\r
-    background-color: #6a1b9a;\r
-}\r
-\r
-.nfh-oc-pick--good > .nfh-oc-tag {\r
-    background-color: #1565c0;\r
-}\r
-\r
-/* Staff flags under a filled slot: one colour and one symbol per kind */\r
-.nfh-oc-flags {\r
-    display: flex;\r
-    flex-direction: column;\r
-}\r
-\r
-.nfh-oc-flag {\r
-    display: block;\r
-    padding: 0 4px;\r
-    color: #ffffff;\r
-    font-size: 10px;\r
-    font-weight: 700;\r
-    line-height: 14px;\r
-    text-align: center;\r
-    white-space: nowrap;\r
-}\r
-\r
-.nfh-oc-flag--unqualified {\r
-    background-color: #b71c1c;\r
-}\r
-\r
-.nfh-oc-flag--unproductive {\r
-    background-color: #8a5300;\r
-}\r
-\r
-.nfh-oc-flag--underlevel {\r
-    background-color: #1565c0;\r
-}\r
-\r
-.nfh-oc-bar-warning {\r
-    color: #c62828;\r
-}\r
-\r
-body.dark-mode .nfh-oc-bar-warning {\r
-    color: #ff8a80;\r
-}\r
-\r
-.nfh-oc-staff {\r
-    flex: 1 1 100%;\r
-    display: flex;\r
-    flex-wrap: wrap;\r
-    align-items: center;\r
-    gap: 6px;\r
-    padding-top: 6px;\r
-    border-top: 1px solid var(--nfh-border);\r
-}\r
-\r
-.nfh-oc-bar-label + .nfh-oc-staff {\r
-    flex: 1 1 260px;\r
-    padding-top: 0;\r
-    border-top: none;\r
-}\r
-\r
-.nfh-oc-staff-panel {\r
-    flex: 1 1 100%;\r
-    display: flex;\r
-    flex-wrap: wrap;\r
-    align-items: center;\r
-    gap: 8px 14px;\r
-}\r
-\r
-.nfh-oc-staff-option {\r
-    display: inline-flex;\r
-    align-items: center;\r
-    gap: 5px;\r
-}\r
-\r
-.nfh-oc-staff-option .nfh-oc-flag {\r
-    border-radius: 3px;\r
-}\r
-\r
-.nfh-oc-staff-number {\r
-    width: 52px;\r
-    padding: 2px 4px;\r
-    border: 1px solid var(--nfh-border);\r
-    border-radius: 3px;\r
-    background-color: var(--nfh-bg);\r
-    color: var(--nfh-text);\r
-    font: inherit;\r
-}\r
-\r
-.nfh-oc-spawn {\r
-    flex: 1 1 100%;\r
-    display: flex;\r
-    flex-wrap: wrap;\r
-    align-items: center;\r
-    gap: 6px;\r
-}\r
-\r
-.nfh-oc-bar-button:disabled {\r
-    opacity: 0.6;\r
-    cursor: default;\r
-}\r
+  var styles_default = `/* Theme-aware CSS variables */
+:root {
+    --nfh-bg: #1a1a1a;
+    --nfh-text: #ffffff;
+    --nfh-section-bg: #2a2a2a;
+    --nfh-container-bg: #222;
+    --nfh-btn-bg: #333;
+    --nfh-btn-hover: #444;
+    --nfh-border: #444;
+    --nfh-list-key: #b0b0b0;
+    --nfh-hidden-count: #999;
+}
+
+/* Light theme overrides */
+body:not(.dark-mode) {
+    --nfh-bg: #f5f5f5;
+    --nfh-text: #333333;
+    --nfh-section-bg: #ffffff;
+    --nfh-container-bg: #eaeaea;
+    --nfh-btn-bg: #dddddd;
+    --nfh-btn-hover: #cccccc;
+    --nfh-border: #cccccc;
+    --nfh-list-key: #666666;
+    --nfh-hidden-count: #666666;
+}
+
+.nfh-section {
+    margin-top: 10px;
+    background-color: var(--nfh-bg);
+    border-radius: 5px;
+    overflow: hidden;
+    font-family: 'Roboto', sans-serif;
+}
+
+.nfh-section-title {
+    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 14px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+}
+
+.nfh-section-container {
+    padding: 10px 12px !important;
+    background-color: var(--nfh-container-bg);
+}
+
+.nfh-section-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.nfh-section-list li {
+    margin-bottom: 8px;
+    padding: 8px 10px 8px 20px;
+    background-color: var(--nfh-section-bg);
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--nfh-text);
+    position: relative;
+}
+
+.nfh-shitlist-entry-profile-container {
+  background-color: var(--nfh-container-bg) !important;
+  border-bottom: 0px !important;
+}
+
+.nfh-section-list li::before {
+    content: '\u25B6';
+    position: absolute;
+    left: 8px;
+    top: 11px;
+    color: #4caf50;
+    font-size: 10px;
+}
+
+.nfh-shitlist-profile-list li {
+  margin-bottom: 8px;
+    padding: 8px 10px 8px 20px;
+    background-color: var(--nfh-section-bg);
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--nfh-text);
+    position: relative;
+}
+
+.nfh-shitlist-profile-list li::before {
+    content: '\u25B6';
+    position: absolute;
+    left: 8px;
+    top: 11px;
+    color: #4caf50;
+    font-size: 10px;
+}
+
+.nfh-list-key {
+    font-weight: 600;
+    color: var(--nfh-list-key);
+    display: inline-block;
+    width: 100px;
+    vertical-align: top;
+}
+
+.nfh-list-value {
+    display: inline-block;
+    width: calc(100% - 105px);
+    vertical-align: top;
+}
+
+.nfh-shitlist-entry-container {
+    border-left: 3px solid #4caf50;
+    background-color: var(--nfh-container-bg);
+}
+
+.nfh-extra-shitlist-entry-condition {
+    font-size: 12px;
+    color: #4caf50;
+    margin-left: 5px;
+}
+
+.nfh-btn {
+    background-color: var(--nfh-btn-bg);
+    color: var(--nfh-text);
+    border: none;
+    padding: 6px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+}
+
+.nfh-btn:hover {
+    background-color: var(--nfh-btn-hover);
+}
+
+.nfh-shitlist-entry-profile-container-friendly {
+  border-right: 3px solid #4caf50;
+}
+
+.nfh-shitlist-entry-container-friendly {
+  background-color: #00ff1466 !important;
+  border-left: 0px !important;
+}
+
+/* Hospital row highlight styles */
+.nfh-hospital-contract {
+  background-color: #20b2aa7d !important;
+}
+
+.nfh-hospital-friendly {
+  background-color: #009d0075 !important;
+}
+
+.nfh-hospital-shitlist {
+  background-color: #f933337d !important;
+}
+
+/* Settings panel styles */
+.nfh-shitlist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.nfh-settings-cog {
+    cursor: pointer;
+    color: var(--nfh-text);
+    font-size: 16px;
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+}
+
+.nfh-settings-cog:hover {
+    color: #4caf50;
+    transform: rotate(90deg);
+}
+
+.nfh-settings-panel {
+    background-color: var(--nfh-section-bg);
+    border-radius: 5px;
+    padding: 15px;
+    border: 1px solid var(--nfh-border);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    position: fixed;
+    z-index: 9999;
+    width: 250px;
+    right: 20px;
+    bottom: 50px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    max-width: 95vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.nfh-settings-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--nfh-text);
+    border-bottom: 1px solid var(--nfh-border);
+    padding-bottom: 5px;
+}
+
+.nfh-category-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 5px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.nfh-category-item:hover {
+    background-color: var(--nfh-btn-bg);
+}
+
+.nfh-category-item input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.nfh-category-item.faction-locked {
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.nfh-category-item.faction-locked input[type="checkbox"] {
+    cursor: not-allowed;
+}
+
+.nfh-hidden-count {
+    font-size: 11px;
+    color: var(--nfh-hidden-count);
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.nfh-close-settings {
+    background-color: var(--nfh-btn-bg);
+    color: var(--nfh-text);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+.nfh-close-settings:hover {
+    background-color: var(--nfh-btn-hover);
+}
+
+/* Chain watch bar (own faction page) */
+.nfh-cw {
+    --nfh-cw-accent: #4caf50;
+    --nfh-cw-warn: #f5a623;
+    --nfh-cw-muted: #9a9a9a;
+    --nfh-cw-empty: #c0392b;
+    clear: both;
+    margin-top: 10px;
+    border-radius: 5px;
+    border-left: 3px solid var(--nfh-border);
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font-size: 12px;
+    line-height: 1.4;
+    overflow: hidden;
+}
+
+body:not(.dark-mode) .nfh-cw {
+    --nfh-cw-accent: #256b29;
+    --nfh-cw-warn: #b26a00;
+    --nfh-cw-muted: #5c5c5c;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.nfh-cw--in {
+    border-left-color: var(--nfh-cw-accent);
+}
+
+.nfh-cw--attn {
+    border-left-color: var(--nfh-cw-warn);
+}
+
+.nfh-cw [hidden] {
+    display: none !important;
+}
+
+.nfh-cw a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.nfh-cw a:hover {
+    text-decoration: underline;
+}
+
+.nfh-cw-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 30px;
+    padding: 0 8px;
+}
+
+.nfh-cw-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.nfh-cw-toggle:disabled {
+    cursor: default;
+}
+
+.nfh-cw-caret {
+    display: inline-block;
+    width: 9px;
+    color: var(--nfh-cw-muted);
+}
+
+.nfh-cw-title,
+.nfh-cw-muted {
+    color: var(--nfh-cw-muted);
+}
+
+.nfh-cw-title {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nfh-cw-status {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nfh-cw-status[data-action] {
+    cursor: pointer;
+}
+
+.nfh-cw--attn .nfh-cw-status {
+    color: var(--nfh-cw-warn);
+    font-weight: 700;
+}
+
+.nfh-cw-need,
+.nfh-cw-error {
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-cw-ok {
+    color: var(--nfh-cw-accent);
+}
+
+.nfh-cw-actions,
+.nfh-cw-detail-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nfh-cw .is-busy {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.nfh-cw-btn,
+.nfh-cw-chip {
+    padding: 3px 9px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 3px;
+    background-color: var(--nfh-btn-bg);
+    color: var(--nfh-text);
+    font: inherit;
+    line-height: 1.3;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.nfh-cw-btn:hover,
+.nfh-cw-chip:hover {
+    background-color: var(--nfh-btn-hover);
+}
+
+.nfh-cw-btn--primary {
+    border-color: var(--nfh-cw-accent);
+    background-color: var(--nfh-cw-accent);
+    color: #fff;
+    font-weight: 700;
+}
+
+.nfh-cw-btn--primary:hover {
+    background-color: var(--nfh-cw-accent);
+    filter: brightness(1.1);
+}
+
+.nfh-cw-chip {
+    border-radius: 10px;
+    background: none;
+    color: var(--nfh-cw-muted);
+}
+
+.nfh-cw-chip.is-armed {
+    border-color: var(--nfh-cw-accent);
+    color: var(--nfh-cw-accent);
+}
+
+.nfh-cw-picker,
+.nfh-cw-settings select,
+.nfh-cw-input {
+    padding: 2px 4px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 3px;
+    background-color: var(--nfh-container-bg);
+    color: var(--nfh-text);
+    font: inherit;
+}
+
+.nfh-cw-picker {
+    max-width: 180px;
+}
+
+.nfh-cw-settings,
+.nfh-cw-panel {
+    padding: 8px 10px;
+    border-top: 1px solid var(--nfh-border);
+    background-color: var(--nfh-container-bg);
+}
+
+.nfh-cw-settings-row,
+.nfh-cw-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+}
+
+.nfh-cw-settings label,
+.nfh-cw-footer label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.nfh-cw-settings input[type="range"] {
+    width: 80px;
+}
+
+.nfh-cw-settings input[type="color"] {
+    width: 26px;
+    height: 20px;
+    padding: 0;
+    border: 1px solid var(--nfh-border);
+    background: none;
+}
+
+.nfh-cw-time {
+    width: 36px;
+    text-align: center;
+}
+
+.nfh-cw-input.is-invalid {
+    border-color: var(--nfh-cw-empty);
+}
+
+.nfh-cw-settings .nfh-cw-need,
+.nfh-cw-help {
+    margin-top: 6px;
+}
+
+.nfh-cw-section + .nfh-cw-section {
+    margin-top: 10px;
+}
+
+.nfh-cw-heading {
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+.nfh-cw-heading .nfh-cw-muted {
+    margin-left: 6px;
+    font-weight: 400;
+}
+
+.nfh-cw-roster-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 2px 0;
+}
+
+.nfh-cw-roster-when {
+    width: 52px;
+    color: var(--nfh-cw-muted);
+}
+
+.nfh-cw-roster-row.is-now .nfh-cw-roster-when {
+    color: var(--nfh-cw-accent);
+    font-weight: 700;
+}
+
+.nfh-cw-roster-time {
+    width: 62px;
+    font-variant-numeric: tabular-nums;
+}
+
+.nfh-cw-people {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+}
+
+.nfh-cw-person {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nfh-cw-person::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--nfh-cw-muted);
+    border-radius: 50%;
+}
+
+.nfh-cw-person--plain::before {
+    content: none;
+}
+
+.nfh-cw-person.is-present::before {
+    border-color: var(--nfh-cw-accent);
+    background-color: var(--nfh-cw-accent);
+}
+
+.nfh-cw-person.is-me > a,
+.nfh-cw-person.is-me > span:first-child {
+    font-weight: 700;
+}
+
+.nfh-cw-person .nfh-cw-btn {
+    padding: 0 6px;
+    font-size: 11px;
+}
+
+.nfh-cw-tag {
+    padding: 0 5px;
+    border-radius: 3px;
+    background-color: var(--nfh-btn-bg);
+    font-size: 11px;
+}
+
+.nfh-cw-tag--scheduled {
+    color: var(--nfh-cw-accent);
+}
+
+.nfh-cw-tag--past_slot {
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-cw-staff {
+    margin-top: 6px;
+}
+
+.nfh-cw-search {
+    width: 280px;
+    max-width: 100%;
+    margin-bottom: 4px;
+}
+
+.nfh-cw-mine {
+    margin-bottom: 6px;
+}
+
+.nfh-cw-day {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.nfh-cw-day-label {
+    width: 70px;
+    padding-top: 6px;
+    color: var(--nfh-cw-muted);
+    white-space: nowrap;
+}
+
+.nfh-cw-grid {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.nfh-cw-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 34px;
+    padding: 2px 0;
+    border: 1px solid var(--nfh-border);
+    border-radius: 4px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font: inherit;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.nfh-cw-slot-hour {
+    font-weight: 700;
+}
+
+.nfh-cw-slot-fill {
+    font-size: 10px;
+    color: var(--nfh-cw-muted);
+}
+
+/* Fill level is carried by the count: open paid spots stand out, a full
+   hour fades back. */
+.nfh-cw-slot--empty .nfh-cw-slot-fill,
+.nfh-cw-slot--short .nfh-cw-slot-fill {
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-cw-slot--full {
+    opacity: 0.6;
+}
+
+.nfh-cw-slot.is-now {
+    border-color: var(--nfh-cw-muted);
+}
+
+.nfh-cw-slot.is-mine {
+    border-color: var(--nfh-cw-accent);
+    background-color: var(--nfh-cw-accent);
+    color: #fff;
+    opacity: 1;
+}
+
+.nfh-cw-slot.is-mine .nfh-cw-slot-fill {
+    color: #fff;
+}
+
+.nfh-cw-slot.is-selected {
+    box-shadow: 0 0 0 2px var(--nfh-text);
+}
+
+.nfh-cw-slot:hover {
+    border-color: var(--nfh-text);
+}
+
+.nfh-cw-detail {
+    margin-top: 6px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    background-color: var(--nfh-section-bg);
+}
+
+.nfh-cw-detail > div + div {
+    margin-top: 4px;
+}
+
+.nfh-cw-footer {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-cw-link {
+    margin-left: auto;
+    color: var(--nfh-cw-muted) !important;
+}
+
+/* Chain timer alert: click-through flash over the whole page */
+#nfh-chain-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    pointer-events: none;
+    animation: nfh-chain-flash 2s steps(1, end) infinite;
+}
+
+@keyframes nfh-chain-flash {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Territory war walls: who not to hit, and who to hit */
+body.nfh-mark-wall .faction-war .members-list .your .user.name {
+    text-decoration: line-through !important;
+    cursor: not-allowed !important;
+}
+
+body.nfh-mark-wall .faction-war .members-list .enemy .user.name {
+    color: #e53935 !important;
+}
+
+body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
+    display: inline-block;
+    animation: nfh-wall-ring 4s 0.7s ease-in-out infinite;
+}
+
+@keyframes nfh-wall-ring {
+    0%, 39%, 100% { transform: rotate(0); }
+    2% { transform: rotate(15deg); }
+    6% { transform: rotate(-15deg); color: #e53935; }
+    10% { transform: rotate(13deg); }
+    14% { transform: rotate(-12deg); }
+    18% { transform: rotate(10deg); }
+    22% { transform: rotate(-8deg); }
+    26% { transform: rotate(6deg); }
+    30% { transform: rotate(-4deg); }
+    34% { transform: rotate(2deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
+        animation: none;
+    }
+}
+
+/* ---- Ranked war board (own faction's ranked war view) ---- */
+
+.nfh-war-bar {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.nfh-war-bar .nfh-cw-bar {
+    flex-wrap: wrap;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.nfh-war-bar label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.nfh-war-bar .nfh-cw-status {
+    text-align: right;
+}
+
+/* The status cell's own text stays in the DOM (Torn keeps rewriting it); ours
+   is drawn over it from an attribute, so the two never fight. */
+.faction-war .members-list [data-nfh-war] {
+    position: relative !important;
+    color: transparent !important;
+}
+
+.faction-war .members-list [data-nfh-war]::after {
+    content: attr(data-nfh-war);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% - 10px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    color: var(--user-status-red-color, #d83500);
+}
+
+.faction-war .members-list [data-nfh-war][data-nfh-war-tone="travel"]::after {
+    color: var(--user-status-blue-color, #2f7fb5);
+}
+
+.faction-war .members-list li[data-nfh-war-row="soon"] {
+    background-color: rgba(76, 175, 80, 0.3) !important;
+}
+
+.faction-war .members-list li[data-nfh-war-row="out"] {
+    background-color: rgba(255, 152, 0, 0.32) !important;
+}
+
+.faction-war .members-list [data-nfh-war-stats] {
+    position: relative !important;
+}
+
+.faction-war .members-list [data-nfh-war-stats]::after {
+    content: attr(data-nfh-war-stats);
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 4px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font-size: 10px;
+    line-height: 15px;
+    pointer-events: none;
+}
+
+/* ---- OC Assistant (faction crimes page) ---- */
+
+.nfh-oc-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    border-left: 3px solid #7b3fb5;
+    border-radius: 5px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.nfh-oc-bar-label {
+    flex: none;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background-color: #6a1b9a;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.nfh-oc-bar-text {
+    flex: 1 1 260px;
+}
+
+.nfh-oc-bar-muted {
+    color: var(--nfh-list-key);
+}
+
+.nfh-oc-bar-button {
+    flex: none;
+    padding: 4px 10px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 3px;
+    background-color: var(--nfh-btn-bg);
+    color: var(--nfh-text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.nfh-oc-bar-button:hover {
+    background-color: var(--nfh-btn-hover);
+}
+
+/* "Min CPR 63" under a slot's header */
+.nfh-oc-min {
+    padding: 0 4px;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.nfh-oc-min--ok {
+    background-color: #2e7d32;
+}
+
+.nfh-oc-min--below {
+    background-color: #c62828;
+}
+
+.nfh-oc-min--filled,
+.nfh-oc-min--weight {
+    background-color: #5f6368;
+}
+
+/* Suggested slots */
+.nfh-oc-pick {
+    position: relative;
+    border-radius: 5px;
+}
+
+.nfh-oc-pick--best {
+    box-shadow: 0 0 0 2px #9c4dcc;
+}
+
+.nfh-oc-pick--good {
+    box-shadow: 0 0 0 2px #1976d2;
+}
+
+.nfh-oc-tag {
+    padding: 2px 6px;
+    border-radius: 3px 3px 0 0;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 15px;
+    text-align: center;
+}
+
+.nfh-oc-pick--best > .nfh-oc-tag {
+    background-color: #6a1b9a;
+}
+
+.nfh-oc-pick--good > .nfh-oc-tag {
+    background-color: #1565c0;
+}
+
+/* Staff flags under a filled slot: one colour and one symbol per kind */
+.nfh-oc-flags {
+    display: flex;
+    flex-direction: column;
+}
+
+.nfh-oc-flag {
+    display: block;
+    padding: 0 4px;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.nfh-oc-flag--unqualified {
+    background-color: #b71c1c;
+}
+
+.nfh-oc-flag--unproductive {
+    background-color: #8a5300;
+}
+
+.nfh-oc-flag--underlevel {
+    background-color: #1565c0;
+}
+
+.nfh-oc-bar-warning {
+    color: #c62828;
+}
+
+body.dark-mode .nfh-oc-bar-warning {
+    color: #ff8a80;
+}
+
+.nfh-oc-staff {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-oc-bar-label + .nfh-oc-staff {
+    flex: 1 1 260px;
+    padding-top: 0;
+    border-top: none;
+}
+
+.nfh-oc-staff-panel {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+}
+
+.nfh-oc-staff-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nfh-oc-staff-option .nfh-oc-flag {
+    border-radius: 3px;
+}
+
+.nfh-oc-staff-number {
+    width: 52px;
+    padding: 2px 4px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 3px;
+    background-color: var(--nfh-bg);
+    color: var(--nfh-text);
+    font: inherit;
+}
+
+.nfh-oc-spawn {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.nfh-oc-bar-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
 `;
 
   // src/core/config.js
