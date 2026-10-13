@@ -4291,6 +4291,9 @@ body.dark-mode .nfh-oc-bar-warning {
       }
       return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
     }
+    if (state3.kind === "joined") {
+      return `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state3.crime)}</strong> (level ${escapeHtml(state3.level ?? "?")}) as <strong>${escapeHtml(state3.role)}</strong>, so no other slot is suggested.</span>`;
+    }
     if (state3.kind === "warning") {
       return `${label}<span class="nfh-oc-bar-text"><strong class="nfh-oc-bar-warning">${escapeHtml(state3.warning)}</strong></span>`;
     }
@@ -4334,10 +4337,11 @@ body.dark-mode .nfh-oc-bar-warning {
   var MOVE_WORTHWHILE_HOURS = 24;
   var staffPanelOpen = false;
   var spawnState = { busy: false, message: null, error: false };
-  function ownSlotWarning(pageCrimes, board, config, rate) {
+  function findOwnSlot(pageCrimes, board) {
     const me = String(getUserscriptUsersPlayerId() || "");
     if (!me) return null;
-    const boardCrimes = (board && board.crimes || []).map((crime) => ({
+    const onPage = new Set(pageCrimes.map((crime) => String(crime.id)));
+    const boardCrimes = (board && board.crimes || []).filter((crime) => !onPage.has(String(crime.id))).map((crime) => ({
       id: String(crime.id),
       name: crime.name,
       level: crime.level,
@@ -4351,15 +4355,19 @@ body.dark-mode .nfh-oc-bar-warning {
     }));
     for (const crime of [...pageCrimes, ...boardCrimes]) {
       const index = crime.slots.findIndex((slot) => slot.occupied && slot.playerId === me);
-      if (index === -1) continue;
-      if (crimeHoursLeft(crime) <= MOVE_WORTHWHILE_HOURS) return null;
-      const rated = rate([crime], config).crimes[0].slots[index];
-      const level = board && board.me ? board.me.level : null;
-      const flags = slotFlags(crime, index, rated, level, limitsFor(config));
-      if (flags.length === 0) return null;
-      return `You are in ${crime.name} as ${crime.slots[index].name}, but: ${flags.map((flag) => flag.title).join(" ")}`;
+      if (index !== -1) return { crime, index };
     }
     return null;
+  }
+  function ownSlotWarning(own, board, config, rate) {
+    if (!own) return null;
+    const { crime, index } = own;
+    if (crimeHoursLeft(crime) <= MOVE_WORTHWHILE_HOURS) return null;
+    const rated = rate([crime], config).crimes[0].slots[index];
+    const level = board && board.me ? board.me.level : null;
+    const flags = slotFlags(crime, index, rated, level, limitsFor(config));
+    if (flags.length === 0) return null;
+    return `You are in ${crime.name} as ${crime.slots[index].name}, but: ${flags.map((flag) => flag.title).join(" ")}`;
   }
   var observer = null;
   var observedRoot = null;
@@ -4390,8 +4398,10 @@ body.dark-mode .nfh-oc-bar-warning {
     const cached = active ? cachedBoard2() : null;
     const board = cached ? cached.board : null;
     const features2 = memberFeatures(config);
-    const warning = features2.warn && recruiting && joining === JoinState.Blocked ? ownSlotWarning(crimes, board, config, rateCrimes) : null;
-    const ranking = features2.enabled && recruiting && crimes.length > 0 && (joining === JoinState.Open || warning !== null);
+    const own = recruiting ? findOwnSlot(crimes, board) : null;
+    const inCrime = own !== null || joining === JoinState.Blocked;
+    const warning = features2.warn && recruiting ? ownSlotWarning(own, board, config, rateCrimes) : null;
+    const ranking = features2.enabled && recruiting && crimes.length > 0 && (warning !== null || !inCrime && joining === JoinState.Open);
     const suggesting = ranking && features2.suggest;
     const elsewhere = ranking && board ? offPageCrimes(board, crimes) : [];
     const myLevel = board && board.me ? board.me.level : null;
@@ -4428,6 +4438,7 @@ body.dark-mode .nfh-oc-bar-warning {
         let state3;
         if (suggestions.length > 0) state3 = { kind: "best", suggestions, warning };
         else if (warning) state3 = { kind: "warning", warning };
+        else if (own) state3 = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
         else if (joining === JoinState.Blocked) state3 = { kind: "blocked" };
         else if (joining === JoinState.Open && result.withheld > 0) state3 = { kind: "low" };
         else if (joining === JoinState.Full) state3 = { kind: "full" };
@@ -4436,7 +4447,7 @@ body.dark-mode .nfh-oc-bar-warning {
       } else if (warning) {
         memberPart = barHtml({ kind: "warning", warning });
       }
-      const tier = joining === JoinState.Open && board && board.me ? spawnTierToRequest(result.suggestions, board.me.level, config) : null;
+      const tier = !inCrime && joining === JoinState.Open && board && board.me ? spawnTierToRequest(result.suggestions, board.me.level, config) : null;
       if (tier || spawnState.message) {
         const quiet = features2.suggest && suggestions.length === 0 && result.withheld > 0;
         memberPart = (memberPart || label) + spawnHtml({ tier, asked: spawnAskedUntil() > 0, quiet, ...spawnState });

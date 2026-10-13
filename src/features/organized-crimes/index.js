@@ -45,38 +45,51 @@ let staffPanelOpen = false;
 // The "ask staff for a crime" button: a request in flight, and its outcome.
 const spawnState = { busy: false, message: null, error: false };
 
-// What is wrong with the slot the viewer sits in, judged by the faction's own
-// thresholds (never a staff member's), or null. Looks on the page first, then
-// in the site's board, since the member's crime is usually on another tab.
-function ownSlotWarning(pageCrimes, board, config, rate) {
+// The slot the viewer sits in, as { crime, index }, or null. The page is the
+// truth for the crimes on it (a crime the member joined stays on Recruiting
+// until it fills); the site's board, a few minutes old, is only asked about
+// crimes that are not on the page, which is where a full crime has gone.
+// Torn does not reliably disable the Join buttons of a member already in a
+// crime, so this, not the buttons, is how one is recognised.
+function findOwnSlot(pageCrimes, board) {
   const me = String(getUserscriptUsersPlayerId() || "");
   if (!me) return null;
 
-  const boardCrimes = ((board && board.crimes) || []).map((crime) => ({
-    id: String(crime.id),
-    name: crime.name,
-    level: crime.level,
-    slots: crime.slots.map((slot) => ({
-      name: slot.role,
-      occupied: slot.player_id !== null,
-      playerId: slot.player_id === null ? null : String(slot.player_id),
-      progress: slot.progress || 0,
-      cpr: slot.cpr,
-    })),
-  }));
+  const onPage = new Set(pageCrimes.map((crime) => String(crime.id)));
+  const boardCrimes = ((board && board.crimes) || [])
+    .filter((crime) => !onPage.has(String(crime.id)))
+    .map((crime) => ({
+      id: String(crime.id),
+      name: crime.name,
+      level: crime.level,
+      slots: crime.slots.map((slot) => ({
+        name: slot.role,
+        occupied: slot.player_id !== null,
+        playerId: slot.player_id === null ? null : String(slot.player_id),
+        progress: slot.progress || 0,
+        cpr: slot.cpr,
+      })),
+    }));
 
   for (const crime of [...pageCrimes, ...boardCrimes]) {
     const index = crime.slots.findIndex((slot) => slot.occupied && slot.playerId === me);
-    if (index === -1) continue;
-    if (crimeHoursLeft(crime) <= MOVE_WORTHWHILE_HOURS) return null;
-
-    const rated = rate([crime], config).crimes[0].slots[index];
-    const level = board && board.me ? board.me.level : null;
-    const flags = slotFlags(crime, index, rated, level, limitsFor(config));
-    if (flags.length === 0) return null;
-    return `You are in ${crime.name} as ${crime.slots[index].name}, but: ${flags.map((flag) => flag.title).join(" ")}`;
+    if (index !== -1) return { crime, index };
   }
   return null;
+}
+
+// What is wrong with the slot the viewer sits in, judged by the faction's own
+// thresholds (never a staff member's), or null.
+function ownSlotWarning(own, board, config, rate) {
+  if (!own) return null;
+  const { crime, index } = own;
+  if (crimeHoursLeft(crime) <= MOVE_WORTHWHILE_HOURS) return null;
+
+  const rated = rate([crime], config).crimes[0].slots[index];
+  const level = board && board.me ? board.me.level : null;
+  const flags = slotFlags(crime, index, rated, level, limitsFor(config));
+  if (flags.length === 0) return null;
+  return `You are in ${crime.name} as ${crime.slots[index].name}, but: ${flags.map((flag) => flag.title).join(" ")}`;
 }
 
 let observer = null;
@@ -119,14 +132,17 @@ function render() {
   // the member is warned and shown better slots even though Torn has the
   // Join buttons disabled until they leave.
   const features = memberFeatures(config);
-  const warning =
-    features.warn && recruiting && joining === JoinState.Blocked
-      ? ownSlotWarning(crimes, board, config, rateCrimes)
-      : null;
-  // Slots are ranked whenever the member could act on it; whether the ranking
-  // is shown is the faction's choice, and the crime request needs it either way.
+  const own = recruiting ? findOwnSlot(crimes, board) : null;
+  const inCrime = own !== null || joining === JoinState.Blocked;
+  const warning = features.warn && recruiting ? ownSlotWarning(own, board, config, rateCrimes) : null;
+  // Slots are ranked whenever the member could act on it: free to join, or in
+  // a slot worth leaving. Whether the ranking is shown is the faction's
+  // choice, and the crime request needs it either way.
   const ranking =
-    features.enabled && recruiting && crimes.length > 0 && (joining === JoinState.Open || warning !== null);
+    features.enabled &&
+    recruiting &&
+    crimes.length > 0 &&
+    (warning !== null || (!inCrime && joining === JoinState.Open));
   const suggesting = ranking && features.suggest;
 
   const elsewhere = ranking && board ? offPageCrimes(board, crimes) : [];
@@ -175,6 +191,7 @@ function render() {
       let state;
       if (suggestions.length > 0) state = { kind: "best", suggestions, warning };
       else if (warning) state = { kind: "warning", warning };
+      else if (own) state = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
       else if (joining === JoinState.Blocked) state = { kind: "blocked" };
       else if (joining === JoinState.Open && result.withheld > 0) state = { kind: "low" };
       else if (joining === JoinState.Full) state = { kind: "full" };
@@ -187,7 +204,7 @@ function render() {
     // Free to join, but nothing decent at their level anywhere: offer to ask
     // staff for a crime (only if the faction has that switched on).
     const tier =
-      joining === JoinState.Open && board && board.me
+      !inCrime && joining === JoinState.Open && board && board.me
         ? spawnTierToRequest(result.suggestions, board.me.level, config)
         : null;
     if (tier || spawnState.message) {

@@ -102,6 +102,10 @@ The automated tests stub the nuke.family API, so every item here needs a real
 - [ ] Recruiting, not in a crime: one slot is tagged "Best for you" (up to two
       more "Good for you") and the bar above the list names the same slot. "Show
       me" scrolls to it.
+- [ ] Join the suggested slot: straight away (and after a reload) the bar says
+      "You are in <crime> as <role>, so no other slot is suggested", no slot is
+      tagged and there is no crime request button, even though Torn still shows
+      live Join buttons. Leave the crime: the suggestions come back at once.
 - [ ] Recruiting, already in a crime: the bar says Torn is not letting you
       join and no slot is tagged. (This relies on Torn disabling every Join
       button while you are in a crime; check that is still what happens.)

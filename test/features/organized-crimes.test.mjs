@@ -591,6 +591,57 @@ describe("OC Assistant staff flags", () => {
   });
 });
 
+describe("OC Assistant for a member already in a crime", () => {
+  // Torn leaves the Join buttons live for a member in a crime, and the crime
+  // stays on Recruiting until it fills: put the viewer (player 1) in Clinical
+  // Precision's filled slot.
+  const joinedClinicalPrecision = async (page) => {
+    await enableJoining(page);
+    await page.evaluate(() => {
+      const link = document.querySelector('[data-oc-id="2305593"] a[href*="profiles.php?XID="]');
+      link.setAttribute("href", "/profiles.php?XID=1");
+    });
+  };
+  const levelEight = { data: { synced_at: 1900000000, crimes: [], me: { player_id: 1, level: 8, cprs: {} } } };
+
+  it("suggests nothing more and does not offer a crime request", async () => {
+    const { page, errors, close } = await openRecruiting({
+      before: joinedClinicalPrecision,
+      api: { "GET /oc/board": levelEight },
+    });
+    try {
+      await page.waitForFunction(() => /You are in/.test(document.querySelector("#nfh-oc-bar").innerText));
+      const bar = await page.locator(BAR).innerText();
+      assert.match(bar, /You are in Clinical Precision \(level 8\) as Cat Burglar, so no other slot is suggested\./);
+      assert.doesNotMatch(bar, /Best slot|Nothing decent/);
+      assert.deepEqual(await picksOf(page), []);
+      assert.equal(await page.locator(`${BAR} [data-nfh-oc-spawn]`).count(), 0);
+      assert.deepEqual(errors, []);
+      await screenshot(page.locator(BAR), "oc-already-joined");
+    } finally {
+      await close();
+    }
+  });
+
+  it("believes the page over a board that still has them in a crime they left", async () => {
+    // The board (a few minutes old) lists the viewer in Clinical Precision;
+    // on the page that slot is someone else's.
+    const stale = structuredClone(levelEight);
+    stale.data.crimes = [
+      { id: 2305593, name: "Clinical Precision", key: "clinicalprecision", level: 8, status: "Recruiting", slots: [
+        { role: "Cat Burglar", role_key: "catburglar", position_id: "P1", player_id: 1, progress: 0.5, cpr: 72 },
+      ] },
+    ];
+    const { page, close } = await openRecruiting({ api: { "GET /oc/board": stale } });
+    try {
+      await page.waitForFunction(() => /Best slot for you/.test(document.querySelector("#nfh-oc-bar").innerText));
+      assert.equal((await picksOf(page)).length, 3);
+    } finally {
+      await close();
+    }
+  });
+});
+
 describe("OC Assistant warning about your own slot", () => {
   // The viewer (player 1) sits in a level 5 crime, last in a long queue.
   const ownCrime = (slots) => ({
@@ -636,8 +687,8 @@ describe("OC Assistant warning about your own slot", () => {
     ]) {
       const { page, close } = await openRecruiting({ before: undefined, api: { "GET /oc/board": { data: ownCrime(slots) } } });
       try {
-        await page.waitForTimeout(700);
-        assert.match(await page.locator(BAR).innerText(), /Torn is not letting you join a crime right now/);
+        await page.waitForFunction(() => /You are in Honey Trap/.test(document.querySelector("#nfh-oc-bar").innerText));
+        assert.match(await page.locator(BAR).innerText(), /You are in Honey Trap \(level 5\) as Muscle #2, so no other slot is suggested\./);
         assert.deepEqual(await picksOf(page), []);
       } finally {
         await close();
@@ -801,7 +852,7 @@ describe("OC Assistant with parts switched off by the faction", () => {
     });
     try {
       await page.waitForTimeout(700);
-      assert.match(await page.locator(BAR).innerText(), /Torn is not letting you join a crime right now/);
+      assert.match(await page.locator(BAR).innerText(), /You are in Honey Trap \(level 5\) as Muscle #2, so no other slot is suggested\./);
       assert.deepEqual(await picksOf(page), []);
     } finally {
       await close();

@@ -255,6 +255,8 @@ export function spawnHtml(spawn) {
 //   { kind: "none" }               open slots, but none the member qualifies for
 //   { kind: "low" }                the member qualifies only for slots in crimes
 //                                  below their level, and can ask staff for one
+//   { kind: "joined", crime, level, role }  the member is in a crime already,
+//                                  in a slot there is nothing wrong with
 //   { kind: "blocked" }            Torn is not letting the member join anything
 //   { kind: "full" }               no open slot is loaded
 export function barHtml(state) {
@@ -294,6 +296,13 @@ export function barHtml(state) {
       `Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ` +
       `${best.pooled === false ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}</span>` +
       `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`
+    );
+  }
+
+  if (state.kind === "joined") {
+    return (
+      `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state.crime)}</strong> ` +
+      `(level ${escapeHtml(state.level ?? "?")}) as <strong>${escapeHtml(state.role)}</strong>, so no other slot is suggested.</span>`
     );
   }
 
