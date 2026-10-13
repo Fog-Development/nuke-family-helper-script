@@ -1143,6 +1143,69 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     background-color: #1565c0;
 }
 
+/* Debug info dialog (faction controls page) */
+.nfh-debug-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.nfh-debug-dialog {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 640px;
+    max-width: 100%;
+    max-height: 100%;
+    padding: 14px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 6px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+}
+
+.nfh-debug-title {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.nfh-debug-note {
+    margin: 0;
+    color: var(--nfh-list-key);
+}
+
+.nfh-debug-text {
+    box-sizing: border-box;
+    width: 100%;
+    height: 320px;
+    max-height: 60vh;
+    padding: 6px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 4px;
+    background-color: var(--nfh-bg);
+    color: var(--nfh-text);
+    font-family: monospace;
+    font-size: 12px;
+    resize: vertical;
+}
+
+.nfh-debug-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.nfh-debug-status {
+    margin-right: auto;
+    color: var(--nfh-list-key);
+}
+
 /* What is wrong with a suggested slot, under its tag's text */
 .nfh-oc-tag > .nfh-oc-flag {
     margin: 2px -6px -2px;
@@ -1370,6 +1433,14 @@ body.dark-mode .nfh-oc-bar-warning {
   var ROLE_CACHE_KEY = "nfhUserRole";
   var PERMISSIONS_CACHE_KEY = "nfhUserPermissions";
   var PERMISSIONS_CACHE_TTL_MS = 12 * 60 * 60 * 1e3;
+  function getUserRole() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(ROLE_CACHE_KEY) || "null");
+      return saved && saved.role || "";
+    } catch (e) {
+      return "";
+    }
+  }
   async function refreshUserRole() {
     try {
       const result = await api("/user/get-own-roles");
@@ -1413,6 +1484,9 @@ body.dark-mode .nfh-oc-bar-warning {
   var stores = [];
   function registerSyncedStore(store) {
     stores.push(store);
+  }
+  function registeredStores() {
+    return [...stores];
   }
   function performTimeBasedCacheCheck() {
     const now = Date.now();
@@ -2793,6 +2867,7 @@ body.dark-mode .nfh-oc-bar-warning {
     let timestamp = 0;
     const listeners = [];
     const store = {
+      storageKey,
       serverField,
       fallbackTtlMs,
       get data() {
@@ -3035,10 +3110,444 @@ body.dark-mode .nfh-oc-bar-warning {
     init: maybeInsertActiveContract
   };
 
+  // src/features/organized-crimes/data.js
+  var ocConfigStore = createSyncedStore({
+    storageKey: "nfhOcConfig",
+    dataField: "config",
+    emptyValue: null,
+    serverField: "oc_config_cache_last_update",
+    fallbackTtlMs: 6 * 60 * 60 * 1e3,
+    // 6 hours
+    fetcher: async () => {
+      try {
+        return (await api("/oc/config")).data || null;
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 403) return null;
+        throw error;
+      }
+    }
+  });
+
+  // src/features/organized-crimes/catalog.js
+  function keyFor(name) {
+    return String(name).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  }
+  function findRole(config, crimeName2, roleName) {
+    if (!config || !Array.isArray(config.crimes)) return null;
+    const crimeKey = keyFor(crimeName2);
+    const crime = config.crimes.find((entry) => entry.key === crimeKey);
+    if (!crime) return null;
+    const roleKey = keyFor(roleName);
+    return (crime.roles || []).find((role) => role.key === roleKey) || null;
+  }
+
+  // src/features/organized-crimes/remote.js
+  var CPR_KEY = "nfhOcCprs";
+  var BOARD_KEY2 = "nfhOcBoard";
+  var UPLOAD_DELAY_MS = 4e3;
+  var BOARD_FRESH_MS2 = 60 * 1e3;
+  var BOARD_RETRY_MS = 30 * 1e3;
+  function readJson2(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || "null");
+    } catch (e) {
+      return null;
+    }
+  }
+  function cprState() {
+    const state3 = readJson2(CPR_KEY);
+    return state3 && state3.known && state3.sent ? state3 : { known: {}, sent: {} };
+  }
+  var pending = /* @__PURE__ */ new Map();
+  var uploadTimer = null;
+  async function upload() {
+    uploadTimer = null;
+    const batch = [...pending.entries()];
+    pending = /* @__PURE__ */ new Map();
+    if (batch.length === 0) return;
+    try {
+      await api("/oc/cpr", { method: "POST", data: { cprs: batch.map(([, entry]) => entry) } });
+      const state3 = cprState();
+      for (const [key, entry] of batch) state3.sent[key] = entry.cpr;
+      localStorage.setItem(CPR_KEY, JSON.stringify(state3));
+      LogInfo(`OC Assistant sent ${batch.length} CPRs`);
+    } catch (error) {
+      console.error("[NFH] Could not send CPRs to nuke.family:", error);
+    }
+  }
+  function learnCprs(crimes) {
+    const state3 = cprState();
+    let changed = false;
+    for (const crime of crimes) {
+      for (const slot of crime.slots) {
+        if (slot.occupied || slot.cpr === null) continue;
+        const key = `${keyFor(crime.name)}|${keyFor(slot.name)}`;
+        if (state3.known[key] !== slot.cpr) {
+          state3.known[key] = slot.cpr;
+          changed = true;
+        }
+        if (state3.sent[key] !== slot.cpr) {
+          pending.set(key, { crime: crime.name, role: slot.name, cpr: slot.cpr });
+        }
+      }
+    }
+    if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state3));
+    if (pending.size > 0 && !uploadTimer) uploadTimer = setTimeout(upload, UPLOAD_DELAY_MS);
+  }
+  function knownCpr(board, crimeName2, roleName) {
+    const crimeKey = keyFor(crimeName2);
+    const roleKey = keyFor(roleName);
+    const local = cprState().known[`${crimeKey}|${roleKey}`];
+    const remote = board && board.me && board.me.cprs && board.me.cprs[crimeKey];
+    const known = [local, remote ? remote[roleKey] : void 0].filter((cpr) => typeof cpr === "number");
+    return known.length > 0 ? Math.max(...known) : null;
+  }
+  var SPAWN_KEY = "nfhOcSpawnAsked";
+  function spawnAskedUntil() {
+    const saved = readJson2(SPAWN_KEY);
+    return saved && saved.until > Date.now() ? saved.until : 0;
+  }
+  async function requestSpawn() {
+    try {
+      const response = await api("/oc/spawn-request", { method: "POST", data: {} });
+      const minutes = response.cooldown_minutes || 30;
+      localStorage.setItem(SPAWN_KEY, JSON.stringify({ until: Date.now() + minutes * 60 * 1e3 }));
+      return { ok: true, message: `Staff have been asked for a level ${response.tier} crime.` };
+    } catch (error) {
+      const reason = error && error.body && error.body.error;
+      if (error && error.status === 429) {
+        localStorage.setItem(SPAWN_KEY, JSON.stringify({ until: Date.now() + 30 * 60 * 1e3 }));
+      }
+      return { ok: false, message: reason || "Could not reach nuke.family. Try again in a minute." };
+    }
+  }
+  function cachedBoard2() {
+    const cached = readJson2(BOARD_KEY2);
+    return cached && cached.board ? cached : null;
+  }
+  var boardRequest = null;
+  var lastBoardAttempt = 0;
+  function refreshBoard2() {
+    const cached = cachedBoard2();
+    const now = Date.now();
+    if (cached && now - cached.fetchedAt < BOARD_FRESH_MS2) return Promise.resolve(false);
+    if (boardRequest) return boardRequest;
+    if (now - lastBoardAttempt < BOARD_RETRY_MS) return Promise.resolve(false);
+    lastBoardAttempt = now;
+    boardRequest = api("/oc/board").then((response) => {
+      localStorage.setItem(BOARD_KEY2, JSON.stringify({ board: response.data, fetchedAt: Date.now() }));
+      return true;
+    }).catch((error) => {
+      console.error("[NFH] Could not load the OC board from nuke.family:", error);
+      return false;
+    }).finally(() => {
+      boardRequest = null;
+    });
+    return boardRequest;
+  }
+  function offPageCrimes(board, pageCrimes) {
+    if (!board || !Array.isArray(board.crimes)) return [];
+    const onPage = new Set(pageCrimes.map((crime) => String(crime.id)));
+    return board.crimes.filter((crime) => crime.status === "Recruiting" && !onPage.has(String(crime.id))).filter((crime) => crime.slots.some((slot) => slot.player_id === null)).map((crime) => ({
+      id: String(crime.id),
+      name: crime.name,
+      level: crime.level,
+      offPage: true,
+      slots: crime.slots.map((slot) => ({
+        name: slot.role,
+        occupied: slot.player_id !== null,
+        progress: slot.progress || 0,
+        cpr: slot.player_id !== null ? slot.cpr : knownCpr(board, crime.name, slot.role)
+      }))
+    }));
+  }
+
+  // src/features/organized-crimes/scoring.js
+  var PLANNING_HOURS = 24;
+  var SlotStatus = {
+    Filled: "filled",
+    // someone is in it
+    Eligible: "eligible",
+    // open, and the viewer meets the minimum
+    Below: "below",
+    // open, but the viewer's CPR is under the minimum
+    Unrated: "unrated"
+    // open, but the viewer's CPR for it is not known
+  };
+  var Rank = { Best: "best", Good: "good" };
+  var GOOD_SLOTS = 2;
+  function memberFeatures(config) {
+    const settings = config && config.settings || {};
+    const enabled = settings.assistant_enabled !== false;
+    const suggest = enabled && settings.suggest_slots !== false;
+    const warn = enabled && settings.warn_poor_slot !== false;
+    return {
+      enabled,
+      suggest,
+      warn,
+      minimums: enabled && (suggest || warn || settings.show_min_cpr !== false),
+      spawn: enabled && Boolean(settings.spawn_requests_enabled)
+    };
+  }
+  var HIGHEST_LEVEL = 10;
+  function productiveFromLevel(config) {
+    const from = (config && config.settings || {}).productive_from_level;
+    if (from === void 0) return 1;
+    return from === null ? HIGHEST_LEVEL + 1 : from;
+  }
+  function countsProductiveDays(crime, fromLevel) {
+    return (crime.level ?? HIGHEST_LEVEL) >= fromLevel;
+  }
+  function hoursUntilPlanning(crime) {
+    return crime.slots.filter((slot) => slot.occupied).reduce((hours, slot) => hours + (1 - (slot.progress || 0)) * PLANNING_HOURS, 0);
+  }
+  function fallbackMinimum(config, level) {
+    const fallbacks = config && config.fallback_min_cpr;
+    if (!fallbacks) return null;
+    return fallbacks[level] ?? fallbacks.default ?? null;
+  }
+  function rateSlot(slot, crime, config) {
+    const role = findRole(config, crime.name, slot.name);
+    const minCpr = role ? role.min_cpr : fallbackMinimum(config, crime.level);
+    const weight = role && role.weight !== null && role.weight !== void 0 ? role.weight : null;
+    let status;
+    if (slot.occupied) status = SlotStatus.Filled;
+    else if (minCpr === null || slot.cpr === null) status = SlotStatus.Unrated;
+    else status = slot.cpr >= minCpr ? SlotStatus.Eligible : SlotStatus.Below;
+    return { slot, minCpr, weight, status, assumed: !role && minCpr !== null };
+  }
+  function pickSlot(ratedSlots) {
+    return ratedSlots.filter((rated) => rated.status === SlotStatus.Eligible).sort((a, b) => (b.weight ?? -1) - (a.weight ?? -1) || b.slot.cpr - a.slot.cpr)[0] || null;
+  }
+  function belowMemberLevel(crime, memberLevel, levelGap) {
+    if (memberLevel === null || memberLevel === void 0) return false;
+    if (crime.level === null || crime.level === void 0) return false;
+    return memberLevel - crime.level >= levelGap;
+  }
+  function canAskForCrime(memberLevel, config) {
+    const settings = config && config.settings || {};
+    if (!memberFeatures(config).spawn) return false;
+    if (memberLevel === null || memberLevel === void 0) return false;
+    return memberLevel >= (settings.spawn_request_min_level ?? 6);
+  }
+  function rateCrimes(crimes, config, member = null) {
+    const settings = config && config.settings || {};
+    const threshold = settings.productive_threshold_hours ?? 12;
+    const levelGap = settings.under_level_gap ?? 2;
+    const fromLevel = productiveFromLevel(config);
+    const memberLevel = member ? member.level : null;
+    const holdBack = Boolean(member && member.canAsk);
+    const rated = crimes.map((crime) => {
+      const waitHours = hoursUntilPlanning(crime);
+      const pooled = countsProductiveDays(crime, fromLevel);
+      return {
+        crime,
+        waitHours,
+        pooled,
+        productive: !pooled || waitHours <= threshold,
+        openSlots: crime.slots.filter((slot) => !slot.occupied).length,
+        slots: crime.slots.map((slot) => rateSlot(slot, crime, config))
+      };
+    });
+    const qualifying = rated.map((entry) => ({
+      ...entry,
+      pick: pickSlot(entry.slots),
+      thresholdHours: threshold,
+      belowLevel: belowMemberLevel(entry.crime, memberLevel, levelGap)
+    })).filter((entry) => entry.pick);
+    const withheld = holdBack ? qualifying.filter((entry) => entry.belowLevel).length : 0;
+    const candidates = qualifying.filter((entry) => !holdBack || !entry.belowLevel).sort(
+      (a, b) => Number(b.productive) - Number(a.productive) || (b.crime.level ?? 0) - (a.crime.level ?? 0) || Number(b.pick.weight !== null) - Number(a.pick.weight !== null) || (a.pooled || b.pooled ? 0 : a.openSlots - b.openSlots) || a.waitHours - b.waitHours || (b.pick.weight ?? -1) - (a.pick.weight ?? -1)
+    );
+    const suggestions = [];
+    const best = candidates[0];
+    if (best) {
+      suggestions.push(suggestion(Rank.Best, best));
+      const lowestGoodLevel = (best.crime.level ?? 0) - (levelGap - 1);
+      for (const candidate of candidates.slice(1)) {
+        if (suggestions.length > GOOD_SLOTS) break;
+        if (candidate.belowLevel) continue;
+        if (candidate.productive !== best.productive) continue;
+        if ((candidate.crime.level ?? 0) < lowestGoodLevel) continue;
+        suggestions.push(suggestion(Rank.Good, candidate));
+      }
+    }
+    return { crimes: rated, suggestions, withheld };
+  }
+  function suggestion(rank, candidate) {
+    return {
+      rank,
+      crime: candidate.crime,
+      rated: candidate.pick,
+      waitHours: candidate.waitHours,
+      pooled: candidate.pooled,
+      productive: candidate.productive,
+      thresholdHours: candidate.thresholdHours,
+      belowLevel: candidate.belowLevel
+    };
+  }
+  function tierFor(level) {
+    if (level <= 2) return "1-2";
+    if (level <= 4) return "3-4";
+    if (level <= 6) return "5-6";
+    if (level <= 8) return "7-8";
+    return "9-10";
+  }
+  function spawnTierToRequest(suggestions, memberLevel, config) {
+    const settings = config && config.settings || {};
+    if (!canAskForCrime(memberLevel, config)) return null;
+    const best = suggestions[0];
+    const lowestDecentLevel = memberLevel - ((settings.under_level_gap ?? 2) - 1);
+    const decent = best && best.productive && (best.crime.level ?? 0) >= lowestDecentLevel;
+    return decent ? null : tierFor(memberLevel);
+  }
+  function describeWait(hours) {
+    if (hours < 0.5) return "now";
+    if (hours < 36) {
+      const rounded = Math.max(1, Math.round(hours));
+      return `in about ${rounded} hour${rounded === 1 ? "" : "s"}`;
+    }
+    const days = Math.round(hours / 24);
+    return `in about ${days} days`;
+  }
+
+  // src/features/debug-info.js
+  var DIALOG_ID = "nfh-debug-dialog";
+  var iso = (ms) => ms ? new Date(ms).toISOString() : null;
+  async function probe(path, summarise = () => void 0) {
+    try {
+      const body = await api(path);
+      return { status: 200, ...summarise(body) };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        const reason = error.body && (error.body.error || error.body.message);
+        return { status: error.status, error: reason || null };
+      }
+      return { status: null, error: "No answer (network error or timeout)" };
+    }
+  }
+  function ocConfigSummary(config) {
+    if (!config) return { present: false };
+    return {
+      present: true,
+      settings: config.settings || null,
+      crimes: Array.isArray(config.crimes) ? config.crimes.length : null,
+      weights_synced_at: config.weights_synced_at ?? null,
+      member_features: memberFeatures(config)
+    };
+  }
+  function boardSummary(board) {
+    if (!board) return { present: false };
+    return {
+      present: true,
+      synced_at: board.synced_at ?? null,
+      crimes: Array.isArray(board.crimes) ? board.crimes.length : null,
+      my_level: board.me ? board.me.level : null,
+      my_known_cprs: board.me && board.me.cprs ? Object.keys(board.me.cprs).length : null,
+      sees_staff_flags: Boolean(board.members)
+    };
+  }
+  function storedKeys() {
+    const keys = {};
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (/^nfh/i.test(key)) keys[key] = (localStorage.getItem(key) || "").length;
+    }
+    return keys;
+  }
+  function countOf(data) {
+    if (Array.isArray(data)) return data.length;
+    if (data && typeof data === "object") return Object.keys(data).length;
+    return data === null || data === void 0 ? null : 1;
+  }
+  async function collectDebugInfo() {
+    const token = getApiToken() || "";
+    const info = typeof GM_info !== "undefined" && GM_info ? GM_info : {};
+    const board = cachedBoard2();
+    const [roles, permissions, lastUpdates, ocConfig, ocBoard] = await Promise.all([
+      probe("/user/get-own-roles", (body) => ({ role: body.role ?? null })),
+      probe("/user/get-own-permissions", (body) => ({ permissions: body.permissions || [] })),
+      probe("/cache/last-updates", (body) => ({ timestamps: body })),
+      probe("/oc/config", (body) => ocConfigSummary(body.data || null)),
+      probe("/oc/board", (body) => boardSummary(body.data || null))
+    ]);
+    return {
+      generated_at: (/* @__PURE__ */ new Date()).toISOString(),
+      script: {
+        version: CURRENT_VERSION,
+        debug_build: DEBUG,
+        api_url: API_URL,
+        manager: info.scriptHandler ? `${info.scriptHandler} ${info.version || ""}`.trim() : null,
+        torn_pda: isPda
+      },
+      browser: { user_agent: navigator.userAgent, page: window.location.href },
+      torn_player_id: getUserscriptUsersPlayerId() || null,
+      key: { stored: token.length > 0, length: token.length, accepted: roles.status === 200 },
+      site_now: {
+        "/user/get-own-roles": roles,
+        "/user/get-own-permissions": permissions,
+        "/cache/last-updates": lastUpdates,
+        "/oc/config": ocConfig,
+        "/oc/board": ocBoard
+      },
+      stored: {
+        role: getUserRole() || null,
+        stores: Object.fromEntries(
+          registeredStores().map((store) => [
+            store.storageKey,
+            { fetched_at: iso(store.timestamp), entries: countOf(store.data), stale: store.isStale() }
+          ])
+        ),
+        oc_config: ocConfigSummary(ocConfigStore.data),
+        oc_board: board ? { fetched_at: iso(board.fetchedAt), ...boardSummary(board.board) } : { present: false },
+        keys: storedKeys()
+      }
+    };
+  }
+  async function copyText(text, textarea) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (error) {
+      textarea.select();
+      try {
+        return document.execCommand("copy");
+      } catch (e) {
+        return false;
+      }
+    }
+  }
+  function showDebugInfo(report) {
+    const existing = document.getElementById(DIALOG_ID);
+    if (existing) existing.remove();
+    const text = JSON.stringify(report, null, 2);
+    const overlay = document.createElement("div");
+    overlay.id = DIALOG_ID;
+    overlay.className = "nfh-debug-overlay";
+    overlay.innerHTML = '<div class="nfh-debug-dialog" role="dialog" aria-modal="true" aria-label="Nuke Family Helper debug info"><div class="nfh-debug-title">Nuke Family Helper debug info</div><p class="nfh-debug-note">Copy this and send it to whoever is helping you. It does not contain your key.</p><textarea class="nfh-debug-text" readonly spellcheck="false"></textarea><div class="nfh-debug-actions"><span class="nfh-debug-status" role="status"></span><button type="button" class="torn-btn" data-nfh-debug-copy>Copy</button><button type="button" class="torn-btn" data-nfh-debug-close>Close</button></div></div>';
+    const textarea = overlay.querySelector("textarea");
+    textarea.value = text;
+    const status = overlay.querySelector(".nfh-debug-status");
+    overlay.addEventListener("click", async (event) => {
+      if (event.target === overlay || event.target.closest("[data-nfh-debug-close]")) {
+        overlay.remove();
+        return;
+      }
+      if (event.target.closest("[data-nfh-debug-copy]")) {
+        status.textContent = await copyText(text, textarea) ? "Copied." : "Could not copy: select the text and copy it yourself.";
+      }
+    });
+    document.body.appendChild(overlay);
+    textarea.focus();
+    textarea.select();
+    textarea.scrollTop = 0;
+  }
+
   // src/features/faction-buttons.js
   var CONTAINER_SELECTOR = "#faction-controls > hr";
   var CHANGE_KEY_ID = "nfh-change-key-btn";
   var CHECK_UPDATES_ID = "nfh-check-updates-btn";
+  var DEBUG_INFO_ID = "nfh-debug-info-btn";
   function buildChangeKeyButton() {
     const btn = document.createElement("button");
     btn.id = CHANGE_KEY_ID;
@@ -3076,6 +3585,26 @@ body.dark-mode .nfh-oc-bar-warning {
     });
     return btn;
   }
+  function buildDebugInfoButton() {
+    const btn = document.createElement("button");
+    btn.id = DEBUG_INFO_ID;
+    btn.innerHTML = "NFH Debug Info";
+    btn.classList.add("torn-btn");
+    btn.addEventListener("click", async function() {
+      btn.disabled = true;
+      const originalLabel = btn.innerHTML;
+      btn.innerHTML = "Collecting\u2026";
+      try {
+        showDebugInfo(await collectDebugInfo());
+      } catch (error) {
+        console.error("Error collecting debug info:", error);
+        showDebugInfo({ error: String(error) });
+      }
+      btn.disabled = false;
+      btn.innerHTML = originalLabel;
+    });
+    return btn;
+  }
   function init2() {
     ensureInjected({
       containerSelector: CONTAINER_SELECTOR,
@@ -3083,6 +3612,7 @@ body.dark-mode .nfh-oc-bar-warning {
       inject: (container) => {
         container.appendChild(buildChangeKeyButton());
         container.appendChild(buildCheckUpdatesButton());
+        container.appendChild(buildDebugInfoButton());
         LogInfo("Faction control buttons inserted");
       }
     });
@@ -3340,186 +3870,6 @@ body.dark-mode .nfh-oc-bar-warning {
     init: init3
   };
 
-  // src/features/organized-crimes/data.js
-  var ocConfigStore = createSyncedStore({
-    storageKey: "nfhOcConfig",
-    dataField: "config",
-    emptyValue: null,
-    serverField: "oc_config_cache_last_update",
-    fallbackTtlMs: 6 * 60 * 60 * 1e3,
-    // 6 hours
-    fetcher: async () => {
-      try {
-        return (await api("/oc/config")).data || null;
-      } catch (error) {
-        if (error instanceof ApiError && error.status === 403) return null;
-        throw error;
-      }
-    }
-  });
-
-  // src/features/organized-crimes/catalog.js
-  function keyFor(name) {
-    return String(name).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
-  }
-  function findRole(config, crimeName2, roleName) {
-    if (!config || !Array.isArray(config.crimes)) return null;
-    const crimeKey = keyFor(crimeName2);
-    const crime = config.crimes.find((entry) => entry.key === crimeKey);
-    if (!crime) return null;
-    const roleKey = keyFor(roleName);
-    return (crime.roles || []).find((role) => role.key === roleKey) || null;
-  }
-
-  // src/features/organized-crimes/scoring.js
-  var PLANNING_HOURS = 24;
-  var SlotStatus = {
-    Filled: "filled",
-    // someone is in it
-    Eligible: "eligible",
-    // open, and the viewer meets the minimum
-    Below: "below",
-    // open, but the viewer's CPR is under the minimum
-    Unrated: "unrated"
-    // open, but the viewer's CPR for it is not known
-  };
-  var Rank = { Best: "best", Good: "good" };
-  var GOOD_SLOTS = 2;
-  function memberFeatures(config) {
-    const settings = config && config.settings || {};
-    const enabled = settings.assistant_enabled !== false;
-    const suggest = enabled && settings.suggest_slots !== false;
-    const warn = enabled && settings.warn_poor_slot !== false;
-    return {
-      enabled,
-      suggest,
-      warn,
-      minimums: enabled && (suggest || warn || settings.show_min_cpr !== false),
-      spawn: enabled && Boolean(settings.spawn_requests_enabled)
-    };
-  }
-  var HIGHEST_LEVEL = 10;
-  function productiveFromLevel(config) {
-    const from = (config && config.settings || {}).productive_from_level;
-    if (from === void 0) return 1;
-    return from === null ? HIGHEST_LEVEL + 1 : from;
-  }
-  function countsProductiveDays(crime, fromLevel) {
-    return (crime.level ?? HIGHEST_LEVEL) >= fromLevel;
-  }
-  function hoursUntilPlanning(crime) {
-    return crime.slots.filter((slot) => slot.occupied).reduce((hours, slot) => hours + (1 - (slot.progress || 0)) * PLANNING_HOURS, 0);
-  }
-  function fallbackMinimum(config, level) {
-    const fallbacks = config && config.fallback_min_cpr;
-    if (!fallbacks) return null;
-    return fallbacks[level] ?? fallbacks.default ?? null;
-  }
-  function rateSlot(slot, crime, config) {
-    const role = findRole(config, crime.name, slot.name);
-    const minCpr = role ? role.min_cpr : fallbackMinimum(config, crime.level);
-    const weight = role && role.weight !== null && role.weight !== void 0 ? role.weight : null;
-    let status;
-    if (slot.occupied) status = SlotStatus.Filled;
-    else if (minCpr === null || slot.cpr === null) status = SlotStatus.Unrated;
-    else status = slot.cpr >= minCpr ? SlotStatus.Eligible : SlotStatus.Below;
-    return { slot, minCpr, weight, status, assumed: !role && minCpr !== null };
-  }
-  function pickSlot(ratedSlots) {
-    return ratedSlots.filter((rated) => rated.status === SlotStatus.Eligible).sort((a, b) => (b.weight ?? -1) - (a.weight ?? -1) || b.slot.cpr - a.slot.cpr)[0] || null;
-  }
-  function belowMemberLevel(crime, memberLevel, levelGap) {
-    if (memberLevel === null || memberLevel === void 0) return false;
-    if (crime.level === null || crime.level === void 0) return false;
-    return memberLevel - crime.level >= levelGap;
-  }
-  function canAskForCrime(memberLevel, config) {
-    const settings = config && config.settings || {};
-    if (!memberFeatures(config).spawn) return false;
-    if (memberLevel === null || memberLevel === void 0) return false;
-    return memberLevel >= (settings.spawn_request_min_level ?? 6);
-  }
-  function rateCrimes(crimes, config, member = null) {
-    const settings = config && config.settings || {};
-    const threshold = settings.productive_threshold_hours ?? 12;
-    const levelGap = settings.under_level_gap ?? 2;
-    const fromLevel = productiveFromLevel(config);
-    const memberLevel = member ? member.level : null;
-    const holdBack = Boolean(member && member.canAsk);
-    const rated = crimes.map((crime) => {
-      const waitHours = hoursUntilPlanning(crime);
-      const pooled = countsProductiveDays(crime, fromLevel);
-      return {
-        crime,
-        waitHours,
-        pooled,
-        productive: !pooled || waitHours <= threshold,
-        openSlots: crime.slots.filter((slot) => !slot.occupied).length,
-        slots: crime.slots.map((slot) => rateSlot(slot, crime, config))
-      };
-    });
-    const qualifying = rated.map((entry) => ({
-      ...entry,
-      pick: pickSlot(entry.slots),
-      thresholdHours: threshold,
-      belowLevel: belowMemberLevel(entry.crime, memberLevel, levelGap)
-    })).filter((entry) => entry.pick);
-    const withheld = holdBack ? qualifying.filter((entry) => entry.belowLevel).length : 0;
-    const candidates = qualifying.filter((entry) => !holdBack || !entry.belowLevel).sort(
-      (a, b) => Number(b.productive) - Number(a.productive) || (b.crime.level ?? 0) - (a.crime.level ?? 0) || Number(b.pick.weight !== null) - Number(a.pick.weight !== null) || (a.pooled || b.pooled ? 0 : a.openSlots - b.openSlots) || a.waitHours - b.waitHours || (b.pick.weight ?? -1) - (a.pick.weight ?? -1)
-    );
-    const suggestions = [];
-    const best = candidates[0];
-    if (best) {
-      suggestions.push(suggestion(Rank.Best, best));
-      const lowestGoodLevel = (best.crime.level ?? 0) - (levelGap - 1);
-      for (const candidate of candidates.slice(1)) {
-        if (suggestions.length > GOOD_SLOTS) break;
-        if (candidate.belowLevel) continue;
-        if (candidate.productive !== best.productive) continue;
-        if ((candidate.crime.level ?? 0) < lowestGoodLevel) continue;
-        suggestions.push(suggestion(Rank.Good, candidate));
-      }
-    }
-    return { crimes: rated, suggestions, withheld };
-  }
-  function suggestion(rank, candidate) {
-    return {
-      rank,
-      crime: candidate.crime,
-      rated: candidate.pick,
-      waitHours: candidate.waitHours,
-      pooled: candidate.pooled,
-      productive: candidate.productive,
-      thresholdHours: candidate.thresholdHours,
-      belowLevel: candidate.belowLevel
-    };
-  }
-  function tierFor(level) {
-    if (level <= 2) return "1-2";
-    if (level <= 4) return "3-4";
-    if (level <= 6) return "5-6";
-    if (level <= 8) return "7-8";
-    return "9-10";
-  }
-  function spawnTierToRequest(suggestions, memberLevel, config) {
-    const settings = config && config.settings || {};
-    if (!canAskForCrime(memberLevel, config)) return null;
-    const best = suggestions[0];
-    const lowestDecentLevel = memberLevel - ((settings.under_level_gap ?? 2) - 1);
-    const decent = best && best.productive && (best.crime.level ?? 0) >= lowestDecentLevel;
-    return decent ? null : tierFor(memberLevel);
-  }
-  function describeWait(hours) {
-    if (hours < 0.5) return "now";
-    if (hours < 36) {
-      const rounded = Math.max(1, Math.round(hours));
-      return `in about ${rounded} hour${rounded === 1 ? "" : "s"}`;
-    }
-    const days = Math.round(hours / 24);
-    return `in about ${days} days`;
-  }
-
   // src/features/organized-crimes/flags.js
   var Flag = {
     Unqualified: "unqualified",
@@ -3703,127 +4053,6 @@ body.dark-mode .nfh-oc-bar-warning {
     );
     if (buttons.length === 0) return JoinState.Full;
     return buttons.some((button2) => !button2.disabled) ? JoinState.Open : JoinState.Blocked;
-  }
-
-  // src/features/organized-crimes/remote.js
-  var CPR_KEY = "nfhOcCprs";
-  var BOARD_KEY2 = "nfhOcBoard";
-  var UPLOAD_DELAY_MS = 4e3;
-  var BOARD_FRESH_MS2 = 60 * 1e3;
-  var BOARD_RETRY_MS = 30 * 1e3;
-  function readJson2(key) {
-    try {
-      return JSON.parse(localStorage.getItem(key) || "null");
-    } catch (e) {
-      return null;
-    }
-  }
-  function cprState() {
-    const state3 = readJson2(CPR_KEY);
-    return state3 && state3.known && state3.sent ? state3 : { known: {}, sent: {} };
-  }
-  var pending = /* @__PURE__ */ new Map();
-  var uploadTimer = null;
-  async function upload() {
-    uploadTimer = null;
-    const batch = [...pending.entries()];
-    pending = /* @__PURE__ */ new Map();
-    if (batch.length === 0) return;
-    try {
-      await api("/oc/cpr", { method: "POST", data: { cprs: batch.map(([, entry]) => entry) } });
-      const state3 = cprState();
-      for (const [key, entry] of batch) state3.sent[key] = entry.cpr;
-      localStorage.setItem(CPR_KEY, JSON.stringify(state3));
-      LogInfo(`OC Assistant sent ${batch.length} CPRs`);
-    } catch (error) {
-      console.error("[NFH] Could not send CPRs to nuke.family:", error);
-    }
-  }
-  function learnCprs(crimes) {
-    const state3 = cprState();
-    let changed = false;
-    for (const crime of crimes) {
-      for (const slot of crime.slots) {
-        if (slot.occupied || slot.cpr === null) continue;
-        const key = `${keyFor(crime.name)}|${keyFor(slot.name)}`;
-        if (state3.known[key] !== slot.cpr) {
-          state3.known[key] = slot.cpr;
-          changed = true;
-        }
-        if (state3.sent[key] !== slot.cpr) {
-          pending.set(key, { crime: crime.name, role: slot.name, cpr: slot.cpr });
-        }
-      }
-    }
-    if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state3));
-    if (pending.size > 0 && !uploadTimer) uploadTimer = setTimeout(upload, UPLOAD_DELAY_MS);
-  }
-  function knownCpr(board, crimeName2, roleName) {
-    const crimeKey = keyFor(crimeName2);
-    const roleKey = keyFor(roleName);
-    const local = cprState().known[`${crimeKey}|${roleKey}`];
-    const remote = board && board.me && board.me.cprs && board.me.cprs[crimeKey];
-    const known = [local, remote ? remote[roleKey] : void 0].filter((cpr) => typeof cpr === "number");
-    return known.length > 0 ? Math.max(...known) : null;
-  }
-  var SPAWN_KEY = "nfhOcSpawnAsked";
-  function spawnAskedUntil() {
-    const saved = readJson2(SPAWN_KEY);
-    return saved && saved.until > Date.now() ? saved.until : 0;
-  }
-  async function requestSpawn() {
-    try {
-      const response = await api("/oc/spawn-request", { method: "POST", data: {} });
-      const minutes = response.cooldown_minutes || 30;
-      localStorage.setItem(SPAWN_KEY, JSON.stringify({ until: Date.now() + minutes * 60 * 1e3 }));
-      return { ok: true, message: `Staff have been asked for a level ${response.tier} crime.` };
-    } catch (error) {
-      const reason = error && error.body && error.body.error;
-      if (error && error.status === 429) {
-        localStorage.setItem(SPAWN_KEY, JSON.stringify({ until: Date.now() + 30 * 60 * 1e3 }));
-      }
-      return { ok: false, message: reason || "Could not reach nuke.family. Try again in a minute." };
-    }
-  }
-  function cachedBoard2() {
-    const cached = readJson2(BOARD_KEY2);
-    return cached && cached.board ? cached : null;
-  }
-  var boardRequest = null;
-  var lastBoardAttempt = 0;
-  function refreshBoard2() {
-    const cached = cachedBoard2();
-    const now = Date.now();
-    if (cached && now - cached.fetchedAt < BOARD_FRESH_MS2) return Promise.resolve(false);
-    if (boardRequest) return boardRequest;
-    if (now - lastBoardAttempt < BOARD_RETRY_MS) return Promise.resolve(false);
-    lastBoardAttempt = now;
-    boardRequest = api("/oc/board").then((response) => {
-      localStorage.setItem(BOARD_KEY2, JSON.stringify({ board: response.data, fetchedAt: Date.now() }));
-      return true;
-    }).catch((error) => {
-      console.error("[NFH] Could not load the OC board from nuke.family:", error);
-      return false;
-    }).finally(() => {
-      boardRequest = null;
-    });
-    return boardRequest;
-  }
-  function offPageCrimes(board, pageCrimes) {
-    if (!board || !Array.isArray(board.crimes)) return [];
-    const onPage = new Set(pageCrimes.map((crime) => String(crime.id)));
-    return board.crimes.filter((crime) => crime.status === "Recruiting" && !onPage.has(String(crime.id))).filter((crime) => crime.slots.some((slot) => slot.player_id === null)).map((crime) => ({
-      id: String(crime.id),
-      name: crime.name,
-      level: crime.level,
-      offPage: true,
-      slots: crime.slots.map((slot) => ({
-        name: slot.role,
-        occupied: slot.player_id !== null,
-        progress: slot.progress || 0,
-        cpr: slot.player_id !== null ? slot.cpr : knownCpr(board, crime.name, slot.role)
-      }))
-    }));
   }
 
   // src/features/organized-crimes/view.js

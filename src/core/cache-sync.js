@@ -11,6 +11,10 @@ export function registerSyncedStore(store) {
   stores.push(store);
 }
 
+export function registeredStores() {
+  return [...stores];
+}
+
 // Time-based TTL fallback: refresh any registered store whose cache is older
 // than its own TTL.
 function performTimeBasedCacheCheck() {

@@ -6,13 +6,15 @@ import { PageType } from "../core/pages.js";
 import { checkForUpdates } from "../core/update-checker.js";
 import { refreshPermissions, refreshUserRole } from "../core/user.js";
 import { clearChainWatchCache } from "./chain-watch/data.js";
+import { collectDebugInfo, showDebugInfo } from "./debug-info.js";
 
-// "Change Nuke Family Key" + "Check NFH Updates" buttons on the faction
-// controls page. This is the script's only settings surface outside the
+// "Change Nuke Family Key", "Check NFH Updates" and "NFH Debug Info" buttons
+// on the faction controls page. This is the script's only settings surface outside the
 // profile-page cog, so the first-run token alert points users here.
 const CONTAINER_SELECTOR = "#faction-controls > hr";
 const CHANGE_KEY_ID = "nfh-change-key-btn";
 const CHECK_UPDATES_ID = "nfh-check-updates-btn";
+const DEBUG_INFO_ID = "nfh-debug-info-btn";
 
 function buildChangeKeyButton() {
   const btn = document.createElement("button");
@@ -61,6 +63,29 @@ function buildCheckUpdatesButton() {
   return btn;
 }
 
+// A report of what the script has stored and what nuke.family answers to this
+// member's key, for them to copy to whoever is helping them.
+function buildDebugInfoButton() {
+  const btn = document.createElement("button");
+  btn.id = DEBUG_INFO_ID;
+  btn.innerHTML = "NFH Debug Info";
+  btn.classList.add("torn-btn");
+  btn.addEventListener("click", async function () {
+    btn.disabled = true;
+    const originalLabel = btn.innerHTML;
+    btn.innerHTML = "Collecting…";
+    try {
+      showDebugInfo(await collectDebugInfo());
+    } catch (error) {
+      console.error("Error collecting debug info:", error);
+      showDebugInfo({ error: String(error) });
+    }
+    btn.disabled = false;
+    btn.innerHTML = originalLabel;
+  });
+  return btn;
+}
+
 function init() {
   // Guard on DOM presence rather than a module flag: Torn rebuilds the
   // controls panel when you navigate away and back, which removes our
@@ -71,6 +96,7 @@ function init() {
     inject: (container) => {
       container.appendChild(buildChangeKeyButton());
       container.appendChild(buildCheckUpdatesButton());
+      container.appendChild(buildDebugInfoButton());
       LogInfo("Faction control buttons inserted");
     },
   });

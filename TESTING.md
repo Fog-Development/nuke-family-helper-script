@@ -214,7 +214,12 @@ two would keep undoing each other.
 
 ## Faction controls (`factions.php` → controls tab)
 
-- [ ] "Change Nuke Family Key" and "Check NFH Updates" buttons appear.
+- [ ] "Change Nuke Family Key", "Check NFH Updates" and "NFH Debug Info"
+      buttons appear.
+- [ ] "NFH Debug Info" opens a box with a report (script version, whether the
+      key is accepted, role, permissions, what the site answers for the OC
+      config and board, what is cached). "Copy" puts it on the clipboard. The
+      key itself is nowhere in it.
 - [ ] **Tab navigation:** browse to a different faction section (e.g. armoury)
       and back to controls — the buttons reappear **without a full page
       reload**, and are not duplicated. Repeat a few times.

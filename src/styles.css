@@ -933,6 +933,69 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     background-color: #1565c0;
 }
 
+/* Debug info dialog (faction controls page) */
+.nfh-debug-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.nfh-debug-dialog {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 640px;
+    max-width: 100%;
+    max-height: 100%;
+    padding: 14px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 6px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+}
+
+.nfh-debug-title {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.nfh-debug-note {
+    margin: 0;
+    color: var(--nfh-list-key);
+}
+
+.nfh-debug-text {
+    box-sizing: border-box;
+    width: 100%;
+    height: 320px;
+    max-height: 60vh;
+    padding: 6px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 4px;
+    background-color: var(--nfh-bg);
+    color: var(--nfh-text);
+    font-family: monospace;
+    font-size: 12px;
+    resize: vertical;
+}
+
+.nfh-debug-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.nfh-debug-status {
+    margin-right: auto;
+    color: var(--nfh-list-key);
+}
+
 /* What is wrong with a suggested slot, under its tag's text */
 .nfh-oc-tag > .nfh-oc-flag {
     margin: 2px -6px -2px;

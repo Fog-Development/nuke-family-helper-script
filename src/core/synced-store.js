@@ -17,6 +17,7 @@ export function createSyncedStore({
   const listeners = [];
 
   const store = {
+    storageKey,
     serverField,
     fallbackTtlMs,
 
