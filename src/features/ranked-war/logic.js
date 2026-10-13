@@ -93,6 +93,34 @@ export function formatStats(total) {
   return String(Math.round(total));
 }
 
+// "4.3b" -> 4300000000, as BSP and FF Scouter write estimates on the page.
+// Null for anything that is not a number ("N/A", a spinner, an empty box).
+export function parseStatText(text) {
+  const match = String(text || "").trim().match(/^([\d.,]+)\s*([kmbtq])?$/i);
+  if (!match) return null;
+  const scale = { k: 1e3, m: 1e6, b: 1e9, t: 1e12, q: 1e15 }[(match[2] || "").toLowerCase()] || 1;
+  const value = Number(match[1].replace(/,/g, "")) * scale;
+  return Number.isFinite(value) && value > 0 ? Math.round(value) : null;
+}
+
+// Where a stat estimate can come from: the two scripts members run.
+export const Source = { Bsp: "bsp", FfScouter: "ffscouter" };
+export const SOURCES = [Source.Bsp, Source.FfScouter];
+
+// The estimate to use for a row: what the member's own BSP or FF Scouter shows
+// on the page if either does, else what nuke.family holds from other members.
+// The preferred source wins within each. Returns { total, source, fromPage },
+// with total 0 when nobody has an estimate.
+export function pickEstimate(onPage, held, preferred) {
+  const order = [preferred, ...SOURCES.filter((source) => source !== preferred)];
+  for (const [values, fromPage] of [[onPage, true], [held, false]]) {
+    for (const source of order) {
+      if (values && values[source] > 0) return { total: values[source], source, fromPage };
+    }
+  }
+  return { total: 0, source: null, fromPage: false };
+}
+
 // What one row should show.
 //
 //   member   { s: state, u: until (unix seconds), d: description } from the

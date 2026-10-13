@@ -1,7 +1,16 @@
 import { api } from "../../core/api.js";
 import { LogInfo } from "../../core/log.js";
 import { PageType } from "../../core/pages.js";
-import { classify, comparatorFor, formatStats, SortMode } from "./logic.js";
+import {
+  classify,
+  comparatorFor,
+  formatStats,
+  parseStatText,
+  pickEstimate,
+  SortMode,
+  Source,
+  SOURCES,
+} from "./logic.js";
 import { getPrefs, setPrefs } from "./prefs.js";
 
 // Ranked war board: on your own faction's ranked war view, every member's
@@ -12,6 +21,11 @@ import { getPrefs, setPrefs } from "./prefs.js";
 // The statuses come from nuke.family (`/war/board`), which reads them from
 // Torn once for everyone looking and knows whether the faction is at war at
 // all; this script never calls Torn's API and needs no Torn key of its own.
+//
+// Stat estimates are BSP's or FF Scouter's. A member who runs either has them
+// on the page already: they are read from there, used for sorting, and passed
+// on to nuke.family (once a day per player is enough), which hands them to the
+// members who run neither.
 //
 // Nothing here runs unless the ranked war view is open: init() returns at once
 // on any other faction tab. While it is open there is one 1s timer, which
@@ -27,19 +41,34 @@ const TONE_ATTR = "data-nfh-war-tone";
 const ROW_ATTR = "data-nfh-war-row";
 const STATS_ATTR = "data-nfh-war-stats";
 
+// BSP's coloured box beside a name; FF Scouter's estimate on the row itself.
+const BSP_BOX_SELECTOR = ".iconStats, .iconStatsAttack";
+// FF Scouter marks a list it is filtering or sorting itself; it is left alone.
+const FF_BUSY_SELECTOR = "[data-ffscouter-active-filter]";
+
 const DEFAULT_POLL_MS = 5000;
 const ERROR_RETRY_MS = 30 * 1000;
-// Estimates barely move during a war; asking again now and then picks up a
-// Torn Stats key added since.
-const STATS_REFRESH_MS = 30 * 60 * 1000;
+// Estimates barely move during a war; asking again now and then picks up
+// what other members' scripts have passed on since.
+const STATS_REFRESH_MS = 10 * 60 * 1000;
+// Estimates read off the page are sent in one request, this long after the
+// last new one turned up (BSP and FF Scouter fill the list in bit by bit).
+const UPLOAD_DELAY_MS = 4000;
+const UPLOAD_RETRY_MS = 5 * 60 * 1000;
+const UPLOAD_MAX = 300;
 // Statuses older than this are no longer shown as if they were current.
 const STALE_MS = 60 * 1000;
 
 const state = {
   war: undefined, // undefined = not asked yet, null = the site knows of no war
   members: {},
-  stats: {},
+  held: { bsp: {}, ffscouter: {} }, // estimates nuke.family holds, by source
+  fresh: { bsp: new Set(), ffscouter: new Set() }, // players it needs nothing for
   statsAt: 0,
+  anyStats: false, // some row has an estimate, from anywhere
+  heldShown: false, // some row is showing one nuke.family supplied
+  sources: new Set(), // the sources estimates are available from
+  uploadAfter: 0,
   fetchedAt: 0, // when statuses last arrived (browser clock)
   clockOffset: 0, // server clock minus browser clock, ms
   nextPollAt: 0,
@@ -54,7 +83,11 @@ const memos = new Map();
 // would change nothing.
 let written = new WeakMap();
 
+// Estimates read off the page that nuke.family does not have yet.
+const pending = { bsp: new Map(), ffscouter: new Map() };
+
 let ticker = null;
+let uploadTimer = null;
 let barHtml = "";
 
 function isRankedWarView() {
@@ -105,6 +138,51 @@ function pageKindOf(statusCell) {
   return text === "Okay" ? "okay" : "other";
 }
 
+// The estimates the member's own BSP and FF Scouter put on this row.
+function pageEstimatesOf(row) {
+  const found = {};
+  const scouter = Number(row.dataset.estValue);
+  if (scouter > 0) found[Source.FfScouter] = Math.round(scouter);
+  const box = row.querySelector(BSP_BOX_SELECTOR);
+  const predicted = box && parseStatText(box.textContent);
+  if (predicted) found[Source.Bsp] = predicted;
+  return found;
+}
+
+// Queue what the page shows and nuke.family lacks. Nothing is queued before
+// the site has said what it holds, so most page views send nothing at all.
+function noteForUpload(id, onPage) {
+  if (state.statsAt === 0 || Date.now() < state.uploadAfter) return;
+  for (const source of SOURCES) {
+    if (!onPage[source] || state.fresh[source].has(id) || pending[source].has(id)) continue;
+    pending[source].set(id, onPage[source]);
+    clearTimeout(uploadTimer);
+    uploadTimer = setTimeout(upload, UPLOAD_DELAY_MS);
+  }
+}
+
+async function upload() {
+  uploadTimer = null;
+  for (const source of SOURCES) {
+    const batch = [...pending[source].entries()].slice(0, UPLOAD_MAX);
+    if (batch.length === 0) continue;
+    pending[source].clear();
+
+    try {
+      await api("/war/estimates", {
+        method: "POST",
+        data: { source, estimates: batch.map(([id, total]) => ({ id: Number(id), total })) },
+      });
+      for (const [id] of batch) state.fresh[source].add(id);
+      LogInfo(`War board sent ${batch.length} ${source} estimates`);
+    } catch (error) {
+      // Not marked as held, so they are tried again later in this page view.
+      state.uploadAfter = Date.now() + UPLOAD_RETRY_MS;
+      console.error("[NFH] Could not send stat estimates to nuke.family:", error);
+    }
+  }
+}
+
 function clearRow(row) {
   setAttr(row, ROW_ATTR, null);
   const statusCell = cellOf(row, "status");
@@ -136,6 +214,9 @@ function decorate(lists) {
   const live = hasData();
   const now = Date.now() + state.clockOffset;
   const compare = live ? comparatorFor(prefs.sort) : null;
+  let anyStats = false;
+  let heldShown = false;
+  const sources = new Set();
 
   for (const list of lists) {
     const entries = [];
@@ -151,7 +232,18 @@ function decorate(lists) {
       const pageKind = pageKindOf(statusCell);
       const entry = classify(state.members[id], pageKind, now, memos.get(id));
       memos.set(id, entry.memo);
-      entry.stats = state.stats[id] || 0;
+      const onPage = pageEstimatesOf(row);
+      const held = { bsp: state.held.bsp[id], ffscouter: state.held.ffscouter[id] };
+      const estimate = pickEstimate(onPage, held, prefs.source);
+      noteForUpload(id, onPage);
+      for (const source of SOURCES) {
+        if (onPage[source] || held[source]) sources.add(source);
+      }
+      entry.stats = estimate.total;
+      // BSP and FF Scouter draw their own; ours is only for what they do not show.
+      const badge = estimate.total > 0 && !estimate.fromPage;
+      anyStats = anyStats || estimate.total > 0;
+      heldShown = heldShown || badge;
       entry.row = row;
       entries.push(entry);
 
@@ -162,12 +254,16 @@ function decorate(lists) {
       setAttr(row, ROW_ATTR, entry.out ? "out" : entry.soon ? "soon" : null);
       const memberCell = cellOf(row, "member");
       if (memberCell) {
-        setAttr(memberCell, STATS_ATTR, prefs.showStats && entry.stats ? formatStats(entry.stats) : null);
+        setAttr(memberCell, STATS_ATTR, prefs.showStats && badge ? formatStats(entry.stats) : null);
       }
     }
 
-    if (compare) reorder(list, entries, compare);
+    if (compare && !list.closest(FF_BUSY_SELECTOR)) reorder(list, entries, compare);
   }
+
+  state.anyStats = anyStats;
+  state.heldShown = heldShown;
+  state.sources = sources;
 }
 
 // Array.prototype.sort is stable, so rows that tie keep the order Torn gave
@@ -179,10 +275,6 @@ function reorder(list, entries, compare) {
   const fragment = document.createDocumentFragment();
   for (const entry of sorted) fragment.appendChild(entry.row);
   list.insertBefore(fragment, list.firstChild);
-}
-
-function hasStats() {
-  return Object.keys(state.stats).length > 0;
 }
 
 function statusText() {
@@ -204,13 +296,19 @@ function renderBar() {
     (state.war
       ? '<span class="nfh-cw-muted">Sort</span>' +
         chip(SortMode.Status, "Hospital", "Who can be hit now, then who leaves hospital next") +
-        (hasStats()
+        (state.anyStats
           ? chip(SortMode.StatsAsc, "Stats ▲", "Lowest battle stat estimate first") +
             chip(SortMode.StatsDesc, "Stats ▼", "Highest battle stat estimate first")
           : "") +
-        chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them") +
-        (hasStats()
-          ? `<label title="Show each opponent's battle stat estimate, from your faction's spies on Torn Stats"><input type="checkbox" data-pref="showStats"${prefs.showStats ? " checked" : ""}> Show stats</label>`
+        chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them (or BSP / FF Scouter, if you sort with theirs)") +
+        (state.sources.size > 1
+          ? '<label title="Whose estimate to use when both are known">Estimates <select data-pref="source">' +
+            `<option value="${Source.Bsp}"${prefs.source === Source.Bsp ? " selected" : ""}>BSP</option>` +
+            `<option value="${Source.FfScouter}"${prefs.source === Source.FfScouter ? " selected" : ""}>FF Scouter</option>` +
+            "</select></label>"
+          : "") +
+        (state.heldShown || (state.anyStats && !prefs.showStats)
+          ? `<label title="Show the estimates other members' BSP or FF Scouter passed on to nuke.family, where yours shows none"><input type="checkbox" data-pref="showStats"${prefs.showStats ? " checked" : ""}> Show stats</label>`
           : "")
       : "") +
     `<span class="nfh-cw-status nfh-cw-muted">${statusText()}</span>` +
@@ -247,16 +345,22 @@ function onClick(event) {
 }
 
 function onChange(event) {
-  if (event.target.dataset.pref !== "showStats") return;
-  setPrefs({ showStats: event.target.checked });
+  const pref = event.target.dataset.pref;
+  if (pref === "showStats") {
+    setPrefs({ showStats: event.target.checked });
+  } else if (pref === "source") {
+    setPrefs({ source: event.target.value });
+  } else {
+    return;
+  }
   refresh();
 }
 
 function refresh() {
   const lists = document.querySelectorAll(LIST_SELECTOR);
   if (lists.length > 0) {
-    ensureBar();
     decorate(lists);
+    ensureBar();
   }
 }
 
@@ -280,8 +384,11 @@ async function poll() {
     state.fetchedAt = Date.now();
     state.clockOffset = data.server_time * 1000 - Date.now();
     state.nextPollAt = Date.now() + (data.poll_seconds * 1000 || DEFAULT_POLL_MS);
-    if (data.stats) {
-      state.stats = data.stats;
+    if (data.estimates) {
+      for (const source of SOURCES) {
+        state.held[source] = data.estimates[source] || {};
+        state.fresh[source] = new Set(((data.estimates_fresh || {})[source] || []).map(String));
+      }
       state.statsAt = Date.now();
     }
   } catch (error) {
@@ -307,8 +414,8 @@ function tick() {
   // Torn has not drawn the war yet (or the war is over and there are no lists).
   if (lists.length === 0) return;
 
-  ensureBar();
   decorate(lists);
+  ensureBar();
 
   if (!state.loading && Date.now() >= state.nextPollAt) {
     poll();
@@ -322,6 +429,9 @@ function stop() {
   if (bar) bar.remove();
   clearAll();
   memos.clear();
+  clearTimeout(uploadTimer);
+  uploadTimer = null;
+  for (const source of SOURCES) pending[source].clear();
   LogInfo("War board stopped");
 }
 

@@ -1659,20 +1659,20 @@ body.dark-mode .nfh-oc-bar-warning {
   }
   function hasUpdateGracePeriodElapsed(githubVersion) {
     const now = Date.now();
-    let pending2 = null;
+    let pending3 = null;
     try {
-      pending2 = JSON.parse(localStorage.getItem("nfhPendingUpdate"));
+      pending3 = JSON.parse(localStorage.getItem("nfhPendingUpdate"));
     } catch (e) {
-      pending2 = null;
+      pending3 = null;
     }
-    if (!pending2 || pending2.version !== githubVersion) {
+    if (!pending3 || pending3.version !== githubVersion) {
       localStorage.setItem(
         "nfhPendingUpdate",
         JSON.stringify({ version: githubVersion, firstSeen: now })
       );
       return false;
     }
-    return now - pending2.firstSeen >= UPDATE_NOTIFY_GRACE_PERIOD;
+    return now - pending3.firstSeen >= UPDATE_NOTIFY_GRACE_PERIOD;
   }
   function isVersionNewer(v1, v2) {
     const v1Parts = v1.split(".").map(Number);
@@ -4195,6 +4195,24 @@ body.dark-mode .nfh-oc-bar-warning {
     }
     return String(Math.round(total));
   }
+  function parseStatText(text) {
+    const match = String(text || "").trim().match(/^([\d.,]+)\s*([kmbtq])?$/i);
+    if (!match) return null;
+    const scale = { k: 1e3, m: 1e6, b: 1e9, t: 1e12, q: 1e15 }[(match[2] || "").toLowerCase()] || 1;
+    const value = Number(match[1].replace(/,/g, "")) * scale;
+    return Number.isFinite(value) && value > 0 ? Math.round(value) : null;
+  }
+  var Source = { Bsp: "bsp", FfScouter: "ffscouter" };
+  var SOURCES = [Source.Bsp, Source.FfScouter];
+  function pickEstimate(onPage, held, preferred) {
+    const order = [preferred, ...SOURCES.filter((source) => source !== preferred)];
+    for (const [values, fromPage] of [[onPage, true], [held, false]]) {
+      for (const source of order) {
+        if (values && values[source] > 0) return { total: values[source], source, fromPage };
+      }
+    }
+    return { total: 0, source: null, fromPage: false };
+  }
   function classify(member, pageKind, nowMs, memo = {}) {
     const base = { label: null, until: 0, soon: false, out: false };
     const carried = { outSince: memo.outSince || 0, okaySince: memo.okaySince || 0 };
@@ -4283,13 +4301,16 @@ body.dark-mode .nfh-oc-bar-warning {
   var STORAGE_KEY2 = "nfhRankedWar";
   var DEFAULTS3 = {
     sort: SortMode.Status,
-    showStats: true
+    showStats: true,
+    // Whose estimate to use when both BSP's and FF Scouter's are known.
+    source: Source.Bsp
   };
   function sanitize2(raw) {
     const source = raw && typeof raw === "object" ? raw : {};
     return {
       sort: Object.values(SortMode).includes(source.sort) ? source.sort : DEFAULTS3.sort,
-      showStats: source.showStats !== false
+      showStats: source.showStats !== false,
+      source: SOURCES.includes(source.source) ? source.source : DEFAULTS3.source
     };
   }
   var prefs2 = null;
@@ -4317,16 +4338,31 @@ body.dark-mode .nfh-oc-bar-warning {
   var TONE_ATTR = "data-nfh-war-tone";
   var ROW_ATTR = "data-nfh-war-row";
   var STATS_ATTR = "data-nfh-war-stats";
+  var BSP_BOX_SELECTOR = ".iconStats, .iconStatsAttack";
+  var FF_BUSY_SELECTOR = "[data-ffscouter-active-filter]";
   var DEFAULT_POLL_MS = 5e3;
   var ERROR_RETRY_MS = 30 * 1e3;
-  var STATS_REFRESH_MS = 30 * 60 * 1e3;
+  var STATS_REFRESH_MS = 10 * 60 * 1e3;
+  var UPLOAD_DELAY_MS2 = 4e3;
+  var UPLOAD_RETRY_MS = 5 * 60 * 1e3;
+  var UPLOAD_MAX = 300;
   var STALE_MS = 60 * 1e3;
   var state2 = {
     war: void 0,
     // undefined = not asked yet, null = the site knows of no war
     members: {},
-    stats: {},
+    held: { bsp: {}, ffscouter: {} },
+    // estimates nuke.family holds, by source
+    fresh: { bsp: /* @__PURE__ */ new Set(), ffscouter: /* @__PURE__ */ new Set() },
+    // players it needs nothing for
     statsAt: 0,
+    anyStats: false,
+    // some row has an estimate, from anywhere
+    heldShown: false,
+    // some row is showing one nuke.family supplied
+    sources: /* @__PURE__ */ new Set(),
+    // the sources estimates are available from
+    uploadAfter: 0,
     fetchedAt: 0,
     // when statuses last arrived (browser clock)
     clockOffset: 0,
@@ -4337,7 +4373,9 @@ body.dark-mode .nfh-oc-bar-warning {
   };
   var memos = /* @__PURE__ */ new Map();
   var written = /* @__PURE__ */ new WeakMap();
+  var pending2 = { bsp: /* @__PURE__ */ new Map(), ffscouter: /* @__PURE__ */ new Map() };
   var ticker2 = null;
+  var uploadTimer2 = null;
   var barHtml2 = "";
   function isRankedWarView() {
     return window.location.search.includes("step=your") && window.location.hash.startsWith("#/war/rank");
@@ -4376,6 +4414,43 @@ body.dark-mode .nfh-oc-bar-warning {
     }
     return text === "Okay" ? "okay" : "other";
   }
+  function pageEstimatesOf(row) {
+    const found = {};
+    const scouter = Number(row.dataset.estValue);
+    if (scouter > 0) found[Source.FfScouter] = Math.round(scouter);
+    const box = row.querySelector(BSP_BOX_SELECTOR);
+    const predicted = box && parseStatText(box.textContent);
+    if (predicted) found[Source.Bsp] = predicted;
+    return found;
+  }
+  function noteForUpload(id, onPage) {
+    if (state2.statsAt === 0 || Date.now() < state2.uploadAfter) return;
+    for (const source of SOURCES) {
+      if (!onPage[source] || state2.fresh[source].has(id) || pending2[source].has(id)) continue;
+      pending2[source].set(id, onPage[source]);
+      clearTimeout(uploadTimer2);
+      uploadTimer2 = setTimeout(upload2, UPLOAD_DELAY_MS2);
+    }
+  }
+  async function upload2() {
+    uploadTimer2 = null;
+    for (const source of SOURCES) {
+      const batch = [...pending2[source].entries()].slice(0, UPLOAD_MAX);
+      if (batch.length === 0) continue;
+      pending2[source].clear();
+      try {
+        await api("/war/estimates", {
+          method: "POST",
+          data: { source, estimates: batch.map(([id, total]) => ({ id: Number(id), total })) }
+        });
+        for (const [id] of batch) state2.fresh[source].add(id);
+        LogInfo(`War board sent ${batch.length} ${source} estimates`);
+      } catch (error) {
+        state2.uploadAfter = Date.now() + UPLOAD_RETRY_MS;
+        console.error("[NFH] Could not send stat estimates to nuke.family:", error);
+      }
+    }
+  }
   function clearRow(row) {
     setAttr(row, ROW_ATTR, null);
     const statusCell = cellOf(row, "status");
@@ -4403,6 +4478,9 @@ body.dark-mode .nfh-oc-bar-warning {
     const live = hasData();
     const now = Date.now() + state2.clockOffset;
     const compare = live ? comparatorFor(prefs3.sort) : null;
+    let anyStats = false;
+    let heldShown = false;
+    const sources = /* @__PURE__ */ new Set();
     for (const list of lists) {
       const entries = [];
       for (const row of list.children) {
@@ -4415,7 +4493,17 @@ body.dark-mode .nfh-oc-bar-warning {
         const pageKind = pageKindOf(statusCell);
         const entry = classify(state2.members[id], pageKind, now, memos.get(id));
         memos.set(id, entry.memo);
-        entry.stats = state2.stats[id] || 0;
+        const onPage = pageEstimatesOf(row);
+        const held = { bsp: state2.held.bsp[id], ffscouter: state2.held.ffscouter[id] };
+        const estimate = pickEstimate(onPage, held, prefs3.source);
+        noteForUpload(id, onPage);
+        for (const source of SOURCES) {
+          if (onPage[source] || held[source]) sources.add(source);
+        }
+        entry.stats = estimate.total;
+        const badge = estimate.total > 0 && !estimate.fromPage;
+        anyStats = anyStats || estimate.total > 0;
+        heldShown = heldShown || badge;
         entry.row = row;
         entries.push(entry);
         if (statusCell) {
@@ -4425,11 +4513,14 @@ body.dark-mode .nfh-oc-bar-warning {
         setAttr(row, ROW_ATTR, entry.out ? "out" : entry.soon ? "soon" : null);
         const memberCell = cellOf(row, "member");
         if (memberCell) {
-          setAttr(memberCell, STATS_ATTR, prefs3.showStats && entry.stats ? formatStats(entry.stats) : null);
+          setAttr(memberCell, STATS_ATTR, prefs3.showStats && badge ? formatStats(entry.stats) : null);
         }
       }
-      if (compare) reorder(list, entries, compare);
+      if (compare && !list.closest(FF_BUSY_SELECTOR)) reorder(list, entries, compare);
     }
+    state2.anyStats = anyStats;
+    state2.heldShown = heldShown;
+    state2.sources = sources;
   }
   function reorder(list, entries, compare) {
     const sorted = [...entries].sort(compare);
@@ -4437,9 +4528,6 @@ body.dark-mode .nfh-oc-bar-warning {
     const fragment = document.createDocumentFragment();
     for (const entry of sorted) fragment.appendChild(entry.row);
     list.insertBefore(fragment, list.firstChild);
-  }
-  function hasStats() {
-    return Object.keys(state2.stats).length > 0;
   }
   function statusText() {
     if (state2.war === null) return "nuke.family has no ranked war on for your faction yet.";
@@ -4451,7 +4539,7 @@ body.dark-mode .nfh-oc-bar-warning {
   function renderBar3() {
     const prefs3 = getPrefs2();
     const chip = (mode, label, title) => `<button type="button" class="nfh-cw-chip${prefs3.sort === mode ? " is-armed" : ""}" data-sort="${mode}" title="${title}">${label}</button>`;
-    return '<div class="nfh-cw-bar"><strong>War board</strong>' + (state2.war ? '<span class="nfh-cw-muted">Sort</span>' + chip(SortMode.Status, "Hospital", "Who can be hit now, then who leaves hospital next") + (hasStats() ? chip(SortMode.StatsAsc, "Stats \u25B2", "Lowest battle stat estimate first") + chip(SortMode.StatsDesc, "Stats \u25BC", "Highest battle stat estimate first") : "") + chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them") + (hasStats() ? `<label title="Show each opponent's battle stat estimate, from your faction's spies on Torn Stats"><input type="checkbox" data-pref="showStats"${prefs3.showStats ? " checked" : ""}> Show stats</label>` : "") : "") + `<span class="nfh-cw-status nfh-cw-muted">${statusText()}</span></div>`;
+    return '<div class="nfh-cw-bar"><strong>War board</strong>' + (state2.war ? '<span class="nfh-cw-muted">Sort</span>' + chip(SortMode.Status, "Hospital", "Who can be hit now, then who leaves hospital next") + (state2.anyStats ? chip(SortMode.StatsAsc, "Stats \u25B2", "Lowest battle stat estimate first") + chip(SortMode.StatsDesc, "Stats \u25BC", "Highest battle stat estimate first") : "") + chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them (or BSP / FF Scouter, if you sort with theirs)") + (state2.sources.size > 1 ? `<label title="Whose estimate to use when both are known">Estimates <select data-pref="source"><option value="${Source.Bsp}"${prefs3.source === Source.Bsp ? " selected" : ""}>BSP</option><option value="${Source.FfScouter}"${prefs3.source === Source.FfScouter ? " selected" : ""}>FF Scouter</option></select></label>` : "") + (state2.heldShown || state2.anyStats && !prefs3.showStats ? `<label title="Show the estimates other members' BSP or FF Scouter passed on to nuke.family, where yours shows none"><input type="checkbox" data-pref="showStats"${prefs3.showStats ? " checked" : ""}> Show stats</label>` : "") : "") + `<span class="nfh-cw-status nfh-cw-muted">${statusText()}</span></div>`;
   }
   function ensureBar() {
     let bar = document.getElementById(BAR_ID2);
@@ -4479,15 +4567,21 @@ body.dark-mode .nfh-oc-bar-warning {
     refresh();
   }
   function onChange2(event) {
-    if (event.target.dataset.pref !== "showStats") return;
-    setPrefs2({ showStats: event.target.checked });
+    const pref = event.target.dataset.pref;
+    if (pref === "showStats") {
+      setPrefs2({ showStats: event.target.checked });
+    } else if (pref === "source") {
+      setPrefs2({ source: event.target.value });
+    } else {
+      return;
+    }
     refresh();
   }
   function refresh() {
     const lists = document.querySelectorAll(LIST_SELECTOR);
     if (lists.length > 0) {
-      ensureBar();
       decorate(lists);
+      ensureBar();
     }
   }
   async function poll() {
@@ -4507,8 +4601,11 @@ body.dark-mode .nfh-oc-bar-warning {
       state2.fetchedAt = Date.now();
       state2.clockOffset = data.server_time * 1e3 - Date.now();
       state2.nextPollAt = Date.now() + (data.poll_seconds * 1e3 || DEFAULT_POLL_MS);
-      if (data.stats) {
-        state2.stats = data.stats;
+      if (data.estimates) {
+        for (const source of SOURCES) {
+          state2.held[source] = data.estimates[source] || {};
+          state2.fresh[source] = new Set(((data.estimates_fresh || {})[source] || []).map(String));
+        }
         state2.statsAt = Date.now();
       }
     } catch (error) {
@@ -4528,8 +4625,8 @@ body.dark-mode .nfh-oc-bar-warning {
     if (document.hidden) return;
     const lists = document.querySelectorAll(LIST_SELECTOR);
     if (lists.length === 0) return;
-    ensureBar();
     decorate(lists);
+    ensureBar();
     if (!state2.loading && Date.now() >= state2.nextPollAt) {
       poll();
     }
@@ -4541,6 +4638,9 @@ body.dark-mode .nfh-oc-bar-warning {
     if (bar) bar.remove();
     clearAll2();
     memos.clear();
+    clearTimeout(uploadTimer2);
+    uploadTimer2 = null;
+    for (const source of SOURCES) pending2[source].clear();
     LogInfo("War board stopped");
   }
   function init5() {

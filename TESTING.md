@@ -150,9 +150,17 @@ by hand, so this pass is the only check against Torn's real markup.
       time left, then travellers. A stay under five minutes is tinted green.
 - [ ] Hospitalise or revive someone: their row moves within a second or two,
       and a revived member is tinted orange at the top for ten seconds.
-- [ ] If the faction has a Torn Stats key on nuke.family: opponents show a
-      stat estimate next to their name, "Stats ▲" / "Stats ▼" sort by it, and
-      "Show stats" hides it. Without a key those controls are absent.
+- [ ] With BSP or FF Scouter installed: "Stats ▲" / "Stats ▼" sort by the
+      estimates that script shows, no extra badge is drawn over them, and a few
+      seconds after the list fills in one `POST /war/estimates` per script goes
+      out (Network tab). Reload: nothing is sent again.
+- [ ] With both installed, "Estimates" in the bar chooses which one sorts.
+- [ ] In a browser with neither installed, after the step above: opponents show
+      a small estimate badge beside their name, the stat sorts work, and "Show
+      stats" hides the badges. Before anyone has passed estimates on, the stat
+      controls are absent.
+- [ ] While FF Scouter's own filter or sort is active on a list, ours leaves
+      that list's order alone.
 - [ ] "Torn's order" stops the sorting (Torn's column headers work again) and
       keeps the countdowns. The choice survives a reload.
 - [ ] The stat estimate does not cover the name or the attack link, on desktop

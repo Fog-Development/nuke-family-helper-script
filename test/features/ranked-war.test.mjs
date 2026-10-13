@@ -82,10 +82,37 @@ function board(over = {}) {
   };
 }
 
-const STATS = { 501: 4_200_000_000, 502: 150_000_000, 504: 9_900_000_000, 505: 780_000_000 };
+const BSP = { 501: 4_200_000_000, 502: 150_000_000, 504: 9_900_000_000, 505: 780_000_000 };
+// What nuke.family holds from other members' scripts: BSP's for four of the
+// opponents (all seen within a day), nothing from FF Scouter.
+const held = (bsp = BSP, ffscouter = {}) => ({
+  estimates: { bsp, ffscouter },
+  estimates_fresh: { bsp: Object.keys(bsp).map(Number), ffscouter: Object.keys(ffscouter).map(Number) },
+});
+
+// Put estimates on the rows the way the member's own scripts do: BSP as a
+// coloured box inside an attack link beside the name, FF Scouter as a raw
+// number on the row.
+async function addScripts(page, { bsp = {}, ffscouter = {} }) {
+  await page.evaluate(
+    ({ bsp, ffscouter }) => {
+      for (const row of document.querySelectorAll(".faction-war .members-list li")) {
+        const id = row.querySelector("a[href*='XID=']").href.match(/XID=(\d+)/)[1];
+        if (bsp[id]) {
+          row.querySelector(".member").insertAdjacentHTML(
+            "afterbegin",
+            `<a href="/loader.php?sid=attack&user2ID=${id}"><div class="iconStats" style="background:#3af">${bsp[id]}</div></a>`,
+          );
+        }
+        if (ffscouter[id]) row.dataset.estValue = String(ffscouter[id]);
+      }
+    },
+    { bsp, ffscouter },
+  );
+}
 
 async function openWar({ api, ...options } = {}) {
-  const withStats = board({ stats: STATS });
+  const withStats = board(held());
   return openTornPage(browser, {
     page: "factions-faction",
     url: WAR_URL,
@@ -167,7 +194,7 @@ describe("ranked war board", () => {
       assert.equal(await page.locator(".faction-war [data-nfh-war-stats]").count(), 0);
 
       const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("nfhRankedWar")));
-      assert.deepEqual(saved, { sort: "off", showStats: false });
+      assert.deepEqual(saved, { sort: "off", showStats: false, source: "bsp" });
       assert.deepEqual(errors, []);
     } finally {
       await close();
@@ -204,13 +231,91 @@ describe("ranked war board", () => {
     }
   });
 
-  it("offers no stat sorting when the site has no estimates", async () => {
-    const { page, close } = await openWar({ api: { [`GET ${BOARD_WITH_STATS}`]: board({ stats: {} }) } });
+  it("offers no stat sorting when nobody has an estimate", async () => {
+    const { page, close } = await openWar({ api: { [`GET ${BOARD_WITH_STATS}`]: board(held({})) } });
     try {
       await page.waitForSelector(".faction-war [data-nfh-war]");
       assert.equal(await page.locator(`${BAR} [data-sort^="stats"]`).count(), 0);
       assert.equal(await page.locator(`${BAR} [data-pref="showStats"]`).count(), 0);
       assert.equal(await page.locator(`${BAR} [data-sort]`).count(), 2);
+    } finally {
+      await close();
+    }
+  });
+
+  it("uses the member's own BSP and FF Scouter estimates and passes on what the site lacks", async () => {
+    const posts = [];
+    const { page, errors, apiCalls, close } = await openWar({
+      before: async (page) => {
+        await addWar(page);
+        // Their BSP shows three opponents: one the site has differently (504)
+        // and one it has nothing for (503). Their FF Scouter shows two.
+        await addScripts(page, {
+          bsp: { 501: "4.2b", 504: "1.1b", 503: "371m" },
+          ffscouter: { 501: 5_000_000_000, 502: 90_000_000 },
+        });
+      },
+      api: {
+        "POST /war/estimates": (details) => {
+          posts.push(JSON.parse(details.data));
+          return { stored: 1 };
+        },
+      },
+    });
+    try {
+      await page.waitForSelector(".faction-war [data-nfh-war]");
+      await page.click(`${BAR} [data-sort="stats-asc"]`);
+
+      // BSP is preferred: their own box where there is one (504 is 1.1b, not
+      // the site's 9.9b), then their FF Scouter (502 is 90m), then the site's.
+      assert.deepEqual(await enemyOrder(page), [
+        "Foe-LongHosp", "Foe-Abroad", "Foe-Revived", "Foe-ShortHosp", "Foe-Okay",
+      ]);
+
+      // Our own badge only where their scripts show nothing.
+      const badge = (id) =>
+        page.locator(`.faction-war li:has(a[href$="XID=${id}"]) .member`).getAttribute("data-nfh-war-stats");
+      assert.equal(await badge(504), null);
+      assert.equal(await badge(503), null);
+      assert.equal(await badge(502), null);
+      assert.equal(await badge(505), "780m");
+
+      // Preferring FF Scouter puts 501 at their FF Scouter's 5b: last.
+      await page.selectOption(`${BAR} [data-pref="source"]`, "ffscouter");
+      assert.equal((await enemyOrder(page)).at(-1), "Foe-Okay");
+      await page.selectOption(`${BAR} [data-pref="source"]`, "bsp");
+      assert.equal((await enemyOrder(page)).at(-1), "Foe-Okay");
+
+      // Only what the site does not already hold is sent, once.
+      await page.waitForTimeout(4600);
+      const sent = Object.fromEntries(posts.map((post) => [post.source, post.estimates]));
+      assert.deepEqual(sent.bsp, [{ id: 503, total: 371_000_000 }]);
+      assert.deepEqual(sent.ffscouter, [
+        { id: 501, total: 5_000_000_000 },
+        { id: 502, total: 90_000_000 },
+      ]);
+      await page.waitForTimeout(1500);
+      assert.equal(apiCalls.filter((call) => call.path === "/war/estimates").length, 2);
+      assert.deepEqual(errors, []);
+      await screenshot(page.locator(BAR), "ranked-war-bar-both-sources");
+    } finally {
+      await close();
+    }
+  });
+
+  it("leaves a list alone while FF Scouter is filtering it", async () => {
+    const { page, close } = await openWar({
+      before: async (page) => {
+        await addWar(page);
+        await page.evaluate(() => {
+          document.querySelector(".faction-war .members-list").setAttribute("data-ffscouter-active-filter", "true");
+        });
+      },
+    });
+    try {
+      await page.waitForSelector(".faction-war [data-nfh-war]");
+      assert.equal((await enemyOrder(page))[0], "Foe-Okay");
+      assert.match(await statusLabel(page, 504), /^\d:\d\d$/);
     } finally {
       await close();
     }

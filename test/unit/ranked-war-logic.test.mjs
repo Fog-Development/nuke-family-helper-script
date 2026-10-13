@@ -7,6 +7,8 @@ import {
   formatStats,
   Group,
   parseRoute,
+  parseStatText,
+  pickEstimate,
   SortMode,
 } from "../../src/features/ranked-war/logic.js";
 
@@ -88,6 +90,30 @@ describe("ranked war: what a row shows", () => {
     assert.equal(formatStats(123_456_789), "123m");
     assert.equal(formatStats(1_250_000_000_000), "1.3t");
     assert.equal(formatStats(950), "950");
+  });
+});
+
+describe("ranked war: stat estimates", () => {
+  it("reads the short form BSP and FF Scouter write", () => {
+    assert.equal(parseStatText("4.3b"), 4_300_000_000);
+    assert.equal(parseStatText(" 371m "), 371_000_000);
+    assert.equal(parseStatText("328k"), 328_000);
+    assert.equal(parseStatText("1.25T"), 1_250_000_000_000);
+    assert.equal(parseStatText("12,500"), 12_500);
+    assert.equal(parseStatText("N/A"), null);
+    assert.equal(parseStatText(""), null);
+    assert.equal(parseStatText("0"), null);
+  });
+
+  it("prefers the member's own script, then the chosen source", () => {
+    const pick = (onPage, held, preferred = "bsp") => pickEstimate(onPage, held, preferred);
+
+    assert.deepEqual(pick({ bsp: 5, ffscouter: 7 }, { bsp: 9 }), { total: 5, source: "bsp", fromPage: true });
+    assert.deepEqual(pick({ bsp: 5, ffscouter: 7 }, {}, "ffscouter"), { total: 7, source: "ffscouter", fromPage: true });
+    assert.deepEqual(pick({ ffscouter: 7 }, { bsp: 9 }), { total: 7, source: "ffscouter", fromPage: true });
+    assert.deepEqual(pick({}, { bsp: 9, ffscouter: 8 }, "ffscouter"), { total: 8, source: "ffscouter", fromPage: false });
+    assert.deepEqual(pick({}, { ffscouter: 8 }), { total: 8, source: "ffscouter", fromPage: false });
+    assert.deepEqual(pick({}, {}), { total: 0, source: null, fromPage: false });
   });
 });
 
