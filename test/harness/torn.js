@@ -138,6 +138,19 @@ export async function openTornPage(browser, options) {
       const css = tornCss(requested);
       if (css) return route.fulfill({ contentType: "text/css", body: css });
     }
+    // A request the page makes to nuke.family itself (the debug report's own
+    // check): the site's answer to a call with no key. A test wanting another
+    // answer adds its own page.route() for the URL.
+    if (requested.startsWith(API_PREFIX)) {
+      const headers = { "access-control-allow-origin": "*", "access-control-allow-headers": "*" };
+      if (request.method() === "OPTIONS") return route.fulfill({ status: 204, headers });
+      return route.fulfill({
+        status: 401,
+        headers,
+        contentType: "application/json",
+        body: JSON.stringify({ message: "Unauthenticated." }),
+      });
+    }
     // Images, fonts, anything else: an empty 200 so nothing hits the network
     // and the page does not log failed-resource errors.
     return route.fulfill({ status: 200, body: "" });

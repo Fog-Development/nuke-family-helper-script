@@ -24,7 +24,8 @@
   // src/core/pda-polyfill.js
   var isPda = (() => {
     try {
-      return !!window.GM_info && !!window.GM_info.scriptHandler && window.GM_info.scriptHandler.toLowerCase().includes("tornpda");
+      const handler = (window.GM_info && window.GM_info.scriptHandler || "").toLowerCase();
+      return /com\.manuito\.tornpda/i.test(navigator.userAgent || "") || handler.includes("tornpda") || handler.includes("gmforpda");
     } catch (e) {
       return false;
     }
@@ -165,7 +166,7 @@ ${text}`) && onclick?.();
               () => rej("Request timed out")
             );
             if (!method || method.toLowerCase() !== "post") {
-              PDA_httpGet(url).then(res).catch(rej);
+              PDA_httpGet(url, headers ?? {}).then(res).catch(rej);
               onprogress?.();
             } else {
               PDA_httpPost(url, headers ?? {}, data ?? "").then(res).catch(rej);
@@ -1396,22 +1397,41 @@ body.dark-mode .nfh-oc-bar-warning {
   }
 
   // src/core/api.js
+  var SNIPPET_LENGTH = 200;
+  function snippet(text) {
+    return typeof text === "string" ? text.trim().slice(0, SNIPPET_LENGTH) : null;
+  }
+  var NoAnswerError = class extends Error {
+    constructor(kind, detail = null, status = null) {
+      super(`Request got no usable answer (${kind})`);
+      this.name = "NoAnswerError";
+      this.kind = kind;
+      this.detail = detail;
+      this.status = status;
+    }
+  };
+  function failureDetail(failure2) {
+    if (!failure2) return null;
+    if (typeof failure2 === "string") return snippet(failure2);
+    return snippet(failure2.error || failure2.message || failure2.statusText || "") || null;
+  }
   function request(details) {
     return new Promise((resolve, reject) => {
       GM_xmlhttpRequest({
         ...details,
         onload: resolve,
-        onerror: reject,
-        ontimeout: reject
+        onerror: (failure2) => reject(new NoAnswerError("network", failureDetail(failure2))),
+        ontimeout: (failure2) => reject(new NoAnswerError("timeout", failureDetail(failure2)))
       });
     });
   }
   var ApiError = class extends Error {
-    constructor(message, status, body) {
+    constructor(message, status, body, raw = null) {
       super(message);
       this.name = "ApiError";
       this.status = status;
       this.body = body;
+      this.raw = raw;
     }
   };
   async function api(path, { method = "GET", data = void 0 } = {}) {
@@ -1428,19 +1448,43 @@ body.dark-mode .nfh-oc-bar-warning {
       headers,
       data: data !== void 0 ? JSON.stringify(data) : void 0
     });
-    if (response.status >= 200 && response.status < 300) {
-      return JSON.parse(response.responseText);
+    return readReply(response, method, path);
+  }
+  function readReply(response, method, path) {
+    if (!response || typeof response.status !== "number") {
+      throw new NoAnswerError("empty");
     }
     let body = null;
+    let parsed = false;
     try {
       body = JSON.parse(response.responseText);
+      parsed = true;
     } catch (e) {
+    }
+    if (response.status >= 200 && response.status < 300) {
+      if (!parsed) throw new NoAnswerError("not_json", snippet(response.responseText), response.status);
+      return body;
     }
     throw new ApiError(
       `API ${method} ${path} failed with status ${response.status}`,
       response.status,
-      body
+      body,
+      parsed ? null : snippet(response.responseText)
     );
+  }
+  async function pageRequest(path, { method = "GET", data = void 0 } = {}) {
+    let reply;
+    try {
+      reply = await fetch(API_URL + path, {
+        method,
+        headers: data !== void 0 ? { Accept: "application/json", "Content-Type": "application/json" } : void 0,
+        body: data !== void 0 ? JSON.stringify(data) : void 0,
+        credentials: "omit"
+      });
+    } catch (error) {
+      throw new NoAnswerError("network", failureDetail(error));
+    }
+    return readReply({ status: reply.status, responseText: await reply.text() }, method, path);
   }
 
   // src/core/log.js
@@ -3442,16 +3486,41 @@ body.dark-mode .nfh-oc-bar-warning {
   // src/features/debug-info.js
   var DIALOG_ID = "nfh-debug-dialog";
   var iso = (ms) => ms ? new Date(ms).toISOString() : null;
+  var NO_ANSWER = {
+    network: "No answer: the request failed before any reply (offline, blocked, or the app could not make it)",
+    timeout: "No answer: timed out",
+    empty: "No answer: the userscript manager returned nothing",
+    not_json: "A reply that is not from the nuke.family API (a block or challenge page, usually)"
+  };
+  function failure(error) {
+    if (error instanceof ApiError) {
+      const reason = error.body && (error.body.error || error.body.message);
+      const result = { status: error.status, error: reason || null };
+      if (error.raw) result.reply_starts = error.raw;
+      return result;
+    }
+    if (error instanceof NoAnswerError) {
+      const result = { status: error.status, error: NO_ANSWER[error.kind] || error.kind, failure: error.kind };
+      if (error.detail) result[error.kind === "not_json" ? "reply_starts" : "detail"] = error.detail;
+      return result;
+    }
+    return { status: null, error: "The script could not read the reply", failure: "script", detail: String(error && error.message) };
+  }
   async function probe(path, summarise = () => void 0) {
     try {
       const body = await api(path);
       return { status: 200, ...summarise(body) };
     } catch (error) {
-      if (error instanceof ApiError) {
-        const reason = error.body && (error.body.error || error.body.message);
-        return { status: error.status, error: reason || null };
-      }
-      return { status: null, error: "No answer (network error or timeout)" };
+      return failure(error);
+    }
+  }
+  async function probeFromPage() {
+    try {
+      await pageRequest("/cache/last-updates");
+      return { reached: true, status: 200 };
+    } catch (error) {
+      const result = failure(error);
+      return { reached: error instanceof ApiError, ...result };
     }
   }
   function ocConfigSummary(config) {
@@ -3492,7 +3561,8 @@ body.dark-mode .nfh-oc-bar-warning {
     const token = getApiToken() || "";
     const info = typeof GM_info !== "undefined" && GM_info ? GM_info : {};
     const board = cachedBoard2();
-    const [roles, permissions, lastUpdates, ocConfig, ocBoard] = await Promise.all([
+    const [fromPage, roles, permissions, lastUpdates, ocConfig, ocBoard] = await Promise.all([
+      probeFromPage(),
       probe("/user/get-own-roles", (body) => ({ role: body.role ?? null })),
       probe("/user/get-own-permissions", (body) => ({ permissions: body.permissions || [] })),
       probe("/cache/last-updates", (body) => ({ timestamps: body })),
@@ -3518,6 +3588,7 @@ body.dark-mode .nfh-oc-bar-warning {
         "/oc/config": ocConfig,
         "/oc/board": ocBoard
       },
+      site_from_page: fromPage,
       stored: {
         role: getUserRole() || null,
         stores: Object.fromEntries(
@@ -3546,17 +3617,27 @@ body.dark-mode .nfh-oc-bar-warning {
     }
   }
   async function sendDebugInfo(report) {
+    const path = "/script/debug-report";
+    let error;
     try {
-      const response = await api("/script/debug-report", { method: "POST", data: { report } });
-      return { reference: response.reference };
-    } catch (error) {
-      if (error instanceof ApiError) {
-        if (error.status === 429) return { error: "Too many reports sent from here. Try again in a few minutes." };
-        const reason = error.body && (error.body.error || error.body.message);
-        return { error: reason || `nuke.family refused it (status ${error.status}).` };
-      }
-      return { error: "Could not reach nuke.family." };
+      return { reference: (await api(path, { method: "POST", data: { report } })).reference };
+    } catch (first) {
+      error = first;
     }
+    if (!(error instanceof ApiError)) {
+      try {
+        const data = { report: { ...report, sent_by: "page", send_failure: failure(error) } };
+        return { reference: (await pageRequest(path, { method: "POST", data })).reference };
+      } catch (second) {
+        if (second instanceof ApiError) error = second;
+      }
+    }
+    if (error instanceof ApiError) {
+      if (error.status === 429) return { error: "Too many reports sent from here. Try again in a few minutes." };
+      const reason = error.body && (error.body.error || error.body.message);
+      return { error: reason || `nuke.family refused it (status ${error.status}).` };
+    }
+    return { error: "Could not reach nuke.family." };
   }
   function showDebugInfo(report) {
     const existing = document.getElementById(DIALOG_ID);

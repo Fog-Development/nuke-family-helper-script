@@ -1,4 +1,4 @@
-import { api, ApiError } from "../core/api.js";
+import { api, ApiError, NoAnswerError, pageRequest } from "../core/api.js";
 import { getApiToken } from "../core/auth.js";
 import { registeredStores } from "../core/cache-sync.js";
 import { API_URL, CURRENT_VERSION, DEBUG } from "../core/config.js";
@@ -22,18 +22,52 @@ const DIALOG_ID = "nfh-debug-dialog";
 
 const iso = (ms) => (ms ? new Date(ms).toISOString() : null);
 
+const NO_ANSWER = {
+  network: "No answer: the request failed before any reply (offline, blocked, or the app could not make it)",
+  timeout: "No answer: timed out",
+  empty: "No answer: the userscript manager returned nothing",
+  not_json: "A reply that is not from the nuke.family API (a block or challenge page, usually)",
+};
+
+// What went wrong with a request, in the report's terms. A refusal keeps the
+// site's own reason; anything else says how it failed and what little came back.
+function failure(error) {
+  if (error instanceof ApiError) {
+    const reason = error.body && (error.body.error || error.body.message);
+    const result = { status: error.status, error: reason || null };
+    if (error.raw) result.reply_starts = error.raw;
+    return result;
+  }
+  if (error instanceof NoAnswerError) {
+    const result = { status: error.status, error: NO_ANSWER[error.kind] || error.kind, failure: error.kind };
+    if (error.detail) result[error.kind === "not_json" ? "reply_starts" : "detail"] = error.detail;
+    return result;
+  }
+  return { status: null, error: "The script could not read the reply", failure: "script", detail: String(error && error.message) };
+}
+
 // One request, reduced to what matters: the status and, through `summarise`,
-// the few fields worth reading. A refusal keeps the site's own reason.
+// the few fields worth reading.
 async function probe(path, summarise = () => undefined) {
   try {
     const body = await api(path);
     return { status: 200, ...summarise(body) };
   } catch (error) {
-    if (error instanceof ApiError) {
-      const reason = error.body && (error.body.error || error.body.message);
-      return { status: error.status, error: reason || null };
-    }
-    return { status: null, error: "No answer (network error or timeout)" };
+    return failure(error);
+  }
+}
+
+// Whether the page itself can reach nuke.family, asked without the key (so
+// the site's answer is a 401). With the probes above failing, this is what
+// separates "the userscript manager's requests are not getting out" from
+// "this device cannot reach nuke.family".
+async function probeFromPage() {
+  try {
+    await pageRequest("/cache/last-updates");
+    return { reached: true, status: 200 };
+  } catch (error) {
+    const result = failure(error);
+    return { reached: error instanceof ApiError, ...result };
   }
 }
 
@@ -82,7 +116,8 @@ export async function collectDebugInfo() {
   const info = typeof GM_info !== "undefined" && GM_info ? GM_info : {};
   const board = cachedBoard();
 
-  const [roles, permissions, lastUpdates, ocConfig, ocBoard] = await Promise.all([
+  const [fromPage, roles, permissions, lastUpdates, ocConfig, ocBoard] = await Promise.all([
+    probeFromPage(),
     probe("/user/get-own-roles", (body) => ({ role: body.role ?? null })),
     probe("/user/get-own-permissions", (body) => ({ permissions: body.permissions || [] })),
     probe("/cache/last-updates", (body) => ({ timestamps: body })),
@@ -109,6 +144,7 @@ export async function collectDebugInfo() {
       "/oc/config": ocConfig,
       "/oc/board": ocBoard,
     },
+    site_from_page: fromPage,
     stored: {
       role: getUserRole() || null,
       stores: Object.fromEntries(
@@ -140,18 +176,32 @@ async function copyText(text, field) {
 }
 
 // Send the report to nuke.family. Resolves with { reference } or { error }.
+// When the userscript manager's request gets no answer, the page sends it
+// instead (the route needs no key), and the report says so.
 export async function sendDebugInfo(report) {
+  const path = "/script/debug-report";
+  let error;
   try {
-    const response = await api("/script/debug-report", { method: "POST", data: { report } });
-    return { reference: response.reference };
-  } catch (error) {
-    if (error instanceof ApiError) {
-      if (error.status === 429) return { error: "Too many reports sent from here. Try again in a few minutes." };
-      const reason = error.body && (error.body.error || error.body.message);
-      return { error: reason || `nuke.family refused it (status ${error.status}).` };
-    }
-    return { error: "Could not reach nuke.family." };
+    return { reference: (await api(path, { method: "POST", data: { report } })).reference };
+  } catch (first) {
+    error = first;
   }
+
+  if (!(error instanceof ApiError)) {
+    try {
+      const data = { report: { ...report, sent_by: "page", send_failure: failure(error) } };
+      return { reference: (await pageRequest(path, { method: "POST", data })).reference };
+    } catch (second) {
+      if (second instanceof ApiError) error = second;
+    }
+  }
+
+  if (error instanceof ApiError) {
+    if (error.status === 429) return { error: "Too many reports sent from here. Try again in a few minutes." };
+    const reason = error.body && (error.body.error || error.body.message);
+    return { error: reason || `nuke.family refused it (status ${error.status}).` };
+  }
+  return { error: "Could not reach nuke.family." };
 }
 
 // Show the report in a box the member can copy from.

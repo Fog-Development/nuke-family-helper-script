@@ -7,12 +7,17 @@
 //
 // This module MUST be imported first in main.js so the polyfill is installed
 // before any other module touches a GM_* function.
+//
+// TornPDA is recognised by its user agent ("com.manuito.tornpda"). The
+// script handler name is only a second sign: the app's built-in GM layer
+// calls itself "GMforPDA version 2.2", with no "tornpda" in it.
 export const isPda = (() => {
   try {
+    const handler = ((window.GM_info && window.GM_info.scriptHandler) || "").toLowerCase();
     return (
-      !!window.GM_info &&
-      !!window.GM_info.scriptHandler &&
-      window.GM_info.scriptHandler.toLowerCase().includes("tornpda")
+      /com\.manuito\.tornpda/i.test(navigator.userAgent || "") ||
+      handler.includes("tornpda") ||
+      handler.includes("gmforpda")
     );
   } catch (e) {
     return false;
@@ -154,7 +159,7 @@ if (isPda && typeof window.GM_xmlhttpRequest === "undefined") {
             rej("Request timed out"),
           );
           if (!method || method.toLowerCase() !== "post") {
-            PDA_httpGet(url).then(res).catch(rej);
+            PDA_httpGet(url, headers ?? {}).then(res).catch(rej);
             onprogress?.();
           } else {
             PDA_httpPost(url, headers ?? {}, data ?? "")
