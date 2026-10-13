@@ -233,7 +233,7 @@ describe("ranked war board", () => {
       assert.equal(await page.locator(".faction-war [data-nfh-war-stats]").count(), 0);
 
       const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("nfhRankedWar")));
-      assert.deepEqual(saved, { sort: "off", then: "stats-asc", showStats: false, source: "bsp" });
+      assert.deepEqual(saved, { sort: "off", then: "score-desc", showStats: false, source: "bsp" });
       assert.deepEqual(errors, []);
     } finally {
       await close();
@@ -246,7 +246,7 @@ describe("ranked war board", () => {
       await page.waitForSelector(".faction-war [data-nfh-war]");
       const okay = async () => (await enemyOrder(page)).filter((name) => /Okay|Scorer|Idle/.test(name));
 
-      // Default: lowest stat estimate first, the unknown after.
+      // Default: highest score first.
       assert.deepEqual(await okay(), ["Foe-Okay", "Foe-Scorer", "Foe-Idle"]);
 
       await page.selectOption(`${BAR} [data-pref="then"]`, "score-desc");

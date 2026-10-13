@@ -4292,7 +4292,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
         return (b.memo.okaySince || 0) - (a.memo.okaySince || 0);
     }
   }
-  function compareStatus(a, b, then = Then.StatsAsc) {
+  function compareStatus(a, b, then = Then.ScoreDesc) {
     if (a.group !== b.group) return a.group - b.group;
     let order = 0;
     switch (a.group) {
@@ -4309,7 +4309,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
     }
     return order || compareThen(a, b, then) || 0;
   }
-  function comparatorFor(mode, then = Then.StatsAsc) {
+  function comparatorFor(mode, then = Then.ScoreDesc) {
     const byStatus = (a, b) => compareStatus(a, b, then);
     if (mode === SortMode.Status) return byStatus;
     if (mode !== SortMode.StatsAsc && mode !== SortMode.StatsDesc) return null;
@@ -4328,7 +4328,7 @@ body.dark-mode .nfh-oc-bar-warning {\r
   var DEFAULTS3 = {
     sort: SortMode.Status,
     // How members with the same status are ordered among themselves.
-    then: Then.StatsAsc,
+    then: Then.ScoreDesc,
     showStats: true,
     // Whose estimate to use when both BSP's and FF Scouter's are known.
     source: Source.Bsp

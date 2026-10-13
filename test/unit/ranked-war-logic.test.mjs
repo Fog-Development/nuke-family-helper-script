@@ -140,7 +140,7 @@ describe("ranked war: sorting", () => {
 
   it("lists who can be hit now, then who leaves hospital next, then travellers", () => {
     assert.deepEqual(names(rows, SortMode.Status), [
-      "just-out", "okay-old", "okay-recent", "hosp-short", "hosp-long", "hosp-unknown", "returning", "abroad",
+      "just-out", "okay-recent", "okay-old", "hosp-short", "hosp-long", "hosp-unknown", "returning", "abroad",
     ]);
   });
 

@@ -230,7 +230,7 @@ function compareThen(a, b, then) {
 // Order two rows by status: who can be hit now (just out of hospital first),
 // then who leaves hospital next, then the travellers. `then` orders the
 // members who are okay, and breaks ties everywhere else.
-export function compareStatus(a, b, then = Then.StatsAsc) {
+export function compareStatus(a, b, then = Then.ScoreDesc) {
   if (a.group !== b.group) return a.group - b.group;
   let order = 0;
   switch (a.group) {
@@ -251,7 +251,7 @@ export function compareStatus(a, b, then = Then.StatsAsc) {
 
 // The comparator for a sort mode, or null when the list is left as Torn has
 // it. Rows without a stat estimate come after the ones with, by status.
-export function comparatorFor(mode, then = Then.StatsAsc) {
+export function comparatorFor(mode, then = Then.ScoreDesc) {
   const byStatus = (a, b) => compareStatus(a, b, then);
   if (mode === SortMode.Status) return byStatus;
   if (mode !== SortMode.StatsAsc && mode !== SortMode.StatsDesc) return null;

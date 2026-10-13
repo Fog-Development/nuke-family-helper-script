@@ -8,7 +8,7 @@ const STORAGE_KEY = "nfhRankedWar";
 const DEFAULTS = {
   sort: SortMode.Status,
   // How members with the same status are ordered among themselves.
-  then: Then.StatsAsc,
+  then: Then.ScoreDesc,
   showStats: true,
   // Whose estimate to use when both BSP's and FF Scouter's are known.
   source: Source.Bsp,
