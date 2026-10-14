@@ -1,6 +1,6 @@
 {
   "name": "nuke-family-helper-script",
-  "version": "2.18.1",
+  "version": "2.19.0",
   "description": "Userscript making things easier for the Nuke Family faction on Torn.com",
   "private": true,
   "type": "module",
