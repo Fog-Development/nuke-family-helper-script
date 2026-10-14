@@ -1,7 +1,7 @@
 import { SettingsManager } from "../../core/settings.js";
 import { categoriesStore } from "./data.js";
 import { renderShitList } from "./render.js";
-import { checkAndInsertReputation } from "../reputation.js";
+import { applyReputationSetting } from "../reputation.js";
 import { applyActiveContractSetting } from "../contracts.js";
 
 // The floating settings panel (category visibility, reputation and active
@@ -52,46 +52,7 @@ export function createSettingsPanel() {
     categoryList.appendChild(categoryItem);
   }
 
-  // Reputation visibility toggle
-  const reputationSection = document.createElement("div");
-  reputationSection.classList.add("nfh-category-list");
-  reputationSection.style.marginTop = "10px";
-  reputationSection.style.borderTop = "1px solid var(--nfh-border)";
-  reputationSection.style.paddingTop = "8px";
-
-  const reputationSectionTitle = document.createElement("div");
-  reputationSectionTitle.classList.add("nfh-settings-title");
-  reputationSectionTitle.style.marginBottom = "6px";
-  reputationSectionTitle.textContent = "Reputation Settings";
-
-  const reputationItem = document.createElement("div");
-  reputationItem.classList.add("nfh-category-item");
-
-  const reputationCheckbox = document.createElement("input");
-  reputationCheckbox.type = "checkbox";
-  reputationCheckbox.checked = SettingsManager.isReputationVisible();
-  reputationCheckbox.addEventListener("change", function () {
-    SettingsManager.setReputationVisible(this.checked);
-    const existing = document.querySelector(".nfh-reputation");
-    if (this.checked) {
-      if (!existing) {
-        checkAndInsertReputation();
-      }
-    } else {
-      if (existing) {
-        existing.remove();
-      }
-    }
-  });
-
-  const reputationLabel = document.createElement("span");
-  reputationLabel.textContent = "Show Reputation box on profiles";
-
-  reputationItem.appendChild(reputationCheckbox);
-  reputationItem.appendChild(reputationLabel);
-  reputationSection.appendChild(reputationSectionTitle);
-  reputationSection.appendChild(reputationItem);
-
+  const reputationSection = buildReputationSection(panel);
   const contractSection = buildContractSection(panel);
 
   const closeButton = document.createElement("button");
@@ -110,12 +71,45 @@ export function createSettingsPanel() {
   return panel;
 }
 
+const REPUTATION_LOCKED_REASON =
+  "You can check recruiting scores, so this always shows: the Check Recruiting Score button is in this box.";
+
+// The reputation box toggle. On by default in a reviving faction, off outside
+// one; on and locked for a member who may check recruiting scores.
+function buildReputationSection(panel) {
+  return buildLockableSection(panel, {
+    title: "Reputation Settings",
+    label: "Show Reputation box on profiles",
+    itemClass: "nfh-reputation-setting",
+    lockedReason: REPUTATION_LOCKED_REASON,
+    isLocked: SettingsManager.isReputationLocked,
+    isVisible: SettingsManager.isReputationVisible,
+    setVisible: SettingsManager.setReputationVisible,
+    apply: applyReputationSetting,
+  });
+}
+
 const CONTRACT_LOCKED_REASON =
   "Your faction revives, so this always shows: it tells you whether a revive on this player is paid.";
 
 // The "Active Contract" box toggle. Off by default outside a reviving faction;
 // inside one it is on and cannot be turned off.
 function buildContractSection(panel) {
+  return buildLockableSection(panel, {
+    title: "Contract Settings",
+    label: "Show Active Contract box on profiles",
+    itemClass: "nfh-contract-setting",
+    lockedReason: CONTRACT_LOCKED_REASON,
+    isLocked: SettingsManager.isActiveContractLocked,
+    isVisible: SettingsManager.isActiveContractVisible,
+    setVisible: SettingsManager.setActiveContractVisible,
+    apply: applyActiveContractSetting,
+  });
+}
+
+// A section with one checkbox that the member's faction or permissions can
+// lock on, showing why on hover and in a note beneath it.
+function buildLockableSection(panel, options) {
   const section = document.createElement("div");
   section.classList.add("nfh-category-list");
   section.style.marginTop = "10px";
@@ -125,37 +119,38 @@ function buildContractSection(panel) {
   const sectionTitle = document.createElement("div");
   sectionTitle.classList.add("nfh-settings-title");
   sectionTitle.style.marginBottom = "6px";
-  sectionTitle.textContent = "Contract Settings";
+  sectionTitle.textContent = options.title;
 
   const item = document.createElement("label");
-  item.classList.add("nfh-category-item", "nfh-contract-setting");
+  item.classList.add("nfh-category-item", options.itemClass);
 
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
 
   const label = document.createElement("span");
-  label.textContent = "Show Active Contract box on profiles";
+  label.textContent = options.label;
 
   const note = document.createElement("div");
   note.classList.add("nfh-setting-note");
-  note.textContent = CONTRACT_LOCKED_REASON;
+  note.textContent = options.lockedReason;
 
-  // Read again each time the panel opens: the member's faction is fetched in
-  // the background and may arrive after the panel was built.
+  // Read again each time the panel opens: the member's faction and
+  // permissions are fetched in the background and may arrive after the panel
+  // was built.
   const sync = () => {
-    const locked = SettingsManager.isActiveContractLocked();
-    checkbox.checked = SettingsManager.isActiveContractVisible();
+    const locked = options.isLocked();
+    checkbox.checked = options.isVisible();
     checkbox.disabled = locked;
     item.classList.toggle("nfh-setting-locked", locked);
-    item.title = locked ? CONTRACT_LOCKED_REASON : "";
+    item.title = locked ? options.lockedReason : "";
     note.style.display = locked ? "" : "none";
   };
   sync();
   panel.addEventListener("nfh-settings-open", sync);
 
   checkbox.addEventListener("change", function () {
-    SettingsManager.setActiveContractVisible(this.checked);
-    applyActiveContractSetting();
+    options.setVisible(this.checked);
+    options.apply();
   });
 
   item.appendChild(checkbox);

@@ -1,9 +1,7 @@
 import { api } from "../core/api.js";
 import { escapeHtml } from "../core/dom.js";
 import { LogInfo } from "../core/log.js";
-import { getOwnPermissions } from "../core/user.js";
-
-const RECRUITING_PERMISSION = "recruiting.predict";
+import { getOwnPermissions, RECRUITING_PERMISSION } from "../core/user.js";
 
 // Fetch a player's ML recruiting score. Deliberately NOT cached client-side:
 // every click is an intentional check that the server logs for audit, and the

@@ -67,6 +67,29 @@ export function inRevivingFaction() {
   return known ? saved.reviving : null;
 }
 
+// Lets a member check a player's recruiting score from the profile's
+// reputation box.
+export const RECRUITING_PERMISSION = "recruiting.predict";
+
+// The cached permission list whatever its age, or null when there is none.
+// For settings that must be decided without waiting; getOwnPermissions()
+// fetches a fresh copy when this one is stale.
+export function cachedPermissions() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(PERMISSIONS_CACHE_KEY));
+    return cached && Array.isArray(cached.permissions) ? cached.permissions : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+const permissionListeners = [];
+
+// Called after the permissions are fetched again.
+export function onPermissionsRefreshed(listener) {
+  permissionListeners.push(listener);
+}
+
 // Fetch the current user's permission list, cached in localStorage for 12h.
 // Resolves with the permissions array; on any failure it yields an empty list
 // so gated UI simply stays hidden.
@@ -92,6 +115,7 @@ export async function getOwnPermissions() {
       PERMISSIONS_CACHE_KEY,
       JSON.stringify({ permissions, timestamp: Date.now() }),
     );
+    for (const listener of permissionListeners) listener();
     return permissions;
   } catch (error) {
     console.error("Error fetching permissions:", error);

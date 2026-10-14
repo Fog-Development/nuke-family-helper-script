@@ -5,6 +5,7 @@ import { THEMES } from "../harness/theme.js";
 
 const BOX = ".nfh-active-contract";
 const SETTING = ".nfh-contract-setting";
+const NOTE = `${SETTING} + .nfh-setting-note`;
 
 let browser;
 before(async () => {
@@ -63,7 +64,7 @@ describe("active contract box setting", () => {
         assert.equal(await box.isChecked(), true);
         assert.equal(await box.isDisabled(), true);
         assert.match(await page.locator(SETTING).getAttribute("title"), /Your faction revives/);
-        assert.equal(await page.locator(".nfh-setting-note").isVisible(), true);
+        assert.equal(await page.locator(NOTE).isVisible(), true);
         assert.deepEqual(errors, []);
         await screenshot(page.locator(".nfh-settings-panel"), `contract-setting-locked-${theme}`);
       } finally {
@@ -81,7 +82,7 @@ describe("active contract box setting", () => {
       assert.equal(await page.locator(BOX).count(), 0);
       const box = page.locator(`${SETTING} input`);
       assert.equal(await box.isDisabled(), false);
-      assert.equal(await page.locator(".nfh-setting-note").isVisible(), false);
+      assert.equal(await page.locator(NOTE).isVisible(), false);
 
       await box.check();
       await page.waitForSelector(BOX);

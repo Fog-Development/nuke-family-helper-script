@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.19.1
+// @version      2.19.2
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -1660,7 +1660,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
 
   // src/core/config.js
   var DEBUG = false;
-  var DEFAULT_VERSION = "2.19.1";
+  var DEFAULT_VERSION = "2.19.2";
   var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : DEFAULT_VERSION;
   var API_URL = DEBUG ? "http://nuke.test/api" : "https://nuke.family/api";
   var TOKEN_GENERATION_URL = DEBUG ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
@@ -1879,6 +1879,19 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     return known ? saved.reviving : null;
   }
+  var RECRUITING_PERMISSION = "recruiting.predict";
+  function cachedPermissions() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(PERMISSIONS_CACHE_KEY));
+      return cached && Array.isArray(cached.permissions) ? cached.permissions : null;
+    } catch (e) {
+      return null;
+    }
+  }
+  var permissionListeners = [];
+  function onPermissionsRefreshed(listener) {
+    permissionListeners.push(listener);
+  }
   async function getOwnPermissions() {
     try {
       const cached = JSON.parse(localStorage.getItem(PERMISSIONS_CACHE_KEY));
@@ -1894,6 +1907,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         PERMISSIONS_CACHE_KEY,
         JSON.stringify({ permissions, timestamp: Date.now() })
       );
+      for (const listener of permissionListeners) listener();
       return permissions;
     } catch (error) {
       console.error("Error fetching permissions:", error);
@@ -3636,13 +3650,20 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       SettingsManager.setHiddenCategories(updated);
       return updated;
     },
+    // The "Nuke Family Reputation" box on profiles. It holds the "Check
+    // Recruiting Score" button, so a member who may use that always gets it.
+    // Anyone else chooses; until they do, it shows unless their faction is known
+    // not to revive.
+    isReputationLocked: () => cachedPermissions()?.includes(RECRUITING_PERMISSION) === true,
     isReputationVisible: () => {
+      if (SettingsManager.isReputationLocked()) return true;
+      let stored = null;
       try {
-        const stored = getItem("nfhShowReputation");
-        return stored === null ? true : stored === "true";
+        stored = getItem("nfhShowReputation");
       } catch (e) {
-        return true;
       }
+      if (stored !== null) return stored === "true";
+      return inRevivingFaction() !== false;
     },
     setReputationVisible: (isVisible) => {
       setItem("nfhShowReputation", String(isVisible));
@@ -5908,7 +5929,6 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   };
 
   // src/features/recruiting.js
-  var RECRUITING_PERMISSION = "recruiting.predict";
   async function getRecruitingScoreForPlayer(playerId) {
     try {
       return await api("/candidate-score/" + playerId);
@@ -6046,12 +6066,22 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       return null;
     }
   }
+  onUserRoleRefreshed(() => applyReputationSetting());
+  onPermissionsRefreshed(() => applyReputationSetting());
+  function applyReputationSetting() {
+    if (SettingsManager.isReputationVisible()) {
+      checkAndInsertReputation();
+    } else {
+      document.querySelector(".nfh-reputation")?.remove();
+    }
+  }
   async function checkAndInsertReputation() {
     if (!IsPage(PageType.Profile)) {
       return;
     }
     if (!SettingsManager.isReputationVisible()) {
-      return;
+      await getOwnPermissions();
+      if (!SettingsManager.isReputationVisible()) return;
     }
     const playerId = getPlayerId();
     if (!playerId) {
@@ -6466,39 +6496,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       categoryItem.appendChild(label);
       categoryList.appendChild(categoryItem);
     }
-    const reputationSection = document.createElement("div");
-    reputationSection.classList.add("nfh-category-list");
-    reputationSection.style.marginTop = "10px";
-    reputationSection.style.borderTop = "1px solid var(--nfh-border)";
-    reputationSection.style.paddingTop = "8px";
-    const reputationSectionTitle = document.createElement("div");
-    reputationSectionTitle.classList.add("nfh-settings-title");
-    reputationSectionTitle.style.marginBottom = "6px";
-    reputationSectionTitle.textContent = "Reputation Settings";
-    const reputationItem = document.createElement("div");
-    reputationItem.classList.add("nfh-category-item");
-    const reputationCheckbox = document.createElement("input");
-    reputationCheckbox.type = "checkbox";
-    reputationCheckbox.checked = SettingsManager.isReputationVisible();
-    reputationCheckbox.addEventListener("change", function() {
-      SettingsManager.setReputationVisible(this.checked);
-      const existing = document.querySelector(".nfh-reputation");
-      if (this.checked) {
-        if (!existing) {
-          checkAndInsertReputation();
-        }
-      } else {
-        if (existing) {
-          existing.remove();
-        }
-      }
-    });
-    const reputationLabel = document.createElement("span");
-    reputationLabel.textContent = "Show Reputation box on profiles";
-    reputationItem.appendChild(reputationCheckbox);
-    reputationItem.appendChild(reputationLabel);
-    reputationSection.appendChild(reputationSectionTitle);
-    reputationSection.appendChild(reputationItem);
+    const reputationSection = buildReputationSection(panel);
     const contractSection = buildContractSection(panel);
     const closeButton = document.createElement("button");
     closeButton.classList.add("nfh-close-settings");
@@ -6513,8 +6511,33 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     panel.appendChild(closeButton);
     return panel;
   }
+  var REPUTATION_LOCKED_REASON = "You can check recruiting scores, so this always shows: the Check Recruiting Score button is in this box.";
+  function buildReputationSection(panel) {
+    return buildLockableSection(panel, {
+      title: "Reputation Settings",
+      label: "Show Reputation box on profiles",
+      itemClass: "nfh-reputation-setting",
+      lockedReason: REPUTATION_LOCKED_REASON,
+      isLocked: SettingsManager.isReputationLocked,
+      isVisible: SettingsManager.isReputationVisible,
+      setVisible: SettingsManager.setReputationVisible,
+      apply: applyReputationSetting
+    });
+  }
   var CONTRACT_LOCKED_REASON = "Your faction revives, so this always shows: it tells you whether a revive on this player is paid.";
   function buildContractSection(panel) {
+    return buildLockableSection(panel, {
+      title: "Contract Settings",
+      label: "Show Active Contract box on profiles",
+      itemClass: "nfh-contract-setting",
+      lockedReason: CONTRACT_LOCKED_REASON,
+      isLocked: SettingsManager.isActiveContractLocked,
+      isVisible: SettingsManager.isActiveContractVisible,
+      setVisible: SettingsManager.setActiveContractVisible,
+      apply: applyActiveContractSetting
+    });
+  }
+  function buildLockableSection(panel, options) {
     const section2 = document.createElement("div");
     section2.classList.add("nfh-category-list");
     section2.style.marginTop = "10px";
@@ -6523,29 +6546,29 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const sectionTitle = document.createElement("div");
     sectionTitle.classList.add("nfh-settings-title");
     sectionTitle.style.marginBottom = "6px";
-    sectionTitle.textContent = "Contract Settings";
+    sectionTitle.textContent = options.title;
     const item = document.createElement("label");
-    item.classList.add("nfh-category-item", "nfh-contract-setting");
+    item.classList.add("nfh-category-item", options.itemClass);
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     const label = document.createElement("span");
-    label.textContent = "Show Active Contract box on profiles";
+    label.textContent = options.label;
     const note = document.createElement("div");
     note.classList.add("nfh-setting-note");
-    note.textContent = CONTRACT_LOCKED_REASON;
+    note.textContent = options.lockedReason;
     const sync = () => {
-      const locked = SettingsManager.isActiveContractLocked();
-      checkbox.checked = SettingsManager.isActiveContractVisible();
+      const locked = options.isLocked();
+      checkbox.checked = options.isVisible();
       checkbox.disabled = locked;
       item.classList.toggle("nfh-setting-locked", locked);
-      item.title = locked ? CONTRACT_LOCKED_REASON : "";
+      item.title = locked ? options.lockedReason : "";
       note.style.display = locked ? "" : "none";
     };
     sync();
     panel.addEventListener("nfh-settings-open", sync);
     checkbox.addEventListener("change", function() {
-      SettingsManager.setActiveContractVisible(this.checked);
-      applyActiveContractSetting();
+      options.setVisible(this.checked);
+      options.apply();
     });
     item.appendChild(checkbox);
     item.appendChild(label);

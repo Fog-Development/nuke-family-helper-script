@@ -4,6 +4,11 @@ import { LogInfo } from "../core/log.js";
 import { IsPage, PageType } from "../core/pages.js";
 import { SettingsManager } from "../core/settings.js";
 import { getPlayerId } from "../core/torn-page.js";
+import {
+  getOwnPermissions,
+  onPermissionsRefreshed,
+  onUserRoleRefreshed,
+} from "../core/user.js";
 import { maybeAddRecruitingButton } from "./recruiting.js";
 
 const REPUTATION_CACHE_PREFIX = "nfh_reputation_";
@@ -71,6 +76,20 @@ async function getReputationForPlayer(playerId) {
   }
 }
 
+// Whether the box shows depends on the member's faction and permissions, both
+// fetched in the background, so look again when either arrives.
+onUserRoleRefreshed(() => applyReputationSetting());
+onPermissionsRefreshed(() => applyReputationSetting());
+
+// Show or remove the section after the setting (or what decides it) changed.
+export function applyReputationSetting() {
+  if (SettingsManager.isReputationVisible()) {
+    checkAndInsertReputation();
+  } else {
+    document.querySelector(".nfh-reputation")?.remove();
+  }
+}
+
 // Build and insert the reputation section on a profile page.
 // Fully async — fires the network request, then waits for the DOM element.
 export async function checkAndInsertReputation() {
@@ -78,8 +97,11 @@ export async function checkAndInsertReputation() {
     return;
   }
 
+  // A stale or missing permission list could hide the box from a member who
+  // may check recruiting scores, so fetch it before deciding.
   if (!SettingsManager.isReputationVisible()) {
-    return;
+    await getOwnPermissions();
+    if (!SettingsManager.isReputationVisible()) return;
   }
 
   const playerId = getPlayerId();

@@ -1,6 +1,10 @@
 import { LogInfo } from "./log.js";
 import { getItem, setItem } from "./storage.js";
-import { inRevivingFaction } from "./user.js";
+import {
+  cachedPermissions,
+  inRevivingFaction,
+  RECRUITING_PERMISSION,
+} from "./user.js";
 
 // Settings manager for user preferences (shitlist category visibility,
 // reputation and active contract box visibility). Stored in localStorage, or
@@ -49,14 +53,23 @@ export const SettingsManager = {
     return updated;
   },
 
+  // The "Nuke Family Reputation" box on profiles. It holds the "Check
+  // Recruiting Score" button, so a member who may use that always gets it.
+  // Anyone else chooses; until they do, it shows unless their faction is known
+  // not to revive.
+  isReputationLocked: () =>
+    cachedPermissions()?.includes(RECRUITING_PERMISSION) === true,
+
   isReputationVisible: () => {
+    if (SettingsManager.isReputationLocked()) return true;
+    let stored = null;
     try {
-      const stored = getItem("nfhShowReputation");
-      // Default to true (enabled) if not set
-      return stored === null ? true : stored === "true";
+      stored = getItem("nfhShowReputation");
     } catch (e) {
-      return true;
+      // fall back to the default
     }
+    if (stored !== null) return stored === "true";
+    return inRevivingFaction() !== false;
   },
 
   setReputationVisible: (isVisible) => {
