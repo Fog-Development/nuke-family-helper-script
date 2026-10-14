@@ -2,7 +2,11 @@ import { waitForElm } from "../core/dom.js";
 import { LogInfo } from "../core/log.js";
 import { PageType } from "../core/pages.js";
 import { SettingsManager } from "../core/settings.js";
-import { contractsStore, findActiveContract } from "./contracts.js";
+import {
+  contractsStore,
+  findActiveContract,
+  onActiveContractSettingChanged,
+} from "./contracts.js";
 import { shitlistStore } from "./shitlist/data.js";
 
 // Colour-codes hospital rows: teal for players under an active revive
@@ -120,11 +124,19 @@ function reprocessHospitalRows() {
 // stores too. No-op when the hospital list isn't on the page.
 shitlistStore.subscribe(reprocessHospitalRows);
 contractsStore.subscribe(reprocessHospitalRows);
+onActiveContractSettingChanged(reprocessHospitalRows);
 
 function processHospitalRows() {
   LogInfo("Processing hospital rows...");
 
-  if (!contractsStore.data.length && !Object.keys(shitlistStore.data).length) {
+  // Contract colours follow the profile's Active Contract setting: a member
+  // who does not revive has no use for them.
+  const showContracts = SettingsManager.isActiveContractVisible();
+
+  if (
+    !(showContracts && contractsStore.data.length) &&
+    !Object.keys(shitlistStore.data).length
+  ) {
     LogInfo("No contracts or shitlist data available");
     return;
   }
@@ -155,7 +167,7 @@ function processHospitalRows() {
     LogInfo(`Processing player ${playerId}, faction ${factionId || "none"}`);
 
     // Priority 1: active contract (highest priority)
-    if (findActiveContract(factionId, playerId)) {
+    if (showContracts && findActiveContract(factionId, playerId)) {
       LogInfo(`Player ${playerId} has active contract - applying teal`);
       applyHospitalRowColor(li, "contract");
       li.classList.add("nfh-hospital-processed");
@@ -171,7 +183,9 @@ function processHospitalRows() {
       return;
     }
 
-    // Mark as processed even if no status found
+    // Mark as processed even if no status found, dropping a colour it had
+    // before (e.g. a contract colour after the setting was turned off)
+    applyHospitalRowColor(li, null);
     li.classList.add("nfh-hospital-processed");
   });
 }

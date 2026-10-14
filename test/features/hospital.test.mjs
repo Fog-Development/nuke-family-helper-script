@@ -90,6 +90,58 @@ describe("hospital row highlighting", () => {
     });
   }
 
+  // A contract covering the shitlisted row's player, with the member's faction
+  // already known.
+  function openWithContract(reviving, localStorage = {}) {
+    const { shit } = pickRows();
+    const coverage = [{
+      player_ids: [Number(shit.playerId)],
+      contract: { contract_start_date: "2026-01-01 00:00:00", contract_end_date: null },
+    }];
+    return openTornPage(browser, {
+      page: "hospitalview",
+      api: {
+        "GET /contracts/active-coverage": { coverage },
+        "GET /user/get-own-roles": { role: "member", in_reviving_faction: reviving },
+      },
+      localStorage: {
+        nfhUserRole: { role: "member", reviving, timestamp: Date.now() },
+        ...localStorage,
+      },
+    });
+  }
+
+  it("colours contract clients for a member of a reviving faction", async () => {
+    const { page, apiCalls, close } = await openWithContract(true);
+    try {
+      await page.waitForSelector(".nfh-hospital-contract", { timeout: 5000 });
+      assert.ok(apiCalls.some((c) => c.path === "/contracts/active-coverage"));
+    } finally {
+      await close();
+    }
+  });
+
+  it("neither colours nor fetches contracts with the setting off", async () => {
+    const { page, apiCalls, close } = await openWithContract(false);
+    try {
+      await page.waitForSelector(".nfh-hospital-processed");
+      await page.waitForTimeout(500);
+      assert.equal(await page.locator(".nfh-hospital-contract").count(), 0);
+      assert.ok(!apiCalls.some((c) => c.path === "/contracts/active-coverage"));
+    } finally {
+      await close();
+    }
+  });
+
+  it("colours contract clients for a non-reviver who turned the setting on", async () => {
+    const { page, close } = await openWithContract(false, { nfhShowActiveContract: "true" });
+    try {
+      await page.waitForSelector(".nfh-hospital-contract", { timeout: 5000 });
+    } finally {
+      await close();
+    }
+  });
+
   // Regression: with a cold cache the rows used to be processed once, before
   // the shitlist API response arrived, and never re-processed.
   it("colours rows once the data arrives on a cold cache", async () => {

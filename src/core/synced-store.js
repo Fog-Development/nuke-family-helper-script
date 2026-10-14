@@ -11,6 +11,9 @@ export function createSyncedStore({
   serverField,
   fallbackTtlMs,
   fetcher,
+  // Whether anything uses the store right now. While false it is never
+  // fetched; its old copy goes stale, so it is fetched once it is wanted again.
+  enabled = () => true,
 }) {
   let data = emptyValue;
   let timestamp = 0;
@@ -60,6 +63,10 @@ export function createSyncedStore({
     // server's timestamp (seconds) is stored so future comparisons line up;
     // otherwise the current time is used (time-based fallback).
     async refresh(serverTimestampSec = null) {
+      if (!enabled()) {
+        LogInfo(`${storageKey} not in use, not fetched`);
+        return;
+      }
       try {
         data = await fetcher();
         timestamp = serverTimestampSec ? serverTimestampSec * 1000 : Date.now();

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.19.2
+// @version      2.19.3
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -1660,7 +1660,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
 
   // src/core/config.js
   var DEBUG = false;
-  var DEFAULT_VERSION = "2.19.2";
+  var DEFAULT_VERSION = "2.19.3";
   var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : DEFAULT_VERSION;
   var API_URL = DEBUG ? "http://nuke.test/api" : "https://nuke.family/api";
   var TOKEN_GENERATION_URL = DEBUG ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
@@ -3693,7 +3693,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     emptyValue,
     serverField,
     fallbackTtlMs,
-    fetcher
+    fetcher,
+    // Whether anything uses the store right now. While false it is never
+    // fetched; its old copy goes stale, so it is fetched once it is wanted again.
+    enabled = () => true
   }) {
     let data = emptyValue;
     let timestamp = 0;
@@ -3737,6 +3740,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       // server's timestamp (seconds) is stored so future comparisons line up;
       // otherwise the current time is used (time-based fallback).
       async refresh(serverTimestampSec = null) {
+        if (!enabled()) {
+          LogInfo(`${storageKey} not in use, not fetched`);
+          return;
+        }
         try {
           data = await fetcher();
           timestamp = serverTimestampSec ? serverTimestampSec * 1e3 : Date.now();
@@ -3768,16 +3775,25 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     serverField: "contract_cache_last_update",
     fallbackTtlMs: 6 * 60 * 60 * 1e3,
     // 6 hours
-    fetcher: async () => (await api("/contracts/active-coverage")).coverage || []
+    fetcher: async () => (await api("/contracts/active-coverage")).coverage || [],
+    // The profile box and the hospital colours are the only uses, and the
+    // setting turns both off.
+    enabled: () => SettingsManager.isActiveContractVisible()
   });
   contractsStore.subscribe(() => maybeInsertActiveContract());
   onUserRoleRefreshed(() => applyActiveContractSetting());
+  var settingListeners = [];
+  function onActiveContractSettingChanged(listener) {
+    settingListeners.push(listener);
+  }
   function applyActiveContractSetting() {
     if (SettingsManager.isActiveContractVisible()) {
+      if (contractsStore.isStale()) contractsStore.refresh();
       maybeInsertActiveContract();
     } else {
       document.querySelector(".nfh-active-contract")?.remove();
     }
+    for (const listener of settingListeners) listener();
   }
   function findActiveContract(factionId, playerId) {
     const coverage = contractsStore.data;
@@ -4630,9 +4646,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   }
   shitlistStore.subscribe(reprocessHospitalRows);
   contractsStore.subscribe(reprocessHospitalRows);
+  onActiveContractSettingChanged(reprocessHospitalRows);
   function processHospitalRows() {
     LogInfo("Processing hospital rows...");
-    if (!contractsStore.data.length && !Object.keys(shitlistStore.data).length) {
+    const showContracts = SettingsManager.isActiveContractVisible();
+    if (!(showContracts && contractsStore.data.length) && !Object.keys(shitlistStore.data).length) {
       LogInfo("No contracts or shitlist data available");
       return;
     }
@@ -4653,7 +4671,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         return;
       }
       LogInfo(`Processing player ${playerId}, faction ${factionId || "none"}`);
-      if (findActiveContract(factionId, playerId)) {
+      if (showContracts && findActiveContract(factionId, playerId)) {
         LogInfo(`Player ${playerId} has active contract - applying teal`);
         applyHospitalRowColor(li, "contract");
         li.classList.add("nfh-hospital-processed");
@@ -4666,6 +4684,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         li.classList.add("nfh-hospital-processed");
         return;
       }
+      applyHospitalRowColor(li, null);
       li.classList.add("nfh-hospital-processed");
     });
   }
@@ -6524,11 +6543,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       apply: applyReputationSetting
     });
   }
-  var CONTRACT_LOCKED_REASON = "Your faction revives, so this always shows: it tells you whether a revive on this player is paid.";
+  var CONTRACT_LOCKED_REASON = "Your faction revives, so this always shows: it tells you whether a revive on a player is paid.";
   function buildContractSection(panel) {
     return buildLockableSection(panel, {
       title: "Contract Settings",
-      label: "Show Active Contract box on profiles",
+      label: "Show active contracts on profiles and in hospital",
       itemClass: "nfh-contract-setting",
       lockedReason: CONTRACT_LOCKED_REASON,
       isLocked: SettingsManager.isActiveContractLocked,

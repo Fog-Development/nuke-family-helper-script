@@ -90,14 +90,14 @@ function buildReputationSection(panel) {
 }
 
 const CONTRACT_LOCKED_REASON =
-  "Your faction revives, so this always shows: it tells you whether a revive on this player is paid.";
+  "Your faction revives, so this always shows: it tells you whether a revive on a player is paid.";
 
 // The "Active Contract" box toggle. Off by default outside a reviving faction;
 // inside one it is on and cannot be turned off.
 function buildContractSection(panel) {
   return buildLockableSection(panel, {
     title: "Contract Settings",
-    label: "Show Active Contract box on profiles",
+    label: "Show active contracts on profiles and in hospital",
     itemClass: "nfh-contract-setting",
     lockedReason: CONTRACT_LOCKED_REASON,
     isLocked: SettingsManager.isActiveContractLocked,

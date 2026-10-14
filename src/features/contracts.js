@@ -19,6 +19,9 @@ export const contractsStore = createSyncedStore({
   serverField: "contract_cache_last_update",
   fallbackTtlMs: 6 * 60 * 60 * 1000, // 6 hours
   fetcher: async () => (await api("/contracts/active-coverage")).coverage || [],
+  // The profile box and the hospital colours are the only uses, and the
+  // setting turns both off.
+  enabled: () => SettingsManager.isActiveContractVisible(),
 });
 
 // Insert the section (again) whenever fresh contract data arrives; the
@@ -28,13 +31,24 @@ export const contractsStore = createSyncedStore({
 contractsStore.subscribe(() => maybeInsertActiveContract());
 onUserRoleRefreshed(() => applyActiveContractSetting());
 
-// Show or remove the section after the setting (or what decides it) changed.
+const settingListeners = [];
+
+// Called after the setting (or what decides it) changed, e.g. to recolour
+// hospital rows.
+export function onActiveContractSettingChanged(listener) {
+  settingListeners.push(listener);
+}
+
+// Show or remove the section after the setting (or what decides it) changed,
+// fetching the contracts first if they went unfetched while it was off.
 export function applyActiveContractSetting() {
   if (SettingsManager.isActiveContractVisible()) {
+    if (contractsStore.isStale()) contractsStore.refresh();
     maybeInsertActiveContract();
   } else {
     document.querySelector(".nfh-active-contract")?.remove();
   }
+  for (const listener of settingListeners) listener();
 }
 
 // Find the active contract (if any) covering a player, who may have no
