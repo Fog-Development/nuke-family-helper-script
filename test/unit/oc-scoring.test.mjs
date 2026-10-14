@@ -14,7 +14,35 @@ import {
   SlotStatus,
   spawnTierToRequest,
   tierFor,
+  weightsChoice,
 } from "../../src/features/organized-crimes/scoring.js";
+
+describe("weightsChoice", () => {
+  const faction = (shows) => ({ faction_id: 5678, settings: { show_role_weights: shows } });
+
+  it("follows the faction until the member chooses", () => {
+    assert.deepEqual(weightsChoice(faction(false), null), { show: false, own: false, factionShows: false });
+    assert.deepEqual(weightsChoice(faction(true), null), { show: true, own: false, factionShows: true });
+  });
+
+  it("hides weights for a site too old to say", () => {
+    assert.equal(weightsChoice({ faction_id: 5678, settings: {} }, null).show, false);
+  });
+
+  it("lets the member's choice win either way while in the same faction", () => {
+    assert.deepEqual(weightsChoice(faction(false), { show: true, factionId: 5678 }), { show: true, own: true, factionShows: false });
+    assert.deepEqual(weightsChoice(faction(true), { show: false, factionId: "5678" }), { show: false, own: true, factionShows: true });
+  });
+
+  it("ignores a choice made in another faction", () => {
+    assert.deepEqual(weightsChoice(faction(true), { show: false, factionId: 1111 }), { show: true, own: false, factionShows: true });
+  });
+
+  it("has nothing to do with whether minimums show", () => {
+    const hidden = { faction_id: 5678, settings: { show_min_cpr: false, suggest_slots: false, warn_poor_slot: false } };
+    assert.equal(weightsChoice(hidden, null).show, false);
+  });
+});
 
 const role = (name, weight, minCpr) => ({ key: keyFor(name), name, weight, min_cpr: minCpr });
 

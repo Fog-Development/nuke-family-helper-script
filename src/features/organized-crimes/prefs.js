@@ -33,6 +33,22 @@ export function setStaffPrefs(changes) {
   return next;
 }
 
+// A member's own choice to show or hide role weights, as { show, factionId },
+// or null to follow the faction (see weightsChoice in scoring.js).
+const WEIGHTS_KEY = "nfhOcWeights";
+
+export function getWeightsPref() {
+  try {
+    return JSON.parse(getItem(WEIGHTS_KEY) || "null");
+  } catch (e) {
+    return null;
+  }
+}
+
+export function setWeightsPref(pref) {
+  setItem(WEIGHTS_KEY, pref === null ? "null" : JSON.stringify(pref));
+}
+
 // A threshold typed into the settings: a whole number in range, or null
 // (blank, or nonsense) to go back to the faction's.
 export function parseOverride(value, min, max) {

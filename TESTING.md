@@ -121,14 +121,22 @@ The automated tests stub the nuke.family API, so every item here needs a real
 - [ ] With a better slot in a crime further down than Torn has loaded, the
       bar names it and offers "Scroll down"; once it loads it is tagged, or
       the suggestion moves on if the slot was taken meanwhile.
-- [ ] Planning (not staff): lines on every slot, no bar and no tags. Completed: nothing odd.
+- [ ] Planning (not staff): lines on every slot, no tags, and a bar holding only
+      "OC Assistant" and "Settings". Completed: nothing odd.
 - [ ] Staff (Helper and above), Recruiting and Planning: filled slots with a
       problem show a flag under the Min CPR line: red "CPR 61 < 72", amber
       "Idle 27h", blue "Level 8 member". The bar counts them.
-- [ ] "Flag settings": unticking a kind hides it; a number in "Not productive
+- [ ] "Settings" (staff): under "Staff flags", unticking a kind hides it; a number in "Not productive
       after" or "Under-levelled from" changes which slots are flagged for you
       only; blank goes back to the faction's. Survives a reload.
-- [ ] A normal member never sees flags or "Flag settings".
+- [ ] A normal member never sees flags; their "Settings" holds only "Show role
+      weights".
+- [ ] "Show role weights" starts as the faction has it (off unless changed on
+      nuke.family) and says "Your faction hides/shows them by default". Ticking
+      it against the faction turns "Min CPR 63" into "Min CPR 63 · 13.5%", says
+      "You changed this", and survives a reload; "Use your faction's choice"
+      goes back. With the faction's weights on, unticking it hides them. After
+      joining another faction, that faction's setting applies again.
 - [ ] At or above the faction's request level, free to join, with nothing
       decent open at your level: the bar offers "Ask staff for a level N crime".
       Clicking it posts in the faction's Discord channel and the button gives
@@ -160,17 +168,20 @@ The automated tests stub the nuke.family API, so every item here needs a real
       about five minutes and a page reload the line shows the new number.
 - [ ] On nuke.family (Organized Crimes → OC Assistant → "What members see in
       the script"), within a few minutes of saving:
-  - "Use the OC Assistant" off: no bar, no tags, no crime request button;
-        every role of a known crime shows a grey "Weight N%" line. Staff still
-        get their flags and "Flag settings".
+  - "Use the OC Assistant" off: no tags, no crime request button, and a bar
+        with only "Settings"; roles show nothing unless weights are on (then a
+        grey "Weight N%" line). Staff still get their flags and settings.
   - "Suggest slots to join" off: no "Best for you" tags and no "Best slot
         for you" line; minimums stay, and the crime request button is still
         offered when nothing decent is open.
   - "Warn members when their slot is a poor fit" off: in a slot staff would
         flag, the bar only says Torn is not letting you join.
   - Suggestions and warnings both off, then "Show the minimum CPR on each
-        role" off: "Weight N%" lines replace "Min CPR". The site does not let
-        that switch go off while either of the other two is on.
+        role" off: no "Min CPR" lines, and "Weight N%" lines only with weights
+        on. The site does not let that switch go off while either of the other
+        two is on.
+  - "Show each role's weight" on: members who never changed their own
+        setting see "Min CPR 63 · 13.5%"; members who did keep their choice.
 - [ ] "Productive days count from level" set to 7: in a crime below level 7
       nobody gets the "Idle Nh" staff flag, your own slot is not called
       unproductive, and a suggested slot there says nothing about when

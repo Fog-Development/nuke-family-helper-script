@@ -4,10 +4,10 @@ import { IsPage, PageType } from "../../core/pages.js";
 import { getUserscriptUsersPlayerId } from "../../core/torn-page.js";
 import { ocConfigStore } from "./data.js";
 import { crimeHoursLeft, limitsFor, slotFlags } from "./flags.js";
-import { getStaffPrefs, parseOverride, setStaffPrefs } from "./prefs.js";
+import { getStaffPrefs, getWeightsPref, parseOverride, setStaffPrefs, setWeightsPref } from "./prefs.js";
 import { activeSubTab, CRIMES_ROOT_SELECTOR, joinState, JoinState, readCrimes, SubTab } from "./page.js";
 import { cachedBoard, learnCprs, offPageCrimes, refreshBoard, requestSpawn, spawnAskedUntil } from "./remote.js";
-import { canAskForCrime, memberFeatures, rateCrimes, spawnTierToRequest } from "./scoring.js";
+import { canAskForCrime, memberFeatures, rateCrimes, spawnTierToRequest, weightsChoice } from "./scoring.js";
 import {
   barHtml,
   clearAll,
@@ -17,6 +17,7 @@ import {
   renderFlags,
   renderMinimum,
   renderSuggestions,
+  settingsHtml,
   spawnHtml,
   staffHtml,
 } from "./view.js";
@@ -26,8 +27,10 @@ import {
 // where you are most useful is marked, using the faction's settings from
 // nuke.family (see docs/oc-assistant-plan.md in the site's repository).
 // The faction chooses how much of this its members get (`memberFeatures`):
-// with all of it off a role shows its weight and nothing else, while staff
-// keep their flags and the viewer's CPRs are still sent to the site.
+// with all of it off members get nothing but role weights (if shown), while
+// staff keep their flags and the viewer's CPRs are still sent to the site.
+// Role weights are their own setting: the faction picks what members start
+// with and each member can choose otherwise under the bar's Settings.
 //
 // Torn lazy-loads the crime list and re-renders it as members join, so the
 // page is re-read whenever the list changes. The page is the truth for the
@@ -41,7 +44,7 @@ const RENDER_DEBOUNCE_MS = 150;
 // more than this long to run; near the end it is not worth leaving.
 const MOVE_WORTHWHILE_HOURS = 24;
 
-let staffPanelOpen = false;
+let settingsOpen = false;
 // The "ask staff for a crime" button: a request in flight, and its outcome.
 const spawnState = { busy: false, message: null, error: false };
 
@@ -132,6 +135,11 @@ function render() {
   // the member is warned and shown better slots even though Torn has the
   // Join buttons disabled until they leave.
   const features = memberFeatures(config);
+  const weights = weightsChoice(config, getWeightsPref());
+  // A choice made in another faction is dropped: the new faction's applies.
+  if (!weights.own && getWeightsPref() !== null && config.faction_id) {
+    setWeightsPref(null);
+  }
   const own = recruiting ? findOwnSlot(crimes, board) : null;
   const inCrime = own !== null || joining === JoinState.Blocked;
   const warning = features.warn && recruiting ? ownSlotWarning(own, board, config, rateCrimes) : null;
@@ -163,7 +171,7 @@ function render() {
   for (const crime of result.crimes) {
     if (crime.crime.offPage) continue;
     crime.slots.forEach((rated, index) => {
-      renderMinimum(rated, features.minimums);
+      renderMinimum(rated, features.minimums, weights.show);
       let flags = [];
       if (members && active && rated.slot.occupied) {
         const member = members[rated.slot.playerId];
@@ -179,10 +187,9 @@ function render() {
   const suggestions = suggesting ? result.suggestions : [];
   renderSuggestions(root, suggestions);
 
-  const staffPart =
-    members && active
-      ? staffHtml({ counts, prefs, factionLimits: limitsFor(config), open: staffPanelOpen })
-      : "";
+  const staff = members && active ? { counts, prefs, factionLimits: limitsFor(config) } : null;
+  const settings = settingsHtml({ open: settingsOpen, weights, staff });
+  const staffPart = staff ? staffHtml(staff, settings.button) : "";
 
   const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
   let memberPart = "";
@@ -212,20 +219,26 @@ function render() {
       memberPart = (memberPart || label) + spawnHtml({ tier, asked: spawnAskedUntil() > 0, quiet, ...spawnState });
     }
   }
-  if (!memberPart && staffPart) memberPart = label;
+  // With crimes on the page there is always a bar, if only for the Settings
+  // button (role weights).
+  if (!memberPart && (staffPart || crimes.length > 0)) memberPart = label;
 
   if (!memberPart) {
     removeBar();
     return;
   }
 
-  const bar = renderBar(root, memberPart + staffPart);
+  const bar = renderBar(root, memberPart + (staffPart || settings.button) + settings.panel);
   if (!bar.dataset.nfhBound) {
     bar.dataset.nfhBound = "1";
     bar.addEventListener("change", (event) => {
       const flag = event.target.getAttribute("data-nfh-oc-flag");
       const limit = event.target.getAttribute("data-nfh-oc-limit");
-      if (flag) {
+      if (event.target.hasAttribute("data-nfh-oc-weights")) {
+        const current = ocConfigStore.data;
+        if (!current || !current.faction_id) return;
+        setWeightsPref({ show: event.target.checked, factionId: current.faction_id });
+      } else if (flag) {
         setStaffPrefs({ show: { ...getStaffPrefs().show, [flag]: event.target.checked } });
       } else if (limit) {
         setStaffPrefs({ [limit]: parseOverride(event.target.value, 1, limit === "levelGap" ? 9 : 168) });
@@ -235,8 +248,13 @@ function render() {
       scheduleRender();
     });
     bar.addEventListener("click", (event) => {
-      if (event.target.closest("[data-nfh-oc-staff-toggle]")) {
-        staffPanelOpen = !staffPanelOpen;
+      if (event.target.closest("[data-nfh-oc-settings-toggle]")) {
+        settingsOpen = !settingsOpen;
+        scheduleRender();
+        return;
+      }
+      if (event.target.closest("[data-nfh-oc-weights-reset]")) {
+        setWeightsPref(null);
         scheduleRender();
         return;
       }

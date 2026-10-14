@@ -38,6 +38,23 @@ export function memberFeatures(config) {
   };
 }
 
+// Whether roles show their weight, which has nothing to do with whether the
+// minimums show. The faction picks what its members start with (off on a site
+// too old to say); a member's own choice, saved as { show, factionId }, wins
+// while they stay in the faction they made it in. Returns { show, own,
+// factionShows }, `own` saying whether the member's choice is the one used.
+export function weightsChoice(config, saved) {
+  const factionShows = Boolean(config && config.settings && config.settings.show_role_weights);
+  const factionId = config ? config.faction_id : null;
+  const own =
+    Boolean(saved) &&
+    typeof saved.show === "boolean" &&
+    factionId !== null &&
+    factionId !== undefined &&
+    String(saved.factionId) === String(factionId);
+  return { show: own ? saved.show : factionShows, own, factionShows };
+}
+
 const HIGHEST_LEVEL = 10;
 
 // The lowest crime level at which the faction counts productive days (usually

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.19.3
+// @version      2.19.4
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -1127,6 +1127,12 @@ body.nfh-mark-wall .faction-war .members-list .enemy .attack a {
     background-color: #5f6368;
 }
 
+/* The " \xB7 13.5%" after a minimum: there, but quieter than the minimum */
+.nfh-oc-min-weight {
+    font-weight: 400;
+    opacity: 0.85;
+}
+
 /* Suggested slots */
 .nfh-oc-pick {
     position: relative;
@@ -1304,9 +1310,35 @@ body.dark-mode .nfh-oc-bar-warning {
 .nfh-oc-staff-panel {
     flex: 1 1 100%;
     display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nfh-oc-settings-group {
+    display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px 14px;
+}
+
+.nfh-oc-settings-group + .nfh-oc-settings-group {
+    padding-top: 8px;
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-oc-settings-heading {
+    flex: 1 1 100%;
+    font-weight: 700;
+}
+
+.nfh-oc-link-button {
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .nfh-oc-staff-option {
@@ -1431,7 +1463,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     "nfhShowActiveContract",
     "nfhChainWatch",
     "nfhRankedWar",
-    "nfhOcStaffPrefs"
+    "nfhOcStaffPrefs",
+    "nfhOcWeights"
   ];
   var UNSAVED_KEY = "nfhNativeStorageUnsaved";
   var LOAD_TIMEOUT_MS = 3e3;
@@ -1660,7 +1693,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
 
   // src/core/config.js
   var DEBUG = false;
-  var DEFAULT_VERSION = "2.19.3";
+  var DEFAULT_VERSION = "2.19.4";
   var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : DEFAULT_VERSION;
   var API_URL = DEBUG ? "http://nuke.test/api" : "https://nuke.family/api";
   var TOKEN_GENERATION_URL = DEBUG ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
@@ -4090,6 +4123,12 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       spawn: enabled && Boolean(settings.spawn_requests_enabled)
     };
   }
+  function weightsChoice(config, saved) {
+    const factionShows = Boolean(config && config.settings && config.settings.show_role_weights);
+    const factionId = config ? config.faction_id : null;
+    const own = Boolean(saved) && typeof saved.show === "boolean" && factionId !== null && factionId !== void 0 && String(saved.factionId) === String(factionId);
+    return { show: own ? saved.show : factionShows, own, factionShows };
+  }
   var HIGHEST_LEVEL = 10;
   function productiveFromLevel(config) {
     const from = (config && config.settings || {}).productive_from_level;
@@ -4799,6 +4838,17 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     setItem(KEY, JSON.stringify(next));
     return next;
   }
+  var WEIGHTS_KEY = "nfhOcWeights";
+  function getWeightsPref() {
+    try {
+      return JSON.parse(getItem(WEIGHTS_KEY) || "null");
+    } catch (e) {
+      return null;
+    }
+  }
+  function setWeightsPref(pref) {
+    setItem(WEIGHTS_KEY, pref === null ? "null" : JSON.stringify(pref));
+  }
   function parseOverride(value, min, max) {
     const number = parseInt(value, 10);
     if (Number.isNaN(number)) return null;
@@ -4930,19 +4980,32 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   function weightChipFor(rated) {
     if (rated.weight === null) return null;
     const weight = `${rated.weight.toFixed(1)}%`;
-    return { state: "weight", text: `Weight ${weight}`, title: `This role carries ${weight} of the crime's outcome.` };
+    return { state: "weight", html: `Weight ${weight}`, title: `This role carries ${weight} of the crime's outcome.` };
   }
-  function renderMinimum(rated, showMinimum = true) {
-    const { slot, minCpr } = rated;
+  function renderMinimum(rated, showMinimum = true, showWeight = false) {
+    const { slot, minCpr, weight } = rated;
     const existing = slot.el.querySelector(`:scope > .${CHIP_CLASS}`);
-    const chip = showMinimum ? chipFor(rated) : weightChipFor(rated);
+    let chip = null;
+    if (showMinimum) {
+      chip = chipFor(rated);
+      if (chip) {
+        chip.html = `Min CPR ${escapeHtml(minCpr)}`;
+        if (showWeight && weight !== null) {
+          chip.html += ` <span class="${CHIP_CLASS}-weight">&middot; ${weight.toFixed(1)}%</span>`;
+        }
+      }
+    } else if (showWeight) {
+      chip = weightChipFor(rated);
+    }
     if (!chip) {
       if (existing) existing.remove();
       return;
     }
     const element = existing || document.createElement("div");
-    const text = chip.text || `Min CPR ${minCpr}`;
-    if (element.textContent !== text) element.textContent = text;
+    if (element.dataset.nfhHtml !== chip.html) {
+      element.dataset.nfhHtml = chip.html;
+      element.innerHTML = chip.html;
+    }
     if (element.title !== chip.title) element.title = chip.title;
     element.classList.add(CHIP_CLASS);
     for (const state3 of CHIP_STATES) {
@@ -4970,19 +5033,26 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       anchor.insertAdjacentElement("afterend", element);
     }
   }
-  function staffHtml(staff) {
-    const kinds = [Flag.Unqualified, Flag.Unproductive, Flag.UnderLevel];
-    const shown = kinds.filter((kind) => staff.prefs.show[kind]);
+  var FLAG_KINDS = [Flag.Unqualified, Flag.Unproductive, Flag.UnderLevel];
+  function staffHtml(staff, after = "") {
+    const shown = FLAG_KINDS.filter((kind) => staff.prefs.show[kind]);
     const summary = shown.length === 0 ? "all hidden" : shown.map((kind) => `${staff.counts[kind] || 0} ${FLAG_LABELS[kind].toLowerCase()}`).join(", ");
-    let panel = "";
-    if (staff.open) {
-      const toggles = kinds.map(
-        (kind) => `<label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-flag="${kind}"${staff.prefs.show[kind] ? " checked" : ""}> <span class="nfh-oc-flag nfh-oc-flag--${kind}"><span aria-hidden="true">${FLAG_SYMBOLS[kind]}</span> ${FLAG_LABELS[kind]}</span></label>`
-      ).join("");
-      const override = (name, label, value, fallback) => `<label class="nfh-oc-staff-option">${label} <input type="number" min="1" class="nfh-oc-staff-number" data-nfh-oc-limit="${name}" value="${escapeHtml(value ?? "")}" placeholder="${escapeHtml(fallback)}"></label>`;
-      panel = `<div class="nfh-oc-staff-panel">${toggles}` + override("thresholdHours", "Not productive after (hours)", staff.prefs.thresholdHours, staff.factionLimits.thresholdHours) + override("levelGap", "Under-levelled from (levels below)", staff.prefs.levelGap, staff.factionLimits.levelGap) + `<span class="nfh-oc-bar-muted">Leave a number blank to use your faction's. These choices are yours alone.</span></div>`;
-    }
-    return `<span class="nfh-oc-staff"><span class="nfh-oc-bar-muted">Staff flags on this page:</span> ${escapeHtml(summary)} <button type="button" class="nfh-oc-bar-button" data-nfh-oc-staff-toggle aria-expanded="${staff.open ? "true" : "false"}">Flag settings</button></span>${panel}`;
+    return `<span class="nfh-oc-staff"><span class="nfh-oc-bar-muted">Staff flags on this page:</span> ${escapeHtml(summary)} ${after}</span>`;
+  }
+  function staffSettingsHtml(staff) {
+    const toggles = FLAG_KINDS.map(
+      (kind) => `<label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-flag="${kind}"${staff.prefs.show[kind] ? " checked" : ""}> <span class="nfh-oc-flag nfh-oc-flag--${kind}"><span aria-hidden="true">${FLAG_SYMBOLS[kind]}</span> ${FLAG_LABELS[kind]}</span></label>`
+    ).join("");
+    const override = (name, label, value, fallback) => `<label class="nfh-oc-staff-option">${label} <input type="number" min="1" class="nfh-oc-staff-number" data-nfh-oc-limit="${name}" value="${escapeHtml(value ?? "")}" placeholder="${escapeHtml(fallback)}"></label>`;
+    return '<div class="nfh-oc-settings-group"><span class="nfh-oc-settings-heading">Staff flags</span>' + toggles + override("thresholdHours", "Not productive after (hours)", staff.prefs.thresholdHours, staff.factionLimits.thresholdHours) + override("levelGap", "Under-levelled from (levels below)", staff.prefs.levelGap, staff.factionLimits.levelGap) + `<span class="nfh-oc-bar-muted">Leave a number blank to use your faction's. These choices are yours alone.</span></div>`;
+  }
+  function settingsHtml({ open, weights, staff }) {
+    const button2 = `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-settings-toggle aria-expanded="${open ? "true" : "false"}">Settings</button>`;
+    if (!open) return { button: button2, panel: "" };
+    const faction = `Your faction ${weights.factionShows ? "shows" : "hides"} them by default.`;
+    const note = weights.own ? `You changed this. ${faction} <button type="button" class="nfh-oc-link-button" data-nfh-oc-weights-reset>Use your faction's choice</button>` : faction;
+    const weightsGroup = `<div class="nfh-oc-settings-group"><label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-weights${weights.show ? " checked" : ""}> Show role weights</label><span class="nfh-oc-bar-muted">${note}</span></div>`;
+    return { button: button2, panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${staff ? staffSettingsHtml(staff) : ""}</div>` };
   }
   var TAG_TEXT = { [Rank.Best]: "Best for you", [Rank.Good]: "Good for you" };
   var TAG_TEXT_FLAWED = { [Rank.Best]: "Best available", [Rank.Good]: "Also available" };
@@ -5115,7 +5185,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   // src/features/organized-crimes/index.js
   var RENDER_DEBOUNCE_MS = 150;
   var MOVE_WORTHWHILE_HOURS = 24;
-  var staffPanelOpen = false;
+  var settingsOpen = false;
   var spawnState = { busy: false, message: null, error: false };
   function findOwnSlot(pageCrimes, board) {
     const me = String(getUserscriptUsersPlayerId() || "");
@@ -5178,6 +5248,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const cached = active ? cachedBoard2() : null;
     const board = cached ? cached.board : null;
     const features2 = memberFeatures(config);
+    const weights = weightsChoice(config, getWeightsPref());
+    if (!weights.own && getWeightsPref() !== null && config.faction_id) {
+      setWeightsPref(null);
+    }
     const own = recruiting ? findOwnSlot(crimes, board) : null;
     const inCrime = own !== null || joining === JoinState.Blocked;
     const warning = features2.warn && recruiting ? ownSlotWarning(own, board, config, rateCrimes) : null;
@@ -5196,7 +5270,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     for (const crime of result.crimes) {
       if (crime.crime.offPage) continue;
       crime.slots.forEach((rated, index) => {
-        renderMinimum(rated, features2.minimums);
+        renderMinimum(rated, features2.minimums, weights.show);
         let flags = [];
         if (members && active && rated.slot.occupied) {
           const member = members[rated.slot.playerId];
@@ -5210,7 +5284,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     const suggestions = suggesting ? result.suggestions : [];
     renderSuggestions(root2, suggestions);
-    const staffPart = members && active ? staffHtml({ counts, prefs: prefs3, factionLimits: limitsFor(config), open: staffPanelOpen }) : "";
+    const staff = members && active ? { counts, prefs: prefs3, factionLimits: limitsFor(config) } : null;
+    const settings = settingsHtml({ open: settingsOpen, weights, staff });
+    const staffPart = staff ? staffHtml(staff, settings.button) : "";
     const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
     let memberPart = "";
     if (features2.enabled && recruiting && crimes.length > 0) {
@@ -5233,18 +5309,22 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         memberPart = (memberPart || label) + spawnHtml({ tier, asked: spawnAskedUntil() > 0, quiet, ...spawnState });
       }
     }
-    if (!memberPart && staffPart) memberPart = label;
+    if (!memberPart && (staffPart || crimes.length > 0)) memberPart = label;
     if (!memberPart) {
       removeBar();
       return;
     }
-    const bar = renderBar2(root2, memberPart + staffPart);
+    const bar = renderBar2(root2, memberPart + (staffPart || settings.button) + settings.panel);
     if (!bar.dataset.nfhBound) {
       bar.dataset.nfhBound = "1";
       bar.addEventListener("change", (event) => {
         const flag = event.target.getAttribute("data-nfh-oc-flag");
         const limit = event.target.getAttribute("data-nfh-oc-limit");
-        if (flag) {
+        if (event.target.hasAttribute("data-nfh-oc-weights")) {
+          const current = ocConfigStore.data;
+          if (!current || !current.faction_id) return;
+          setWeightsPref({ show: event.target.checked, factionId: current.faction_id });
+        } else if (flag) {
           setStaffPrefs({ show: { ...getStaffPrefs().show, [flag]: event.target.checked } });
         } else if (limit) {
           setStaffPrefs({ [limit]: parseOverride(event.target.value, 1, limit === "levelGap" ? 9 : 168) });
@@ -5254,8 +5334,13 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         scheduleRender();
       });
       bar.addEventListener("click", (event) => {
-        if (event.target.closest("[data-nfh-oc-staff-toggle]")) {
-          staffPanelOpen = !staffPanelOpen;
+        if (event.target.closest("[data-nfh-oc-settings-toggle]")) {
+          settingsOpen = !settingsOpen;
+          scheduleRender();
+          return;
+        }
+        if (event.target.closest("[data-nfh-oc-weights-reset]")) {
+          setWeightsPref(null);
           scheduleRender();
           return;
         }

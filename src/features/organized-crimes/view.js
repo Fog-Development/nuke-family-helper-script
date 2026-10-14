@@ -48,19 +48,30 @@ function chipFor(rated) {
   }
 }
 
-// What a faction that has minimum CPRs hidden gets in their place.
+// The weight on its own, for a role whose minimum is hidden.
 function weightChipFor(rated) {
   if (rated.weight === null) return null;
   const weight = `${rated.weight.toFixed(1)}%`;
-  return { state: "weight", text: `Weight ${weight}`, title: `This role carries ${weight} of the crime's outcome.` };
+  return { state: "weight", html: `Weight ${weight}`, title: `This role carries ${weight} of the crime's outcome.` };
 }
 
-// The "Min CPR 63" line under a slot's header, or "Weight 13.5%" when the
-// faction does not show its minimums.
-export function renderMinimum(rated, showMinimum = true) {
-  const { slot, minCpr } = rated;
+// The line under a slot's header: "Min CPR 63", "Min CPR 63 · 13.5%" with
+// weights on, "Weight 13.5%" with only weights, or nothing.
+export function renderMinimum(rated, showMinimum = true, showWeight = false) {
+  const { slot, minCpr, weight } = rated;
   const existing = slot.el.querySelector(`:scope > .${CHIP_CLASS}`);
-  const chip = showMinimum ? chipFor(rated) : weightChipFor(rated);
+  let chip = null;
+  if (showMinimum) {
+    chip = chipFor(rated);
+    if (chip) {
+      chip.html = `Min CPR ${escapeHtml(minCpr)}`;
+      if (showWeight && weight !== null) {
+        chip.html += ` <span class="${CHIP_CLASS}-weight">&middot; ${weight.toFixed(1)}%</span>`;
+      }
+    }
+  } else if (showWeight) {
+    chip = weightChipFor(rated);
+  }
 
   if (!chip) {
     if (existing) existing.remove();
@@ -68,8 +79,10 @@ export function renderMinimum(rated, showMinimum = true) {
   }
 
   const element = existing || document.createElement("div");
-  const text = chip.text || `Min CPR ${minCpr}`;
-  if (element.textContent !== text) element.textContent = text;
+  if (element.dataset.nfhHtml !== chip.html) {
+    element.dataset.nfhHtml = chip.html;
+    element.innerHTML = chip.html;
+  }
   if (element.title !== chip.title) element.title = chip.title;
   element.classList.add(CHIP_CLASS);
   for (const state of CHIP_STATES) {
@@ -106,39 +119,58 @@ export function renderFlags(slot, flags) {
   }
 }
 
-// The staff part of the bar: how many of each flag are on the page, and the
-// settings for which to show. `staff` is { counts, prefs, limits, open }.
-export function staffHtml(staff) {
-  const kinds = [Flag.Unqualified, Flag.Unproductive, Flag.UnderLevel];
-  const shown = kinds.filter((kind) => staff.prefs.show[kind]);
+const FLAG_KINDS = [Flag.Unqualified, Flag.Unproductive, Flag.UnderLevel];
+
+// The staff part of the bar: how many of each flag are on the page, then
+// `after` (the Settings button) on the same line.
+// `staff` is { counts, prefs, factionLimits }.
+export function staffHtml(staff, after = "") {
+  const shown = FLAG_KINDS.filter((kind) => staff.prefs.show[kind]);
   const summary =
     shown.length === 0
       ? "all hidden"
       : shown.map((kind) => `${staff.counts[kind] || 0} ${FLAG_LABELS[kind].toLowerCase()}`).join(", ");
+  return `<span class="nfh-oc-staff"><span class="nfh-oc-bar-muted">Staff flags on this page:</span> ${escapeHtml(summary)} ${after}</span>`;
+}
 
-  let panel = "";
-  if (staff.open) {
-    const toggles = kinds
-      .map(
-        (kind) =>
-          `<label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-flag="${kind}"${staff.prefs.show[kind] ? " checked" : ""}> ` +
-          `<span class="nfh-oc-flag nfh-oc-flag--${kind}"><span aria-hidden="true">${FLAG_SYMBOLS[kind]}</span> ${FLAG_LABELS[kind]}</span></label>`,
-      )
-      .join("");
-    const override = (name, label, value, fallback) =>
-      `<label class="nfh-oc-staff-option">${label} ` +
-      `<input type="number" min="1" class="nfh-oc-staff-number" data-nfh-oc-limit="${name}" value="${escapeHtml(value ?? "")}" placeholder="${escapeHtml(fallback)}"></label>`;
-    panel =
-      `<div class="nfh-oc-staff-panel">${toggles}` +
-      override("thresholdHours", "Not productive after (hours)", staff.prefs.thresholdHours, staff.factionLimits.thresholdHours) +
-      override("levelGap", "Under-levelled from (levels below)", staff.prefs.levelGap, staff.factionLimits.levelGap) +
-      '<span class="nfh-oc-bar-muted">Leave a number blank to use your faction\'s. These choices are yours alone.</span></div>';
-  }
-
+// Which flags to show and the staff member's own thresholds.
+function staffSettingsHtml(staff) {
+  const toggles = FLAG_KINDS.map(
+    (kind) =>
+      `<label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-flag="${kind}"${staff.prefs.show[kind] ? " checked" : ""}> ` +
+      `<span class="nfh-oc-flag nfh-oc-flag--${kind}"><span aria-hidden="true">${FLAG_SYMBOLS[kind]}</span> ${FLAG_LABELS[kind]}</span></label>`,
+  ).join("");
+  const override = (name, label, value, fallback) =>
+    `<label class="nfh-oc-staff-option">${label} ` +
+    `<input type="number" min="1" class="nfh-oc-staff-number" data-nfh-oc-limit="${name}" value="${escapeHtml(value ?? "")}" placeholder="${escapeHtml(fallback)}"></label>`;
   return (
-    `<span class="nfh-oc-staff"><span class="nfh-oc-bar-muted">Staff flags on this page:</span> ${escapeHtml(summary)} ` +
-    `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-staff-toggle aria-expanded="${staff.open ? "true" : "false"}">Flag settings</button></span>${panel}`
+    '<div class="nfh-oc-settings-group"><span class="nfh-oc-settings-heading">Staff flags</span>' +
+    toggles +
+    override("thresholdHours", "Not productive after (hours)", staff.prefs.thresholdHours, staff.factionLimits.thresholdHours) +
+    override("levelGap", "Under-levelled from (levels below)", staff.prefs.levelGap, staff.factionLimits.levelGap) +
+    '<span class="nfh-oc-bar-muted">Leave a number blank to use your faction\'s. These choices are yours alone.</span></div>'
   );
+}
+
+// The Settings button, and its panel when open: the role weights choice
+// (`weights` is weightsChoice()'s answer) and, for staff, the flag settings.
+// Returns { button, panel }.
+export function settingsHtml({ open, weights, staff }) {
+  const button =
+    `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-settings-toggle ` +
+    `aria-expanded="${open ? "true" : "false"}">Settings</button>`;
+  if (!open) return { button, panel: "" };
+
+  const faction = `Your faction ${weights.factionShows ? "shows" : "hides"} them by default.`;
+  const note = weights.own
+    ? `You changed this. ${faction} <button type="button" class="nfh-oc-link-button" data-nfh-oc-weights-reset>Use your faction's choice</button>`
+    : faction;
+  const weightsGroup =
+    '<div class="nfh-oc-settings-group">' +
+    `<label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-weights${weights.show ? " checked" : ""}> Show role weights</label>` +
+    `<span class="nfh-oc-bar-muted">${note}</span></div>`;
+
+  return { button, panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${staff ? staffSettingsHtml(staff) : ""}</div>` };
 }
 
 const TAG_TEXT = { [Rank.Best]: "Best for you", [Rank.Good]: "Good for you" };

@@ -6,6 +6,11 @@ import { contrastRatio, measureContrast, THEMES } from "../harness/theme.js";
 const BAR = "#nfh-oc-bar";
 const ROOT = "#faction-crimes-root";
 
+// With nothing to say, the bar is only there for its Settings button.
+async function assertQuietBar(page) {
+  assert.match(await page.locator(BAR).innerText(), /^OC Assistant\s*Settings$/i);
+}
+
 let browser;
 before(async () => {
   browser = await launch();
@@ -546,7 +551,7 @@ describe("OC Assistant staff flags", () => {
 
         assert.deepEqual(errors, []);
         await screenshot(page.locator('[data-oc-id="2275218"]'), `oc-flags-${theme}`);
-        await page.locator(`${BAR} [data-nfh-oc-staff-toggle]`).click();
+        await page.locator(`${BAR} [data-nfh-oc-settings-toggle]`).click();
         await page.waitForSelector(`${BAR} .nfh-oc-staff-panel`);
         await screenshot(page.locator(BAR), `oc-flags-settings-${theme}`);
       } finally {
@@ -562,7 +567,7 @@ describe("OC Assistant staff flags", () => {
     });
     try {
       await page.waitForSelector(".nfh-oc-flag");
-      await page.locator(`${BAR} [data-nfh-oc-staff-toggle]`).click();
+      await page.locator(`${BAR} [data-nfh-oc-settings-toggle]`).click();
 
       await page.locator(`${BAR} [data-nfh-oc-flag="unqualified"]`).uncheck();
       await page.waitForFunction(() => !document.querySelector(".nfh-oc-flags .nfh-oc-flag--unqualified"));
@@ -614,7 +619,10 @@ describe("OC Assistant staff flags", () => {
       await page.waitForSelector(`${ROOT} .nfh-oc-min`);
       await page.waitForTimeout(500);
       assert.equal(await page.locator(".nfh-oc-flag").count(), 0);
-      assert.equal(await page.locator(BAR).count(), 0);
+      await assertQuietBar(page);
+      await page.locator(`${BAR} [data-nfh-oc-settings-toggle]`).click();
+      await page.waitForSelector(`${BAR} [data-nfh-oc-weights]`);
+      assert.equal(await page.locator(`${BAR} [data-nfh-oc-flag]`).count(), 0);
     } finally {
       await close();
     }
@@ -762,11 +770,11 @@ describe("OC Assistant with parts switched off by the faction", () => {
         page: "factions-crimes-recruiting",
         theme,
         before: enableJoining,
-        api: { "GET /oc/config": configWith({ assistant_enabled: false }) },
+        api: { "GET /oc/config": configWith({ assistant_enabled: false, show_role_weights: true }) },
       });
       try {
         await page.waitForSelector(`${ROOT} .nfh-oc-min`);
-        assert.equal(await page.locator(BAR).count(), 0);
+        await assertQuietBar(page);
         assert.deepEqual(await picksOf(page), []);
         assert.deepEqual(await chipsOf(page, "2302842"), weightChips);
         // "Ship Happens" has no weights yet, so there is nothing to show on it.
@@ -793,7 +801,7 @@ describe("OC Assistant with parts switched off by the faction", () => {
   it("leaves staff their flags when the assistant is off", async () => {
     const { page, close } = await openTornPage(browser, {
       page: "factions-crimes-planning",
-      api: { "GET /oc/board": staffBoard(), "GET /oc/config": configWith({ assistant_enabled: false }) },
+      api: { "GET /oc/board": staffBoard(), "GET /oc/config": configWith({ assistant_enabled: false, show_role_weights: true }) },
     });
     try {
       await page.waitForSelector(".nfh-oc-flag");
@@ -818,9 +826,9 @@ describe("OC Assistant with parts switched off by the faction", () => {
       api: { "GET /oc/board": board, "GET /oc/config": config },
     });
     try {
-      await page.waitForSelector(`${ROOT} .nfh-oc-min`);
+      await page.waitForSelector(BAR);
       await page.waitForTimeout(700);
-      assert.equal(await page.locator(BAR).count(), 0);
+      await assertQuietBar(page);
     } finally {
       await close();
     }
@@ -836,7 +844,7 @@ describe("OC Assistant with parts switched off by the faction", () => {
     try {
       await free.page.waitForSelector(`${ROOT} .nfh-oc-min`);
       await free.page.waitForTimeout(700);
-      assert.equal(await free.page.locator(BAR).count(), 0, "nothing to say to a member free to join");
+      await assertQuietBar(free.page);
       assert.deepEqual(await picksOf(free.page), []);
       assert.deepEqual((await chipsOf(free.page, "2302842"))[4], ["Muscle #3", "Min CPR 72", "below"]);
     } finally {
@@ -889,11 +897,12 @@ describe("OC Assistant with parts switched off by the faction", () => {
     }
   });
 
-  it("shows weights in place of minimums only when nothing is suggested or warned about", async () => {
+  it("shows weights where minimums are hidden only when the weights are on", async () => {
+    const hiddenSettings = { show_min_cpr: false, suggest_slots: false, warn_poor_slot: false };
     const hidden = await openTornPage(browser, {
       page: "factions-crimes-recruiting",
       before: enableJoining,
-      api: { "GET /oc/config": configWith({ show_min_cpr: false, suggest_slots: false, warn_poor_slot: false }) },
+      api: { "GET /oc/config": configWith({ ...hiddenSettings, show_role_weights: true }) },
     });
     try {
       await hidden.page.waitForSelector(`${ROOT} .nfh-oc-min`);
@@ -902,10 +911,128 @@ describe("OC Assistant with parts switched off by the faction", () => {
       await hidden.close();
     }
 
+    // Minimums hidden and weights off: each role shows nothing at all.
+    const bare = await openTornPage(browser, {
+      page: "factions-crimes-recruiting",
+      before: enableJoining,
+      api: { "GET /oc/config": configWith(hiddenSettings) },
+    });
+    try {
+      await bare.page.waitForSelector(BAR);
+      await bare.page.waitForTimeout(500);
+      assert.equal(await bare.page.locator(".nfh-oc-min").count(), 0);
+    } finally {
+      await bare.close();
+    }
+
     const { page, close } = await openRecruiting({ api: { "GET /oc/config": configWith({ show_min_cpr: false }) } });
     try {
       assert.deepEqual((await chipsOf(page, "2302842"))[4], ["Muscle #3", "Min CPR 72", "below"]);
       assert.equal((await picksOf(page)).length, 3);
+    } finally {
+      await close();
+    }
+  });
+});
+
+describe("OC Assistant role weights", () => {
+  const configWith = (settings) => {
+    const config = structuredClone(loadApiFixture()["GET /oc/config"]);
+    Object.assign(config.data.settings, settings);
+    return config;
+  };
+  const weightsBox = `${BAR} [data-nfh-oc-weights]`;
+  const openSettings = async (page) => {
+    await page.locator(`${BAR} [data-nfh-oc-settings-toggle]`).click();
+    await page.waitForSelector(weightsBox);
+  };
+  const muscle3 = async (page) => {
+    await page.waitForSelector('[data-oc-id="2302842"] .nfh-oc-min');
+    return (await chipsOf(page, "2302842"))[4];
+  };
+
+  for (const theme of THEMES) {
+    it(`adds the weight beside the minimum when the faction shows them (${theme})`, async () => {
+      const { page, errors, close } = await openTornPage(browser, {
+        page: "factions-crimes-planning",
+        theme,
+        api: { "GET /oc/config": configWith({ show_role_weights: true }) },
+      });
+      try {
+        await page.waitForSelector(`${ROOT} .nfh-oc-min-weight`);
+        const [, text, state] = (await chipsOf(page, "2269984"))[0];
+        assert.match(text, /^Min CPR \d+ · \d+\.\d%$/);
+        assert.equal(state, "filled");
+        const { ratio } = await measureContrast(page, ".nfh-oc-min-weight");
+        assert.ok(ratio >= 4.5, `weight contrast ${ratio.toFixed(2)} in ${theme}`);
+
+        await openSettings(page);
+        assert.equal(await page.locator(weightsBox).isChecked(), true);
+        assert.match(await page.locator(BAR).innerText(), /Your faction shows them by default\./);
+        assert.deepEqual(errors, []);
+        await screenshot(page.locator('[data-oc-id="2269984"]'), `oc-min-and-weight-${theme}`);
+        await screenshot(page.locator(BAR), `oc-settings-weights-${theme}`);
+      } finally {
+        await close();
+      }
+    });
+  }
+
+  it("starts with weights hidden, as every faction does until it changes that", async () => {
+    const { page, close } = await openRecruiting();
+    try {
+      assert.deepEqual(await muscle3(page), ["Muscle #3", "Min CPR 72", "below"]);
+      await openSettings(page);
+      assert.equal(await page.locator(weightsBox).isChecked(), false);
+      assert.match(await page.locator(BAR).innerText(), /Your faction hides them by default\./);
+    } finally {
+      await close();
+    }
+  });
+
+  it("lets a member turn weights on against the faction, and go back to its choice", async () => {
+    const { page, errors, close } = await openRecruiting();
+    try {
+      await openSettings(page);
+      await page.locator(weightsBox).check();
+      await page.waitForFunction(() => document.querySelector(".nfh-oc-min-weight"));
+      assert.deepEqual(await muscle3(page), ["Muscle #3", "Min CPR 72 · 31.7%", "below"]);
+      assert.match(await page.locator(BAR).innerText(), /You changed this\. Your faction hides them by default\./);
+      assert.deepEqual(
+        await page.evaluate(() => JSON.parse(localStorage.getItem("nfhOcWeights"))),
+        { show: true, factionId: 5678 },
+      );
+      await screenshot(page.locator(BAR), "oc-settings-weights-changed-dark");
+
+      await page.locator(`${BAR} [data-nfh-oc-weights-reset]`).click();
+      await page.waitForFunction(() => !document.querySelector(".nfh-oc-min-weight"));
+      assert.equal(await page.locator(weightsBox).isChecked(), false);
+      assert.doesNotMatch(await page.locator(BAR).innerText(), /You changed this/);
+      assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+
+  it("lets a member hide weights their faction shows", async () => {
+    const { page, close } = await openRecruiting({
+      api: { "GET /oc/config": configWith({ show_role_weights: true }) },
+      localStorage: { nfhOcWeights: JSON.stringify({ show: false, factionId: 5678 }) },
+    });
+    try {
+      assert.deepEqual(await muscle3(page), ["Muscle #3", "Min CPR 72", "below"]);
+    } finally {
+      await close();
+    }
+  });
+
+  it("drops a choice made in another faction", async () => {
+    const { page, close } = await openRecruiting({
+      localStorage: { nfhOcWeights: JSON.stringify({ show: true, factionId: 1111 }) },
+    });
+    try {
+      assert.deepEqual(await muscle3(page), ["Muscle #3", "Min CPR 72", "below"]);
+      await page.waitForFunction(() => localStorage.getItem("nfhOcWeights") === "null");
     } finally {
       await close();
     }
@@ -962,7 +1089,7 @@ describe("OC Assistant on the Planning tab", () => {
       const { page, errors, close } = await openTornPage(browser, { page: "factions-crimes-planning", theme });
       try {
         await page.waitForSelector(`${ROOT} .nfh-oc-min`);
-        assert.equal(await page.locator(BAR).count(), 0);
+        await assertQuietBar(page);
         assert.equal(await page.locator(".nfh-oc-pick").count(), 0);
         assert.deepEqual((await chipsOf(page, "2269984")).map(([, , state]) => state), Array(6).fill("filled"));
         assert.deepEqual(errors, []);
