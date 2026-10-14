@@ -1,5 +1,6 @@
-import { API_URL } from "./config.js";
+import { API_URL, CURRENT_VERSION } from "./config.js";
 import { getApiToken, noteAnswer, noteKeyRejected, noteNoAnswer } from "./auth.js";
+import { isPda } from "./pda-polyfill.js";
 
 // How much of an unreadable reply is kept for a debug report.
 const SNIPPET_LENGTH = 200;
@@ -57,6 +58,66 @@ export class ApiError extends Error {
   }
 }
 
+// What each call tells nuke.family about the script making it, so the site can
+// count which features members use (Super Admins read it on /admin/script).
+// Nothing here is read from Torn, and it adds no requests of its own:
+//   X-NFH-Version   the script's version
+//   X-NFH-Client    "browser" or "TornPDA"
+//   X-NFH-Manager   the userscript manager and its version
+//   X-NFH-Feature   set only on calls that are not a feature's own (the debug
+//                   report's probes, Check NFH Updates), so they are not
+//                   counted as that feature being used
+//   X-NFH-Failures  calls that got no answer since the last one that did
+//                   (kept across page loads), which the site cannot see itself
+const FAILURES_KEY = "nfhUnansweredCalls";
+
+let requestLabel = null;
+
+function managerName() {
+  try {
+    const info = typeof GM_info !== "undefined" && GM_info ? GM_info : {};
+    return info.scriptHandler ? `${info.scriptHandler} ${info.version || ""}`.trim().slice(0, 60) : "";
+  } catch (e) {
+    return "";
+  }
+}
+
+function unansweredCalls() {
+  return parseInt(localStorage.getItem(FAILURES_KEY) || "0", 10) || 0;
+}
+
+function setUnansweredCalls(count) {
+  try {
+    if (count > 0) localStorage.setItem(FAILURES_KEY, String(Math.min(count, 9999)));
+    else localStorage.removeItem(FAILURES_KEY);
+  } catch (e) {
+    // Storage full or blocked: the count is only a hint.
+  }
+}
+
+// Label every call made while `work` runs (Check NFH Updates refetches every
+// cache through the features' own code).
+export async function labelRequests(label, work) {
+  requestLabel = label;
+  try {
+    return await work();
+  } finally {
+    requestLabel = null;
+  }
+}
+
+function scriptHeaders(feature) {
+  const headers = {
+    "X-NFH-Version": CURRENT_VERSION,
+    "X-NFH-Client": isPda ? "TornPDA" : "browser",
+  };
+  const manager = managerName();
+  if (manager) headers["X-NFH-Manager"] = manager;
+  const label = feature || requestLabel;
+  if (label) headers["X-NFH-Feature"] = label;
+  return headers;
+}
+
 // Authenticated JSON call to the nuke.family API. Returns the parsed response
 // body on 2xx; throws ApiError (with .status and .body) on a non-2xx status,
 // or NoAnswerError when nothing usable came back.
@@ -67,13 +128,23 @@ export class ApiError extends Error {
 // `token` sends another key than the stored one ("" for none, on the routes
 // that need none). Only calls made with the stored key count towards whether
 // the script is connected (see auth.js).
-export async function api(path, { method = "GET", data = undefined, token = undefined } = {}) {
+//
+// `feature` labels a call that is not the feature's own use (see scriptHeaders).
+export async function api(path, { method = "GET", data = undefined, token = undefined, feature = undefined } = {}) {
   const stored = token === undefined;
   const key = stored ? getApiToken() : token;
-  const headers = { Accept: "application/json" };
+  const headers = { Accept: "application/json", ...scriptHeaders(feature) };
   if (key) headers.Authorization = "Bearer " + key;
   if (data !== undefined) {
     headers["Content-Type"] = "application/json";
+  }
+
+  // Taken now and put back with this call if it fails too, so calls running
+  // side by side do not report the same failures twice.
+  const failures = unansweredCalls();
+  if (failures > 0) {
+    headers["X-NFH-Failures"] = String(failures);
+    setUnansweredCalls(0);
   }
 
   let response;
@@ -85,8 +156,12 @@ export async function api(path, { method = "GET", data = undefined, token = unde
       data: data !== undefined ? JSON.stringify(data) : undefined,
     });
   } catch (error) {
+    setUnansweredCalls(unansweredCalls() + failures + 1);
     if (stored && key) noteNoAnswer();
     throw error;
+  }
+  if (!response || typeof response.status !== "number") {
+    setUnansweredCalls(unansweredCalls() + failures + 1);
   }
 
   if (stored && key && response && typeof response.status === "number") {

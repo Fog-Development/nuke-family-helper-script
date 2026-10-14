@@ -1,3 +1,4 @@
+import { labelRequests } from "../core/api.js";
 import { refreshAllCaches } from "../core/cache-sync.js";
 import { ensureInjected } from "../core/dom.js";
 import { LogInfo } from "../core/log.js";
@@ -47,7 +48,7 @@ function buildCheckUpdatesButton() {
     // script update.
     try {
       clearChainWatchCache();
-      await refreshAllCaches();
+      await labelRequests("check-updates", refreshAllCaches);
       LogInfo("All caches force-refreshed from the update button");
     } catch (error) {
       console.error("Error refreshing caches:", error);

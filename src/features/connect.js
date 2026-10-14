@@ -290,7 +290,7 @@ export async function enterKeyByHand() {
   }
 
   try {
-    await api("/user/get-own-roles", { token: key });
+    await api("/user/get-own-roles", { token: key, feature: "connect" });
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
       alert("nuke.family did not accept that key, so it was not saved. Check you copied all of it, or press Connect instead.");

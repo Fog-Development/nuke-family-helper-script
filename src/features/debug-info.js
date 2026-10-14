@@ -51,7 +51,7 @@ function failure(error) {
 // the few fields worth reading.
 async function probe(path, summarise = () => undefined) {
   try {
-    const body = await api(path);
+    const body = await api(path, { feature: "debug-info" });
     return { status: 200, ...summarise(body) };
   } catch (error) {
     return failure(error);

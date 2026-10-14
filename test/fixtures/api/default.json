@@ -92,7 +92,7 @@
   "POST /oc/cpr": { "stored": 0 },
   "POST /oc/spawn-request": { "status": "sent", "level": 9, "tier": "7-8", "cooldown_minutes": 30 },
   "POST /script/debug-report": { "reference": "K7QM2X" },
-  "GET /user/get-own-roles": { "role": "leader" },
+  "GET /user/get-own-roles": { "role": "leader", "in_reviving_faction": true },
   "GET /user/get-own-permissions": { "permissions": [] },
   "GET /reputation/1234": { "paid_revives_90d": 7, "window_days": 90 },
   "GET /contracts/active-coverage": { "coverage": [] },

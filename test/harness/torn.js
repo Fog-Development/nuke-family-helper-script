@@ -165,7 +165,7 @@ export async function openTornPage(browser, options) {
       return { status: 200, responseText: "// @version 0.0.0" };
     }
     const path = requestUrl.slice(API_PREFIX.length);
-    apiCalls.push({ method, path, data: details.data });
+    apiCalls.push({ method, path, data: details.data, headers: details.headers || {} });
     const route = routes[`${method} ${path}`];
     if (route === undefined) {
       return { status: 404, responseText: JSON.stringify({ message: "no route" }) };
@@ -184,7 +184,7 @@ export async function openTornPage(browser, options) {
     window.GM_info = { script: { version: "test" }, scriptHandler: "Tampermonkey" };
     window.GM_xmlhttpRequest = (details) => {
       window
-        .__nfhRequest({ method: details.method, url: details.url, data: details.data })
+        .__nfhRequest({ method: details.method, url: details.url, data: details.data, headers: details.headers })
         .then(details.onload, details.onerror);
     };
     window.__gmStore = store;

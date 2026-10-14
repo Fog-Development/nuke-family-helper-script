@@ -32,6 +32,7 @@ const MANAGER_KEYS = ["apiToken", "apiTokenFirstTime", "nfhTokenReturnUrl", "nfh
 const LOCAL_KEYS = [
   "hiddenShitlistCategories",
   "nfhShowReputation",
+  "nfhShowActiveContract",
   "nfhChainWatch",
   "nfhRankedWar",
   "nfhOcStaffPrefs",

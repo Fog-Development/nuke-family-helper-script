@@ -236,6 +236,21 @@ body:not(.dark-mode) {
     cursor: not-allowed;
 }
 
+/* A setting the script decides, with the reason on hover and in a note below
+   (hover alone does nothing on a phone). Unlike faction-locked it keeps
+   pointer events, or the tooltip would never show. */
+.nfh-category-item.nfh-setting-locked {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+.nfh-setting-note {
+    font-size: 11px;
+    color: var(--nfh-hidden-count);
+    margin: -4px 0 6px 5px;
+    font-style: italic;
+}
+
 .nfh-hidden-count {
     font-size: 11px;
     color: var(--nfh-hidden-count);

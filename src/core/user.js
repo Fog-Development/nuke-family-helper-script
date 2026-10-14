@@ -1,4 +1,5 @@
 import { api } from "./api.js";
+import { getApiToken } from "./auth.js";
 import { LogInfo } from "./log.js";
 
 // The logged-in user's nuke.family role and permissions.
@@ -24,12 +25,46 @@ export async function refreshUserRole() {
     const result = await api("/user/get-own-roles");
     localStorage.setItem(
       ROLE_CACHE_KEY,
-      JSON.stringify({ role: result["role"], timestamp: Date.now() }),
+      JSON.stringify({
+        role: result["role"],
+        // Absent from an older site: unknown, not "no".
+        reviving: typeof result["in_reviving_faction"] === "boolean" ? result["in_reviving_faction"] : null,
+        timestamp: Date.now(),
+      }),
     );
     LogInfo("Updated users role from nuke.family in local storage");
+    for (const listener of roleListeners) listener();
   } catch (error) {
     console.error("Error fetching user role:", error);
   }
+}
+
+const roleListeners = [];
+
+// Called after the role (and reviving faction) is fetched again.
+export function onUserRoleRefreshed(listener) {
+  roleListeners.push(listener);
+}
+
+let staleRefreshStarted = false;
+
+// Whether the member is in a reviving faction: true, false, or null when not
+// known yet. Members change faction, so a cached answer older than the
+// permissions' 12 hours is fetched again in the background, once per page.
+export function inRevivingFaction() {
+  let saved = null;
+  try {
+    saved = JSON.parse(localStorage.getItem(ROLE_CACHE_KEY) || "null");
+  } catch (e) {
+    // fall through to a refetch
+  }
+  const known = saved && typeof saved.reviving === "boolean";
+  const fresh = known && saved.timestamp && Date.now() - saved.timestamp < PERMISSIONS_CACHE_TTL_MS;
+  if (!fresh && !staleRefreshStarted && getApiToken()) {
+    staleRefreshStarted = true;
+    refreshUserRole();
+  }
+  return known ? saved.reviving : null;
 }
 
 // Fetch the current user's permission list, cached in localStorage for 12h.

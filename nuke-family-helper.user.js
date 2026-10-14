@@ -447,6 +447,21 @@ body:not(.dark-mode) {
     cursor: not-allowed;
 }
 
+/* A setting the script decides, with the reason on hover and in a note below
+   (hover alone does nothing on a phone). Unlike faction-locked it keeps
+   pointer events, or the tooltip would never show. */
+.nfh-category-item.nfh-setting-locked {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+.nfh-setting-note {
+    font-size: 11px;
+    color: var(--nfh-hidden-count);
+    margin: -4px 0 6px 5px;
+    font-style: italic;
+}
+
 .nfh-hidden-count {
     font-size: 11px;
     color: var(--nfh-hidden-count);
@@ -1413,6 +1428,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   var LOCAL_KEYS = [
     "hiddenShitlistCategories",
     "nfhShowReputation",
+    "nfhShowActiveContract",
     "nfhChainWatch",
     "nfhRankedWar",
     "nfhOcStaffPrefs"
@@ -1688,13 +1704,57 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       this.raw = raw;
     }
   };
-  async function api(path, { method = "GET", data = void 0, token = void 0 } = {}) {
+  var FAILURES_KEY = "nfhUnansweredCalls";
+  var requestLabel = null;
+  function managerName() {
+    try {
+      const info2 = typeof GM_info !== "undefined" && GM_info ? GM_info : {};
+      return info2.scriptHandler ? `${info2.scriptHandler} ${info2.version || ""}`.trim().slice(0, 60) : "";
+    } catch (e) {
+      return "";
+    }
+  }
+  function unansweredCalls() {
+    return parseInt(localStorage.getItem(FAILURES_KEY) || "0", 10) || 0;
+  }
+  function setUnansweredCalls(count) {
+    try {
+      if (count > 0) localStorage.setItem(FAILURES_KEY, String(Math.min(count, 9999)));
+      else localStorage.removeItem(FAILURES_KEY);
+    } catch (e) {
+    }
+  }
+  async function labelRequests(label, work) {
+    requestLabel = label;
+    try {
+      return await work();
+    } finally {
+      requestLabel = null;
+    }
+  }
+  function scriptHeaders(feature) {
+    const headers = {
+      "X-NFH-Version": CURRENT_VERSION,
+      "X-NFH-Client": isPda ? "TornPDA" : "browser"
+    };
+    const manager = managerName();
+    if (manager) headers["X-NFH-Manager"] = manager;
+    const label = feature || requestLabel;
+    if (label) headers["X-NFH-Feature"] = label;
+    return headers;
+  }
+  async function api(path, { method = "GET", data = void 0, token = void 0, feature = void 0 } = {}) {
     const stored = token === void 0;
     const key = stored ? getApiToken() : token;
-    const headers = { Accept: "application/json" };
+    const headers = { Accept: "application/json", ...scriptHeaders(feature) };
     if (key) headers.Authorization = "Bearer " + key;
     if (data !== void 0) {
       headers["Content-Type"] = "application/json";
+    }
+    const failures = unansweredCalls();
+    if (failures > 0) {
+      headers["X-NFH-Failures"] = String(failures);
+      setUnansweredCalls(0);
     }
     let response;
     try {
@@ -1705,8 +1765,12 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         data: data !== void 0 ? JSON.stringify(data) : void 0
       });
     } catch (error) {
+      setUnansweredCalls(unansweredCalls() + failures + 1);
       if (stored && key) noteNoAnswer();
       throw error;
+    }
+    if (!response || typeof response.status !== "number") {
+      setUnansweredCalls(unansweredCalls() + failures + 1);
     }
     if (stored && key && response && typeof response.status === "number") {
       if (response.status === 401) noteKeyRejected();
@@ -1783,12 +1847,37 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       const result = await api("/user/get-own-roles");
       localStorage.setItem(
         ROLE_CACHE_KEY,
-        JSON.stringify({ role: result["role"], timestamp: Date.now() })
+        JSON.stringify({
+          role: result["role"],
+          // Absent from an older site: unknown, not "no".
+          reviving: typeof result["in_reviving_faction"] === "boolean" ? result["in_reviving_faction"] : null,
+          timestamp: Date.now()
+        })
       );
       LogInfo("Updated users role from nuke.family in local storage");
+      for (const listener of roleListeners) listener();
     } catch (error) {
       console.error("Error fetching user role:", error);
     }
+  }
+  var roleListeners = [];
+  function onUserRoleRefreshed(listener) {
+    roleListeners.push(listener);
+  }
+  var staleRefreshStarted = false;
+  function inRevivingFaction() {
+    let saved = null;
+    try {
+      saved = JSON.parse(localStorage.getItem(ROLE_CACHE_KEY) || "null");
+    } catch (e) {
+    }
+    const known = saved && typeof saved.reviving === "boolean";
+    const fresh = known && saved.timestamp && Date.now() - saved.timestamp < PERMISSIONS_CACHE_TTL_MS;
+    if (!fresh && !staleRefreshStarted && getApiToken()) {
+      staleRefreshStarted = true;
+      refreshUserRole();
+    }
+    return known ? saved.reviving : null;
   }
   async function getOwnPermissions() {
     try {
@@ -3452,7 +3541,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       return false;
     }
     try {
-      await api("/user/get-own-roles", { token: key });
+      await api("/user/get-own-roles", { token: key, feature: "connect" });
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
         alert("nuke.family did not accept that key, so it was not saved. Check you copied all of it, or press Connect instead.");
@@ -3511,6 +3600,70 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     renderSoon();
   }
+
+  // src/core/settings.js
+  var SettingsManager = {
+    getHiddenCategories: () => {
+      try {
+        return JSON.parse(
+          getItem("hiddenShitlistCategories") || "[]"
+        );
+      } catch (e) {
+        console.error("Error parsing hidden categories:", e);
+        return [];
+      }
+    },
+    setHiddenCategories: (hiddenIds) => {
+      setItem("hiddenShitlistCategories", JSON.stringify(hiddenIds));
+    },
+    isCategoryVisible: (categoryId, isFaction) => {
+      if (isFaction) return true;
+      return !SettingsManager.getHiddenCategories().includes(String(categoryId));
+    },
+    toggleCategory: (categoryId, isVisible) => {
+      const hidden = SettingsManager.getHiddenCategories();
+      LogInfo("Hidden categories before toggle:", hidden);
+      let updated;
+      if (isVisible) {
+        updated = hidden.filter((id) => id !== categoryId);
+      } else {
+        if (!hidden.includes(String(categoryId))) {
+          updated = [...hidden, String(categoryId)];
+        } else {
+          updated = hidden;
+        }
+      }
+      SettingsManager.setHiddenCategories(updated);
+      return updated;
+    },
+    isReputationVisible: () => {
+      try {
+        const stored = getItem("nfhShowReputation");
+        return stored === null ? true : stored === "true";
+      } catch (e) {
+        return true;
+      }
+    },
+    setReputationVisible: (isVisible) => {
+      setItem("nfhShowReputation", String(isVisible));
+    },
+    // The "Active Contract" box on profiles. A reviver needs it, so a member of a
+    // reviving faction always gets it; anyone else gets it only if they turned
+    // it on. Until the site has said which they are, it shows.
+    isActiveContractLocked: () => inRevivingFaction() === true,
+    isActiveContractVisible: () => {
+      const reviving = inRevivingFaction();
+      if (reviving !== false) return true;
+      try {
+        return getItem("nfhShowActiveContract") === "true";
+      } catch (e) {
+        return false;
+      }
+    },
+    setActiveContractVisible: (isVisible) => {
+      setItem("nfhShowActiveContract", String(isVisible));
+    }
+  };
 
   // src/core/synced-store.js
   function createSyncedStore({
@@ -3597,6 +3750,14 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     fetcher: async () => (await api("/contracts/active-coverage")).coverage || []
   });
   contractsStore.subscribe(() => maybeInsertActiveContract());
+  onUserRoleRefreshed(() => applyActiveContractSetting());
+  function applyActiveContractSetting() {
+    if (SettingsManager.isActiveContractVisible()) {
+      maybeInsertActiveContract();
+    } else {
+      document.querySelector(".nfh-active-contract")?.remove();
+    }
+  }
   function findActiveContract(factionId, playerId) {
     const coverage = contractsStore.data;
     if (!Array.isArray(coverage) || coverage.length === 0) {
@@ -3615,7 +3776,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     return match ? match.contract : null;
   }
   function maybeInsertActiveContract() {
-    if (!IsPage(PageType.Profile)) {
+    if (!IsPage(PageType.Profile) || !SettingsManager.isActiveContractVisible()) {
       return;
     }
     LogInfo("Waiting for faction info to load before checking contracts...");
@@ -4054,7 +4215,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   }
   async function probe(path, summarise = () => void 0) {
     try {
-      const body = await api(path);
+      const body = await api(path, { feature: "debug-info" });
       return { status: 200, ...summarise(body) };
     } catch (error) {
       return failure(error);
@@ -4264,7 +4425,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       btn.innerHTML = "Refreshing\u2026";
       try {
         clearChainWatchCache();
-        await refreshAllCaches();
+        await labelRequests("check-updates", refreshAllCaches);
         LogInfo("All caches force-refreshed from the update button");
       } catch (error) {
         console.error("Error refreshing caches:", error);
@@ -4311,54 +4472,6 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     name: "faction-buttons",
     pages: [PageType.FactionControl],
     init: init2
-  };
-
-  // src/core/settings.js
-  var SettingsManager = {
-    getHiddenCategories: () => {
-      try {
-        return JSON.parse(
-          getItem("hiddenShitlistCategories") || "[]"
-        );
-      } catch (e) {
-        console.error("Error parsing hidden categories:", e);
-        return [];
-      }
-    },
-    setHiddenCategories: (hiddenIds) => {
-      setItem("hiddenShitlistCategories", JSON.stringify(hiddenIds));
-    },
-    isCategoryVisible: (categoryId, isFaction) => {
-      if (isFaction) return true;
-      return !SettingsManager.getHiddenCategories().includes(String(categoryId));
-    },
-    toggleCategory: (categoryId, isVisible) => {
-      const hidden = SettingsManager.getHiddenCategories();
-      LogInfo("Hidden categories before toggle:", hidden);
-      let updated;
-      if (isVisible) {
-        updated = hidden.filter((id) => id !== categoryId);
-      } else {
-        if (!hidden.includes(String(categoryId))) {
-          updated = [...hidden, String(categoryId)];
-        } else {
-          updated = hidden;
-        }
-      }
-      SettingsManager.setHiddenCategories(updated);
-      return updated;
-    },
-    isReputationVisible: () => {
-      try {
-        const stored = getItem("nfhShowReputation");
-        return stored === null ? true : stored === "true";
-      } catch (e) {
-        return true;
-      }
-    },
-    setReputationVisible: (isVisible) => {
-      setItem("nfhShowReputation", String(isVisible));
-    }
   };
 
   // src/features/shitlist/data.js
@@ -6386,6 +6499,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     reputationItem.appendChild(reputationLabel);
     reputationSection.appendChild(reputationSectionTitle);
     reputationSection.appendChild(reputationItem);
+    const contractSection = buildContractSection(panel);
     const closeButton = document.createElement("button");
     closeButton.classList.add("nfh-close-settings");
     closeButton.textContent = "Close";
@@ -6395,8 +6509,50 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     panel.appendChild(title);
     panel.appendChild(categoryList);
     panel.appendChild(reputationSection);
+    panel.appendChild(contractSection);
     panel.appendChild(closeButton);
     return panel;
+  }
+  var CONTRACT_LOCKED_REASON = "Your faction revives, so this always shows: it tells you whether a revive on this player is paid.";
+  function buildContractSection(panel) {
+    const section2 = document.createElement("div");
+    section2.classList.add("nfh-category-list");
+    section2.style.marginTop = "10px";
+    section2.style.borderTop = "1px solid var(--nfh-border)";
+    section2.style.paddingTop = "8px";
+    const sectionTitle = document.createElement("div");
+    sectionTitle.classList.add("nfh-settings-title");
+    sectionTitle.style.marginBottom = "6px";
+    sectionTitle.textContent = "Contract Settings";
+    const item = document.createElement("label");
+    item.classList.add("nfh-category-item", "nfh-contract-setting");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    const label = document.createElement("span");
+    label.textContent = "Show Active Contract box on profiles";
+    const note = document.createElement("div");
+    note.classList.add("nfh-setting-note");
+    note.textContent = CONTRACT_LOCKED_REASON;
+    const sync = () => {
+      const locked = SettingsManager.isActiveContractLocked();
+      checkbox.checked = SettingsManager.isActiveContractVisible();
+      checkbox.disabled = locked;
+      item.classList.toggle("nfh-setting-locked", locked);
+      item.title = locked ? CONTRACT_LOCKED_REASON : "";
+      note.style.display = locked ? "" : "none";
+    };
+    sync();
+    panel.addEventListener("nfh-settings-open", sync);
+    checkbox.addEventListener("change", function() {
+      SettingsManager.setActiveContractVisible(this.checked);
+      applyActiveContractSetting();
+    });
+    item.appendChild(checkbox);
+    item.appendChild(label);
+    section2.appendChild(sectionTitle);
+    section2.appendChild(item);
+    section2.appendChild(note);
+    return section2;
   }
 
   // src/features/shitlist/profile.js
@@ -6441,6 +6597,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       settingsCog.addEventListener("click", function() {
         if (settingsPanel.style.display === "none") {
           settingsPanel.style.display = "block";
+          settingsPanel.dispatchEvent(new Event("nfh-settings-open"));
         } else {
           settingsPanel.style.display = "none";
         }

@@ -68,6 +68,7 @@ function init() {
     settingsCog.addEventListener("click", function () {
       if (settingsPanel.style.display === "none") {
         settingsPanel.style.display = "block";
+        settingsPanel.dispatchEvent(new Event("nfh-settings-open"));
       } else {
         settingsPanel.style.display = "none";
       }

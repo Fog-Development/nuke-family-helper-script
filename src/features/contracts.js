@@ -2,9 +2,11 @@ import { api } from "../core/api.js";
 import { escapeHtml, waitForElm } from "../core/dom.js";
 import { LogInfo } from "../core/log.js";
 import { IsPage, PageType } from "../core/pages.js";
+import { SettingsManager } from "../core/settings.js";
 import { createSyncedStore } from "../core/synced-store.js";
 import { parseApiUtcDate } from "../core/time.js";
 import { getFactionId, getPlayerId } from "../core/torn-page.js";
+import { onUserRoleRefreshed } from "../core/user.js";
 
 // Who is covered by an active contract. Each entry names a faction and/or a
 // list of players; the site decides the shape, so new kinds of coverage
@@ -21,7 +23,19 @@ export const contractsStore = createSyncedStore({
 
 // Insert the section (again) whenever fresh contract data arrives; the
 // insertion is a no-op off profile pages or when the section already exists.
+// The same when the member's faction is fetched again, since that decides
+// whether the box shows at all.
 contractsStore.subscribe(() => maybeInsertActiveContract());
+onUserRoleRefreshed(() => applyActiveContractSetting());
+
+// Show or remove the section after the setting (or what decides it) changed.
+export function applyActiveContractSetting() {
+  if (SettingsManager.isActiveContractVisible()) {
+    maybeInsertActiveContract();
+  } else {
+    document.querySelector(".nfh-active-contract")?.remove();
+  }
+}
 
 // Find the active contract (if any) covering a player, who may have no
 // faction. A coverage entry with a faction_id only covers that faction's
@@ -58,7 +72,7 @@ export function findActiveContract(factionId, playerId) {
 // On a profile page: check whether the viewed player is covered by an active
 // contract and, if so, insert the "Active Contract" section.
 export function maybeInsertActiveContract() {
-  if (!IsPage(PageType.Profile)) {
+  if (!IsPage(PageType.Profile) || !SettingsManager.isActiveContractVisible()) {
     return;
   }
 
