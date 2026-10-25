@@ -54,3 +54,18 @@ export function markSent(attacks) {
 export function report(factionId, attacks) {
   return api("/retals/report", { method: "POST", data: { faction_id: factionId, attacks } });
 }
+
+// The faction's open retals. Answers { server_now, retals }.
+export function fetchRetals() {
+  return api("/retals");
+}
+
+// Hold a retal for 45s (or refresh your own hold). A 409 ApiError means
+// someone else holds it; its body carries `claimed_by` and the list.
+export function claimRetal(enemyId) {
+  return api(`/retals/${enemyId}/claim`, { method: "POST" });
+}
+
+export function unclaimRetal(enemyId) {
+  return api(`/retals/${enemyId}/unclaim`, { method: "POST" });
+}

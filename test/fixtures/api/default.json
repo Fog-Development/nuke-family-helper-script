@@ -5,6 +5,8 @@
     "contracts_cache_last_update": 1900000000,
     "oc_config_cache_last_update": 1900000000
   },
+  "GET /retals": { "server_now": 0, "retals": [] },
+  "POST /retals/report": { "server_now": 0, "retals": [] },
   "GET /war/board": { "data": { "war": null, "recheck_seconds": 600 } },
   "GET /war/board?stats=1": { "data": { "war": null, "recheck_seconds": 600 } },
   "GET /oc/config": {

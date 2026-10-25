@@ -114,11 +114,18 @@ function pageTap(eventName) {
     send("fetch", { feed: null, error: "wrap_failed" });
   }
 
+  // A list Torn has just drawn (the chain box opened again) is passed on even
+  // when its attacks are the ones already seen, so the retal list comes back.
   let lastSeen = "";
+  let lastList = null;
   setInterval(() => {
     if (document.hidden) return;
-    const list = document.querySelector(".chain-attacks-list");
+    const list = document.querySelector(".chain-attacks-list.recent-attacks");
     if (!list) return;
+    if (list !== lastList) {
+      lastList = list;
+      lastSeen = "";
+    }
     const key = Object.keys(list).find((k) => k.startsWith("__reactFiber$") || k.startsWith("__reactInternalInstance$"));
     if (!key) return;
     let fiber = list[key];

@@ -1453,6 +1453,109 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     font-size: 12px;
     line-height: 1.4;
 }
+
+/* Retal list under Torn's recent attacks (shares the chain watch bar's look) */
+.nfh-rt {
+    margin-top: 6px;
+    border-left-color: var(--nfh-cw-warn);
+}
+
+.nfh-rt[hidden] {
+    display: none;
+}
+
+.nfh-rt-head {
+    padding: 5px 10px 3px;
+}
+
+.nfh-rt-title {
+    font-weight: 700;
+}
+
+.nfh-rt-muted,
+.nfh-rt-held {
+    color: var(--nfh-cw-muted);
+}
+
+.nfh-rt-held.is-mine {
+    color: var(--nfh-cw-accent);
+    font-weight: 700;
+}
+
+.nfh-rt-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nfh-rt-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    padding: 4px 10px;
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-rt-main {
+    flex: 1 1 160px;
+    min-width: 0;
+}
+
+.nfh-rt .nfh-rt-name {
+    font-weight: 700;
+}
+
+.nfh-rt-tag {
+    color: var(--nfh-cw-muted);
+    font-size: 11px;
+}
+
+.nfh-rt-left {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
+
+.nfh-rt-row.is-ending .nfh-rt-left {
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-rt-actions {
+    display: inline-flex;
+    gap: 6px;
+}
+
+.nfh-rt .nfh-rt-attack,
+.nfh-rt .nfh-rt-attack:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.nfh-rt-row.is-done {
+    opacity: 0.7;
+}
+
+.nfh-rt-row.is-taken .nfh-rt-attack {
+    border-color: var(--nfh-border);
+    background-color: var(--nfh-btn-bg);
+    color: var(--nfh-text);
+    font-weight: 400;
+}
+
+.nfh-rt-warn,
+.nfh-rt-error {
+    flex-basis: 100%;
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-rt-error {
+    padding: 3px 10px 5px;
+}
+
+.nfh-rt-warn .nfh-cw-btn {
+    margin-left: 6px;
+    text-decoration: none;
+}
 `;
 
   // src/core/storage.js
@@ -1661,12 +1764,12 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   }
   var lastState = null;
   function notify() {
-    const state3 = connectionState();
-    if (state3 === lastState) return;
-    lastState = state3;
+    const state4 = connectionState();
+    if (state4 === lastState) return;
+    lastState = state4;
     for (const listener of listeners) {
       try {
-        listener(state3);
+        listener(state4);
       } catch (error) {
         console.error("[NFH] Connection listener failed:", error);
       }
@@ -2785,21 +2888,21 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   }
   function renderBar({ board, watches, prefs: prefs3, armed, chainActive, flash, busy, now }) {
     const summary = board ? summarize(board, now) : null;
-    const state3 = summary ? barState(board, summary, now) : { tone: "", text: '<span class="nfh-cw-muted">No chain watch scheduled</span>', actions: "" };
-    if (summary && summary.started && !summary.myCheckin && chainActive && armed && state3.tone !== "attn") {
-      state3.text = '<span class="nfh-cw-need" title="Check in so your time watching is recorded on the chain watch sheet">Not checked in</span> \xB7 ' + state3.text;
-      state3.actions = button("checkin", "Check in");
+    const state4 = summary ? barState(board, summary, now) : { tone: "", text: '<span class="nfh-cw-muted">No chain watch scheduled</span>', actions: "" };
+    if (summary && summary.started && !summary.myCheckin && chainActive && armed && state4.tone !== "attn") {
+      state4.text = '<span class="nfh-cw-need" title="Check in so your time watching is recorded on the chain watch sheet">Not checked in</span> \xB7 ' + state4.text;
+      state4.actions = button("checkin", "Check in");
     }
     const title = board && board.title ? `<span class="nfh-cw-title">${escapeHtml(board.title)}</span>` : "";
-    const status = flash ? `<span class="${flash.error ? "nfh-cw-error" : "nfh-cw-ok"}">${escapeHtml(flash.text)}</span>` : state3.text;
+    const status = flash ? `<span class="${flash.error ? "nfh-cw-error" : "nfh-cw-ok"}">${escapeHtml(flash.text)}</span>` : state4.text;
     const expandable = !!board;
     const expanded = expandable && prefs3.expanded;
     const picker = watches.length > 1 ? `<select class="nfh-cw-picker" data-role="watch-picker" title="Chain watch">${watches.map(
       (watch3) => `<option value="${escapeHtml(watch3.id)}"${board && board.id === watch3.id ? " selected" : ""}>${escapeHtml(watch3.title || `Chain watch #${watch3.id}`)}</option>`
     ).join("")}</select>` : title;
     return {
-      tone: state3.tone,
-      html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy ? " is-busy" : ""}">${state3.actions}</span>` + alertChip(prefs3, armed)
+      tone: state4.tone,
+      html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy ? " is-busy" : ""}">${state4.actions}</span>` + alertChip(prefs3, armed)
     };
   }
   function overCapNote(slot) {
@@ -3408,21 +3511,21 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     [Connection.Rejected]: "Nuke Family Helper has been disconnected from nuke.family, so this may be missing or out of date.",
     [Connection.Unreachable]: "Nuke Family Helper cannot reach nuke.family right now: this may be missing or out of date."
   };
-  var canConnect = (state3) => state3 === Connection.Missing || state3 === Connection.Rejected;
+  var canConnect = (state4) => state4 === Connection.Missing || state4 === Connection.Rejected;
   function pending() {
     const saved = getValue(PENDING_KEY, null);
     if (!saved || typeof saved !== "object" || !saved.secret || !saved.url) return null;
     return saved.expires > Date.now() ? saved : null;
   }
-  function isHidden(state3) {
+  function isHidden(state4) {
     try {
       const hidden = JSON.parse(localStorage.getItem(HIDDEN_KEY) || "null");
-      return Boolean(hidden) && hidden.state === state3 && Date.now() - hidden.at < HIDE_FOR_MS;
+      return Boolean(hidden) && hidden.state === state4 && Date.now() - hidden.at < HIDE_FOR_MS;
     } catch (e) {
       return false;
     }
   }
-  function bannerHtml(state3) {
+  function bannerHtml(state4) {
     const button2 = (attribute, label) => `<button type="button" class="torn-btn" ${attribute}>${label}</button>`;
     const dismiss = '<button type="button" class="nfh-connect-dismiss" data-nfh-connect-dismiss aria-label="Hide" title="Hide for a day">&times;</button>';
     if (phase && phase.kind === "connected") {
@@ -3436,13 +3539,13 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       return `<span class="nfh-connect-text"><strong>Finish connecting on nuke.family.</strong> Approve there, then come back: this page picks it up by itself.</span><a class="torn-btn nfh-connect-link" href="${escapeHtml(phase.url)}" target="_blank" rel="noopener" data-nfh-connect-open>Open nuke.family</a>` + button2("data-nfh-connect-cancel", "Cancel");
     }
     const failed = phase && phase.kind === "failed" ? ` <span class="nfh-connect-error">${escapeHtml(phase.message)}</span>` : "";
-    const actions = canConnect(state3) ? button2("data-nfh-connect", state3 === Connection.Rejected ? "Reconnect" : "Connect") + '<button type="button" class="nfh-connect-manual" data-nfh-connect-manual>Enter a key instead</button>' : "";
-    return `<span class="nfh-connect-text">${STATE_TEXT[state3]}${failed}</span>${actions}${dismiss}`;
+    const actions = canConnect(state4) ? button2("data-nfh-connect", state4 === Connection.Rejected ? "Reconnect" : "Connect") + '<button type="button" class="nfh-connect-manual" data-nfh-connect-manual>Enter a key instead</button>' : "";
+    return `<span class="nfh-connect-text">${STATE_TEXT[state4]}${failed}</span>${actions}${dismiss}`;
   }
   function renderBanner() {
-    const state3 = connectionState();
+    const state4 = connectionState();
     const busy = phase !== null && phase.kind !== "failed";
-    const show = busy || state3 !== Connection.Connected && !isHidden(state3);
+    const show = busy || state4 !== Connection.Connected && !isHidden(state4);
     let banner = document.getElementById(BANNER_ID);
     if (!show) {
       if (banner) banner.remove();
@@ -3455,7 +3558,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       banner.setAttribute("role", "status");
       document.body.prepend(banner);
     }
-    const html = bannerHtml(state3);
+    const html = bannerHtml(state4);
     if (banner.__nfhHtml !== html) {
       banner.innerHTML = html;
       banner.__nfhHtml = html;
@@ -3463,8 +3566,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     banner.classList.toggle("nfh-connect-banner--ok", Boolean(phase && phase.kind === "connected"));
   }
   function renderNotes() {
-    const state3 = connectionState();
-    const text = NOTE_TEXT[state3];
+    const state4 = connectionState();
+    const text = NOTE_TEXT[state4];
     for (const host of NOTE_HOSTS) {
       const element = document.querySelector(host.selector);
       if (!element) continue;
@@ -3479,7 +3582,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         note.className = NOTE_CLASS;
         element.insertAdjacentElement(host.place, note);
       }
-      const html = `<span>${text}</span>` + (canConnect(state3) ? ' <button type="button" class="nfh-connect-note-link" data-nfh-connect>Connect</button>' : "");
+      const html = `<span>${text}</span>` + (canConnect(state4) ? ' <button type="button" class="nfh-connect-note-link" data-nfh-connect>Connect</button>' : "");
       if (note.__nfhHtml !== html) {
         note.innerHTML = html;
         note.__nfhHtml = html;
@@ -3989,8 +4092,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
   }
   function cprState() {
-    const state3 = readJson2(CPR_KEY);
-    return state3 && state3.known && state3.sent ? state3 : { known: {}, sent: {} };
+    const state4 = readJson2(CPR_KEY);
+    return state4 && state4.known && state4.sent ? state4 : { known: {}, sent: {} };
   }
   var pending2 = /* @__PURE__ */ new Map();
   var uploadTimer = null;
@@ -4001,31 +4104,31 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     if (batch.length === 0) return;
     try {
       await api("/oc/cpr", { method: "POST", data: { cprs: batch.map(([, entry]) => entry) } });
-      const state3 = cprState();
-      for (const [key, entry] of batch) state3.sent[key] = entry.cpr;
-      localStorage.setItem(CPR_KEY, JSON.stringify(state3));
+      const state4 = cprState();
+      for (const [key, entry] of batch) state4.sent[key] = entry.cpr;
+      localStorage.setItem(CPR_KEY, JSON.stringify(state4));
       LogInfo(`OC Assistant sent ${batch.length} CPRs`);
     } catch (error) {
       console.error("[NFH] Could not send CPRs to nuke.family:", error);
     }
   }
   function learnCprs(crimes) {
-    const state3 = cprState();
+    const state4 = cprState();
     let changed = false;
     for (const crime of crimes) {
       for (const slot of crime.slots) {
         if (slot.occupied || slot.cpr === null) continue;
         const key = `${keyFor(crime.name)}|${keyFor(slot.name)}`;
-        if (state3.known[key] !== slot.cpr) {
-          state3.known[key] = slot.cpr;
+        if (state4.known[key] !== slot.cpr) {
+          state4.known[key] = slot.cpr;
           changed = true;
         }
-        if (state3.sent[key] !== slot.cpr) {
+        if (state4.sent[key] !== slot.cpr) {
           pending2.set(key, { crime: crime.name, role: slot.name, cpr: slot.cpr });
         }
       }
     }
-    if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state3));
+    if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state4));
     if (pending2.size > 0 && !uploadTimer) uploadTimer = setTimeout(upload, UPLOAD_DELAY_MS);
   }
   function knownCpr(board, crimeName2, roleName) {
@@ -4862,8 +4965,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     Planning: "planning",
     Completed: "completed"
   };
-  function activeSubTab(root2) {
-    for (const name of root2.querySelectorAll('[class^="tabName___"]')) {
+  function activeSubTab(root3) {
+    for (const name of root3.querySelectorAll('[class^="tabName___"]')) {
       const button2 = name.closest("button");
       if (button2 && /(^|\s)active___/.test(button2.className)) {
         return name.textContent.trim().toLowerCase();
@@ -4911,9 +5014,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     return name.trim() || null;
   }
-  function readCrimes(root2) {
+  function readCrimes(root3) {
     const crimes = [];
-    for (const el of root2.querySelectorAll("[data-oc-id]")) {
+    for (const el of root3.querySelectorAll("[data-oc-id]")) {
       const name = crimeName(el);
       if (!name) continue;
       const levelEl = el.querySelector('[class^="levelValue___"]');
@@ -4941,11 +5044,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     // no open slot is loaded
   };
   function joinState(crimes) {
-    const buttons = crimes.flatMap(
+    const buttons2 = crimes.flatMap(
       (crime) => crime.slots.map((slot) => slot.joinButton).filter(Boolean)
     );
-    if (buttons.length === 0) return JoinState.Full;
-    return buttons.some((button2) => !button2.disabled) ? JoinState.Open : JoinState.Blocked;
+    if (buttons2.length === 0) return JoinState.Full;
+    return buttons2.some((button2) => !button2.disabled) ? JoinState.Open : JoinState.Blocked;
   }
 
   // src/features/organized-crimes/view.js
@@ -5008,8 +5111,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     if (element.title !== chip.title) element.title = chip.title;
     element.classList.add(CHIP_CLASS);
-    for (const state3 of CHIP_STATES) {
-      element.classList.toggle(`${CHIP_CLASS}--${state3}`, state3 === chip.state);
+    for (const state4 of CHIP_STATES) {
+      element.classList.toggle(`${CHIP_CLASS}--${state4}`, state4 === chip.state);
     }
     if (!existing) slot.headerEl.insertAdjacentElement("afterend", element);
   }
@@ -5082,11 +5185,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     if (caveats.length > 0) return caveats.map((caveat) => caveat.title).join(" ");
     return suggestion2.pooled === false ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full." : waitSentence(suggestion2);
   }
-  function renderSuggestions(root2, suggestions) {
+  function renderSuggestions(root3, suggestions) {
     const wanted = new Map(
       suggestions.filter((suggestion2) => suggestion2.rated.slot.el).map((suggestion2) => [suggestion2.rated.slot.el, suggestion2])
     );
-    for (const marked of root2.querySelectorAll(`.${PICK_CLASS}`)) {
+    for (const marked of root3.querySelectorAll(`.${PICK_CLASS}`)) {
       if (wanted.has(marked)) continue;
       marked.classList.remove(PICK_CLASS, `${PICK_CLASS}--best`, `${PICK_CLASS}--good`);
       const tag = marked.querySelector(`:scope > .${TAG_CLASS}`);
@@ -5123,10 +5226,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     return `<span class="nfh-oc-spawn">${spawn.quiet ? "" : '<span class="nfh-oc-bar-muted">Nothing decent is open at your level.</span> '}<button type="button" class="nfh-oc-bar-button" data-nfh-oc-spawn${spawn.busy ? " disabled" : ""}>${spawn.busy ? "Asking..." : `Ask staff for a level ${escapeHtml(spawn.tier)} crime`}</button></span>`;
   }
-  function barHtml(state3) {
+  function barHtml(state4) {
     const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
-    if (state3.kind === "best") {
-      const [best, ...rest] = state3.suggestions;
+    if (state4.kind === "best") {
+      const [best, ...rest] = state4.suggestions;
       const { slot, minCpr } = best.rated;
       const others = rest.filter((suggestion2) => !suggestion2.crime.offPage);
       const flawed = suggestionCaveats(best).length > 0;
@@ -5136,16 +5239,16 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       const late = best.productive ? "" : ` <strong class="nfh-oc-bar-warning">That is later than the ${escapeHtml(best.thresholdHours)} hours that count as productive,</strong> <span class="nfh-oc-bar-muted">but nothing open would start you sooner.</span>`;
       const belowLevel = best.belowLevel ? ` <strong class="nfh-oc-bar-warning">This crime is below your level (${escapeHtml(best.memberLevel)}).</strong>` : "";
       let lead = flawed ? "Best slot available: " : "Best slot for you: ";
-      if (state3.warning) {
-        lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state3.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
+      if (state4.warning) {
+        lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state4.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
       }
       return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
     }
-    if (state3.kind === "joined") {
-      return `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state3.crime)}</strong> (level ${escapeHtml(state3.level ?? "?")}) as <strong>${escapeHtml(state3.role)}</strong>, so no other slot is suggested.</span>`;
+    if (state4.kind === "joined") {
+      return `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state4.crime)}</strong> (level ${escapeHtml(state4.level ?? "?")}) as <strong>${escapeHtml(state4.role)}</strong>, so no other slot is suggested.</span>`;
     }
-    if (state3.kind === "warning") {
-      return `${label}<span class="nfh-oc-bar-text"><strong class="nfh-oc-bar-warning">${escapeHtml(state3.warning)}</strong></span>`;
+    if (state4.kind === "warning") {
+      return `${label}<span class="nfh-oc-bar-text"><strong class="nfh-oc-bar-warning">${escapeHtml(state4.warning)}</strong></span>`;
     }
     const messages = {
       none: "None of the open slots loaded so far meets your faction's minimum CPR for you. Scroll down to load more crimes.",
@@ -5153,15 +5256,15 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       full: "No open slot is loaded yet. Scroll down to load more crimes.",
       low: "The open slots you qualify for are all in crimes below your level, so none is suggested."
     };
-    return `${label}<span class="nfh-oc-bar-text">${messages[state3.kind]}</span>`;
+    return `${label}<span class="nfh-oc-bar-text">${messages[state4.kind]}</span>`;
   }
-  function renderBar2(root2, html) {
+  function renderBar2(root3, html) {
     let bar = document.getElementById(BAR_ID);
     if (!bar) {
       bar = document.createElement("div");
       bar.id = BAR_ID;
       bar.className = "nfh-oc-bar";
-      root2.parentElement.insertBefore(bar, root2);
+      root3.parentElement.insertBefore(bar, root3);
     }
     if (bar.dataset.nfhHtml !== html) {
       bar.dataset.nfhHtml = html;
@@ -5173,10 +5276,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const bar = document.getElementById(BAR_ID);
     if (bar) bar.remove();
   }
-  function clearAll(root2) {
+  function clearAll(root3) {
     removeBar();
-    renderSuggestions(root2, []);
-    for (const ours of root2.querySelectorAll(`.${CHIP_CLASS}, .${FLAGS_CLASS}`)) ours.remove();
+    renderSuggestions(root3, []);
+    for (const ours of root3.querySelectorAll(`.${CHIP_CLASS}, .${FLAGS_CLASS}`)) ours.remove();
   }
   function isOwnElement(node) {
     return node.nodeType === Node.ELEMENT_NODE && (node.classList.contains(CHIP_CLASS) || node.classList.contains(TAG_CLASS) || node.classList.contains(FLAGS_CLASS) || node.id === BAR_ID);
@@ -5227,15 +5330,15 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     return window.location.search.includes("step=your") && IsPage(PageType.FactionCrimes);
   }
   function render3() {
-    const root2 = document.querySelector(CRIMES_ROOT_SELECTOR);
-    if (!root2 || !isOwnFactionCrimesTab()) return;
+    const root3 = document.querySelector(CRIMES_ROOT_SELECTOR);
+    if (!root3 || !isOwnFactionCrimesTab()) return;
     const config = ocConfigStore.data;
     if (!config) {
-      clearAll(root2);
+      clearAll(root3);
       return;
     }
-    const crimes = readCrimes(root2);
-    const tab = activeSubTab(root2);
+    const crimes = readCrimes(root3);
+    const tab = activeSubTab(root3);
     const recruiting = tab === SubTab.Recruiting;
     const active = (recruiting || tab === SubTab.Planning) && crimes.length > 0;
     const joining = joinState(crimes);
@@ -5283,7 +5386,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       });
     }
     const suggestions = suggesting ? result.suggestions : [];
-    renderSuggestions(root2, suggestions);
+    renderSuggestions(root3, suggestions);
     const staff = members && active ? { counts, prefs: prefs3, factionLimits: limitsFor(config) } : null;
     const settings = settingsHtml({ open: settingsOpen, weights, staff });
     const staffPart = staff ? staffHtml(staff, settings.button) : "";
@@ -5291,15 +5394,15 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     let memberPart = "";
     if (features2.enabled && recruiting && crimes.length > 0) {
       if (features2.suggest) {
-        let state3;
-        if (suggestions.length > 0) state3 = { kind: "best", suggestions, warning };
-        else if (warning) state3 = { kind: "warning", warning };
-        else if (own) state3 = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
-        else if (joining === JoinState.Blocked) state3 = { kind: "blocked" };
-        else if (joining === JoinState.Open && result.withheld > 0) state3 = { kind: "low" };
-        else if (joining === JoinState.Full) state3 = { kind: "full" };
-        else state3 = { kind: "none" };
-        memberPart = barHtml(state3);
+        let state4;
+        if (suggestions.length > 0) state4 = { kind: "best", suggestions, warning };
+        else if (warning) state4 = { kind: "warning", warning };
+        else if (own) state4 = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
+        else if (joining === JoinState.Blocked) state4 = { kind: "blocked" };
+        else if (joining === JoinState.Open && result.withheld > 0) state4 = { kind: "low" };
+        else if (joining === JoinState.Full) state4 = { kind: "full" };
+        else state4 = { kind: "none" };
+        memberPart = barHtml(state4);
       } else if (warning) {
         memberPart = barHtml({ kind: "warning", warning });
       }
@@ -5314,7 +5417,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       removeBar();
       return;
     }
-    const bar = renderBar2(root2, memberPart + (staffPart || settings.button) + settings.panel);
+    const bar = renderBar2(root3, memberPart + (staffPart || settings.button) + settings.panel);
     if (!bar.dataset.nfhBound) {
       bar.dataset.nfhBound = "1";
       bar.addEventListener("change", (event) => {
@@ -5382,16 +5485,16 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const nodes = [...mutation.addedNodes, ...mutation.removedNodes];
     return nodes.length > 0 && nodes.every(isOwnElement);
   }
-  function watch(root2) {
-    if (observedRoot === root2 && root2.isConnected) return;
+  function watch(root3) {
+    if (observedRoot === root3 && root3.isConnected) return;
     if (observer) observer.disconnect();
-    observedRoot = root2;
+    observedRoot = root3;
     observer = new MutationObserver((mutations) => {
       if (!isOwnFactionCrimesTab()) return;
       if (mutations.every(isOwnMutation)) return;
       scheduleRender();
     });
-    observer.observe(root2, { childList: true, subtree: true });
+    observer.observe(root3, { childList: true, subtree: true });
     LogInfo("OC Assistant watching the crimes list");
   }
   function init4() {
@@ -5400,8 +5503,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       subscribed = true;
       ocConfigStore.subscribe(() => scheduleRender());
     }
-    waitForElm(CRIMES_ROOT_SELECTOR).then((root2) => {
-      watch(root2);
+    waitForElm(CRIMES_ROOT_SELECTOR).then((root3) => {
+      watch(root3);
       scheduleRender();
     });
   }
@@ -5735,13 +5838,13 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       element.setAttribute(name, value);
     }
   }
-  function playerIdOf(row) {
-    const link = row.querySelector("a[href*='profiles.php?XID=']");
+  function playerIdOf(row2) {
+    const link = row2.querySelector("a[href*='profiles.php?XID=']");
     const match = link && link.getAttribute("href").match(/XID=(\d+)/);
     return match ? match[1] : null;
   }
-  function cellOf(row, name) {
-    return row.querySelector(`.${name}`) || row.querySelector(`[class*="${name}___"]`);
+  function cellOf(row2, name) {
+    return row2.querySelector(`.${name}`) || row2.querySelector(`[class*="${name}___"]`);
   }
   function pageKindOf(statusCell) {
     if (!statusCell) return "other";
@@ -5755,17 +5858,17 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     return text === "Okay" ? "okay" : "other";
   }
-  function pageEstimatesOf(row) {
+  function pageEstimatesOf(row2) {
     const found = {};
-    const scouter = Number(row.dataset.estValue);
+    const scouter = Number(row2.dataset.estValue);
     if (scouter > 0) found[Source.FfScouter] = Math.round(scouter);
-    const box = row.querySelector(BSP_BOX_SELECTOR);
+    const box = row2.querySelector(BSP_BOX_SELECTOR);
     const predicted = box && (Math.round(Number(box.dataset.bspStats)) || parseStatText(box.textContent));
     if (predicted > 0) found[Source.Bsp] = predicted;
     return found;
   }
-  function scoreOf(row) {
-    const cell = cellOf(row, "points");
+  function scoreOf(row2) {
+    const cell = cellOf(row2, "points");
     return cell && Number(cell.textContent.replace(/,/g, "")) || 0;
   }
   function noteForUpload(id, onPage) {
@@ -5802,14 +5905,14 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       }
     }
   }
-  function clearRow(row) {
-    setAttr(row, ROW_ATTR, null);
-    const statusCell = cellOf(row, "status");
+  function clearRow(row2) {
+    setAttr(row2, ROW_ATTR, null);
+    const statusCell = cellOf(row2, "status");
     if (statusCell) {
       setAttr(statusCell, STATUS_ATTR, null);
       setAttr(statusCell, TONE_ATTR, null);
     }
-    const memberCell = cellOf(row, "member");
+    const memberCell = cellOf(row2, "member");
     if (memberCell) setAttr(memberCell, STATS_ATTR, null);
   }
   function clearAll2() {
@@ -5834,17 +5937,17 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const sources = /* @__PURE__ */ new Set();
     for (const list of lists) {
       const entries = [];
-      for (const row of list.children) {
-        const id = playerIdOf(row);
+      for (const row2 of list.children) {
+        const id = playerIdOf(row2);
         if (!id || !live) {
-          clearRow(row);
+          clearRow(row2);
           continue;
         }
-        const statusCell = cellOf(row, "status");
+        const statusCell = cellOf(row2, "status");
         const pageKind = pageKindOf(statusCell);
         const entry = classify(state2.members[id], pageKind, now, memos.get(id));
         memos.set(id, entry.memo);
-        const onPage = pageEstimatesOf(row);
+        const onPage = pageEstimatesOf(row2);
         const held = { bsp: state2.held.bsp[id], ffscouter: state2.held.ffscouter[id] };
         const estimate = pickEstimate(onPage, held, prefs3.source);
         noteForUpload(id, onPage);
@@ -5852,18 +5955,18 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
           if (onPage[source] || held[source]) sources.add(source);
         }
         entry.stats = estimate.total;
-        entry.score = scoreOf(row);
+        entry.score = scoreOf(row2);
         const badge = estimate.total > 0 && !estimate.fromPage;
         anyStats = anyStats || estimate.total > 0;
         heldShown = heldShown || badge;
-        entry.row = row;
+        entry.row = row2;
         entries.push(entry);
         if (statusCell) {
           setAttr(statusCell, STATUS_ATTR, entry.label);
           setAttr(statusCell, TONE_ATTR, entry.label !== null && pageKind === "travel" ? "travel" : null);
         }
-        setAttr(row, ROW_ATTR, entry.out ? "out" : entry.soon ? "soon" : null);
-        const memberCell = cellOf(row, "member");
+        setAttr(row2, ROW_ATTR, entry.out ? "out" : entry.soon ? "soon" : null);
+        const memberCell = cellOf(row2, "member");
         if (memberCell) {
           setAttr(memberCell, STATS_ATTR, prefs3.showStats && badge ? formatStats(entry.stats) : null);
         }
@@ -6246,8 +6349,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       const attacks = feed.recentAttacks;
       const users = {};
       const all = feed.users || {};
-      for (const attack of attacks) {
-        for (const id of [attack.attackerID, attack.defenderID, attack.firstUserID]) {
+      for (const attack2 of attacks) {
+        for (const id of [attack2.attackerID, attack2.defenderID, attack2.firstUserID]) {
           if (id && all[id]) users[id] = all[id];
         }
       }
@@ -6318,17 +6421,22 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       send("fetch", { feed: null, error: "wrap_failed" });
     }
     let lastSeen = "";
+    let lastList = null;
     setInterval(() => {
       if (document.hidden) return;
-      const list = document.querySelector(".chain-attacks-list");
+      const list = document.querySelector(".chain-attacks-list.recent-attacks");
       if (!list) return;
+      if (list !== lastList) {
+        lastList = list;
+        lastSeen = "";
+      }
       const key = Object.keys(list).find((k) => k.startsWith("__reactFiber$") || k.startsWith("__reactInternalInstance$"));
       if (!key) return;
       let fiber = list[key];
       for (let i = 0; fiber && i < 40; i++, fiber = fiber.return) {
         const props = fiber.memoizedProps;
         if (props && props.warDesc && Array.isArray(props.warDesc.recentAttacks)) {
-          const seen = props.warDesc.recentAttacks.map((attack) => attack.publicID).join(",");
+          const seen = props.warDesc.recentAttacks.map((attack2) => attack2.publicID).join(",");
           if (seen !== lastSeen) {
             lastSeen = seen;
             send("react", { feed: pick(props.warDesc, props.userFactionID) });
@@ -6367,8 +6475,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     if (stated > 0) return stated;
     const attacks = feed && feed.recentAttacks || [];
     const users = feed && feed.users || {};
-    for (const attack of attacks) {
-      const ours = users[attack.firstUserID];
+    for (const attack2 of attacks) {
+      const ours = users[attack2.firstUserID];
       if (ours && Number(ours.factionID) > 0) return Number(ours.factionID);
     }
     return null;
@@ -6380,34 +6488,49 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   function textOrNull(value) {
     return typeof value === "string" && value.trim() !== "" ? value.trim() : null;
   }
-  function normalizeAttack(attack, users = {}) {
-    const attackerId = idOrNull(attack.attackerID);
+  function normalizeAttack(attack2, users = {}) {
+    const attackerId = idOrNull(attack2.attackerID);
     const attacker = attackerId && users[attackerId] || {};
-    const defender = users[attack.defenderID] || {};
+    const defender = users[attack2.defenderID] || {};
     return {
-      id: String(attack.publicID),
+      id: String(attack2.publicID),
       attacker_id: attackerId,
       attacker_name: textOrNull(attacker.playername),
       attacker_faction_id: idOrNull(attacker.factionID),
       attacker_faction_tag: textOrNull(attacker.factiontag),
-      defender_id: Number(attack.defenderID),
+      defender_id: Number(attack2.defenderID),
       defender_name: textOrNull(defender.playername),
       defender_faction_id: idOrNull(defender.factionID),
-      finished_at: Math.floor(Number(attack.finishTimestamp) / 1e3),
-      respect: Number(attack.respect) || 0,
-      result: textOrNull(attack.result),
-      stealth: Number(attack.stealthAttack) !== 0 || attackerId === null,
-      retal: Number(attack.retal) === 1
+      finished_at: Math.floor(Number(attack2.finishTimestamp) / 1e3),
+      respect: Number(attack2.respect) || 0,
+      result: textOrNull(attack2.result),
+      stealth: Number(attack2.stealthAttack) !== 0 || attackerId === null,
+      retal: Number(attack2.retal) === 1
     };
   }
-  function matters(attack, factionId) {
-    const incoming = attack.defender_faction_id === factionId && attack.attacker_faction_id !== factionId && !attack.stealth && attack.respect < 0;
-    const retalDone = attack.attacker_faction_id === factionId && attack.retal;
+  function matters(attack2, factionId) {
+    const incoming = attack2.defender_faction_id === factionId && attack2.attacker_faction_id !== factionId && !attack2.stealth && attack2.respect < 0;
+    const retalDone = attack2.attacker_faction_id === factionId && attack2.retal;
     return incoming || retalDone;
   }
   function attacksToReport(feed, factionId, sent2, nowSeconds) {
     const users = feed && feed.users || {};
-    return (feed && feed.recentAttacks || []).filter((attack) => attack && attack.publicID && !sent2.has(String(attack.publicID))).map((attack) => normalizeAttack(attack, users)).filter((attack) => attack.finished_at > nowSeconds - WINDOW_SECONDS).filter((attack) => matters(attack, factionId));
+    return (feed && feed.recentAttacks || []).filter((attack2) => attack2 && attack2.publicID && !sent2.has(String(attack2.publicID))).map((attack2) => normalizeAttack(attack2, users)).filter((attack2) => attack2.finished_at > nowSeconds - WINDOW_SECONDS).filter((attack2) => matters(attack2, factionId));
+  }
+  function formatLeft(seconds) {
+    const left = Math.max(0, Math.floor(seconds));
+    return `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+  }
+  function retalState(retal, nowSeconds) {
+    if (retal.done_at) return "done";
+    if (!retal.claimed_by || !(retal.claimed_until > nowSeconds)) return "free";
+    return retal.claimed_by_me ? "mine" : "taken";
+  }
+  var DONE_LINGER_SECONDS = 120;
+  function visibleRetals(retals, nowSeconds) {
+    return (retals || []).filter(
+      (retal) => retal.done_at ? retal.done_at + DONE_LINGER_SECONDS > nowSeconds : retal.expires_at > nowSeconds
+    );
   }
 
   // src/features/retals/data.js
@@ -6437,9 +6560,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   }
   function markSent(attacks) {
     const list = load2();
-    for (const attack of attacks) {
-      const id = String(attack.id ?? attack.publicID);
-      const at = attack.finished_at ?? Math.floor(Number(attack.finishTimestamp) / 1e3);
+    for (const attack2 of attacks) {
+      const id = String(attack2.id ?? attack2.publicID);
+      const at = attack2.finished_at ?? Math.floor(Number(attack2.finishTimestamp) / 1e3);
       list.set(id, at);
     }
     save();
@@ -6447,33 +6570,132 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   function report(factionId, attacks) {
     return api("/retals/report", { method: "POST", data: { faction_id: factionId, attacks } });
   }
+  function fetchRetals() {
+    return api("/retals");
+  }
+  function claimRetal(enemyId) {
+    return api(`/retals/${enemyId}/claim`, { method: "POST" });
+  }
+  function unclaimRetal(enemyId) {
+    return api(`/retals/${enemyId}/unclaim`, { method: "POST" });
+  }
+
+  // src/features/retals/view.js
+  function profileUrl(playerId) {
+    return `/profiles.php?XID=${encodeURIComponent(playerId)}`;
+  }
+  function attackUrl(playerId) {
+    return `/page.php?sid=attack&user2ID=${encodeURIComponent(playerId)}`;
+  }
+  function enemyName(retal) {
+    const name = escapeHtml(retal.enemy_name || `#${retal.enemy_id}`);
+    const tag = retal.enemy_faction_tag ? ` <span class="nfh-rt-tag">${escapeHtml(retal.enemy_faction_tag)}</span>` : "";
+    return `<a class="nfh-rt-name" href="${profileUrl(retal.enemy_id)}">${name}</a>${tag}`;
+  }
+  function victims(retal) {
+    const list = retal.victims || [];
+    if (!list.length) return "";
+    const first = escapeHtml(list[0].name || `#${list[0].id}`);
+    const more = list.length > 1 ? ` +${list.length - 1}` : "";
+    return `<span class="nfh-rt-muted">hit ${first}${more}</span>`;
+  }
+  function buttons(retal, state4, ui) {
+    const busy = ui.busy === retal.enemy_id ? " disabled" : "";
+    const id = escapeHtml(retal.enemy_id);
+    const claim = state4 === "mine" ? `<button type="button" class="nfh-cw-btn" data-action="unclaim" data-enemy="${id}"${busy}>Unclaim</button>` : state4 === "free" ? `<button type="button" class="nfh-cw-btn" data-action="claim" data-enemy="${id}"${busy}>Claim</button>` : "";
+    const attack2 = `<a class="nfh-cw-btn nfh-cw-btn--primary nfh-rt-attack" href="${attackUrl(retal.enemy_id)}" data-action="attack" data-enemy="${id}">Attack</a>`;
+    return `<span class="nfh-rt-actions">${claim}${attack2}</span>`;
+  }
+  function row(retal, now, ui) {
+    const state4 = retalState(retal, now);
+    const id = escapeHtml(retal.enemy_id);
+    if (state4 === "done") {
+      const by = retal.done_by && retal.done_by.name ? ` by ${escapeHtml(retal.done_by.name)}` : "";
+      return `<li class="nfh-rt-row is-done" data-enemy="${id}"><span class="nfh-rt-main">${enemyName(retal)} <span class="nfh-rt-muted">retal done${by}</span></span></li>`;
+    }
+    const left = retal.expires_at - now;
+    const hold = state4 === "mine" ? `<span class="nfh-rt-held is-mine">Claimed by you</span>` : state4 === "taken" ? `<span class="nfh-rt-held">Claimed by ${escapeHtml(retal.claimed_by.name || "someone")}</span>` : "";
+    const warning = ui.warn && ui.warn.enemyId === retal.enemy_id ? `<div class="nfh-rt-warn" role="alert">${escapeHtml(ui.warn.name || "Someone")} has claimed this retal.
+          <a class="nfh-cw-btn" href="${attackUrl(retal.enemy_id)}" data-action="attack-anyway" data-enemy="${id}">Attack anyway</a>
+          <button type="button" class="nfh-cw-btn" data-action="dismiss" data-enemy="${id}">Cancel</button></div>` : "";
+    return `<li class="nfh-rt-row is-${state4}${left <= 60 ? " is-ending" : ""}" data-enemy="${id}">
+    <span class="nfh-rt-main">${enemyName(retal)} ${victims(retal)}</span>
+    <span class="nfh-rt-left" title="Time left to retaliate">${formatLeft(left)}</span>
+    ${hold}
+    ${buttons(retal, state4, ui)}
+    ${warning}
+  </li>`;
+  }
+  function renderList(retals, now, ui = {}) {
+    const shown = visibleRetals(retals, now);
+    if (!shown.length) return "";
+    const open = shown.filter((retal) => !retal.done_at).length;
+    const error = ui.error ? `<div class="nfh-rt-error">${escapeHtml(ui.error)}</div>` : "";
+    return `<div class="nfh-rt-head"><span class="nfh-rt-title">Retals</span> <span class="nfh-rt-muted">${open} open</span></div>
+    <ul class="nfh-rt-list">${shown.map((retal) => row(retal, now, ui)).join("")}</ul>${error}`;
+  }
 
   // src/features/retals/index.js
-  function sendReports() {
-    if (DEBUG) return true;
-    try {
-      return localStorage.getItem("nfhRetalsReport") === "1";
-    } catch (e) {
-      return false;
-    }
-  }
+  var ROOT_ID2 = "nfh-retals";
+  var ANCHOR_SELECTOR3 = ".chain-attacks-list.recent-attacks";
+  var POLL_MS2 = 10 * 1e3;
+  var ERROR_MS = 6e3;
+  var state3 = {
+    retals: [],
+    offset: 0,
+    // server clock minus ours, in seconds
+    lastAnswerAt: 0,
+    polling: false,
+    refused: false,
+    // not in a Nuke faction, or a site without retals: stop asking
+    ui: { busy: null, warn: null, error: null },
+    errorUntil: 0
+  };
   var sourcesSeen = /* @__PURE__ */ new Set();
   var sending = false;
   var queued = false;
   var latestFeed = null;
+  var root2 = null;
+  var rendered = null;
+  var ticker3 = null;
+  var serverNow = () => Math.floor(Date.now() / 1e3) + state3.offset;
+  function take(answer) {
+    if (!answer || !Array.isArray(answer.retals)) return;
+    state3.retals = answer.retals;
+    if (answer.server_now) state3.offset = answer.server_now - Math.floor(Date.now() / 1e3);
+    state3.lastAnswerAt = Date.now();
+    render4();
+  }
+  function isRefusal(error) {
+    return error instanceof ApiError && (error.status === 403 || error.status === 404 && !(error.body && error.body.retals));
+  }
+  function showError(text) {
+    state3.ui.error = text;
+    state3.errorUntil = Date.now() + ERROR_MS;
+    render4();
+  }
+  function stop3() {
+    state3.refused = true;
+    if (ticker3) clearInterval(ticker3);
+    ticker3 = null;
+    if (root2) root2.remove();
+    root2 = null;
+    rendered = null;
+  }
   function onFeed(feed, source, keys) {
-    if (!isOwnFactionMainTab()) return;
+    if (!isOwnFactionMainTab() || state3.refused) return;
     if (!sourcesSeen.has(source)) {
       sourcesSeen.add(source);
       LogInfo(`[retals] first chain feed from ${source}`, { answer_keys: keys, sample: feed.recentAttacks[0] });
     }
-    const stealthed = feed.recentAttacks.find((attack) => Number(attack.stealthAttack) !== 0);
+    const stealthed = feed.recentAttacks.find((attack2) => Number(attack2.stealthAttack) !== 0);
     if (stealthed && !sourcesSeen.has("stealth")) {
       sourcesSeen.add("stealth");
       LogInfo("[retals] a stealthed attack as Torn gives it", stealthed, feed.users[stealthed.attackerID] || null);
     }
     latestFeed = feed;
     flush();
+    mount2();
   }
   async function flush() {
     if (sending) {
@@ -6481,29 +6703,23 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       return;
     }
     const feed = latestFeed;
-    if (!feed) return;
+    if (!feed || !getApiToken()) return;
     const factionId = feedFactionId(feed);
     if (!factionId) {
       LogInfo("[retals] could not tell the faction from the feed", feed);
       return;
     }
-    const sent2 = sentIds();
-    const attacks = attacksToReport(feed, factionId, sent2, Math.floor(Date.now() / 1e3));
-    const reporting = new Set(attacks.map((attack) => attack.id));
-    markSent(feed.recentAttacks.filter((attack) => attack.publicID && !reporting.has(String(attack.publicID))));
+    const attacks = attacksToReport(feed, factionId, sentIds(), Math.floor(Date.now() / 1e3));
+    const reporting = new Set(attacks.map((attack2) => attack2.id));
+    markSent(feed.recentAttacks.filter((attack2) => attack2.publicID && !reporting.has(String(attack2.publicID))));
     if (!attacks.length) return;
-    const send = sendReports();
-    LogInfo(`[retals] ${send ? "sending" : "would send"} for faction ${factionId}`, attacks);
-    if (!send || !getApiToken()) {
-      markSent(attacks);
-      return;
-    }
+    LogInfo(`[retals] reporting for faction ${factionId}`, attacks);
     sending = true;
     try {
-      const answer = await report(factionId, attacks);
+      take(await report(factionId, attacks));
       markSent(attacks);
-      LogInfo("[retals] site answered", answer);
     } catch (error) {
+      if (isRefusal(error)) stop3();
       LogInfo("[retals] report failed", error.status ?? error.kind, error.body ?? error.message);
     } finally {
       sending = false;
@@ -6513,12 +6729,155 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       }
     }
   }
+  function render4() {
+    if (!root2) return;
+    if (state3.ui.error && Date.now() > state3.errorUntil) state3.ui.error = null;
+    const html = renderList(state3.retals, serverNow(), state3.ui);
+    if (html === rendered) return;
+    rendered = html;
+    root2.innerHTML = html;
+    root2.hidden = html === "";
+  }
+  function mount2() {
+    if (state3.refused || !getApiToken() || !isOwnFactionMainTab()) return false;
+    const anchor = document.querySelector(ANCHOR_SELECTOR3);
+    if (!anchor) {
+      if (root2) root2.remove();
+      root2 = null;
+      rendered = null;
+      return false;
+    }
+    if (!root2 || !root2.isConnected || root2.previousElementSibling !== anchor) {
+      if (root2) root2.remove();
+      root2 = document.createElement("div");
+      root2.id = ROOT_ID2;
+      root2.className = "nfh-cw nfh-rt";
+      root2.hidden = true;
+      root2.addEventListener("click", onClick4);
+      anchor.insertAdjacentElement("afterend", root2);
+      rendered = null;
+    }
+    if (!ticker3) ticker3 = setInterval(tick3, 1e3);
+    render4();
+    return true;
+  }
+  function tick3() {
+    if (!mount2()) {
+      clearInterval(ticker3);
+      ticker3 = null;
+      return;
+    }
+    if (!document.hidden && !state3.polling && Date.now() - state3.lastAnswerAt >= POLL_MS2) poll3();
+  }
+  async function poll3() {
+    state3.polling = true;
+    try {
+      take(await fetchRetals());
+    } catch (error) {
+      if (isRefusal(error)) stop3();
+      state3.lastAnswerAt = Date.now();
+    } finally {
+      state3.polling = false;
+    }
+  }
+  function find(enemyId) {
+    return state3.retals.find((retal) => retal.enemy_id === enemyId);
+  }
+  async function changeClaim(enemyId, change) {
+    state3.ui.busy = enemyId;
+    render4();
+    try {
+      take(await change(enemyId));
+      return { ok: true };
+    } catch (error) {
+      if (error instanceof ApiError && error.body && error.body.retals) take(error.body);
+      if (error instanceof ApiError && error.status === 409) return { ok: false, takenBy: error.body.claimed_by };
+      if (error instanceof ApiError && error.status === 404) return { ok: false, gone: true };
+      if (isRefusal(error)) stop3();
+      return { ok: false, failed: true };
+    } finally {
+      state3.ui.busy = null;
+      render4();
+    }
+  }
+  function openAttack(enemyId, tab = null) {
+    const url = attackUrl(enemyId);
+    if (isPda) {
+      window.location.href = url;
+      return;
+    }
+    if (tab) tab.location.href = url;
+    else if (!window.open(url, "_blank")) window.location.href = url;
+  }
+  function openBlankTab() {
+    if (isPda) return null;
+    try {
+      return window.open("", "_blank");
+    } catch (e) {
+      return null;
+    }
+  }
+  async function attack(enemyId) {
+    const retal = find(enemyId);
+    const now = serverNow();
+    const current = retal ? retalState(retal, now) : "free";
+    if (current === "taken") {
+      state3.ui.warn = { enemyId, name: retal.claimed_by.name };
+      render4();
+      return;
+    }
+    if (current === "mine" || current === "done") {
+      openAttack(enemyId);
+      if (current === "mine") changeClaim(enemyId, claimRetal);
+      return;
+    }
+    const tab = openBlankTab();
+    const result = await changeClaim(enemyId, claimRetal);
+    if (result.takenBy) {
+      if (tab) tab.close();
+      state3.ui.warn = { enemyId, name: result.takenBy.name };
+      render4();
+      return;
+    }
+    if (result.failed) showError("Could not claim it on nuke.family; attacking anyway.");
+    openAttack(enemyId, tab);
+  }
+  function onClick4(event) {
+    const target = event.target.closest("[data-action]");
+    if (!target || !root2.contains(target)) return;
+    const enemyId = Number(target.dataset.enemy);
+    const action = target.dataset.action;
+    if (target.tagName === "A" && (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey)) return;
+    event.preventDefault();
+    if (action === "claim") {
+      changeClaim(enemyId, claimRetal).then((result) => {
+        if (result.takenBy) {
+          state3.ui.warn = { enemyId, name: result.takenBy.name };
+          render4();
+        } else if (result.failed) showError("Could not reach nuke.family to claim it.");
+      });
+    } else if (action === "unclaim") {
+      changeClaim(enemyId, unclaimRetal).then((result) => {
+        if (result.failed) showError("Could not reach nuke.family to unclaim it.");
+      });
+    } else if (action === "attack") {
+      attack(enemyId);
+    } else if (action === "attack-anyway") {
+      state3.ui.warn = null;
+      render4();
+      openAttack(enemyId);
+    } else if (action === "dismiss") {
+      state3.ui.warn = null;
+      render4();
+    }
+  }
   var retals_default = {
     name: "retals",
     pages: [PageType.Faction],
     init() {
-      if (!isOwnFactionMainTab()) return;
+      if (!isOwnFactionMainTab() || state3.refused) return;
       startCapture(onFeed);
+      mount2();
     }
   };
 

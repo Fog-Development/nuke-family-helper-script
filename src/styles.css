@@ -1242,3 +1242,106 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     font-size: 12px;
     line-height: 1.4;
 }
+
+/* Retal list under Torn's recent attacks (shares the chain watch bar's look) */
+.nfh-rt {
+    margin-top: 6px;
+    border-left-color: var(--nfh-cw-warn);
+}
+
+.nfh-rt[hidden] {
+    display: none;
+}
+
+.nfh-rt-head {
+    padding: 5px 10px 3px;
+}
+
+.nfh-rt-title {
+    font-weight: 700;
+}
+
+.nfh-rt-muted,
+.nfh-rt-held {
+    color: var(--nfh-cw-muted);
+}
+
+.nfh-rt-held.is-mine {
+    color: var(--nfh-cw-accent);
+    font-weight: 700;
+}
+
+.nfh-rt-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nfh-rt-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    padding: 4px 10px;
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-rt-main {
+    flex: 1 1 160px;
+    min-width: 0;
+}
+
+.nfh-rt .nfh-rt-name {
+    font-weight: 700;
+}
+
+.nfh-rt-tag {
+    color: var(--nfh-cw-muted);
+    font-size: 11px;
+}
+
+.nfh-rt-left {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
+
+.nfh-rt-row.is-ending .nfh-rt-left {
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-rt-actions {
+    display: inline-flex;
+    gap: 6px;
+}
+
+.nfh-rt .nfh-rt-attack,
+.nfh-rt .nfh-rt-attack:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.nfh-rt-row.is-done {
+    opacity: 0.7;
+}
+
+.nfh-rt-row.is-taken .nfh-rt-attack {
+    border-color: var(--nfh-border);
+    background-color: var(--nfh-btn-bg);
+    color: var(--nfh-text);
+    font-weight: 400;
+}
+
+.nfh-rt-warn,
+.nfh-rt-error {
+    flex-basis: 100%;
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-rt-error {
+    padding: 3px 10px 5px;
+}
+
+.nfh-rt-warn .nfh-cw-btn {
+    margin-left: 6px;
+    text-decoration: none;
+}

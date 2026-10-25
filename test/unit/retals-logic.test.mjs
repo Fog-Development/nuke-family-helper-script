@@ -1,6 +1,14 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { attacksToReport, feedFactionId, matters, normalizeAttack } from "../../src/features/retals/logic.js";
+import {
+  attacksToReport,
+  feedFactionId,
+  formatLeft,
+  matters,
+  normalizeAttack,
+  retalState,
+  visibleRetals,
+} from "../../src/features/retals/logic.js";
 
 const OURS = 17133;
 const ENEMY_FACTION = 14365;
@@ -114,6 +122,36 @@ describe("attacksToReport", () => {
     assert.deepEqual(
       list.map((attack) => attack.id),
       ["new"],
+    );
+  });
+});
+
+describe("the list", () => {
+  it("formats the countdown", () => {
+    assert.equal(formatLeft(245), "4:05");
+    assert.equal(formatLeft(59.9), "0:59");
+    assert.equal(formatLeft(-3), "0:00");
+  });
+
+  it("tells done, mine, taken and free apart, with run-out holds free", () => {
+    const held = { claimed_by: { id: 9, name: "X" }, claimed_until: NOW + 10 };
+    assert.equal(retalState({ done_at: NOW }, NOW), "done");
+    assert.equal(retalState({ ...held, claimed_by_me: true }, NOW), "mine");
+    assert.equal(retalState(held, NOW), "taken");
+    assert.equal(retalState(held, NOW + 10), "free");
+    assert.equal(retalState({ claimed_by: null }, NOW), "free");
+  });
+
+  it("shows open retals with time left and done ones for two minutes", () => {
+    const list = [
+      { enemy_id: 1, expires_at: NOW + 1 },
+      { enemy_id: 2, expires_at: NOW },
+      { enemy_id: 3, done_at: NOW - 119 },
+      { enemy_id: 4, done_at: NOW - 120 },
+    ];
+    assert.deepEqual(
+      visibleRetals(list, NOW).map((retal) => retal.enemy_id),
+      [1, 3],
     );
   });
 });

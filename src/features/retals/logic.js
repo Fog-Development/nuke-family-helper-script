@@ -76,3 +76,28 @@ export function attacksToReport(feed, factionId, sent, nowSeconds) {
     .filter((attack) => attack.finished_at > nowSeconds - WINDOW_SECONDS)
     .filter((attack) => matters(attack, factionId));
 }
+
+// "4:05" for a countdown in seconds; never negative.
+export function formatLeft(seconds) {
+  const left = Math.max(0, Math.floor(seconds));
+  return `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+}
+
+// What a retal looks like right now: done, held by me, held by someone else,
+// or free. A hold that has run out is free, whatever the last answer said.
+export function retalState(retal, nowSeconds) {
+  if (retal.done_at) return "done";
+  if (!retal.claimed_by || !(retal.claimed_until > nowSeconds)) return "free";
+  return retal.claimed_by_me ? "mine" : "taken";
+}
+
+// A done retal stays on the list this long (the site drops it then too).
+export const DONE_LINGER_SECONDS = 120;
+
+// The retals worth showing: open ones with time left, and done ones for a
+// short while.
+export function visibleRetals(retals, nowSeconds) {
+  return (retals || []).filter((retal) =>
+    retal.done_at ? retal.done_at + DONE_LINGER_SECONDS > nowSeconds : retal.expires_at > nowSeconds,
+  );
+}
