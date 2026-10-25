@@ -275,6 +275,30 @@ describe("retal list", () => {
     }
   });
 
+  it("asks every 5s with recent attacks open, every 10s with the chain box closed", async () => {
+    const site = siteWith([retal()]);
+    const closed = await openTornPage(browser, { page: "factions-faction", api: site.api });
+    try {
+      await closed.page.waitForTimeout(11_500);
+      const gets = callsTo(closed.apiCalls, "GET", "/retals").length;
+      assert.ok(gets >= 1 && gets <= 2, `closed: ${gets} calls`);
+      // Opening the box shows the list at once, from what was already fetched.
+      await tornList(closed.page);
+      await closed.page.waitForSelector(`${LIST} .nfh-rt-row`, { timeout: 1500 });
+    } finally {
+      await closed.close();
+    }
+
+    const open = await openList(site.api);
+    try {
+      await open.page.waitForTimeout(11_500);
+      const gets = callsTo(open.apiCalls, "GET", "/retals").length;
+      assert.ok(gets >= 2 && gets <= 3, `open: ${gets} calls`);
+    } finally {
+      await open.close();
+    }
+  });
+
   it("claims and unclaims", async () => {
     const site = siteWith([retal()]);
     const { page, apiCalls, close } = await openList(site.api);

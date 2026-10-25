@@ -2860,10 +2860,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       };
     }
     if (!summary.started) {
-      const start2 = Date.parse(board.start_time);
+      const start3 = Date.parse(board.start_time);
       return {
         tone: "",
-        text: `Starts ${slotLabel(start2)} TCT \xB7 in ${duration(start2 - now)}`,
+        text: `Starts ${slotLabel(start3)} TCT \xB7 in ${duration(start3 - now)}`,
         actions: ""
       };
     }
@@ -2963,7 +2963,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     return slot.paid_count < slot.cap ? "short" : "full";
   }
   function slotDetail(slot, busy) {
-    const start2 = slotStart(slot);
+    const start3 = slotStart(slot);
     const isMine = slot.signups.some((signup) => signup.is_me);
     const waitlist = slot.total_count - slot.paid_count;
     const names = slot.signups.map(
@@ -2971,7 +2971,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     ).join("");
     const paid = slot.rate > 0;
     const unpaidWarning = !isMine && slot.paid_count >= slot.cap ? paid ? '<span class="nfh-cw-need">Paid spots are full: you would be unpaid unless staff approve it.</span>' : '<span class="nfh-cw-muted">This hour is covered: extra watchers are welcome.</span>' : "";
-    return `<div class="nfh-cw-detail"><div><strong>${slotLabel(start2)}\u2013${hourLabel(start2 + HOUR_MS)} TCT</strong> <span class="nfh-cw-muted">(${escapeHtml(localTime(start2))} your time)</span>` + (paid ? ` \xB7 ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " \u2605" : ""}` : "") + (slot.range_label ? ` \xB7 ${escapeHtml(slot.range_label)}` : "") + ` \xB7 ${escapeHtml(fillText(slot))}` + (waitlist > 0 ? ` (+${waitlist} ${paid ? "unpaid" : "extra"})` : "") + `</div><div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div><div class="nfh-cw-detail-actions${busy ? " is-busy" : ""}">` + (isMine ? button("leave", "Leave this slot", { data: { slot: slot.slot_start_iso } }) : button("signup", "Sign up", { primary: true, data: { slot: slot.slot_start_iso } })) + unpaidWarning + "</div></div>";
+    return `<div class="nfh-cw-detail"><div><strong>${slotLabel(start3)}\u2013${hourLabel(start3 + HOUR_MS)} TCT</strong> <span class="nfh-cw-muted">(${escapeHtml(localTime(start3))} your time)</span>` + (paid ? ` \xB7 ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " \u2605" : ""}` : "") + (slot.range_label ? ` \xB7 ${escapeHtml(slot.range_label)}` : "") + ` \xB7 ${escapeHtml(fillText(slot))}` + (waitlist > 0 ? ` (+${waitlist} ${paid ? "unpaid" : "extra"})` : "") + `</div><div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div><div class="nfh-cw-detail-actions${busy ? " is-busy" : ""}">` + (isMine ? button("leave", "Leave this slot", { data: { slot: slot.slot_start_iso } }) : button("signup", "Sign up", { primary: true, data: { slot: slot.slot_start_iso } })) + unpaidWarning + "</div></div>";
   }
   function slotsSection(summary, ui, busy) {
     const { slots } = summary;
@@ -6638,7 +6638,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   // src/features/retals/index.js
   var ROOT_ID2 = "nfh-retals";
   var ANCHOR_SELECTOR3 = ".chain-attacks-list.recent-attacks";
-  var POLL_MS2 = 10 * 1e3;
+  var POLL_OPEN_MS = 5 * 1e3;
+  var POLL_CLOSED_MS = 10 * 1e3;
   var ERROR_MS = 6e3;
   var state3 = {
     retals: [],
@@ -6695,7 +6696,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     latestFeed = feed;
     flush();
-    mount2();
+    start();
   }
   async function flush() {
     if (sending) {
@@ -6739,7 +6740,6 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     root2.hidden = html === "";
   }
   function mount2() {
-    if (state3.refused || !getApiToken() || !isOwnFactionMainTab()) return false;
     const anchor = document.querySelector(ANCHOR_SELECTOR3);
     if (!anchor) {
       if (root2) root2.remove();
@@ -6757,17 +6757,26 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       anchor.insertAdjacentElement("afterend", root2);
       rendered = null;
     }
-    if (!ticker3) ticker3 = setInterval(tick3, 1e3);
     render4();
     return true;
   }
+  function start() {
+    if (state3.refused || !getApiToken() || !isOwnFactionMainTab()) return;
+    mount2();
+    if (!ticker3) ticker3 = setInterval(tick3, 1e3);
+  }
   function tick3() {
-    if (!mount2()) {
+    if (state3.refused || !isOwnFactionMainTab()) {
       clearInterval(ticker3);
       ticker3 = null;
+      if (root2) root2.remove();
+      root2 = null;
+      rendered = null;
       return;
     }
-    if (!document.hidden && !state3.polling && Date.now() - state3.lastAnswerAt >= POLL_MS2) poll3();
+    const open = mount2();
+    const every = open ? POLL_OPEN_MS : POLL_CLOSED_MS;
+    if (!document.hidden && !state3.polling && Date.now() - state3.lastAnswerAt >= every) poll3();
   }
   async function poll3() {
     state3.polling = true;
@@ -6877,7 +6886,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     init() {
       if (!isOwnFactionMainTab() || state3.refused) return;
       startCapture(onFeed);
-      mount2();
+      start();
     }
   };
 
@@ -7495,10 +7504,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       else initTokenCapture();
       return;
     }
-    if (hasNativeStorage()) initStorage().then(start);
-    else start();
+    if (hasNativeStorage()) initStorage().then(start2);
+    else start2();
   }
-  function start() {
+  function start2() {
     addStyle(styles_default);
     LogInfo("Nuke Family Helper Script Loaded");
     checkForUpdates();

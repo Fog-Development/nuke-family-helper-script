@@ -14,14 +14,20 @@ import { attackUrl, renderList } from "./view.js";
 // Torn counted as retals), and lists who can still be hit back under Torn's
 // recent attacks, with a countdown, a claim and an attack button.
 //
-// Kept cheap, like chain watch: one 1s timer that only exists while the
-// recent attacks list is open, polling only while the tab is visible and no
-// report has brought the list in the last few seconds, and the list rewritten
+// Kept cheap, like chain watch: one 1s timer that only exists on the
+// faction's main tab, polling only while the tab is visible and no report has
+// brought the list in the last few seconds (every 5s with Torn's recent
+// attacks open, every 10s with the chain box closed), and the list rewritten
 // only when its HTML changed.
 
 const ROOT_ID = "nfh-retals";
 const ANCHOR_SELECTOR = ".chain-attacks-list.recent-attacks";
-const POLL_MS = 10 * 1000;
+// How often the list is asked for: with Torn's recent attacks open (about as
+// often as Torn itself polls the chain feed), and on the faction's main tab
+// with the chain box closed (so the list is fresh when it opens, and new
+// retals can still be announced).
+const POLL_OPEN_MS = 5 * 1000;
+const POLL_CLOSED_MS = 10 * 1000;
 const ERROR_MS = 6000;
 
 const state = {
@@ -92,7 +98,7 @@ function onFeed(feed, source, keys) {
 
   latestFeed = feed;
   flush();
-  mount();
+  start();
 }
 
 async function flush() {
@@ -150,8 +156,8 @@ function render() {
 
 // Put the list under Torn's recent attacks, or back there after React
 // re-rendered the chain box. Gone with the list when the box is closed.
+// Answers whether the list is on the page.
 function mount() {
-  if (state.refused || !getApiToken() || !isOwnFactionMainTab()) return false;
   const anchor = document.querySelector(ANCHOR_SELECTOR);
   if (!anchor) {
     if (root) root.remove();
@@ -169,18 +175,30 @@ function mount() {
     anchor.insertAdjacentElement("afterend", root);
     rendered = null;
   }
-  if (!ticker) ticker = setInterval(tick, 1000);
   render();
   return true;
 }
 
+// The 1s timer runs while the member is on their faction's main tab (with a
+// key, and in a Nuke faction as far as we know), and stops when they leave.
+function start() {
+  if (state.refused || !getApiToken() || !isOwnFactionMainTab()) return;
+  mount();
+  if (!ticker) ticker = setInterval(tick, 1000);
+}
+
 function tick() {
-  if (!mount()) {
+  if (state.refused || !isOwnFactionMainTab()) {
     clearInterval(ticker);
     ticker = null;
+    if (root) root.remove();
+    root = null;
+    rendered = null;
     return;
   }
-  if (!document.hidden && !state.polling && Date.now() - state.lastAnswerAt >= POLL_MS) poll();
+  const open = mount();
+  const every = open ? POLL_OPEN_MS : POLL_CLOSED_MS;
+  if (!document.hidden && !state.polling && Date.now() - state.lastAnswerAt >= every) poll();
 }
 
 async function poll() {
@@ -313,6 +331,6 @@ export default {
     // and ignores the feed off the main tab. The list is mounted whenever the
     // recent attacks list is there (the feed arriving means it is).
     startCapture(onFeed);
-    mount();
+    start();
   },
 };
