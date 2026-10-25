@@ -1605,19 +1605,19 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     write(key, String(value));
   }
   async function storageInfo() {
-    const report = {
+    const report2 = {
       ...info,
       keys: native ? Object.keys(mirror) : void 0,
       unsaved: info.present ? unsavedKeys() : void 0
     };
     if (native && typeof native.usage === "function") {
       try {
-        report.usage = await withTimeout(native.usage(), LOAD_TIMEOUT_MS);
+        report2.usage = await withTimeout(native.usage(), LOAD_TIMEOUT_MS);
       } catch (e) {
-        report.usage = null;
+        report2.usage = null;
       }
     }
-    return report;
+    return report2;
   }
 
   // src/core/auth.js
@@ -2238,6 +2238,64 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       if (v1Part < v2Part) return false;
     }
     return false;
+  }
+
+  // src/core/torn-page.js
+  function getCookie(name) {
+    const match = document.cookie.match(
+      new RegExp("(?:^|;\\s*)" + name + "=([^;]*)")
+    );
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+  function getPlayerId() {
+    const canonical = document.querySelector("link[rel='canonical']");
+    if (canonical != void 0) {
+      const urlParams = new URLSearchParams(canonical.href);
+      return urlParams.get("https://www.torn.com/profiles.php?XID");
+    } else {
+      const urlParams = new URL(window.location).searchParams;
+      return urlParams.get("XID");
+    }
+  }
+  function getPlayerName() {
+    const nameElement = document.querySelector(
+      ".info-table > li:first-child > div.user-info-value > span"
+    );
+    if (nameElement != void 0) {
+      const nameMatch = nameElement.innerText.match(/^(.*?)\s*\[/);
+      if (nameMatch && nameMatch[1]) {
+        return nameMatch[1];
+      }
+    }
+    return null;
+  }
+  function getFactionId() {
+    const factionUrl = document.querySelector(
+      ".basic-information .info-table a[href^='/factions.php?step=profile&ID=']"
+    );
+    if (factionUrl != void 0) {
+      const urlParams = new URLSearchParams(factionUrl.href);
+      return urlParams.get("ID");
+    }
+    return null;
+  }
+  function getUserscriptUsersPlayerId() {
+    try {
+      return getCookie("uid");
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+  function getUserscriptUsersPlayerName() {
+    const id = getUserscriptUsersPlayerId();
+    const data = JSON.parse(sessionStorage.getItem("sidebarData" + id));
+    if (data && data.user) {
+      return data.user.name;
+    }
+  }
+  function isOwnFactionMainTab() {
+    return window.location.search.includes("step=your") && !window.location.hash.includes("tab=");
   }
 
   // src/features/chain-watch/prefs.js
@@ -2902,9 +2960,6 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   var ticker = null;
   var tickCount = 0;
   var searchTimer = null;
-  function isOwnFactionMainTab() {
-    return window.location.search.includes("step=your") && !window.location.hash.includes("tab=");
-  }
   function applyWallMarking() {
     document.body.classList.toggle("nfh-mark-wall", getPrefs().markWall);
   }
@@ -3326,61 +3381,6 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     pages: [PageType.Faction],
     init
   };
-
-  // src/core/torn-page.js
-  function getCookie(name) {
-    const match = document.cookie.match(
-      new RegExp("(?:^|;\\s*)" + name + "=([^;]*)")
-    );
-    return match ? decodeURIComponent(match[1]) : null;
-  }
-  function getPlayerId() {
-    const canonical = document.querySelector("link[rel='canonical']");
-    if (canonical != void 0) {
-      const urlParams = new URLSearchParams(canonical.href);
-      return urlParams.get("https://www.torn.com/profiles.php?XID");
-    } else {
-      const urlParams = new URL(window.location).searchParams;
-      return urlParams.get("XID");
-    }
-  }
-  function getPlayerName() {
-    const nameElement = document.querySelector(
-      ".info-table > li:first-child > div.user-info-value > span"
-    );
-    if (nameElement != void 0) {
-      const nameMatch = nameElement.innerText.match(/^(.*?)\s*\[/);
-      if (nameMatch && nameMatch[1]) {
-        return nameMatch[1];
-      }
-    }
-    return null;
-  }
-  function getFactionId() {
-    const factionUrl = document.querySelector(
-      ".basic-information .info-table a[href^='/factions.php?step=profile&ID=']"
-    );
-    if (factionUrl != void 0) {
-      const urlParams = new URLSearchParams(factionUrl.href);
-      return urlParams.get("ID");
-    }
-    return null;
-  }
-  function getUserscriptUsersPlayerId() {
-    try {
-      return getCookie("uid");
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  }
-  function getUserscriptUsersPlayerName() {
-    const id = getUserscriptUsersPlayerId();
-    const data = JSON.parse(sessionStorage.getItem("sidebarData" + id));
-    if (data && data.user) {
-      return data.user.name;
-    }
-  }
 
   // src/features/connect.js
   var BANNER_ID = "nfh-connect-banner";
@@ -4401,17 +4401,17 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       }
     }
   }
-  async function sendDebugInfo(report) {
+  async function sendDebugInfo(report2) {
     const path = "/script/debug-report";
     let error;
     try {
-      return { reference: (await api(path, { method: "POST", data: { report } })).reference };
+      return { reference: (await api(path, { method: "POST", data: { report: report2 } })).reference };
     } catch (first) {
       error = first;
     }
     if (!(error instanceof ApiError)) {
       try {
-        const data = { report: { ...report, sent_by: "page", send_failure: failure(error) } };
+        const data = { report: { ...report2, sent_by: "page", send_failure: failure(error) } };
         return { reference: (await pageRequest(path, { method: "POST", data })).reference };
       } catch (second) {
         if (second instanceof ApiError) error = second;
@@ -4424,10 +4424,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     return { error: "Could not reach nuke.family." };
   }
-  function showDebugInfo(report) {
+  function showDebugInfo(report2) {
     const existing = document.getElementById(DIALOG_ID);
     if (existing) existing.remove();
-    const text = JSON.stringify(report, null, 2);
+    const text = JSON.stringify(report2, null, 2);
     const overlay = document.createElement("div");
     overlay.id = DIALOG_ID;
     overlay.className = "nfh-debug-overlay";
@@ -4435,7 +4435,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const textarea = overlay.querySelector("textarea");
     textarea.value = text;
     const status = overlay.querySelector(".nfh-debug-status");
-    const sent = overlay.querySelector(".nfh-debug-sent");
+    const sent2 = overlay.querySelector(".nfh-debug-sent");
     const reference = overlay.querySelector(".nfh-debug-reference");
     overlay.addEventListener("click", async (event) => {
       if (event.target === overlay || event.target.closest("[data-nfh-debug-close]")) {
@@ -4454,10 +4454,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       if (send && !send.disabled) {
         send.disabled = true;
         status.textContent = "Sending...";
-        const outcome = await sendDebugInfo(report);
+        const outcome = await sendDebugInfo(report2);
         if (outcome.reference) {
           reference.value = outcome.reference;
-          sent.hidden = false;
+          sent2.hidden = false;
           status.textContent = "";
           send.remove();
         } else {
@@ -6236,6 +6236,292 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     init: checkAndInsertReputation
   };
 
+  // src/features/retals/capture.js
+  var EVENT = "nfh:chain-feed";
+  var started2 = false;
+  function pageTap(eventName) {
+    if (window.__nfhChainFeedTap) return;
+    window.__nfhChainFeedTap = true;
+    const pick = (feed, factionId) => {
+      const attacks = feed.recentAttacks;
+      const users = {};
+      const all = feed.users || {};
+      for (const attack of attacks) {
+        for (const id of [attack.attackerID, attack.defenderID, attack.firstUserID]) {
+          if (id && all[id]) users[id] = all[id];
+        }
+      }
+      return { recentAttacks: attacks, users, userFactionID: factionId ?? feed.userFactionID ?? null };
+    };
+    const send = (source, detail) => {
+      try {
+        document.dispatchEvent(new CustomEvent(eventName, { detail: JSON.stringify({ source, ...detail }) }));
+      } catch (e) {
+      }
+    };
+    const findFeed = (value, depth) => {
+      if (!value || typeof value !== "object" || Array.isArray(value) || depth > 4) return null;
+      if (Array.isArray(value.recentAttacks)) return value;
+      for (const key of Object.keys(value)) {
+        const found = findFeed(value[key], depth + 1);
+        if (found) return found;
+      }
+      return null;
+    };
+    const fromBody = (source, body) => {
+      try {
+        if (typeof body === "string") body = JSON.parse(body);
+        const feed = findFeed(body, 0);
+        if (feed) send(source, { feed: pick(feed, body && body.userFactionID), keys: Object.keys(body || {}).slice(0, 20) });
+        else send(source, { feed: null, keys: Object.keys(body || {}).slice(0, 20) });
+      } catch (e) {
+        send(source, { feed: null, error: "not_json" });
+      }
+    };
+    const isChainFeed = (url) => /faction_wars\.php/.test(url) && /step=getwardata/.test(url) && /wardescid=chain/.test(url);
+    try {
+      const open = XMLHttpRequest.prototype.open;
+      const sendRequest = XMLHttpRequest.prototype.send;
+      XMLHttpRequest.prototype.open = function(method, url) {
+        this.__nfhChainFeed = isChainFeed(String(url));
+        return open.apply(this, arguments);
+      };
+      XMLHttpRequest.prototype.send = function() {
+        if (this.__nfhChainFeed) {
+          this.addEventListener("load", () => {
+            if (this.responseType === "json") fromBody("xhr", this.response);
+            else if (this.responseType === "" || this.responseType === "text") fromBody("xhr", this.responseText);
+          });
+        }
+        return sendRequest.apply(this, arguments);
+      };
+    } catch (e) {
+      send("xhr", { feed: null, error: "wrap_failed" });
+    }
+    try {
+      const pageFetch = window.fetch;
+      if (pageFetch) {
+        window.fetch = function(input) {
+          const answer = pageFetch.apply(this, arguments);
+          try {
+            const url = typeof input === "string" ? input : input && input.url;
+            if (url && isChainFeed(String(url))) {
+              answer.then((response) => response.clone().text()).then((text) => fromBody("fetch", text)).catch(() => {
+              });
+            }
+          } catch (e) {
+          }
+          return answer;
+        };
+      }
+    } catch (e) {
+      send("fetch", { feed: null, error: "wrap_failed" });
+    }
+    let lastSeen = "";
+    setInterval(() => {
+      if (document.hidden) return;
+      const list = document.querySelector(".chain-attacks-list");
+      if (!list) return;
+      const key = Object.keys(list).find((k) => k.startsWith("__reactFiber$") || k.startsWith("__reactInternalInstance$"));
+      if (!key) return;
+      let fiber = list[key];
+      for (let i = 0; fiber && i < 40; i++, fiber = fiber.return) {
+        const props = fiber.memoizedProps;
+        if (props && props.warDesc && Array.isArray(props.warDesc.recentAttacks)) {
+          const seen = props.warDesc.recentAttacks.map((attack) => attack.publicID).join(",");
+          if (seen !== lastSeen) {
+            lastSeen = seen;
+            send("react", { feed: pick(props.warDesc, props.userFactionID) });
+          }
+          return;
+        }
+      }
+    }, 2e3);
+  }
+  function startCapture(onFeed2) {
+    if (started2) return;
+    started2 = true;
+    document.addEventListener(EVENT, (event) => {
+      let detail;
+      try {
+        detail = JSON.parse(event.detail);
+      } catch (e) {
+        return;
+      }
+      if (!detail.feed) {
+        LogInfo("[retals] chain feed answer without attacks", detail);
+        return;
+      }
+      onFeed2(detail.feed, detail.source, detail.keys);
+    });
+    const tag = document.createElement("script");
+    tag.textContent = `(${pageTap.toString()})(${JSON.stringify(EVENT)});`;
+    (document.head || document.documentElement).appendChild(tag);
+    tag.remove();
+  }
+
+  // src/features/retals/logic.js
+  var WINDOW_SECONDS = 300;
+  function feedFactionId(feed) {
+    const stated = Number(feed && feed.userFactionID);
+    if (stated > 0) return stated;
+    const attacks = feed && feed.recentAttacks || [];
+    const users = feed && feed.users || {};
+    for (const attack of attacks) {
+      const ours = users[attack.firstUserID];
+      if (ours && Number(ours.factionID) > 0) return Number(ours.factionID);
+    }
+    return null;
+  }
+  function idOrNull(value) {
+    const id = Number(value);
+    return id > 0 ? id : null;
+  }
+  function textOrNull(value) {
+    return typeof value === "string" && value.trim() !== "" ? value.trim() : null;
+  }
+  function normalizeAttack(attack, users = {}) {
+    const attackerId = idOrNull(attack.attackerID);
+    const attacker = attackerId && users[attackerId] || {};
+    const defender = users[attack.defenderID] || {};
+    return {
+      id: String(attack.publicID),
+      attacker_id: attackerId,
+      attacker_name: textOrNull(attacker.playername),
+      attacker_faction_id: idOrNull(attacker.factionID),
+      attacker_faction_tag: textOrNull(attacker.factiontag),
+      defender_id: Number(attack.defenderID),
+      defender_name: textOrNull(defender.playername),
+      defender_faction_id: idOrNull(defender.factionID),
+      finished_at: Math.floor(Number(attack.finishTimestamp) / 1e3),
+      respect: Number(attack.respect) || 0,
+      result: textOrNull(attack.result),
+      stealth: Number(attack.stealthAttack) !== 0 || attackerId === null,
+      retal: Number(attack.retal) === 1
+    };
+  }
+  function matters(attack, factionId) {
+    const incoming = attack.defender_faction_id === factionId && attack.attacker_faction_id !== factionId && !attack.stealth && attack.respect < 0;
+    const retalDone = attack.attacker_faction_id === factionId && attack.retal;
+    return incoming || retalDone;
+  }
+  function attacksToReport(feed, factionId, sent2, nowSeconds) {
+    const users = feed && feed.users || {};
+    return (feed && feed.recentAttacks || []).filter((attack) => attack && attack.publicID && !sent2.has(String(attack.publicID))).map((attack) => normalizeAttack(attack, users)).filter((attack) => attack.finished_at > nowSeconds - WINDOW_SECONDS).filter((attack) => matters(attack, factionId));
+  }
+
+  // src/features/retals/data.js
+  var SENT_KEY = "nfhRetalsSent";
+  var SENT_KEEP_SECONDS = WINDOW_SECONDS * 2;
+  var sent = null;
+  function load2() {
+    if (sent) return sent;
+    sent = /* @__PURE__ */ new Map();
+    try {
+      const stored = JSON.parse(localStorage.getItem(SENT_KEY) || "{}");
+      for (const [id, at] of Object.entries(stored)) sent.set(id, Number(at));
+    } catch (e) {
+    }
+    return sent;
+  }
+  function save() {
+    const oldest = Math.floor(Date.now() / 1e3) - SENT_KEEP_SECONDS;
+    for (const [id, at] of sent) if (at < oldest) sent.delete(id);
+    try {
+      localStorage.setItem(SENT_KEY, JSON.stringify(Object.fromEntries(sent)));
+    } catch (e) {
+    }
+  }
+  function sentIds() {
+    return new Set(load2().keys());
+  }
+  function markSent(attacks) {
+    const list = load2();
+    for (const attack of attacks) {
+      const id = String(attack.id ?? attack.publicID);
+      const at = attack.finished_at ?? Math.floor(Number(attack.finishTimestamp) / 1e3);
+      list.set(id, at);
+    }
+    save();
+  }
+  function report(factionId, attacks) {
+    return api("/retals/report", { method: "POST", data: { faction_id: factionId, attacks } });
+  }
+
+  // src/features/retals/index.js
+  function sendReports() {
+    if (DEBUG) return true;
+    try {
+      return localStorage.getItem("nfhRetalsReport") === "1";
+    } catch (e) {
+      return false;
+    }
+  }
+  var sourcesSeen = /* @__PURE__ */ new Set();
+  var sending = false;
+  var queued = false;
+  var latestFeed = null;
+  function onFeed(feed, source, keys) {
+    if (!isOwnFactionMainTab()) return;
+    if (!sourcesSeen.has(source)) {
+      sourcesSeen.add(source);
+      LogInfo(`[retals] first chain feed from ${source}`, { answer_keys: keys, sample: feed.recentAttacks[0] });
+    }
+    const stealthed = feed.recentAttacks.find((attack) => Number(attack.stealthAttack) !== 0);
+    if (stealthed && !sourcesSeen.has("stealth")) {
+      sourcesSeen.add("stealth");
+      LogInfo("[retals] a stealthed attack as Torn gives it", stealthed, feed.users[stealthed.attackerID] || null);
+    }
+    latestFeed = feed;
+    flush();
+  }
+  async function flush() {
+    if (sending) {
+      queued = true;
+      return;
+    }
+    const feed = latestFeed;
+    if (!feed) return;
+    const factionId = feedFactionId(feed);
+    if (!factionId) {
+      LogInfo("[retals] could not tell the faction from the feed", feed);
+      return;
+    }
+    const sent2 = sentIds();
+    const attacks = attacksToReport(feed, factionId, sent2, Math.floor(Date.now() / 1e3));
+    const reporting = new Set(attacks.map((attack) => attack.id));
+    markSent(feed.recentAttacks.filter((attack) => attack.publicID && !reporting.has(String(attack.publicID))));
+    if (!attacks.length) return;
+    const send = sendReports();
+    LogInfo(`[retals] ${send ? "sending" : "would send"} for faction ${factionId}`, attacks);
+    if (!send || !getApiToken()) {
+      markSent(attacks);
+      return;
+    }
+    sending = true;
+    try {
+      const answer = await report(factionId, attacks);
+      markSent(attacks);
+      LogInfo("[retals] site answered", answer);
+    } catch (error) {
+      LogInfo("[retals] report failed", error.status ?? error.kind, error.body ?? error.message);
+    } finally {
+      sending = false;
+      if (queued) {
+        queued = false;
+        flush();
+      }
+    }
+  }
+  var retals_default = {
+    name: "retals",
+    pages: [PageType.Faction],
+    init() {
+      if (!isOwnFactionMainTab()) return;
+      startCapture(onFeed);
+    }
+  };
+
   // src/features/shitlist/form.js
   function showShitlistWarningDialogue(onConfirm) {
     const overlay = document.createElement("div");
@@ -6829,6 +7115,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     hospital_default,
     faction_buttons_default,
     chain_watch_default,
+    retals_default,
     ranked_war_default,
     organized_crimes_default
   ];

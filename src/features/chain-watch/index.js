@@ -1,6 +1,7 @@
 import { ensureInjected } from "../../core/dom.js";
 import { LogInfo } from "../../core/log.js";
 import { PageType } from "../../core/pages.js";
+import { isOwnFactionMainTab } from "../../core/torn-page.js";
 import { readChainTimer, stopAlert, updateAlert } from "./alert.js";
 import {
   BOARD_FRESH_MS,
@@ -71,15 +72,6 @@ let renderedHtml = {};
 let ticker = null;
 let tickCount = 0;
 let searchTimer = null;
-
-// Only your own faction's main tab has the chain box (and only your own
-// faction can have a watch you may join).
-function isOwnFactionMainTab() {
-  return (
-    window.location.search.includes("step=your") &&
-    !window.location.hash.includes("tab=")
-  );
-}
 
 // Wall marking is plain CSS keyed off a body class, so it follows Torn's war
 // lists as they re-render without any polling.

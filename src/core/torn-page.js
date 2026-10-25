@@ -66,3 +66,12 @@ export function getUserscriptUsersPlayerName() {
     return data.user.name;
   }
 }
+
+// Your own faction's main tab: the only one with the chain box (and its
+// recent attacks), and the only faction that can have a watch you may join.
+export function isOwnFactionMainTab() {
+  return (
+    window.location.search.includes("step=your") &&
+    !window.location.hash.includes("tab=")
+  );
+}
