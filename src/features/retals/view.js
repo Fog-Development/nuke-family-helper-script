@@ -1,8 +1,11 @@
 import { escapeHtml } from "../../core/dom.js";
 import { formatLeft, retalState, visibleRetals } from "./logic.js";
+import { MAX_MIN_SECONDS } from "./prefs.js";
 
-// Pure HTML for the retal list under Torn's recent attacks. Every name comes
-// from Torn by way of nuke.family, so all of it goes through escapeHtml.
+// Pure HTML for the retal section under Torn's recent attacks: a one-line
+// header (always there, so the settings can be reached), the settings, and
+// the list. Every name comes from Torn by way of nuke.family, so all of it
+// goes through escapeHtml.
 
 export function profileUrl(playerId) {
   return `/profiles.php?XID=${encodeURIComponent(playerId)}`;
@@ -12,10 +15,11 @@ export function attackUrl(playerId) {
   return `/page.php?sid=attack&user2ID=${encodeURIComponent(playerId)}`;
 }
 
+// The name sits in a wrapper the stat tags are put on afterwards (stats.js).
 function enemyName(retal) {
   const name = escapeHtml(retal.enemy_name || `#${retal.enemy_id}`);
   const tag = retal.enemy_faction_tag ? ` <span class="nfh-rt-tag">${escapeHtml(retal.enemy_faction_tag)}</span>` : "";
-  return `<a class="nfh-rt-name" href="${profileUrl(retal.enemy_id)}">${name}</a>${tag}`;
+  return `<span class="nfh-rt-who" data-nfh-tag="${escapeHtml(retal.enemy_id)}"><a class="nfh-rt-name" href="${profileUrl(retal.enemy_id)}">${name}</a></span>${tag}`;
 }
 
 function victims(retal) {
@@ -71,12 +75,52 @@ function row(retal, now, ui) {
   </li>`;
 }
 
-// The whole list, or "" when there is nothing to show (the list is hidden).
+// "Retals  2 open  [Settings]". `show` false: "off".
+export function renderHead(retals, now, prefs, ui = {}) {
+  const open = prefs.show ? visibleRetals(retals, now).filter((retal) => !retal.done_at).length : 0;
+  const summary = !prefs.show ? "off" : open ? `${open} open` : "none open";
+  return `<div class="nfh-rt-head">
+    <span><span class="nfh-rt-title">Retals</span> <span class="nfh-rt-muted">${summary}</span></span>
+    <button type="button" class="nfh-cw-chip${ui.settingsOpen ? " is-armed" : ""}" data-action="settings" aria-expanded="${ui.settingsOpen ? "true" : "false"}">Settings</button>
+  </div>`;
+}
+
+// The rows, or "" when there is nothing to show.
 export function renderList(retals, now, ui = {}) {
   const shown = visibleRetals(retals, now);
-  if (!shown.length) return "";
-  const open = shown.filter((retal) => !retal.done_at).length;
   const error = ui.error ? `<div class="nfh-rt-error">${escapeHtml(ui.error)}</div>` : "";
-  return `<div class="nfh-rt-head"><span class="nfh-rt-title">Retals</span> <span class="nfh-rt-muted">${open} open</span></div>
-    <ul class="nfh-rt-list">${shown.map((retal) => row(retal, now, ui)).join("")}</ul>${error}`;
+  if (!shown.length) return error;
+  return `<ul class="nfh-rt-list">${shown.map((retal) => row(retal, now, ui)).join("")}</ul>${error}`;
+}
+
+const MIN_CHOICES = [0, 15, 30, 60, 90, 120, MAX_MIN_SECONDS];
+
+function check(pref, on, label, title = "", disabled = false) {
+  return `<label${title ? ` title="${escapeHtml(title)}"` : ""}><input type="checkbox" data-pref="${pref}"${on ? " checked" : ""}${disabled ? " disabled" : ""}> <span>${label}</span></label>`;
+}
+
+// `desktop` is "granted", "denied", "default" or "unsupported" (no such
+// thing here, as in TornPDA: the option is left out).
+export function renderSettings(prefs, desktop) {
+  const off = !prefs.show;
+  const quiet = off || !prefs.notify;
+  const minutes = MIN_CHOICES.map(
+    (seconds) => `<option value="${seconds}"${seconds === prefs.minSeconds ? " selected" : ""}>${seconds ? formatLeft(seconds) : "any"}</option>`,
+  ).join("");
+  const desktopRow =
+    desktop === "unsupported"
+      ? ""
+      : `<div class="nfh-cw-settings-row">${check("desktop", prefs.desktop && desktop === "granted", "Desktop notification", "Also show a notification outside the page", quiet || desktop === "denied")}${
+          desktop === "denied" ? ` <span class="nfh-rt-muted">Blocked by the browser for torn.com</span>` : ""
+        }</div>`;
+
+  return `<div class="nfh-cw-settings nfh-rt-settings">
+    <div class="nfh-cw-settings-row">${check("show", prefs.show, "Show retals", "List who can be hit back here, and pass on what your page sees to nuke.family")}</div>
+    <div class="nfh-cw-settings-row">${check("notify", prefs.notify, "Notify me of new retals", "A short notice on the page, once per retal", off)}
+      <label>with at least <select data-pref="minSeconds"${quiet ? " disabled" : ""}>${minutes}</select> left</label></div>
+    <div class="nfh-cw-settings-row">${check("sound", prefs.sound, "Sound", "One short chime with the notice", quiet)}
+      <input type="range" min="0.05" max="1" step="0.05" value="${prefs.volume}" data-pref="volume" aria-label="Volume"${quiet || !prefs.sound ? " disabled" : ""}>
+      <button type="button" class="nfh-cw-btn" data-action="test-sound"${quiet || !prefs.sound ? " disabled" : ""}>Test</button></div>
+    ${desktopRow}
+  </div>`;
 }

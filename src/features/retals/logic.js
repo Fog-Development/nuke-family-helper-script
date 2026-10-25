@@ -101,3 +101,23 @@ export function visibleRetals(retals, nowSeconds) {
     retal.done_at ? retal.done_at + DONE_LINGER_SECONDS > nowSeconds : retal.expires_at > nowSeconds,
   );
 }
+
+// The key a retal is announced under: a new hit after one was done opens a
+// fresh retal on the same enemy, which is announced again.
+export function noticeKey(retal) {
+  return `${retal.enemy_id}:${retal.first_hit_at}`;
+}
+
+// Retals worth announcing: open, not held by someone else, with at least
+// `minSeconds` left, and not announced in this browser before. `announced`
+// is a Set of noticeKey()s.
+export function retalsToAnnounce(retals, announced, nowSeconds, minSeconds) {
+  return visibleRetals(retals, nowSeconds).filter((retal) => {
+    const state = retalState(retal, nowSeconds);
+    return (
+      (state === "free" || state === "mine") &&
+      retal.expires_at - nowSeconds >= minSeconds &&
+      !announced.has(noticeKey(retal))
+    );
+  });
+}

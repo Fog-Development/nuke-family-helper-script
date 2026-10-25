@@ -1254,7 +1254,64 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
 }
 
 .nfh-rt-head {
-    padding: 5px 10px 3px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 10px;
+}
+
+.nfh-rt [data-region][hidden] {
+    display: none;
+}
+
+.nfh-rt-settings {
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-rt-settings input[type="range"] {
+    width: 90px;
+    vertical-align: middle;
+}
+
+.nfh-rt-who {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+}
+
+/* BSP's cached estimate, for an enemy whose row BSP never drew: neutral,
+   since BSP colours its own tag against the member's stats. */
+.nfh-rt-bsp {
+    padding: 0 4px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 3px;
+    color: var(--nfh-text);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.nfh-rt-toast {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: min(420px, calc(100vw - 32px));
+    padding: 8px 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.nfh-rt-toast-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.nfh-rt-toast .nfh-rt-muted {
+    margin-left: 4px;
 }
 
 .nfh-rt-title {
@@ -1344,4 +1401,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
 .nfh-rt-warn .nfh-cw-btn {
     margin-left: 6px;
     text-decoration: none;
+}
+
+.nfh-rt-settings .nfh-cw-settings-row + .nfh-cw-settings-row {
+    margin-top: 6px;
 }

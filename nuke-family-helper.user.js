@@ -1465,7 +1465,64 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
 }
 
 .nfh-rt-head {
-    padding: 5px 10px 3px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 10px;
+}
+
+.nfh-rt [data-region][hidden] {
+    display: none;
+}
+
+.nfh-rt-settings {
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-rt-settings input[type="range"] {
+    width: 90px;
+    vertical-align: middle;
+}
+
+.nfh-rt-who {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+}
+
+/* BSP's cached estimate, for an enemy whose row BSP never drew: neutral,
+   since BSP colours its own tag against the member's stats. */
+.nfh-rt-bsp {
+    padding: 0 4px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 3px;
+    color: var(--nfh-text);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.nfh-rt-toast {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: min(420px, calc(100vw - 32px));
+    padding: 8px 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.nfh-rt-toast-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.nfh-rt-toast .nfh-rt-muted {
+    margin-left: 4px;
 }
 
 .nfh-rt-title {
@@ -1556,6 +1613,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     margin-left: 6px;
     text-decoration: none;
 }
+
+.nfh-rt-settings .nfh-cw-settings-row + .nfh-cw-settings-row {
+    margin-top: 6px;
+}
 `;
 
   // src/core/storage.js
@@ -1565,6 +1626,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     "nfhShowReputation",
     "nfhShowActiveContract",
     "nfhChainWatch",
+    "nfhRetals",
     "nfhRankedWar",
     "nfhOcStaffPrefs",
     "nfhOcWeights"
@@ -2524,14 +2586,14 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       if (flash) flash.remove();
       return;
     }
-    const prefs3 = getPrefs();
+    const prefs4 = getPrefs();
     if (!flash) {
       flash = document.createElement("div");
       flash.id = FLASH_ID;
       document.body.appendChild(flash);
     }
-    flash.style.backgroundColor = hexToRgba(prefs3.color, prefs3.opacity);
-    flash.style.animationDuration = `${PACES[prefs3.pace]}ms`;
+    flash.style.backgroundColor = hexToRgba(prefs4.color, prefs4.opacity);
+    flash.style.animationDuration = `${PACES[prefs4.pace]}ms`;
   }
   var audioContext = null;
   var lastBeepAt = 0;
@@ -2556,16 +2618,16 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
   }
   function updateAlert({ timer, armed, test = false }) {
-    const prefs3 = getPrefs();
+    const prefs4 = getPrefs();
     const low = armed && !!timer && timer.active && // An unreadable hit count must not silence the alert.
-    (timer.hits === null || timer.hits >= MIN_CHAIN_HITS) && timer.seconds !== null && timer.seconds > 0 && timer.seconds < prefs3.alertSeconds;
+    (timer.hits === null || timer.hits >= MIN_CHAIN_HITS) && timer.seconds !== null && timer.seconds > 0 && timer.seconds < prefs4.alertSeconds;
     const alerting = low || test;
     setFlashing(alerting);
-    if (alerting && prefs3.beep) {
+    if (alerting && prefs4.beep) {
       const now = Date.now();
-      if (now - lastBeepAt >= PACES[prefs3.pace] - 100) {
+      if (now - lastBeepAt >= PACES[prefs4.pace] - 100) {
         lastBeepAt = now;
-        beep(prefs3.volume);
+        beep(prefs4.volume);
       }
     }
     return low;
@@ -2875,18 +2937,18 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       actions: checkInButton(false)
     };
   }
-  function alertChip(prefs3, armed) {
-    let label = `Alert ${formatAlertTime(prefs3.alertSeconds)}`;
-    let title = `Flashes the page when an active chain of at least ${MIN_CHAIN_HITS} hits drops below ${formatAlertTime(prefs3.alertSeconds)}. Click for settings.`;
-    if (prefs3.alertMode === AlertMode.Off) {
+  function alertChip(prefs4, armed) {
+    let label = `Alert ${formatAlertTime(prefs4.alertSeconds)}`;
+    let title = `Flashes the page when an active chain of at least ${MIN_CHAIN_HITS} hits drops below ${formatAlertTime(prefs4.alertSeconds)}. Click for settings.`;
+    if (prefs4.alertMode === AlertMode.Off) {
       label = "Alert off";
       title = "Chain timer alert is off. Click for settings.";
     } else if (!armed) {
-      title = prefs3.alertMode === AlertMode.Watch ? "Chain timer alert is waiting: your faction has no chain watch set up on nuke.family. Click for settings." : "Chain timer alert is waiting: you are not checked in to a chain watch. Click for settings.";
+      title = prefs4.alertMode === AlertMode.Watch ? "Chain timer alert is waiting: your faction has no chain watch set up on nuke.family. Click for settings." : "Chain timer alert is waiting: you are not checked in to a chain watch. Click for settings.";
     }
     return `<button type="button" class="nfh-cw-chip${armed ? " is-armed" : ""}" data-action="settings" title="${escapeHtml(title)}">${escapeHtml(label)}</button>`;
   }
-  function renderBar({ board, watches, prefs: prefs3, armed, chainActive, flash, busy, now }) {
+  function renderBar({ board, watches, prefs: prefs4, armed, chainActive, flash, busy, now }) {
     const summary = board ? summarize(board, now) : null;
     const state4 = summary ? barState(board, summary, now) : { tone: "", text: '<span class="nfh-cw-muted">No chain watch scheduled</span>', actions: "" };
     if (summary && summary.started && !summary.myCheckin && chainActive && armed && state4.tone !== "attn") {
@@ -2896,13 +2958,13 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const title = board && board.title ? `<span class="nfh-cw-title">${escapeHtml(board.title)}</span>` : "";
     const status = flash ? `<span class="${flash.error ? "nfh-cw-error" : "nfh-cw-ok"}">${escapeHtml(flash.text)}</span>` : state4.text;
     const expandable = !!board;
-    const expanded = expandable && prefs3.expanded;
+    const expanded = expandable && prefs4.expanded;
     const picker = watches.length > 1 ? `<select class="nfh-cw-picker" data-role="watch-picker" title="Chain watch">${watches.map(
       (watch3) => `<option value="${escapeHtml(watch3.id)}"${board && board.id === watch3.id ? " selected" : ""}>${escapeHtml(watch3.title || `Chain watch #${watch3.id}`)}</option>`
     ).join("")}</select>` : title;
     return {
       tone: state4.tone,
-      html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy ? " is-busy" : ""}">${state4.actions}</span>` + alertChip(prefs3, armed)
+      html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy ? " is-busy" : ""}">${state4.actions}</span>` + alertChip(prefs4, armed)
     };
   }
   function overCapNote(slot) {
@@ -3005,14 +3067,14 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   function section(title, body) {
     return `<div class="nfh-cw-section"><div class="nfh-cw-heading">${title}</div>${body}</div>`;
   }
-  function renderPanel({ board, prefs: prefs3, ui, busy, now }) {
+  function renderPanel({ board, prefs: prefs4, ui, busy, now }) {
     const summary = summarize(board, now);
     const pays = board.pays !== false;
     const pay = (board.default_rate > 0 ? `${escapeHtml(board.default_rate)} xanax/hr \xB7 ${escapeHtml(board.default_slot_cap)} paid per slot` : `${escapeHtml(board.default_slot_cap)} watchers per slot`) + (pays ? " \xB7 \u2605 pays more" : "");
     return section("On watch", rosterSection(summary, board, now)) + section(`Checked in (${summary.checkins.length})`, checkinSection(summary, board, ui, now)) + section(
       `Slots <span class="nfh-cw-muted">TCT \xB7 ${pay}</span>`,
       slotsSection(summary, ui, busy)
-    ) + `<div class="nfh-cw-footer"><label title="Applies to slots you sign up for from here"><input type="checkbox" data-pref="dmReminder"${prefs3.dmReminder ? " checked" : ""}> Discord DM reminder before my slots</label>` + button("test-dm", "Test DM", { title: "Send yourself a test reminder on Discord" }) + button("refresh", "Refresh") + (/^https?:\/\//.test(board.signup_url || "") ? `<a class="nfh-cw-link" href="${escapeHtml(board.signup_url)}" target="_blank" rel="noopener">Open on nuke.family</a>` : "") + "</div>";
+    ) + `<div class="nfh-cw-footer"><label title="Applies to slots you sign up for from here"><input type="checkbox" data-pref="dmReminder"${prefs4.dmReminder ? " checked" : ""}> Discord DM reminder before my slots</label>` + button("test-dm", "Test DM", { title: "Send yourself a test reminder on Discord" }) + button("refresh", "Refresh") + (/^https?:\/\//.test(board.signup_url || "") ? `<a class="nfh-cw-link" href="${escapeHtml(board.signup_url)}" target="_blank" rel="noopener">Open on nuke.family</a>` : "") + "</div>";
   }
   var ALERT_MODE_HELP = {
     [AlertMode.Always]: "You are alerted whenever your faction has an active chain in Torn and its timer gets low, whether or not a chain watch exists on nuke.family.",
@@ -3020,9 +3082,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     [AlertMode.CheckedIn]: "You are alerted only when all three are true: your faction has an active chain in Torn, it has a chain watch set up on nuke.family, and you are checked in to it.",
     [AlertMode.Off]: "You are never alerted about the chain timer."
   };
-  function renderSettings({ prefs: prefs3, legacyScript }) {
+  function renderSettings({ prefs: prefs4, legacyScript }) {
     const option = (value, label, current) => `<option value="${value}"${value === current ? " selected" : ""}>${label}</option>`;
-    return `<div class="nfh-cw-settings-row"><label>Chain timer alert <select data-pref="alertMode">` + option(AlertMode.Always, "Any active chain", prefs3.alertMode) + option(AlertMode.Watch, "Only chains with a chain watch", prefs3.alertMode) + option(AlertMode.CheckedIn, "Only while I'm checked in", prefs3.alertMode) + option(AlertMode.Off, "Off", prefs3.alertMode) + `</select></label><label>Alert below <input type="text" class="nfh-cw-input nfh-cw-time" data-pref="alertSeconds" value="${formatAlertTime(prefs3.alertSeconds)}" maxlength="4" title="m:ss, up to 4:59"></label><label>Pace <select data-pref="pace">` + option("fast", "Fast", prefs3.pace) + option("normal", "Normal", prefs3.pace) + option("slow", "Slow", prefs3.pace) + `</select></label><label>Colour <input type="color" data-pref="color" value="${escapeHtml(prefs3.color)}"></label><label>Strength <input type="range" data-pref="opacity" min="5" max="100" value="${Math.round(prefs3.opacity * 100)}"></label><label><input type="checkbox" data-pref="beep"${prefs3.beep ? " checked" : ""}> Beep</label><label>Volume <input type="range" data-pref="volume" min="1" max="100" value="${Math.round(prefs3.volume * 100)}"></label>` + button("test-alert", "Test", { title: "Preview the alert for a few seconds" }) + `<label title="On territory war walls: strike through your own members and highlight enemies"><input type="checkbox" data-pref="markWall"${prefs3.markWall ? " checked" : ""}> Mark wall targets</label></div><div class="nfh-cw-muted nfh-cw-help">${ALERT_MODE_HELP[prefs3.alertMode]}` + (prefs3.alertMode === AlertMode.Off ? "" : ` Chains under ${MIN_CHAIN_HITS} hits never alert.`) + "</div>" + (legacyScript ? '<div class="nfh-cw-need">The old "Chain watcher" script is still running. This replaces it, so you can remove it (otherwise both will alert).</div>' : "");
+    return `<div class="nfh-cw-settings-row"><label>Chain timer alert <select data-pref="alertMode">` + option(AlertMode.Always, "Any active chain", prefs4.alertMode) + option(AlertMode.Watch, "Only chains with a chain watch", prefs4.alertMode) + option(AlertMode.CheckedIn, "Only while I'm checked in", prefs4.alertMode) + option(AlertMode.Off, "Off", prefs4.alertMode) + `</select></label><label>Alert below <input type="text" class="nfh-cw-input nfh-cw-time" data-pref="alertSeconds" value="${formatAlertTime(prefs4.alertSeconds)}" maxlength="4" title="m:ss, up to 4:59"></label><label>Pace <select data-pref="pace">` + option("fast", "Fast", prefs4.pace) + option("normal", "Normal", prefs4.pace) + option("slow", "Slow", prefs4.pace) + `</select></label><label>Colour <input type="color" data-pref="color" value="${escapeHtml(prefs4.color)}"></label><label>Strength <input type="range" data-pref="opacity" min="5" max="100" value="${Math.round(prefs4.opacity * 100)}"></label><label><input type="checkbox" data-pref="beep"${prefs4.beep ? " checked" : ""}> Beep</label><label>Volume <input type="range" data-pref="volume" min="1" max="100" value="${Math.round(prefs4.volume * 100)}"></label>` + button("test-alert", "Test", { title: "Preview the alert for a few seconds" }) + `<label title="On territory war walls: strike through your own members and highlight enemies"><input type="checkbox" data-pref="markWall"${prefs4.markWall ? " checked" : ""}> Mark wall targets</label></div><div class="nfh-cw-muted nfh-cw-help">${ALERT_MODE_HELP[prefs4.alertMode]}` + (prefs4.alertMode === AlertMode.Off ? "" : ` Chains under ${MIN_CHAIN_HITS} hits never alert.`) + "</div>" + (legacyScript ? '<div class="nfh-cw-need">The old "Chain watcher" script is still running. This replaces it, so you can remove it (otherwise both will alert).</div>' : "");
   }
 
   // src/features/chain-watch/index.js
@@ -3117,11 +3179,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   function render() {
     if (!root || !root.isConnected) return;
     const now = Date.now();
-    const prefs3 = getPrefs();
+    const prefs4 = getPrefs();
     const bar = renderBar({
       board: state.board,
       watches: state.watches,
-      prefs: prefs3,
+      prefs: prefs4,
       armed: isArmed(),
       chainActive: state.chainActive,
       flash: state.flash,
@@ -3130,12 +3192,12 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     });
     setRegion("bar", bar.html);
     root.className = "nfh-cw" + (bar.tone ? ` nfh-cw--${bar.tone}` : "");
-    const showPanel = !!state.board && prefs3.expanded;
+    const showPanel = !!state.board && prefs4.expanded;
     regions.panel.hidden = !showPanel;
     if (showPanel) {
       setRegion(
         "panel",
-        renderPanel({ board: state.board, prefs: prefs3, ui: state.ui, busy: state.busy, now })
+        renderPanel({ board: state.board, prefs: prefs4, ui: state.ui, busy: state.busy, now })
       );
     }
     regions.settings.hidden = !state.settingsOpen;
@@ -4906,11 +4968,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     return flags;
   }
-  function limitsFor(config, prefs3 = null) {
+  function limitsFor(config, prefs4 = null) {
     const settings = config && config.settings || {};
     return {
-      thresholdHours: (prefs3 && prefs3.thresholdHours) ?? settings.productive_threshold_hours ?? 12,
-      levelGap: (prefs3 && prefs3.levelGap) ?? settings.under_level_gap ?? 2,
+      thresholdHours: (prefs4 && prefs4.thresholdHours) ?? settings.productive_threshold_hours ?? 12,
+      levelGap: (prefs4 && prefs4.levelGap) ?? settings.under_level_gap ?? 2,
       // The faction's alone: where its pay is pooled is not a matter of taste.
       productiveFromLevel: productiveFromLevel(config)
     };
@@ -5367,8 +5429,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       canAsk: canAskForCrime(myLevel, config)
     });
     const members = board && board.members ? board.members : null;
-    const prefs3 = members ? getStaffPrefs() : null;
-    const limits = limitsFor(config, prefs3);
+    const prefs4 = members ? getStaffPrefs() : null;
+    const limits = limitsFor(config, prefs4);
     const counts = {};
     for (const crime of result.crimes) {
       if (crime.crime.offPage) continue;
@@ -5378,7 +5440,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         if (members && active && rated.slot.occupied) {
           const member = members[rated.slot.playerId];
           flags = slotFlags(crime.crime, index, rated, member ? member.level : null, limits).filter(
-            (flag) => prefs3.show[flag.flag]
+            (flag) => prefs4.show[flag.flag]
           );
           for (const flag of flags) counts[flag.flag] = (counts[flag.flag] || 0) + 1;
         }
@@ -5387,7 +5449,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     const suggestions = suggesting ? result.suggestions : [];
     renderSuggestions(root3, suggestions);
-    const staff = members && active ? { counts, prefs: prefs3, factionLimits: limitsFor(config) } : null;
+    const staff = members && active ? { counts, prefs: prefs4, factionLimits: limitsFor(config) } : null;
     const settings = settingsHtml({ open: settingsOpen, weights, staff });
     const staffPart = staff ? staffHtml(staff, settings.button) : "";
     const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
@@ -5928,10 +5990,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     return !!state2.war && Date.now() - state2.fetchedAt < STALE_MS;
   }
   function decorate(lists) {
-    const prefs3 = getPrefs2();
+    const prefs4 = getPrefs2();
     const live = hasData();
     const now = Date.now() + state2.clockOffset;
-    const compare = live ? comparatorFor(prefs3.sort, prefs3.then) : null;
+    const compare = live ? comparatorFor(prefs4.sort, prefs4.then) : null;
     let anyStats = false;
     let heldShown = false;
     const sources = /* @__PURE__ */ new Set();
@@ -5949,7 +6011,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         memos.set(id, entry.memo);
         const onPage = pageEstimatesOf(row2);
         const held = { bsp: state2.held.bsp[id], ffscouter: state2.held.ffscouter[id] };
-        const estimate = pickEstimate(onPage, held, prefs3.source);
+        const estimate = pickEstimate(onPage, held, prefs4.source);
         noteForUpload(id, onPage);
         for (const source of SOURCES) {
           if (onPage[source] || held[source]) sources.add(source);
@@ -5968,7 +6030,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         setAttr(row2, ROW_ATTR, entry.out ? "out" : entry.soon ? "soon" : null);
         const memberCell = cellOf(row2, "member");
         if (memberCell) {
-          setAttr(memberCell, STATS_ATTR, prefs3.showStats && badge ? formatStats(entry.stats) : null);
+          setAttr(memberCell, STATS_ATTR, prefs4.showStats && badge ? formatStats(entry.stats) : null);
         }
       }
       if (compare && !list.closest(FF_BUSY_SELECTOR)) reorder(list, entries, compare);
@@ -5993,20 +6055,20 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const age = Math.round((Date.now() - state2.fetchedAt) / 1e3);
     return age < 15 ? "Live" : `Updated ${age}s ago`;
   }
-  function thenSelect(prefs3) {
+  function thenSelect(prefs4) {
     const options = [
       ...state2.anyStats ? [[Then.StatsAsc, "lowest stats"], [Then.StatsDesc, "highest stats"]] : [],
       [Then.ScoreDesc, "highest score"],
       [Then.ScoreAsc, "lowest score"],
       [Then.Recent, "latest out of hospital"]
     ];
-    const chosen = options.some(([value]) => value === prefs3.then) ? prefs3.then : "";
+    const chosen = options.some(([value]) => value === prefs4.then) ? prefs4.then : "";
     return '<label title="How members with the same status are ordered">then <select data-pref="then">' + (chosen === "" ? `<option value="" selected>Torn's order</option>` : "") + options.map(([value, label]) => `<option value="${value}"${value === chosen ? " selected" : ""}>${label}</option>`).join("") + "</select></label>";
   }
   function renderBar3() {
-    const prefs3 = getPrefs2();
-    const chip = (mode, label, title) => `<button type="button" class="nfh-cw-chip${prefs3.sort === mode ? " is-armed" : ""}" data-sort="${mode}" title="${title}">${label}</button>`;
-    return '<div class="nfh-cw-bar"><strong>War board</strong>' + (state2.war ? '<span class="nfh-cw-muted">Sort</span>' + chip(SortMode.Status, "Hospital", "Who can be hit now, then who leaves hospital next") + (state2.anyStats ? chip(SortMode.StatsAsc, "Stats \u25B2", "Lowest battle stat estimate first") + chip(SortMode.StatsDesc, "Stats \u25BC", "Highest battle stat estimate first") : "") + chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them (or BSP / FF Scouter, if you sort with theirs)") + (prefs3.sort === SortMode.Status ? thenSelect(prefs3) : "") + (state2.sources.size > 1 ? `<label title="Whose estimate to use when both are known">Estimates <select data-pref="source"><option value="${Source.Bsp}"${prefs3.source === Source.Bsp ? " selected" : ""}>BSP</option><option value="${Source.FfScouter}"${prefs3.source === Source.FfScouter ? " selected" : ""}>FF Scouter</option></select></label>` : "") + (state2.heldShown || state2.anyStats && !prefs3.showStats ? `<label title="Show the estimates other members' BSP or FF Scouter passed on to nuke.family, where yours shows none"><input type="checkbox" data-pref="showStats"${prefs3.showStats ? " checked" : ""}> Show stats</label>` : "") : "") + `<span class="nfh-cw-status nfh-cw-muted">${statusText()}</span></div>`;
+    const prefs4 = getPrefs2();
+    const chip = (mode, label, title) => `<button type="button" class="nfh-cw-chip${prefs4.sort === mode ? " is-armed" : ""}" data-sort="${mode}" title="${title}">${label}</button>`;
+    return '<div class="nfh-cw-bar"><strong>War board</strong>' + (state2.war ? '<span class="nfh-cw-muted">Sort</span>' + chip(SortMode.Status, "Hospital", "Who can be hit now, then who leaves hospital next") + (state2.anyStats ? chip(SortMode.StatsAsc, "Stats \u25B2", "Lowest battle stat estimate first") + chip(SortMode.StatsDesc, "Stats \u25BC", "Highest battle stat estimate first") : "") + chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them (or BSP / FF Scouter, if you sort with theirs)") + (prefs4.sort === SortMode.Status ? thenSelect(prefs4) : "") + (state2.sources.size > 1 ? `<label title="Whose estimate to use when both are known">Estimates <select data-pref="source"><option value="${Source.Bsp}"${prefs4.source === Source.Bsp ? " selected" : ""}>BSP</option><option value="${Source.FfScouter}"${prefs4.source === Source.FfScouter ? " selected" : ""}>FF Scouter</option></select></label>` : "") + (state2.heldShown || state2.anyStats && !prefs4.showStats ? `<label title="Show the estimates other members' BSP or FF Scouter passed on to nuke.family, where yours shows none"><input type="checkbox" data-pref="showStats"${prefs4.showStats ? " checked" : ""}> Show stats</label>` : "") : "") + `<span class="nfh-cw-status nfh-cw-muted">${statusText()}</span></div>`;
   }
   function ensureBar() {
     let bar = document.getElementById(BAR_ID2);
@@ -6532,6 +6594,15 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       (retal) => retal.done_at ? retal.done_at + DONE_LINGER_SECONDS > nowSeconds : retal.expires_at > nowSeconds
     );
   }
+  function noticeKey(retal) {
+    return `${retal.enemy_id}:${retal.first_hit_at}`;
+  }
+  function retalsToAnnounce(retals, announced, nowSeconds, minSeconds) {
+    return visibleRetals(retals, nowSeconds).filter((retal) => {
+      const state4 = retalState(retal, nowSeconds);
+      return (state4 === "free" || state4 === "mine") && retal.expires_at - nowSeconds >= minSeconds && !announced.has(noticeKey(retal));
+    });
+  }
 
   // src/features/retals/data.js
   var SENT_KEY = "nfhRetalsSent";
@@ -6580,6 +6651,247 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     return api(`/retals/${enemyId}/unclaim`, { method: "POST" });
   }
 
+  // src/features/retals/prefs.js
+  var STORAGE_KEY3 = "nfhRetals";
+  var DEFAULTS4 = {
+    show: true,
+    // the list, and reporting what this browser sees
+    notify: true,
+    // a toast for each new retal
+    sound: false,
+    // one chime with the toast
+    volume: 0.5,
+    desktop: false,
+    // a desktop notification as well (where the browser allows it)
+    minSeconds: 30
+    // a retal with less time left than this is not announced
+  };
+  var MAX_MIN_SECONDS = 240;
+  function clamp2(value, min, max, fallback) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return fallback;
+    return Math.min(max, Math.max(min, number));
+  }
+  function sanitize3(raw) {
+    const source = raw && typeof raw === "object" ? raw : {};
+    return {
+      show: source.show !== false,
+      notify: source.notify !== false,
+      sound: source.sound === true,
+      volume: clamp2(source.volume, 0.05, 1, DEFAULTS4.volume),
+      desktop: source.desktop === true,
+      minSeconds: Math.round(clamp2(source.minSeconds, 0, MAX_MIN_SECONDS, DEFAULTS4.minSeconds))
+    };
+  }
+  var prefs3 = null;
+  function getPrefs3() {
+    if (prefs3) return prefs3;
+    let stored = null;
+    try {
+      stored = JSON.parse(getItem(STORAGE_KEY3) || "null");
+    } catch (e) {
+    }
+    prefs3 = sanitize3(stored);
+    return prefs3;
+  }
+  function setPrefs3(patch) {
+    prefs3 = sanitize3({ ...getPrefs3(), ...patch });
+    setItem(STORAGE_KEY3, JSON.stringify(prefs3));
+    return prefs3;
+  }
+
+  // src/features/retals/notify.js
+  var TOAST_ID = "nfh-retal-toast";
+  var TOAST_MS = 12 * 1e3;
+  var ANNOUNCED_KEY = "nfhRetalsAnnounced";
+  var KEEP_SECONDS = 15 * 60;
+  var toastTimer = null;
+  var audioContext2 = null;
+  function loadAnnounced() {
+    try {
+      return JSON.parse(localStorage.getItem(ANNOUNCED_KEY) || "{}") || {};
+    } catch (e) {
+      return {};
+    }
+  }
+  function saveAnnounced(list, nowSeconds) {
+    for (const [key, at] of Object.entries(list)) if (at < nowSeconds - KEEP_SECONDS) delete list[key];
+    try {
+      localStorage.setItem(ANNOUNCED_KEY, JSON.stringify(list));
+    } catch (e) {
+    }
+  }
+  function desktopSupported() {
+    return !isPda && typeof window.Notification === "function";
+  }
+  function desktopPermission() {
+    return desktopSupported() ? window.Notification.permission : "unsupported";
+  }
+  async function askDesktopPermission() {
+    if (!desktopSupported()) return "unsupported";
+    if (window.Notification.permission !== "default") return window.Notification.permission;
+    try {
+      return await window.Notification.requestPermission();
+    } catch (e) {
+      return "denied";
+    }
+  }
+  function chime(volume) {
+    try {
+      if (!audioContext2) audioContext2 = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext2.state === "suspended") audioContext2.resume();
+      const start3 = audioContext2.currentTime;
+      [660, 880].forEach((hz, index) => {
+        const oscillator = audioContext2.createOscillator();
+        const gain = audioContext2.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.value = hz;
+        const at = start3 + index * 0.16;
+        gain.gain.setValueAtTime(volume, at);
+        gain.gain.exponentialRampToValueAtTime(1e-3, at + 0.15);
+        oscillator.connect(gain);
+        gain.connect(audioContext2.destination);
+        oscillator.start(at);
+        oscillator.stop(at + 0.16);
+      });
+    } catch (e) {
+    }
+  }
+  function describe(retal, nowSeconds) {
+    const victim = retal.victims && retal.victims[0] ? ` hit ${retal.victims[0].name || "one of us"}` : "";
+    return `${victim} \xB7 ${formatLeft(retal.expires_at - nowSeconds)} left`;
+  }
+  function hideToast() {
+    const toast = document.getElementById(TOAST_ID);
+    if (toast) toast.remove();
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = null;
+  }
+  function showToast(retals, nowSeconds, onAttack) {
+    hideToast();
+    const toast = document.createElement("div");
+    toast.id = TOAST_ID;
+    toast.className = "nfh-cw nfh-rt-toast";
+    toast.setAttribute("role", "status");
+    if (retals.length === 1) {
+      const retal = retals[0];
+      const tag = retal.enemy_faction_tag ? ` <span class="nfh-rt-tag">${escapeHtml(retal.enemy_faction_tag)}</span>` : "";
+      toast.innerHTML = `<div class="nfh-rt-toast-text"><strong>Retal:</strong> ${escapeHtml(retal.enemy_name || `#${retal.enemy_id}`)}${tag}<span class="nfh-rt-muted">${escapeHtml(describe(retal, nowSeconds))}</span></div>
+      <span class="nfh-rt-actions"><button type="button" class="nfh-cw-btn nfh-cw-btn--primary" data-toast="attack">Attack</button>
+      <button type="button" class="nfh-cw-btn" data-toast="close" aria-label="Dismiss">\u2715</button></span>`;
+    } else {
+      const names = retals.map((retal) => escapeHtml(retal.enemy_name || `#${retal.enemy_id}`)).join(", ");
+      toast.innerHTML = `<div class="nfh-rt-toast-text"><strong>${retals.length} new retals:</strong> ${names}</div>
+      <span class="nfh-rt-actions"><button type="button" class="nfh-cw-btn" data-toast="close" aria-label="Dismiss">\u2715</button></span>`;
+    }
+    toast.addEventListener("click", (event) => {
+      const button2 = event.target.closest("[data-toast]");
+      if (!button2) return;
+      if (button2.dataset.toast === "attack") onAttack(retals[0].enemy_id);
+      hideToast();
+    });
+    document.body.appendChild(toast);
+    toastTimer = setTimeout(hideToast, TOAST_MS);
+  }
+  function showDesktop(retals, nowSeconds) {
+    if (desktopPermission() !== "granted") return;
+    try {
+      const first = retals[0];
+      const title = retals.length === 1 ? `Retal: ${first.enemy_name || `#${first.enemy_id}`}` : `${retals.length} new retals`;
+      const body = retals.length === 1 ? describe(first, nowSeconds).replace(/^ /, "") : retals.map((retal) => retal.enemy_name || `#${retal.enemy_id}`).join(", ");
+      const notice = new window.Notification(title, { body, tag: `nfh-retal-${noticeKey(first)}` });
+      notice.onclick = () => {
+        window.focus();
+        notice.close();
+      };
+    } catch (e) {
+    }
+  }
+  function announce(retals, nowSeconds, onAttack) {
+    const prefs4 = getPrefs3();
+    const announced = loadAnnounced();
+    const fresh = retalsToAnnounce(retals, new Set(Object.keys(announced)), nowSeconds, prefs4.minSeconds);
+    if (!fresh.length) return;
+    for (const retal of fresh) announced[noticeKey(retal)] = nowSeconds;
+    saveAnnounced(announced, nowSeconds);
+    if (!prefs4.notify) return;
+    showToast(fresh, nowSeconds, onAttack);
+    if (prefs4.sound) chime(prefs4.volume);
+    if (prefs4.desktop) showDesktop(fresh, nowSeconds);
+  }
+
+  // src/features/retals/stats.js
+  var BSP_TAG = ".iconStats, .iconStatsAttack";
+  var FFS_GAUGE = "ffscouter-gauge";
+  var FFS_MARKER = ".ffscouter-marker-wrapper";
+  var copied = /* @__PURE__ */ new Map();
+  function tornNameBox(enemyId) {
+    const links = document.querySelectorAll(`.chain-attacks-list a[href*="XID=${enemyId}"]`);
+    for (const link of links) {
+      if (new URL(link.href, location.href).searchParams.get("XID") !== String(enemyId)) continue;
+      const box = link.closest('[class*="userInfoBox"]');
+      if (box && !box.closest("#nfh-retals")) return box;
+    }
+    return null;
+  }
+  function captureTags(retals) {
+    for (const retal of retals) {
+      const id = retal.enemy_id;
+      const box = tornNameBox(id);
+      if (!box) continue;
+      const had = copied.get(id) || { bsp: null, ffs: null };
+      const bsp = box.querySelector(BSP_TAG);
+      const ffs = box.classList.contains(FFS_GAUGE) ? {
+        percent: box.style.getPropertyValue("--band-percent"),
+        side: box.dataset.ffscouterBandSide || "",
+        mode: box.dataset.ffscouterAttachMode || "",
+        marker: box.querySelector(FFS_MARKER)
+      } : null;
+      copied.set(id, {
+        bsp: bsp ? bsp.cloneNode(true) : had.bsp,
+        ffs: ffs ? { ...ffs, marker: ffs.marker ? ffs.marker.cloneNode(true) : null } : had.ffs
+      });
+    }
+  }
+  function bspCached(enemyId) {
+    try {
+      const stored = JSON.parse(localStorage.getItem(`tdup.battleStatsPredictor.cache.prediction.${enemyId}`) || "null");
+      const total = Number(stored && stored.TBS);
+      return total > 0 ? total : null;
+    } catch (e) {
+      return null;
+    }
+  }
+  function applyTags(root3) {
+    for (const wrapper of root3.querySelectorAll("[data-nfh-tag]")) {
+      const id = Number(wrapper.dataset.nfhTag);
+      const tags = copied.get(id);
+      if (tags && tags.bsp) {
+        wrapper.prepend(tags.bsp.cloneNode(true));
+      } else {
+        const total = bspCached(id);
+        if (total) {
+          const tag = document.createElement("span");
+          tag.className = "nfh-rt-bsp";
+          tag.title = "Battle Stats Predictor estimate";
+          tag.textContent = formatStats(total);
+          wrapper.prepend(tag);
+        }
+      }
+      if (tags && tags.ffs) {
+        wrapper.classList.add(FFS_GAUGE);
+        if (tags.ffs.percent) wrapper.style.setProperty("--band-percent", tags.ffs.percent);
+        if (tags.ffs.side) wrapper.dataset.ffscouterBandSide = tags.ffs.side;
+        if (tags.ffs.mode) wrapper.dataset.ffscouterAttachMode = tags.ffs.mode;
+        if (tags.ffs.marker) wrapper.append(tags.ffs.marker.cloneNode(true));
+      }
+    }
+  }
+  function forgetTags(retals) {
+    const keep = new Set(retals.map((retal) => retal.enemy_id));
+    for (const id of copied.keys()) if (!keep.has(id)) copied.delete(id);
+  }
+
   // src/features/retals/view.js
   function profileUrl(playerId) {
     return `/profiles.php?XID=${encodeURIComponent(playerId)}`;
@@ -6590,7 +6902,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   function enemyName(retal) {
     const name = escapeHtml(retal.enemy_name || `#${retal.enemy_id}`);
     const tag = retal.enemy_faction_tag ? ` <span class="nfh-rt-tag">${escapeHtml(retal.enemy_faction_tag)}</span>` : "";
-    return `<a class="nfh-rt-name" href="${profileUrl(retal.enemy_id)}">${name}</a>${tag}`;
+    return `<span class="nfh-rt-who" data-nfh-tag="${escapeHtml(retal.enemy_id)}"><a class="nfh-rt-name" href="${profileUrl(retal.enemy_id)}">${name}</a></span>${tag}`;
   }
   function victims(retal) {
     const list = retal.victims || [];
@@ -6626,13 +6938,40 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     ${warning}
   </li>`;
   }
+  function renderHead(retals, now, prefs4, ui = {}) {
+    const open = prefs4.show ? visibleRetals(retals, now).filter((retal) => !retal.done_at).length : 0;
+    const summary = !prefs4.show ? "off" : open ? `${open} open` : "none open";
+    return `<div class="nfh-rt-head">
+    <span><span class="nfh-rt-title">Retals</span> <span class="nfh-rt-muted">${summary}</span></span>
+    <button type="button" class="nfh-cw-chip${ui.settingsOpen ? " is-armed" : ""}" data-action="settings" aria-expanded="${ui.settingsOpen ? "true" : "false"}">Settings</button>
+  </div>`;
+  }
   function renderList(retals, now, ui = {}) {
     const shown = visibleRetals(retals, now);
-    if (!shown.length) return "";
-    const open = shown.filter((retal) => !retal.done_at).length;
     const error = ui.error ? `<div class="nfh-rt-error">${escapeHtml(ui.error)}</div>` : "";
-    return `<div class="nfh-rt-head"><span class="nfh-rt-title">Retals</span> <span class="nfh-rt-muted">${open} open</span></div>
-    <ul class="nfh-rt-list">${shown.map((retal) => row(retal, now, ui)).join("")}</ul>${error}`;
+    if (!shown.length) return error;
+    return `<ul class="nfh-rt-list">${shown.map((retal) => row(retal, now, ui)).join("")}</ul>${error}`;
+  }
+  var MIN_CHOICES = [0, 15, 30, 60, 90, 120, MAX_MIN_SECONDS];
+  function check(pref, on, label, title = "", disabled = false) {
+    return `<label${title ? ` title="${escapeHtml(title)}"` : ""}><input type="checkbox" data-pref="${pref}"${on ? " checked" : ""}${disabled ? " disabled" : ""}> <span>${label}</span></label>`;
+  }
+  function renderSettings2(prefs4, desktop) {
+    const off = !prefs4.show;
+    const quiet = off || !prefs4.notify;
+    const minutes = MIN_CHOICES.map(
+      (seconds) => `<option value="${seconds}"${seconds === prefs4.minSeconds ? " selected" : ""}>${seconds ? formatLeft(seconds) : "any"}</option>`
+    ).join("");
+    const desktopRow = desktop === "unsupported" ? "" : `<div class="nfh-cw-settings-row">${check("desktop", prefs4.desktop && desktop === "granted", "Desktop notification", "Also show a notification outside the page", quiet || desktop === "denied")}${desktop === "denied" ? ` <span class="nfh-rt-muted">Blocked by the browser for torn.com</span>` : ""}</div>`;
+    return `<div class="nfh-cw-settings nfh-rt-settings">
+    <div class="nfh-cw-settings-row">${check("show", prefs4.show, "Show retals", "List who can be hit back here, and pass on what your page sees to nuke.family")}</div>
+    <div class="nfh-cw-settings-row">${check("notify", prefs4.notify, "Notify me of new retals", "A short notice on the page, once per retal", off)}
+      <label>with at least <select data-pref="minSeconds"${quiet ? " disabled" : ""}>${minutes}</select> left</label></div>
+    <div class="nfh-cw-settings-row">${check("sound", prefs4.sound, "Sound", "One short chime with the notice", quiet)}
+      <input type="range" min="0.05" max="1" step="0.05" value="${prefs4.volume}" data-pref="volume" aria-label="Volume"${quiet || !prefs4.sound ? " disabled" : ""}>
+      <button type="button" class="nfh-cw-btn" data-action="test-sound"${quiet || !prefs4.sound ? " disabled" : ""}>Test</button></div>
+    ${desktopRow}
+  </div>`;
   }
 
   // src/features/retals/index.js
@@ -6649,7 +6988,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     polling: false,
     refused: false,
     // not in a Nuke faction, or a site without retals: stop asking
-    ui: { busy: null, warn: null, error: null },
+    ui: { busy: null, warn: null, error: null, settingsOpen: false },
     errorUntil: 0
   };
   var sourcesSeen = /* @__PURE__ */ new Set();
@@ -6657,7 +6996,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   var queued = false;
   var latestFeed = null;
   var root2 = null;
-  var rendered = null;
+  var regions2 = null;
+  var rendered = {};
   var ticker3 = null;
   var serverNow = () => Math.floor(Date.now() / 1e3) + state3.offset;
   function take(answer) {
@@ -6665,6 +7005,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     state3.retals = answer.retals;
     if (answer.server_now) state3.offset = answer.server_now - Math.floor(Date.now() / 1e3);
     state3.lastAnswerAt = Date.now();
+    forgetTags(state3.retals);
+    if (getPrefs3().show) announce(state3.retals, serverNow(), attack);
     render4();
   }
   function isRefusal(error) {
@@ -6675,13 +7017,17 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     state3.errorUntil = Date.now() + ERROR_MS;
     render4();
   }
+  function unmount() {
+    if (root2) root2.remove();
+    root2 = null;
+    regions2 = null;
+    rendered = {};
+  }
   function stop3() {
     state3.refused = true;
     if (ticker3) clearInterval(ticker3);
     ticker3 = null;
-    if (root2) root2.remove();
-    root2 = null;
-    rendered = null;
+    unmount();
   }
   function onFeed(feed, source, keys) {
     if (!isOwnFactionMainTab() || state3.refused) return;
@@ -6694,9 +7040,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       sourcesSeen.add("stealth");
       LogInfo("[retals] a stealthed attack as Torn gives it", stealthed, feed.users[stealthed.attackerID] || null);
     }
+    start();
+    if (!getPrefs3().show) return;
     latestFeed = feed;
     flush();
-    start();
   }
   async function flush() {
     if (sending) {
@@ -6730,32 +7077,43 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       }
     }
   }
+  function setRegion2(name, html) {
+    if (rendered[name] === html) return false;
+    rendered[name] = html;
+    regions2[name].innerHTML = html;
+    regions2[name].hidden = html === "";
+    return true;
+  }
   function render4() {
     if (!root2) return;
     if (state3.ui.error && Date.now() > state3.errorUntil) state3.ui.error = null;
-    const html = renderList(state3.retals, serverNow(), state3.ui);
-    if (html === rendered) return;
-    rendered = html;
-    root2.innerHTML = html;
-    root2.hidden = html === "";
+    const prefs4 = getPrefs3();
+    const now = serverNow();
+    setRegion2("head", renderHead(state3.retals, now, prefs4, state3.ui));
+    setRegion2("settings", state3.ui.settingsOpen ? renderSettings2(prefs4, desktopPermission()) : "");
+    if (setRegion2("list", prefs4.show ? renderList(state3.retals, now, state3.ui) : "")) applyTags(regions2.list);
   }
   function mount2() {
     const anchor = document.querySelector(ANCHOR_SELECTOR3);
     if (!anchor) {
-      if (root2) root2.remove();
-      root2 = null;
-      rendered = null;
+      unmount();
       return false;
     }
     if (!root2 || !root2.isConnected || root2.previousElementSibling !== anchor) {
-      if (root2) root2.remove();
+      unmount();
       root2 = document.createElement("div");
       root2.id = ROOT_ID2;
       root2.className = "nfh-cw nfh-rt";
-      root2.hidden = true;
+      regions2 = {};
+      for (const name of ["head", "settings", "list"]) {
+        regions2[name] = document.createElement("div");
+        regions2[name].dataset.region = name;
+        root2.appendChild(regions2[name]);
+      }
       root2.addEventListener("click", onClick4);
+      root2.addEventListener("change", onChange3);
+      root2.addEventListener("input", onChange3);
       anchor.insertAdjacentElement("afterend", root2);
-      rendered = null;
     }
     render4();
     return true;
@@ -6769,14 +7127,13 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     if (state3.refused || !isOwnFactionMainTab()) {
       clearInterval(ticker3);
       ticker3 = null;
-      if (root2) root2.remove();
-      root2 = null;
-      rendered = null;
+      unmount();
       return;
     }
     const open = mount2();
+    if (open) captureTags(state3.retals);
     const every = open ? POLL_OPEN_MS : POLL_CLOSED_MS;
-    if (!document.hidden && !state3.polling && Date.now() - state3.lastAnswerAt >= every) poll3();
+    if (getPrefs3().show && !document.hidden && !state3.polling && Date.now() - state3.lastAnswerAt >= every) poll3();
   }
   async function poll3() {
     state3.polling = true;
@@ -6878,7 +7235,30 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     } else if (action === "dismiss") {
       state3.ui.warn = null;
       render4();
+    } else if (action === "settings") {
+      state3.ui.settingsOpen = !state3.ui.settingsOpen;
+      render4();
+    } else if (action === "test-sound") {
+      chime(getPrefs3().volume);
     }
+  }
+  async function onChange3(event) {
+    const input = event.target.closest("[data-pref]");
+    if (!input || !root2 || !root2.contains(input)) return;
+    const pref = input.dataset.pref;
+    if (event.type === "input" && pref !== "volume") return;
+    if (input.type === "checkbox") {
+      if (pref === "desktop" && input.checked) {
+        const answer = await askDesktopPermission();
+        setPrefs3({ desktop: answer === "granted" });
+      } else {
+        setPrefs3({ [pref]: input.checked });
+      }
+    } else {
+      setPrefs3({ [pref]: Number(input.value) });
+    }
+    if (pref === "show" && input.checked) state3.lastAnswerAt = 0;
+    if (pref !== "volume") render4();
   }
   var retals_default = {
     name: "retals",

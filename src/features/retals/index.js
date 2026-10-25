@@ -7,12 +7,18 @@ import { isOwnFactionMainTab } from "../../core/torn-page.js";
 import { startCapture } from "./capture.js";
 import { claimRetal, fetchRetals, markSent, report, sentIds, unclaimRetal } from "./data.js";
 import { attacksToReport, feedFactionId, retalState } from "./logic.js";
-import { attackUrl, renderList } from "./view.js";
+import { announce, askDesktopPermission, chime, desktopPermission } from "./notify.js";
+import { getPrefs, setPrefs } from "./prefs.js";
+import { applyTags, captureTags, forgetTags } from "./stats.js";
+import { attackUrl, renderHead, renderList, renderSettings } from "./view.js";
 
 // Retal alerts: hears Torn's chain feed on the member's own faction page,
 // tells nuke.family about enemies who hit our members (and about our hits
 // Torn counted as retals), and lists who can still be hit back under Torn's
-// recent attacks, with a countdown, a claim and an attack button.
+// recent attacks, with a countdown, a claim and an attack button. New retals
+// are announced once (notify.js), and members running BSP or FF Scouter get
+// their estimate beside each enemy (stats.js). "Show retals" off stops all of
+// it, reporting included, leaving only the header line to turn it back on.
 //
 // Kept cheap, like chain watch: one 1s timer that only exists on the
 // faction's main tab, polling only while the tab is visible and no report has
@@ -36,7 +42,7 @@ const state = {
   lastAnswerAt: 0,
   polling: false,
   refused: false, // not in a Nuke faction, or a site without retals: stop asking
-  ui: { busy: null, warn: null, error: null },
+  ui: { busy: null, warn: null, error: null, settingsOpen: false },
   errorUntil: 0,
 };
 
@@ -45,7 +51,8 @@ let sending = false;
 let queued = false;
 let latestFeed = null;
 let root = null;
-let rendered = null;
+let regions = null; // { head, settings, list } elements
+let rendered = {};
 let ticker = null;
 
 const serverNow = () => Math.floor(Date.now() / 1000) + state.offset;
@@ -56,6 +63,8 @@ function take(answer) {
   state.retals = answer.retals;
   if (answer.server_now) state.offset = answer.server_now - Math.floor(Date.now() / 1000);
   state.lastAnswerAt = Date.now();
+  forgetTags(state.retals);
+  if (getPrefs().show) announce(state.retals, serverNow(), attack);
   render();
 }
 
@@ -71,13 +80,18 @@ function showError(text) {
   render();
 }
 
+function unmount() {
+  if (root) root.remove();
+  root = null;
+  regions = null;
+  rendered = {};
+}
+
 function stop() {
   state.refused = true;
   if (ticker) clearInterval(ticker);
   ticker = null;
-  if (root) root.remove();
-  root = null;
-  rendered = null;
+  unmount();
 }
 
 // --- Reporting what Torn's chain feed shows ---------------------------------
@@ -96,9 +110,10 @@ function onFeed(feed, source, keys) {
     LogInfo("[retals] a stealthed attack as Torn gives it", stealthed, feed.users[stealthed.attackerID] || null);
   }
 
+  start();
+  if (!getPrefs().show) return;
   latestFeed = feed;
   flush();
-  start();
 }
 
 async function flush() {
@@ -144,36 +159,50 @@ async function flush() {
 
 // --- The list ----------------------------------------------------------------
 
+function setRegion(name, html) {
+  if (rendered[name] === html) return false;
+  rendered[name] = html;
+  regions[name].innerHTML = html;
+  regions[name].hidden = html === "";
+  return true;
+}
+
+// Each part is rewritten only when its HTML changed, so the settings are
+// never redrawn under the member's cursor by the countdown.
 function render() {
   if (!root) return;
   if (state.ui.error && Date.now() > state.errorUntil) state.ui.error = null;
-  const html = renderList(state.retals, serverNow(), state.ui);
-  if (html === rendered) return;
-  rendered = html;
-  root.innerHTML = html;
-  root.hidden = html === "";
+  const prefs = getPrefs();
+  const now = serverNow();
+  setRegion("head", renderHead(state.retals, now, prefs, state.ui));
+  setRegion("settings", state.ui.settingsOpen ? renderSettings(prefs, desktopPermission()) : "");
+  if (setRegion("list", prefs.show ? renderList(state.retals, now, state.ui) : "")) applyTags(regions.list);
 }
 
-// Put the list under Torn's recent attacks, or back there after React
+// Put the section under Torn's recent attacks, or back there after React
 // re-rendered the chain box. Gone with the list when the box is closed.
-// Answers whether the list is on the page.
+// Answers whether it is on the page.
 function mount() {
   const anchor = document.querySelector(ANCHOR_SELECTOR);
   if (!anchor) {
-    if (root) root.remove();
-    root = null;
-    rendered = null;
+    unmount();
     return false;
   }
   if (!root || !root.isConnected || root.previousElementSibling !== anchor) {
-    if (root) root.remove();
+    unmount();
     root = document.createElement("div");
     root.id = ROOT_ID;
     root.className = "nfh-cw nfh-rt";
-    root.hidden = true;
+    regions = {};
+    for (const name of ["head", "settings", "list"]) {
+      regions[name] = document.createElement("div");
+      regions[name].dataset.region = name;
+      root.appendChild(regions[name]);
+    }
     root.addEventListener("click", onClick);
+    root.addEventListener("change", onChange);
+    root.addEventListener("input", onChange);
     anchor.insertAdjacentElement("afterend", root);
-    rendered = null;
   }
   render();
   return true;
@@ -191,14 +220,13 @@ function tick() {
   if (state.refused || !isOwnFactionMainTab()) {
     clearInterval(ticker);
     ticker = null;
-    if (root) root.remove();
-    root = null;
-    rendered = null;
+    unmount();
     return;
   }
   const open = mount();
+  if (open) captureTags(state.retals);
   const every = open ? POLL_OPEN_MS : POLL_CLOSED_MS;
-  if (!document.hidden && !state.polling && Date.now() - state.lastAnswerAt >= every) poll();
+  if (getPrefs().show && !document.hidden && !state.polling && Date.now() - state.lastAnswerAt >= every) poll();
 }
 
 async function poll() {
@@ -319,7 +347,36 @@ function onClick(event) {
   } else if (action === "dismiss") {
     state.ui.warn = null;
     render();
+  } else if (action === "settings") {
+    state.ui.settingsOpen = !state.ui.settingsOpen;
+    render();
+  } else if (action === "test-sound") {
+    chime(getPrefs().volume);
   }
+}
+
+async function onChange(event) {
+  const input = event.target.closest("[data-pref]");
+  if (!input || !root || !root.contains(input)) return;
+  const pref = input.dataset.pref;
+  // The volume slider saves as it moves; everything else once changed.
+  if (event.type === "input" && pref !== "volume") return;
+
+  if (input.type === "checkbox") {
+    if (pref === "desktop" && input.checked) {
+      // Asked inside the click, as browsers require. Ticked only if allowed.
+      const answer = await askDesktopPermission();
+      setPrefs({ desktop: answer === "granted" });
+    } else {
+      setPrefs({ [pref]: input.checked });
+    }
+  } else {
+    setPrefs({ [pref]: Number(input.value) });
+  }
+
+  // Turning the list back on: ask for it now rather than at the next poll.
+  if (pref === "show" && input.checked) state.lastAnswerAt = 0;
+  if (pref !== "volume") render();
 }
 
 export default {

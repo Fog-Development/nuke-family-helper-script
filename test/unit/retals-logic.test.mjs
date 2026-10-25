@@ -5,8 +5,10 @@ import {
   feedFactionId,
   formatLeft,
   matters,
+  noticeKey,
   normalizeAttack,
   retalState,
+  retalsToAnnounce,
   visibleRetals,
 } from "../../src/features/retals/logic.js";
 
@@ -153,5 +155,30 @@ describe("the list", () => {
       visibleRetals(list, NOW).map((retal) => retal.enemy_id),
       [1, 3],
     );
+  });
+});
+
+describe("retalsToAnnounce", () => {
+  const open = (over = {}) => ({ enemy_id: 1, first_hit_at: NOW - 30, expires_at: NOW + 270, claimed_by: null, done_at: null, ...over });
+
+  it("announces open retals not seen before with enough time left", () => {
+    const list = [
+      open(),
+      open({ enemy_id: 2, expires_at: NOW + 29 }),
+      open({ enemy_id: 3, done_at: NOW - 5 }),
+      open({ enemy_id: 4, claimed_by: { id: 9 }, claimed_until: NOW + 20 }),
+      open({ enemy_id: 5, claimed_by: { id: 1 }, claimed_until: NOW + 20, claimed_by_me: true }),
+      open({ enemy_id: 6 }),
+    ];
+    const announced = new Set([noticeKey(open({ enemy_id: 6 }))]);
+    assert.deepEqual(
+      retalsToAnnounce(list, announced, NOW, 30).map((retal) => retal.enemy_id),
+      [1, 5],
+    );
+  });
+
+  it("announces a fresh retal on an enemy whose last one was done", () => {
+    const announced = new Set([noticeKey(open())]);
+    assert.equal(retalsToAnnounce([open({ first_hit_at: NOW })], announced, NOW, 30).length, 1);
   });
 });

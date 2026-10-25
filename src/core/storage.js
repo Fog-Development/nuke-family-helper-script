@@ -34,6 +34,7 @@ const LOCAL_KEYS = [
   "nfhShowReputation",
   "nfhShowActiveContract",
   "nfhChainWatch",
+  "nfhRetals",
   "nfhRankedWar",
   "nfhOcStaffPrefs",
   "nfhOcWeights",
