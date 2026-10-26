@@ -6656,7 +6656,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       respect: Number(attack2.respect) || 0,
       result: textOrNull(attack2.result),
       stealth: Number(attack2.stealthAttack) !== 0 || attackerId === null,
-      retal: Number(attack2.retal) === 1
+      // Torn gives a level for each bonus icon (seen: retal 3, fairFight 2), 0 for none.
+      retal: Number(attack2.retal) > 0
     };
   }
   function matters(attack2, factionId) {

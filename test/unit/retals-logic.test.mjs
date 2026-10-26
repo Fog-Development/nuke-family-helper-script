@@ -106,6 +106,38 @@ describe("matters", () => {
   });
 });
 
+describe("a retal done, as Torn gives it", () => {
+  // Fogest's retal on Stonefight, from Torn's feed on 2026-10-26: the retal
+  // field is the icon's level (3), not 1.
+  const feed = {
+    userFactionID: OURS,
+    users: {
+      2254826: { userID: 2254826, factionID: OURS, playername: "Fogest", factiontag: "NUKE" },
+      3503779: { userID: 3503779, factionID: 1149, playername: "Stonefight", factiontag: "WTF" },
+    },
+    recentAttacks: [
+      {
+        publicID: "60a881acfe62180f76471c2e5c73cb02", attackerID: 2254826, defenderID: 3503779,
+        firstUserID: 2254826, secondUserID: 3503779, respect: 7.14, finishTimestamp: (NOW - 20) * 1000,
+        result: "Hospitalized", stealthAttack: 0, fairFight: 2, warBonus: 0, retal: 3,
+        bonusValues: { fairFight: 2.05, warBonus: 1, retal: 1.5 },
+      },
+    ],
+  };
+
+  it("is reported as a retal", () => {
+    const [attack] = attacksToReport(feed, OURS, new Set(), NOW);
+    assert.equal(attack.retal, true);
+    assert.equal(attack.attacker_faction_id, OURS);
+    assert.equal(attack.defender_id, 3503779);
+  });
+
+  it("a hit without the bonus is not", () => {
+    const plain = { ...feed, recentAttacks: [{ ...feed.recentAttacks[0], retal: 0 }] };
+    assert.deepEqual(attacksToReport(plain, OURS, new Set(), NOW), []);
+  });
+});
+
 describe("attacksToReport", () => {
   const feed = (attacks) => ({ userFactionID: OURS, users, recentAttacks: attacks });
 

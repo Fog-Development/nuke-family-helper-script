@@ -48,7 +48,8 @@ export function normalizeAttack(attack, users = {}) {
     respect: Number(attack.respect) || 0,
     result: textOrNull(attack.result),
     stealth: Number(attack.stealthAttack) !== 0 || attackerId === null,
-    retal: Number(attack.retal) === 1,
+    // Torn gives a level for each bonus icon (seen: retal 3, fairFight 2), 0 for none.
+    retal: Number(attack.retal) > 0,
   };
 }
 
