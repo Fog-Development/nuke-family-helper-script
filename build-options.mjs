@@ -15,16 +15,26 @@ const cssAsLfText = {
   },
 };
 
+// The file users install. Only a production build is ever written here.
+export const RELEASE_FILE = "nuke-family-helper.user.js";
+// Debug builds go to their own file (gitignored), named "Nuke Assistant (dev)"
+// so it can be installed beside the real one and pasted into a userscript
+// manager that cannot load files from disk (Firefox).
+export const DEV_FILE = "nuke-family-helper.dev.user.js";
+
 export function makeBuildOptions({
   debug = false,
   debugSite = false,
-  outfile = "nuke-family-helper.user.js",
+  outfile = debug || debugSite ? DEV_FILE : RELEASE_FILE,
 } = {}) {
   const pkg = JSON.parse(readFileSync("package.json", "utf8"));
-  const header = readLf("src/header.txt").replace(
+  let header = readLf("src/header.txt").replace(
     /\{\{VERSION\}\}/g,
     pkg.version,
   );
+  if (debug || debugSite) {
+    header = header.replace(/^(\/\/ @name\s+)(.+)$/m, `$1$2 (dev${debugSite ? ", nuke.test" : ""})`);
+  }
 
   /** @type {import("esbuild").BuildOptions} */
   return {

@@ -4,15 +4,15 @@
 // from package.json, so the version only ever needs to be bumped in one place.
 //
 // Usage:
-//   npm run build         production build (debug off)
-//   npm run watch         rebuild on change (debug off)
-//   npm run watch:debug        rebuild on change with logging, against nuke.family
-//   npm run watch:debug-site   rebuild on change with logging, against nuke.test
+//   npm run build              production build -> nuke-family-helper.user.js
+//   npm run watch              the same, rebuilt on change
+//   npm run build:dev          dev build (logging, nuke.family) -> nuke-family-helper.dev.user.js
+//   npm run watch:debug        the same, rebuilt on change
+//   npm run watch:debug-site   dev build against the local nuke.test, rebuilt on change
 //
-// IMPORTANT: always run `npm run build` (not watch:debug) before committing —
-// the committed nuke-family-helper.user.js is what users install and what the
-// update checker downloads. CI verifies the committed file matches a fresh
-// production build.
+// Debug builds never touch nuke-family-helper.user.js, the file users install
+// and the update checker downloads; CI verifies it matches a fresh production
+// build. The dev file is gitignored.
 import * as esbuild from "esbuild";
 import { readFileSync } from "node:fs";
 import { makeBuildOptions } from "./build-options.mjs";

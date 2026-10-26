@@ -13,12 +13,15 @@ The legacy "Payout Helper" features (cash payouts on faction controls, xanax pay
 The source lives in `src/` as ES modules and is bundled by esbuild into the single userscript file users install: `nuke-family-helper.user.js` at the repo root. **Never edit `nuke-family-helper.user.js` directly** — edit `src/` and rebuild. CI (`.github/workflows/verify-build.yml`) fails if the committed file doesn't match a fresh production build.
 
 ```bash
-npm install          # once
-npm run build        # production build (ALWAYS run before committing)
-npm run watch        # rebuild on save (production settings)
-npm run watch:debug       # rebuild on save with console logging, against nuke.family
-npm run watch:debug-site  # rebuild on save with console logging, against the local nuke.test
+npm install               # once
+npm run build             # production build -> nuke-family-helper.user.js (ALWAYS run before committing)
+npm run watch             # the same, rebuilt on save
+npm run build:dev         # dev build -> nuke-family-helper.dev.user.js (console logging, nuke.family)
+npm run watch:debug       # the same, rebuilt on save
+npm run watch:debug-site  # dev build against the local nuke.test, rebuilt on save
 ```
+
+- Debug builds go to their own file, `nuke-family-helper.dev.user.js` (gitignored), never to the release file. Its `@name` is "Nuke Assistant (dev)" ("(dev, nuke.test)" for `watch:debug-site`), so it installs beside the real script; turn the real one off while testing.
 
 - The userscript metadata header is generated from `src/header.txt`; the `@version` comes from `version` in `package.json` (single source of truth).
 - `__DEBUG__`, `__DEBUG_SITE__` and `__VERSION__` are compile-time defines injected by `build.mjs` (see `src/core/config.js`). `DEBUG` only turns on logging; `DEBUG_SITE` (`--debug-site`, which implies `--debug`) is what switches the API to nuke.test.
@@ -26,7 +29,7 @@ npm run watch:debug-site  # rebuild on save with console logging, against the lo
 
 ## Development Workflow
 
-For local testing, install `dev.user.js` in your userscript manager. It loads the built file from disk via `@require file://...`, so run `npm run watch` and reload the Torn page after each change. `dev.user.js` also matches `http://nuke.test/auth/token-generation` for testing the token flow against a local nuke.family instance.
+For local testing, run `npm run watch:debug` and paste `nuke-family-helper.dev.user.js` into the userscript manager after each change (Firefox cannot load files from disk). In Chrome, `dev.user.js` can instead load the built release file from disk via `@require file://...` (needs "Allow access to file URLs"), so run `npm run watch` and reload the Torn page after each change. `dev.user.js` also matches `http://nuke.test/auth/token-generation` for testing the token flow against a local nuke.family instance.
 
 Before releasing: run through `TESTING.md`, bump `version` in `package.json`, `npm run build`, commit `src/` and the regenerated `nuke-family-helper.user.js` together. Users install from the raw GitHub URL of the root file and the in-script update checker scrapes `@version` from it, so the built file must stay committed at that exact path.
 
