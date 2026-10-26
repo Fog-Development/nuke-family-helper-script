@@ -148,6 +148,31 @@ describe("retal capture", () => {
     }
   });
 
+  it("still reads the React props when the page blocks the added script", async () => {
+    const list = feed([incoming("b1")]);
+    const { page, apiCalls, close } = await openTornPage(browser, {
+      page: "factions-faction",
+      api: { "POST /retals/report": answer, "GET /retals": answer },
+      before: (p) =>
+        p.evaluate(({ data, factionId }) => {
+          // Stands in for a page that never runs the script tag.
+          window.__nfhChainFeedTap = true;
+          const element = document.createElement("div");
+          element.className = "chain-attacks-list recent-attacks";
+          document.body.appendChild(element);
+          element["__reactFiber$test"] = { memoizedProps: {}, return: { memoizedProps: { warDesc: data, userFactionID: factionId } } };
+        }, { data: list, factionId: OURS }),
+    });
+    try {
+      const sent = await waitForReports(page, apiCalls, 1);
+      assert.equal(sent.length, 1);
+      assert.deepEqual(sent[0].attacks.map((attack) => attack.id), ["b1"]);
+      assert.equal(sent[0].attacks[0].attacker_name, "SiTluX");
+    } finally {
+      await close();
+    }
+  });
+
   it("does not listen off the main tab", async () => {
     const { page, apiCalls, close } = await openTornPage(browser, {
       page: "factions-controls",

@@ -141,6 +141,81 @@ function pageTap(eventName) {
       }
     }
   }, 2000);
+
+  // Tells the script this ran: a page that blocks added scripts never says so.
+  send("ready", { ready: true });
+}
+
+// --- Read from the script's own side -----------------------------------------
+//
+// The same React props, read without the page script: for pages that block
+// added scripts. In Firefox the script sees the page's objects through a
+// wrapper that hides React's own properties; `wrappedJSObject` is the way
+// past it. Only the fields the retal rules need are copied, into plain
+// objects.
+
+const ATTACK_FIELDS = ["publicID", "attackerID", "defenderID", "firstUserID", "secondUserID", "respect", "finishTimestamp", "result", "stealthAttack", "retal"];
+const USER_FIELDS = ["userID", "factionID", "playername", "factiontag"];
+
+function pageSide(value) {
+  return value && value.wrappedJSObject ? value.wrappedJSObject : value;
+}
+
+function copyFields(source, fields) {
+  const copy = {};
+  for (const field of fields) {
+    const value = source[field];
+    if (value === null || ["string", "number", "boolean"].includes(typeof value)) copy[field] = value;
+  }
+  return copy;
+}
+
+let localReport = null; // why the last local read found nothing, logged once each
+
+function noteLocal(reason) {
+  if (localReport === reason) return;
+  localReport = reason;
+  LogInfo(`[retals] reading React data from the script: ${reason}`);
+}
+
+function readHere() {
+  const list = document.querySelector(".chain-attacks-list.recent-attacks");
+  if (!list) return null;
+  const element = pageSide(list);
+  let key;
+  try {
+    key = Object.keys(element).find((k) => k.startsWith("__reactFiber$") || k.startsWith("__reactInternalInstance$"));
+  } catch (e) {
+    noteLocal(`cannot look at the list (${e.message})`);
+    return null;
+  }
+  if (!key) {
+    noteLocal("no React data on the list from here");
+    return null;
+  }
+  let fiber = pageSide(element[key]);
+  for (let i = 0; fiber && i < 40; i++, fiber = pageSide(fiber.return)) {
+    const props = pageSide(fiber.memoizedProps);
+    const warDesc = props && pageSide(props.warDesc);
+    const attacks = warDesc && pageSide(warDesc.recentAttacks);
+    if (!attacks || typeof attacks.length !== "number") continue;
+
+    const recentAttacks = [];
+    const users = {};
+    const allUsers = pageSide(warDesc.users) || {};
+    for (let n = 0; n < attacks.length; n++) {
+      const attack = copyFields(pageSide(attacks[n]), ATTACK_FIELDS);
+      recentAttacks.push(attack);
+      for (const id of [attack.attackerID, attack.defenderID, attack.firstUserID]) {
+        const user = id && pageSide(allUsers[id]);
+        if (user) users[id] = copyFields(user, USER_FIELDS);
+      }
+    }
+    noteLocal(`found ${recentAttacks.length} attacks`);
+    return { recentAttacks, users, userFactionID: Number(props.userFactionID) || null };
+  }
+  noteLocal("React data found, but no recent attacks in it");
+  return null;
 }
 
 // Start hearing the chain feed. `onFeed(feed, source)` gets Torn's raw recent
@@ -149,11 +224,17 @@ export function startCapture(onFeed) {
   if (started) return;
   started = true;
 
+  let pageTapRan = false;
   document.addEventListener(EVENT, (event) => {
     let detail;
     try {
       detail = JSON.parse(event.detail);
     } catch (e) {
+      return;
+    }
+    if (detail.ready) {
+      pageTapRan = true;
+      LogInfo("[retals] page script running");
       return;
     }
     if (!detail.feed) {
@@ -163,8 +244,34 @@ export function startCapture(onFeed) {
     onFeed(detail.feed, detail.source, detail.keys);
   });
 
-  const tag = document.createElement("script");
-  tag.textContent = `(${pageTap.toString()})(${JSON.stringify(EVENT)});`;
-  (document.head || document.documentElement).appendChild(tag);
-  tag.remove();
+  try {
+    const tag = document.createElement("script");
+    tag.textContent = `(${pageTap.toString()})(${JSON.stringify(EVENT)});`;
+    (document.head || document.documentElement).appendChild(tag);
+    tag.remove();
+  } catch (e) {
+    LogInfo("[retals] could not add the page script", e);
+  }
+  setTimeout(() => {
+    if (!pageTapRan) LogInfo("[retals] page script did not run (the page may block added scripts); reading from the script only");
+  }, 3000);
+
+  // Read from here too, every 2s while the list is there and the tab is seen.
+  // The controller ignores attacks it has already dealt with.
+  let lastSeen = "";
+  let lastList = null;
+  setInterval(() => {
+    if (document.hidden) return;
+    const list = document.querySelector(".chain-attacks-list.recent-attacks");
+    if (list !== lastList) {
+      lastList = list;
+      lastSeen = "";
+    }
+    const feed = readHere();
+    if (!feed) return;
+    const seen = feed.recentAttacks.map((attack) => attack.publicID).join(",");
+    if (seen === lastSeen) return;
+    lastSeen = seen;
+    onFeed(feed, "react-here");
+  }, 2000);
 }
