@@ -1458,6 +1458,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
 .nfh-rt {
     margin-top: 6px;
     border-left-color: var(--nfh-cw-warn);
+    /* Torn's chain box uses a narrow display font, which has no real bold
+       (Firefox fakes one); use the page font the chain watch bar uses. */
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .nfh-rt[hidden] {
@@ -1504,6 +1507,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
 }
 
 .nfh-rt-toast {
+    font-family: Arial, Helvetica, sans-serif;
     position: fixed;
     right: 16px;
     bottom: 16px;
