@@ -6500,7 +6500,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       for (let i = 0; fiber && i < 40; i++, fiber = fiber.return) {
         const props = fiber.memoizedProps;
         if (props && props.warDesc && Array.isArray(props.warDesc.recentAttacks)) {
-          const seen = props.warDesc.recentAttacks.map((attack2) => attack2.publicID).join(",");
+          const seen = props.warDesc.recentAttacks.map((attack2) => [attack2.publicID, attack2.respect, attack2.result, attack2.retal].join(":")).join(",");
           if (seen !== lastSeen) {
             lastSeen = seen;
             send("react", { feed: pick(props.warDesc, props.userFactionID) });
@@ -6612,7 +6612,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       }
       const feed = readHere();
       if (!feed) return;
-      const seen = feed.recentAttacks.map((attack2) => attack2.publicID).join(",");
+      const seen = feed.recentAttacks.map((attack2) => [attack2.publicID, attack2.respect, attack2.result, attack2.retal].join(":")).join(",");
       if (seen === lastSeen) return;
       lastSeen = seen;
       onFeed2(feed, "react-here");
@@ -7148,8 +7148,6 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       return;
     }
     const attacks = attacksToReport(feed, factionId, sentIds(), Math.floor(Date.now() / 1e3));
-    const reporting = new Set(attacks.map((attack2) => attack2.id));
-    markSent(feed.recentAttacks.filter((attack2) => attack2.publicID && !reporting.has(String(attack2.publicID))));
     if (!attacks.length) return;
     LogInfo(`[retals] reporting for faction ${factionId}`, attacks);
     sending = true;

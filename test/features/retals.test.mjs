@@ -173,6 +173,30 @@ describe("retal capture", () => {
     }
   });
 
+  it("reports a fight once Torn fills in its result, on the same attack", async () => {
+    // Torn lists a fight while it is going ("Attacked", no respect, no
+    // bonuses), then fills those in on the same attack when it ends.
+    const going = { ...incoming("p1"), attackerID: 3828253, defenderID: ENEMY, respect: 0, result: "Attacked", retal: 0 };
+    const { page, apiCalls, close } = await open({ list: feed([going]) });
+    try {
+      await page.waitForTimeout(2500);
+      assert.equal(reports(apiCalls).length, 0);
+
+      await page.evaluate(() => {
+        const element = document.querySelector(".chain-attacks-list.recent-attacks");
+        const attack = element["__reactFiber$test"].return.return.memoizedProps.warDesc.recentAttacks[0];
+        Object.assign(attack, { respect: 7.14, result: "Hospitalized", retal: 3 });
+      });
+
+      const sent = await waitForReports(page, apiCalls, 1);
+      assert.equal(sent.length, 1);
+      assert.equal(sent[0].attacks[0].id, "p1");
+      assert.equal(sent[0].attacks[0].retal, true);
+    } finally {
+      await close();
+    }
+  });
+
   it("does not listen off the main tab", async () => {
     const { page, apiCalls, close } = await openTornPage(browser, {
       page: "factions-controls",

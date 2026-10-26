@@ -130,13 +130,11 @@ async function flush() {
     return;
   }
 
+  // Only attacks the site has taken are remembered. Everything else is
+  // looked at again on every update: Torn lists a fight while it is still
+  // going ("Attacked", no respect, no bonuses) and fills in the respect and
+  // the retal bonus on the same attack once it ends.
   const attacks = attacksToReport(feed, factionId, sentIds(), Math.floor(Date.now() / 1000));
-
-  // Attacks that don't matter never will, so they are dealt with now; the
-  // ones being reported only once the site has them.
-  const reporting = new Set(attacks.map((attack) => attack.id));
-  markSent(feed.recentAttacks.filter((attack) => attack.publicID && !reporting.has(String(attack.publicID))));
-
   if (!attacks.length) return;
 
   LogInfo(`[retals] reporting for faction ${factionId}`, attacks);

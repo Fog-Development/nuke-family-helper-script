@@ -132,7 +132,11 @@ function pageTap(eventName) {
     for (let i = 0; fiber && i < 40; i++, fiber = fiber.return) {
       const props = fiber.memoizedProps;
       if (props && props.warDesc && Array.isArray(props.warDesc.recentAttacks)) {
-        const seen = props.warDesc.recentAttacks.map((attack) => attack.publicID).join(",");
+        // An attack's respect and bonuses are filled in when the fight ends, on
+        // the same attack, so those count as a change too.
+        const seen = props.warDesc.recentAttacks
+          .map((attack) => [attack.publicID, attack.respect, attack.result, attack.retal].join(":"))
+          .join(",");
         if (seen !== lastSeen) {
           lastSeen = seen;
           send("react", { feed: pick(props.warDesc, props.userFactionID) });
@@ -269,7 +273,7 @@ export function startCapture(onFeed) {
     }
     const feed = readHere();
     if (!feed) return;
-    const seen = feed.recentAttacks.map((attack) => attack.publicID).join(",");
+    const seen = feed.recentAttacks.map((attack) => [attack.publicID, attack.respect, attack.result, attack.retal].join(":")).join(",");
     if (seen === lastSeen) return;
     lastSeen = seen;
     onFeed(feed, "react-here");
