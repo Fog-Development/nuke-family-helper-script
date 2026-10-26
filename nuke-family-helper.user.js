@@ -1858,10 +1858,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
 
   // src/core/config.js
   var DEBUG = false;
+  var DEBUG_SITE = false;
   var DEFAULT_VERSION = "2.19.4";
   var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : DEFAULT_VERSION;
-  var API_URL = DEBUG ? "http://nuke.test/api" : "https://nuke.family/api";
-  var TOKEN_GENERATION_URL = DEBUG ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
+  var API_URL = DEBUG_SITE ? "http://nuke.test/api" : "https://nuke.family/api";
+  var TOKEN_GENERATION_URL = DEBUG_SITE ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
   var GITHUB_URL = "https://github.com/Fog-Development/nuke-family-helper-script/raw/master/nuke-family-helper.user.js";
 
   // src/core/api.js
@@ -4523,6 +4524,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       script: {
         version: CURRENT_VERSION,
         debug_build: DEBUG,
+        debug_site: DEBUG_SITE,
         api_url: API_URL,
         manager: info2.scriptHandler ? `${info2.scriptHandler} ${info2.version || ""}`.trim() : null,
         torn_pda: isPda
@@ -6507,15 +6509,79 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         }
       }
     }, 2e3);
+    send("ready", { ready: true });
+  }
+  var ATTACK_FIELDS = ["publicID", "attackerID", "defenderID", "firstUserID", "secondUserID", "respect", "finishTimestamp", "result", "stealthAttack", "retal"];
+  var USER_FIELDS = ["userID", "factionID", "playername", "factiontag"];
+  function pageSide(value) {
+    return value && value.wrappedJSObject ? value.wrappedJSObject : value;
+  }
+  function copyFields(source, fields) {
+    const copy = {};
+    for (const field of fields) {
+      const value = source[field];
+      if (value === null || ["string", "number", "boolean"].includes(typeof value)) copy[field] = value;
+    }
+    return copy;
+  }
+  var localReport = null;
+  function noteLocal(reason) {
+    if (localReport === reason) return;
+    localReport = reason;
+    LogInfo(`[retals] reading React data from the script: ${reason}`);
+  }
+  function readHere() {
+    const list = document.querySelector(".chain-attacks-list.recent-attacks");
+    if (!list) return null;
+    const element = pageSide(list);
+    let key;
+    try {
+      key = Object.keys(element).find((k) => k.startsWith("__reactFiber$") || k.startsWith("__reactInternalInstance$"));
+    } catch (e) {
+      noteLocal(`cannot look at the list (${e.message})`);
+      return null;
+    }
+    if (!key) {
+      noteLocal("no React data on the list from here");
+      return null;
+    }
+    let fiber = pageSide(element[key]);
+    for (let i = 0; fiber && i < 40; i++, fiber = pageSide(fiber.return)) {
+      const props = pageSide(fiber.memoizedProps);
+      const warDesc = props && pageSide(props.warDesc);
+      const attacks = warDesc && pageSide(warDesc.recentAttacks);
+      if (!attacks || typeof attacks.length !== "number") continue;
+      const recentAttacks = [];
+      const users = {};
+      const allUsers = pageSide(warDesc.users) || {};
+      for (let n = 0; n < attacks.length; n++) {
+        const attack2 = copyFields(pageSide(attacks[n]), ATTACK_FIELDS);
+        recentAttacks.push(attack2);
+        for (const id of [attack2.attackerID, attack2.defenderID, attack2.firstUserID]) {
+          const user = id && pageSide(allUsers[id]);
+          if (user) users[id] = copyFields(user, USER_FIELDS);
+        }
+      }
+      noteLocal(`found ${recentAttacks.length} attacks`);
+      return { recentAttacks, users, userFactionID: Number(props.userFactionID) || null };
+    }
+    noteLocal("React data found, but no recent attacks in it");
+    return null;
   }
   function startCapture(onFeed2) {
     if (started2) return;
     started2 = true;
+    let pageTapRan = false;
     document.addEventListener(EVENT, (event) => {
       let detail;
       try {
         detail = JSON.parse(event.detail);
       } catch (e) {
+        return;
+      }
+      if (detail.ready) {
+        pageTapRan = true;
+        LogInfo("[retals] page script running");
         return;
       }
       if (!detail.feed) {
@@ -6524,10 +6590,33 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       }
       onFeed2(detail.feed, detail.source, detail.keys);
     });
-    const tag = document.createElement("script");
-    tag.textContent = `(${pageTap.toString()})(${JSON.stringify(EVENT)});`;
-    (document.head || document.documentElement).appendChild(tag);
-    tag.remove();
+    try {
+      const tag = document.createElement("script");
+      tag.textContent = `(${pageTap.toString()})(${JSON.stringify(EVENT)});`;
+      (document.head || document.documentElement).appendChild(tag);
+      tag.remove();
+    } catch (e) {
+      LogInfo("[retals] could not add the page script", e);
+    }
+    setTimeout(() => {
+      if (!pageTapRan) LogInfo("[retals] page script did not run (the page may block added scripts); reading from the script only");
+    }, 3e3);
+    let lastSeen = "";
+    let lastList = null;
+    setInterval(() => {
+      if (document.hidden) return;
+      const list = document.querySelector(".chain-attacks-list.recent-attacks");
+      if (list !== lastList) {
+        lastList = list;
+        lastSeen = "";
+      }
+      const feed = readHere();
+      if (!feed) return;
+      const seen = feed.recentAttacks.map((attack2) => attack2.publicID).join(",");
+      if (seen === lastSeen) return;
+      lastSeen = seen;
+      onFeed2(feed, "react-here");
+    }, 2e3);
   }
 
   // src/features/retals/logic.js

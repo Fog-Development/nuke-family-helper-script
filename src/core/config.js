@@ -1,7 +1,10 @@
-// Build-time constants. __DEBUG__ and __VERSION__ are injected by build.mjs
-// (see the `define` option): __VERSION__ comes from package.json, and
-// __DEBUG__ is true only for `npm run watch:debug` builds.
+// Build-time constants, injected by build.mjs (see the `define` option):
+// __VERSION__ comes from package.json; __DEBUG__ (console logging) is on for
+// `npm run watch:debug` and `watch:debug-site`; __DEBUG_SITE__ (talk to the
+// local nuke.test instead of nuke.family) only for `watch:debug-site`, so a
+// debug build can log while connected to the real site.
 export const DEBUG = __DEBUG__;
+export const DEBUG_SITE = __DEBUG_SITE__;
 
 const DEFAULT_VERSION = __VERSION__;
 export const CURRENT_VERSION =
@@ -9,11 +12,11 @@ export const CURRENT_VERSION =
     ? GM_info.script.version
     : DEFAULT_VERSION;
 
-export const API_URL = DEBUG
+export const API_URL = DEBUG_SITE
   ? "http://nuke.test/api"
   : "https://nuke.family/api";
 
-export const TOKEN_GENERATION_URL = DEBUG
+export const TOKEN_GENERATION_URL = DEBUG_SITE
   ? "http://nuke.test/auth/token-generation"
   : "https://nuke.family/auth/token-generation";
 

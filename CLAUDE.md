@@ -16,12 +16,13 @@ The source lives in `src/` as ES modules and is bundled by esbuild into the sing
 npm install          # once
 npm run build        # production build (ALWAYS run before committing)
 npm run watch        # rebuild on save (production settings)
-npm run watch:debug  # rebuild on save with debug on (nuke.test API + console logging)
+npm run watch:debug       # rebuild on save with console logging, against nuke.family
+npm run watch:debug-site  # rebuild on save with console logging, against the local nuke.test
 ```
 
 - The userscript metadata header is generated from `src/header.txt`; the `@version` comes from `version` in `package.json` (single source of truth).
-- `__DEBUG__` and `__VERSION__` are compile-time defines injected by `build.mjs` (see `src/core/config.js`).
-- Debug builds point at `http://nuke.test/api`. There is no hardcoded dev token; press Connect against nuke.test, or set one via its token-generation page or `GM_setValue("apiToken", "...")` from the userscript manager console.
+- `__DEBUG__`, `__DEBUG_SITE__` and `__VERSION__` are compile-time defines injected by `build.mjs` (see `src/core/config.js`). `DEBUG` only turns on logging; `DEBUG_SITE` (`--debug-site`, which implies `--debug`) is what switches the API to nuke.test.
+- `watch:debug-site` builds point at `http://nuke.test/api` (plain `watch:debug` stays on nuke.family). There is no hardcoded dev token; press Connect against nuke.test, or set one via its token-generation page or `GM_setValue("apiToken", "...")` from the userscript manager console.
 
 ## Development Workflow
 

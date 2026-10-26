@@ -1,7 +1,7 @@
 import { api, ApiError, NoAnswerError, pageRequest } from "../core/api.js";
 import { getApiToken } from "../core/auth.js";
 import { registeredStores } from "../core/cache-sync.js";
-import { API_URL, CURRENT_VERSION, DEBUG } from "../core/config.js";
+import { API_URL, CURRENT_VERSION, DEBUG, DEBUG_SITE } from "../core/config.js";
 import { isPda } from "../core/pda-polyfill.js";
 import { storageInfo } from "../core/storage.js";
 import { getUserscriptUsersPlayerId } from "../core/torn-page.js";
@@ -132,6 +132,7 @@ export async function collectDebugInfo() {
     script: {
       version: CURRENT_VERSION,
       debug_build: DEBUG,
+      debug_site: DEBUG_SITE,
       api_url: API_URL,
       manager: info.scriptHandler ? `${info.scriptHandler} ${info.version || ""}`.trim() : null,
       torn_pda: isPda,

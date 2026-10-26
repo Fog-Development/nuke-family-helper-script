@@ -17,6 +17,7 @@ const cssAsLfText = {
 
 export function makeBuildOptions({
   debug = false,
+  debugSite = false,
   outfile = "nuke-family-helper.user.js",
 } = {}) {
   const pkg = JSON.parse(readFileSync("package.json", "utf8"));
@@ -35,7 +36,8 @@ export function makeBuildOptions({
     banner: { js: header },
     plugins: [cssAsLfText],
     define: {
-      __DEBUG__: JSON.stringify(debug),
+      __DEBUG__: JSON.stringify(debug || debugSite),
+      __DEBUG_SITE__: JSON.stringify(debugSite),
       __VERSION__: JSON.stringify(pkg.version),
     },
     // Keep the output readable: it gets committed and reviewed in PRs, and
