@@ -8,6 +8,17 @@ This is a userscript for the Nuke Family faction in the online game Torn. The sc
 
 The legacy "Payout Helper" features (cash payouts on faction controls, xanax payouts on the armoury drugs tab) were removed in the modular refactor — payouts are handled elsewhere now. Don't reintroduce them.
 
+## Torn's scripting rules (`torn:torn-city` skill)
+
+This script runs on torn.com, so Torn's Scripting Abuse rule covers every feature, and breaking it risks a game ban for everyone running the script. Load the `torn:torn-city` skill (from the `torn` plugin) and read its `rules-and-compliance.md` before adding or changing a feature. If a design conflicts with the rules, say so instead of building it.
+
+- Only use what Torn already shows on the page the member loaded and is viewing. No extra requests to torn.com pages or endpoints, and no scraping pages that aren't being viewed.
+- Alerts (toasts, sounds, title or tab changes) must not come from data watched on an unfocused page; Torn tightened the rule to name exactly this. Alerts driven by nuke.family or Torn API data are fine. Check new alerts, and changes to the retal alerts in `retals/`, against it.
+- Torn API data comes through nuke.family; the script itself doesn't call Torn's API (as in `ranked-war/`).
+- Torn has three fixed page widths (976 / 784 / 386px). Read the skill's `page-layout.md` before sizing injected UI, and check the 386px (TornPDA) layout.
+- For BSP or FF Scouter markup on the page, load `torn:torn-ffscouter`: `functionality.md` covers coexisting with the FF Scouter userscript and `developer-terms.md` covers its terms. Another script's stored keys belong to its user; never read them.
+- Never open torn.com with browser automation or the browser pane. Test against the fixtures (`npm test`). When something new is needed from a live page, give Justin a console snippet to run and paste back, or a dev build to paste into his userscript manager.
+
 ## Build System
 
 The source lives in `src/` as ES modules and is bundled by esbuild into the single userscript file users install: `nuke-family-helper.user.js` at the repo root. **Never edit `nuke-family-helper.user.js` directly** — edit `src/` and rebuild. CI (`.github/workflows/verify-build.yml`) fails if the committed file doesn't match a fresh production build.
