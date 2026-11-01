@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.20.0
+// @version      2.20.1
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -1863,7 +1863,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   // src/core/config.js
   var DEBUG = false;
   var DEBUG_SITE = false;
-  var DEFAULT_VERSION = "2.20.0";
+  var DEFAULT_VERSION = "2.20.1";
   var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : DEFAULT_VERSION;
   var API_URL = DEBUG_SITE ? "http://nuke.test/api" : "https://nuke.family/api";
   var TOKEN_GENERATION_URL = DEBUG_SITE ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
@@ -4406,7 +4406,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         suggestions.push(suggestion(Rank.Good, candidate));
       }
     }
-    return { crimes: rated, suggestions, withheld };
+    const hiddenStalled = rated.filter(
+      (entry) => entry.crime.offPage && entry.stalled && !belowOwnLevel(entry.crime, memberLevel, config) && !pickSlot(entry.slots) && entry.slots.some((slot) => slot.status === SlotStatus.Unrated)
+    ).length;
+    return { crimes: rated, suggestions, withheld, hiddenStalled };
   }
   function suggestion(rank, candidate) {
     return {
@@ -5306,6 +5309,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     return `<span class="nfh-oc-spawn">${spawn.quiet ? "" : '<span class="nfh-oc-bar-muted">Nothing decent is open at your level.</span> '}<button type="button" class="nfh-oc-bar-button" data-nfh-oc-spawn${spawn.busy ? " disabled" : ""}>${spawn.busy ? "Asking..." : `Ask staff for a level ${escapeHtml(spawn.tier)} crime`}</button></span>`;
   }
+  function stalledHint(count) {
+    if (!count) return "";
+    const crimes = count === 1 ? "1 stalled crime further down the list has" : `${count} stalled crimes further down the list have`;
+    return ` <span class="nfh-oc-bar-muted" data-nfh-oc-stalled-hint>${escapeHtml(crimes)} an open slot your CPR is not known for yet. Scroll down to check it.</span>`;
+  }
   function barHtml(state4) {
     const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
     if (state4.kind === "best") {
@@ -5322,7 +5330,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       if (state4.warning) {
         lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state4.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
       }
-      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
+      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}${stalledHint(state4.hiddenStalled)}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
     }
     if (state4.kind === "joined") {
       return `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state4.crime)}</strong> (level ${escapeHtml(state4.level ?? "?")}) as <strong>${escapeHtml(state4.role)}</strong>, so no other slot is suggested.</span>`;
@@ -5336,7 +5344,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       full: "No open slot is loaded yet. Scroll down to load more crimes.",
       low: "The open slots you qualify for are all in crimes below your level, so none is suggested."
     };
-    return `${label}<span class="nfh-oc-bar-text">${messages[state4.kind]}</span>`;
+    const hint = state4.kind === "blocked" ? "" : stalledHint(state4.hiddenStalled);
+    return `${label}<span class="nfh-oc-bar-text">${messages[state4.kind]}${hint}</span>`;
   }
   function renderBar2(root3, html) {
     let bar = document.getElementById(BAR_ID);
@@ -5438,7 +5447,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const own = recruiting ? findOwnSlot(crimes, board) : null;
     const inCrime = own !== null || joining === JoinState.Blocked;
     const warning = features2.warn && recruiting ? ownSlotWarning(own, board, config, rateCrimes) : null;
-    const ranking = features2.enabled && recruiting && crimes.length > 0 && (warning !== null || !inCrime && joining === JoinState.Open);
+    const ranking = features2.enabled && recruiting && crimes.length > 0 && (warning !== null || !inCrime && (joining === JoinState.Open || joining === JoinState.Full));
     const suggesting = ranking && features2.suggest;
     const elsewhere = ranking && board ? offPageCrimes(board, crimes) : [];
     const myLevel = board && board.me ? board.me.level : null;
@@ -5475,13 +5484,14 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     if (features2.enabled && recruiting && crimes.length > 0) {
       if (features2.suggest) {
         let state4;
-        if (suggestions.length > 0) state4 = { kind: "best", suggestions, warning };
+        const hiddenStalled = result.hiddenStalled;
+        if (suggestions.length > 0) state4 = { kind: "best", suggestions, warning, hiddenStalled };
         else if (warning) state4 = { kind: "warning", warning };
         else if (own) state4 = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
         else if (joining === JoinState.Blocked) state4 = { kind: "blocked" };
-        else if (joining === JoinState.Open && result.withheld > 0) state4 = { kind: "low" };
-        else if (joining === JoinState.Full) state4 = { kind: "full" };
-        else state4 = { kind: "none" };
+        else if (joining === JoinState.Open && result.withheld > 0) state4 = { kind: "low", hiddenStalled };
+        else if (joining === JoinState.Full) state4 = { kind: "full", hiddenStalled };
+        else state4 = { kind: "none", hiddenStalled };
         memberPart = barHtml(state4);
       } else if (warning) {
         memberPart = barHtml({ kind: "warning", warning });
