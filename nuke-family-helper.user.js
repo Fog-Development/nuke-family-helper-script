@@ -4311,6 +4311,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   function hoursUntilPlanning(crime) {
     return crime.slots.filter((slot) => slot.occupied).reduce((hours, slot) => hours + (1 - (slot.progress || 0)) * PLANNING_HOURS, 0);
   }
+  var STALL_SLACK_HOURS = 0.1;
+  function isStalled(crime) {
+    const occupied = crime.slots.filter((slot) => slot.occupied).length;
+    return occupied > 0 && occupied < crime.slots.length && hoursUntilPlanning(crime) < STALL_SLACK_HOURS;
+  }
   function fallbackMinimum(config, level) {
     const fallbacks = config && config.fallback_min_cpr;
     if (!fallbacks) return null;
@@ -4368,6 +4373,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         waitHours,
         pooled,
         productive: !pooled || waitHours <= threshold,
+        stalled: isStalled(crime),
         openSlots: crime.slots.filter((slot) => !slot.occupied).length,
         slots: crime.slots.map((slot) => rateSlot(slot, crime, config))
       };
@@ -4381,8 +4387,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       tooLow: belowMemberLevel(entry.crime, memberLevel, levelGap)
     })).filter((entry) => entry.pick);
     const withheld = holdBack ? qualifying.filter((entry) => entry.tooLow).length : 0;
+    const unstalls = (entry) => entry.stalled && !entry.belowLevel;
     const candidates = qualifying.filter((entry) => !holdBack || !entry.tooLow).sort(
-      (a, b) => Number(b.productive) - Number(a.productive) || (b.crime.level ?? 0) - (a.crime.level ?? 0) || Number(b.pick.weight !== null) - Number(a.pick.weight !== null) || (a.pooled || b.pooled ? 0 : a.openSlots - b.openSlots) || a.waitHours - b.waitHours || (b.pick.weight ?? -1) - (a.pick.weight ?? -1)
+      (a, b) => Number(unstalls(b)) - Number(unstalls(a)) || Number(b.productive) - Number(a.productive) || (b.crime.level ?? 0) - (a.crime.level ?? 0) || (unstalls(a) && unstalls(b) ? a.openSlots - b.openSlots : 0) || Number(b.pick.weight !== null) - Number(a.pick.weight !== null) || (a.pooled || b.pooled ? 0 : a.openSlots - b.openSlots) || a.waitHours - b.waitHours || (b.pick.weight ?? -1) - (a.pick.weight ?? -1)
     );
     const ownLevelsSuit = memberLevel > HIGHEST_SPAWNABLE_LEVEL && candidates.some((entry) => entry.productive && (entry.crime.level ?? 0) > HIGHEST_SPAWNABLE_LEVEL);
     const suggestions = [];
@@ -4409,6 +4416,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       waitHours: candidate.waitHours,
       pooled: candidate.pooled,
       productive: candidate.productive,
+      stalled: candidate.stalled,
       thresholdHours: candidate.thresholdHours,
       belowLevel: candidate.belowLevel,
       memberLevel: candidate.memberLevel
@@ -5246,11 +5254,15 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     return caveats;
   }
   function waitSentence(suggestion2) {
+    if (suggestion2.stalled) {
+      return "Everyone in it has finished planning, so it is stalled until its open slots are filled. Your planning would start now.";
+    }
     return `Your planning would start ${describeWait(suggestion2.waitHours)}.`;
   }
   function tagTitle(suggestion2) {
     const caveats = suggestionCaveats(suggestion2);
     if (caveats.length > 0) return caveats.map((caveat) => caveat.title).join(" ");
+    if (suggestion2.stalled) return waitSentence(suggestion2);
     return suggestion2.pooled === false ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full." : waitSentence(suggestion2);
   }
   function renderSuggestions(root3, suggestions) {
@@ -5310,7 +5322,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       if (state4.warning) {
         lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state4.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
       }
-      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
+      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
     }
     if (state4.kind === "joined") {
       return `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state4.crime)}</strong> (level ${escapeHtml(state4.level ?? "?")}) as <strong>${escapeHtml(state4.role)}</strong>, so no other slot is suggested.</span>`;

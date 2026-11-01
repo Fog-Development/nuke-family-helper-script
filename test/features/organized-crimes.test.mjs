@@ -244,6 +244,38 @@ describe("OC Assistant on the Recruiting tab", () => {
     }
   });
 
+  it("sends the member to a stalled crime before anything else, even one Torn has not loaded yet", async () => {
+    const board = {
+      data: {
+        synced_at: 1900000000,
+        me: { player_id: 1, level: 8, cprs: { clinicalprecision: { catburglar: 80 } } },
+        crimes: [
+          {
+            id: 7000003, name: "Clinical Precision", key: "clinicalprecision", level: 8, status: "Recruiting",
+            slots: [
+              { role: "Cleaner", role_key: "cleaner", position_id: "P1", player_id: 4001, progress: 1, cpr: 71 },
+              { role: "Imitator", role_key: "imitator", position_id: "P2", player_id: 4002, progress: 1, cpr: 77 },
+              { role: "Assassin", role_key: "assassin", position_id: "P3", player_id: 4003, progress: 1, cpr: 78 },
+              { role: "Cat Burglar", role_key: "catburglar", position_id: "P4", player_id: null, progress: 0, cpr: null },
+            ],
+          },
+        ],
+      },
+    };
+    const { page, errors, close } = await openRecruiting({ api: { "GET /oc/board": board } });
+    try {
+      await page.waitForFunction(() => /stalled/.test(document.querySelector("#nfh-oc-bar").innerText));
+      const bar = await page.locator(BAR).innerText();
+      assert.match(bar, /Best slot for you: Clinical Precision \(level 8\), Cat Burglar\./);
+      assert.match(bar, /Everyone in it has finished planning, so it is stalled until its open slots are filled\./);
+      assert.match(bar, /further down the list/);
+      assert.equal(await page.locator(`${BAR} [data-nfh-oc-show]`).innerText(), "Scroll down");
+      assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+
   it("names a better slot in a crime Torn has not loaded yet", async () => {
     const board = {
       data: {

@@ -7,6 +7,7 @@ import {
   canAskForCrime,
   describeWait,
   hoursUntilPlanning,
+  isStalled,
   memberFeatures,
   productiveFromLevel,
   Rank,
@@ -218,6 +219,63 @@ describe("slot rating", () => {
       config,
     );
     assert.deepEqual(suggestions, []);
+  });
+});
+
+describe("stalled crimes", () => {
+  const withLevel8 = {
+    ...config,
+    crimes: [
+      ...config.crimes,
+      {
+        key: "clinicalprecision", name: "Clinical Precision", level: 8,
+        roles: [role("Imitator", 43.3, 74), role("Cleaner", 21.7, 70), role("Assassin", 16.1, 67), role("Cat Burglar", 18.9, 68)],
+      },
+    ],
+  };
+  // Seen live: both Clinical Precisions below had two members done and two
+  // light roles open, and the script sent the member to a fresh one for its
+  // heavy Imitator role instead.
+  const stalledA = crime(1, "Clinical Precision", 8, [filled("Cleaner", 1), filled("Imitator", 1), open("Assassin", 78), open("Cat Burglar", 78)]);
+  const fresh = crime(2, "Clinical Precision", 8, [open("Imitator", 80), open("Cleaner", 80), open("Assassin", 78), open("Cat Burglar", 78)]);
+  const stalledB = crime(3, "Clinical Precision", 8, [filled("Cleaner", 1), filled("Imitator", 1), filled("Assassin", 1), open("Cat Burglar", 78)]);
+
+  it("are only crimes whose members have all finished planning and that have a slot open", () => {
+    assert.equal(isStalled(stalledA), true);
+    assert.equal(isStalled(fresh), false, "nobody is waiting on an empty crime");
+    assert.equal(isStalled(crime(4, "Clinical Precision", 8, [filled("Cleaner", 1), filled("Imitator", 0.4), open("Assassin", 78)])), false);
+    assert.equal(isStalled(crime(5, "Clinical Precision", 8, [filled("Cleaner", 1), filled("Imitator", 0.998), open("Assassin", 78)])), true);
+    assert.equal(isStalled(crime(6, "Clinical Precision", 8, [filled("Cleaner", 1), filled("Imitator", 1)])), false, "a full crime is not stalled");
+  });
+
+  it("come before a fresh crime with a heavier role", () => {
+    const { suggestions } = rateCrimes([fresh, stalledA], withLevel8);
+    assert.equal(suggestions[0].crime.id, 1);
+    assert.equal(suggestions[0].stalled, true);
+    assert.equal(suggestions[0].rated.slot.name, "Cat Burglar");
+    assert.equal(suggestions[1].crime.id, 2);
+    assert.equal(suggestions[1].stalled, false);
+  });
+
+  it("come before a higher level crime, and the one closest to running comes first", () => {
+    const { suggestions } = rateCrimes(
+      [crime(7, "Blast from the Past", 7, [filled("Hacker", 1), open("Muscle", 80)]), fresh, stalledA, stalledB],
+      { ...withLevel8, settings: { ...withLevel8.settings, under_level_gap: 3 } },
+    );
+    assert.deepEqual(suggestions.map((s) => s.crime.id), [3, 1, 7]);
+  });
+
+  it("do not jump ahead when below the member's level", () => {
+    const stalledLow = crime(7, "Blast from the Past", 7, [filled("Hacker", 1), open("Muscle", 80)]);
+    const productiveEverywhere = { ...withLevel8, settings: { ...withLevel8.settings, productive_from_level: 7 } };
+    const { suggestions } = rateCrimes([stalledLow, fresh], productiveEverywhere, { level: 8, canAsk: false });
+    assert.equal(suggestions[0].crime.id, 2, "a level 8 member is held to level 8 where productive days count");
+  });
+
+  it("are found among crimes the page has not loaded, from the site's progress", () => {
+    const offPage = { ...stalledA, id: 9, offPage: true, slots: stalledA.slots.map((slot) => (slot.occupied ? { ...slot, progress: 0.9999 } : slot)) };
+    const { suggestions } = rateCrimes([fresh, offPage], withLevel8);
+    assert.equal(suggestions[0].crime.id, 9);
   });
 });
 

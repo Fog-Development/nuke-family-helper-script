@@ -81,6 +81,17 @@ export function hoursUntilPlanning(crime) {
     .reduce((hours, slot) => hours + (1 - (slot.progress || 0)) * PLANNING_HOURS, 0);
 }
 
+// Planning owed below this counts as none: the page's clock and the site's
+// rounded progress can leave a few seconds on a finished member.
+const STALL_SLACK_HOURS = 0.1;
+
+// Whether a crime is stalled: everyone in it has finished planning and it is
+// only waiting on its open slots, so it is going nowhere until someone joins.
+export function isStalled(crime) {
+  const occupied = crime.slots.filter((slot) => slot.occupied).length;
+  return occupied > 0 && occupied < crime.slots.length && hoursUntilPlanning(crime) < STALL_SLACK_HOURS;
+}
+
 // The minimum to assume for a role of a crime the site has no entry for yet
 // (one released so recently that no faction has spawned it): the site's
 // per-level fallback. Null when even that is missing.
@@ -169,11 +180,15 @@ export function canAskForCrime(memberLevel, config) {
 // that staff would flag them in it is not suggested at all to a member who
 // can ask staff for a crime instead (`withheld` counts those).
 //
-// Returns { crimes: [{ crime, waitHours, pooled, productive, slots: [rated] }],
-//           suggestions: [{ rank, crime, rated, waitHours, pooled, productive, thresholdHours,
-//                           belowLevel, memberLevel }],
+// Returns { crimes: [{ crime, waitHours, pooled, productive, stalled, slots: [rated] }],
+//           suggestions: [{ rank, crime, rated, waitHours, pooled, productive, stalled,
+//                           thresholdHours, belowLevel, memberLevel }],
 //           withheld }
-// with `suggestions` best first. A candidate is one slot per crime; they are
+// with `suggestions` best first. A candidate is one slot per crime. A stalled
+// crime (`isStalled`) not below the member's level comes before everything
+// else: its members are idle until it fills, while a fresh crime costs nobody
+// anything by waiting. Stalled crimes go highest level first, then fewest open
+// slots (the one closest to running), then the order below. The rest are
 // ordered by: planning starts within the faction's productive threshold,
 // then crime level (highest first), then crimes whose role weights are known
 // before crimes too new to have any (those are judged on CPR and level
@@ -201,6 +216,7 @@ export function rateCrimes(crimes, config, member = null) {
       waitHours,
       pooled,
       productive: !pooled || waitHours <= threshold,
+      stalled: isStalled(crime),
       openSlots: crime.slots.filter((slot) => !slot.occupied).length,
       slots: crime.slots.map((slot) => rateSlot(slot, crime, config)),
     };
@@ -218,12 +234,15 @@ export function rateCrimes(crimes, config, member = null) {
     .filter((entry) => entry.pick);
   const withheld = holdBack ? qualifying.filter((entry) => entry.tooLow).length : 0;
 
+  const unstalls = (entry) => entry.stalled && !entry.belowLevel;
   const candidates = qualifying
     .filter((entry) => !holdBack || !entry.tooLow)
     .sort(
       (a, b) =>
+        Number(unstalls(b)) - Number(unstalls(a)) ||
         Number(b.productive) - Number(a.productive) ||
         (b.crime.level ?? 0) - (a.crime.level ?? 0) ||
+        (unstalls(a) && unstalls(b) ? a.openSlots - b.openSlots : 0) ||
         Number(b.pick.weight !== null) - Number(a.pick.weight !== null) ||
         (a.pooled || b.pooled ? 0 : a.openSlots - b.openSlots) ||
         a.waitHours - b.waitHours ||
@@ -265,6 +284,7 @@ function suggestion(rank, candidate) {
     waitHours: candidate.waitHours,
     pooled: candidate.pooled,
     productive: candidate.productive,
+    stalled: candidate.stalled,
     thresholdHours: candidate.thresholdHours,
     belowLevel: candidate.belowLevel,
     memberLevel: candidate.memberLevel,

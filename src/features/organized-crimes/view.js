@@ -202,6 +202,9 @@ export function suggestionCaveats(suggestion) {
 }
 
 function waitSentence(suggestion) {
+  if (suggestion.stalled) {
+    return "Everyone in it has finished planning, so it is stalled until its open slots are filled. Your planning would start now.";
+  }
   return `Your planning would start ${describeWait(suggestion.waitHours)}.`;
 }
 
@@ -210,6 +213,7 @@ function waitSentence(suggestion) {
 function tagTitle(suggestion) {
   const caveats = suggestionCaveats(suggestion);
   if (caveats.length > 0) return caveats.map((caveat) => caveat.title).join(" ");
+  if (suggestion.stalled) return waitSentence(suggestion);
   return suggestion.pooled === false
     ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full."
     : waitSentence(suggestion);
@@ -326,7 +330,7 @@ export function barHtml(state) {
       `<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), ` +
       `<strong>${escapeHtml(slot.name)}</strong>. ` +
       `Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ` +
-      `${best.pooled === false ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}</span>` +
+      `${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}</span>` +
       `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`
     );
   }
