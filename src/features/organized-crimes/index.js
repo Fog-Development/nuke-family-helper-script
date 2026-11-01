@@ -143,14 +143,15 @@ function render() {
   const own = recruiting ? findOwnSlot(crimes, board) : null;
   const inCrime = own !== null || joining === JoinState.Blocked;
   const warning = features.warn && recruiting ? ownSlotWarning(own, board, config, rateCrimes) : null;
-  // Slots are ranked whenever the member could act on it: free to join, or in
-  // a slot worth leaving. Whether the ranking is shown is the faction's
+  // Slots are ranked whenever the member could act on it: free to join (with
+  // an open slot loaded, or none loaded yet but perhaps some further down), or
+  // in a slot worth leaving. Whether the ranking is shown is the faction's
   // choice, and the crime request needs it either way.
   const ranking =
     features.enabled &&
     recruiting &&
     crimes.length > 0 &&
-    (warning !== null || (!inCrime && joining === JoinState.Open));
+    (warning !== null || (!inCrime && (joining === JoinState.Open || joining === JoinState.Full)));
   const suggesting = ranking && features.suggest;
 
   const elsewhere = ranking && board ? offPageCrimes(board, crimes) : [];
@@ -196,13 +197,15 @@ function render() {
   if (features.enabled && recruiting && crimes.length > 0) {
     if (features.suggest) {
       let state;
-      if (suggestions.length > 0) state = { kind: "best", suggestions, warning };
+      // Only worth saying to a member free to join (`elsewhere` is empty otherwise).
+      const hiddenStalled = result.hiddenStalled;
+      if (suggestions.length > 0) state = { kind: "best", suggestions, warning, hiddenStalled };
       else if (warning) state = { kind: "warning", warning };
       else if (own) state = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
       else if (joining === JoinState.Blocked) state = { kind: "blocked" };
-      else if (joining === JoinState.Open && result.withheld > 0) state = { kind: "low" };
-      else if (joining === JoinState.Full) state = { kind: "full" };
-      else state = { kind: "none" };
+      else if (joining === JoinState.Open && result.withheld > 0) state = { kind: "low", hiddenStalled };
+      else if (joining === JoinState.Full) state = { kind: "full", hiddenStalled };
+      else state = { kind: "none", hiddenStalled };
       memberPart = barHtml(state);
     } else if (warning) {
       memberPart = barHtml({ kind: "warning", warning });

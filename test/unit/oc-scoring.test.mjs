@@ -272,6 +272,20 @@ describe("stalled crimes", () => {
     assert.equal(suggestions[0].crime.id, 2, "a level 8 member is held to level 8 where productive days count");
   });
 
+  it("are counted further down when the member's CPR for their open slots is not known", () => {
+    const unknown = { ...stalledA, id: 10, offPage: true, slots: stalledA.slots.map((slot) => (slot.occupied ? slot : { ...slot, cpr: null })) };
+    const tooWeak = { ...stalledA, id: 11, offPage: true, slots: stalledA.slots.map((slot) => (slot.occupied ? slot : { ...slot, cpr: 40 })) };
+    const onPage = { ...stalledA, id: 12, slots: stalledA.slots.map((slot) => (slot.occupied ? slot : { ...slot, cpr: null })) };
+    const low = { ...crime(13, "Blast from the Past", 7, [filled("Hacker", 1), open("Muscle", null)]), offPage: true };
+    const productiveEverywhere = { ...withLevel8, settings: { ...withLevel8.settings, productive_from_level: 7 } };
+
+    assert.equal(rateCrimes([fresh, unknown], withLevel8).hiddenStalled, 1);
+    assert.equal(rateCrimes([fresh, tooWeak], withLevel8).hiddenStalled, 0, "a known CPR under the minimum is not worth the scroll");
+    assert.equal(rateCrimes([fresh, onPage], withLevel8).hiddenStalled, 0, "a crime on the page is already in front of them");
+    assert.equal(rateCrimes([fresh, stalledA], withLevel8).hiddenStalled, 0, "one already suggested needs no hint");
+    assert.equal(rateCrimes([fresh, low], productiveEverywhere, { level: 8, canAsk: false }).hiddenStalled, 0, "below their level");
+  });
+
   it("are found among crimes the page has not loaded, from the site's progress", () => {
     const offPage = { ...stalledA, id: 9, offPage: true, slots: stalledA.slots.map((slot) => (slot.occupied ? { ...slot, progress: 0.9999 } : slot)) };
     const { suggestions } = rateCrimes([fresh, offPage], withLevel8);

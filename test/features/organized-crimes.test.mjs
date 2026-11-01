@@ -259,6 +259,14 @@ describe("OC Assistant on the Recruiting tab", () => {
               { role: "Cat Burglar", role_key: "catburglar", position_id: "P4", player_id: null, progress: 0, cpr: null },
             ],
           },
+          // Stalled too, but the member's CPR as Negotiator is not known: only hinted at.
+          {
+            id: 7000004, name: "Hostile Takeover", key: "hostiletakeover", level: 9, status: "Recruiting",
+            slots: [
+              { role: "Engineer", role_key: "engineer", position_id: "P2", player_id: 4004, progress: 1, cpr: 77 },
+              { role: "Negotiator", role_key: "negotiator", position_id: "P6", player_id: null, progress: 0, cpr: null },
+            ],
+          },
         ],
       },
     };
@@ -268,11 +276,54 @@ describe("OC Assistant on the Recruiting tab", () => {
       const bar = await page.locator(BAR).innerText();
       assert.match(bar, /Best slot for you: Clinical Precision \(level 8\), Cat Burglar\./);
       assert.match(bar, /Everyone in it has finished planning, so it is stalled until its open slots are filled\./);
-      assert.match(bar, /further down the list/);
+      assert.match(bar, /further down the list and may have been taken/);
+      assert.match(bar, /1 stalled crime further down the list has an open slot your CPR is not known for yet\. Scroll down to check it\./);
       assert.equal(await page.locator(`${BAR} [data-nfh-oc-show]`).innerText(), "Scroll down");
       assert.deepEqual(errors, []);
     } finally {
       await close();
+    }
+  });
+
+  it("looks further down the list when no open slot has loaded yet", async () => {
+    // No open slot on the page: as if Torn had only loaded full crimes so far.
+    const onlyFullCrimes = (page) =>
+      page.evaluate(() => {
+        for (const header of document.querySelectorAll('button[class^="slotHeader___"]')) {
+          const slot = header.parentElement;
+          if (!slot.querySelector('[class^="badge___"]')) slot.remove();
+        }
+      });
+    const stalled = (id, role, roleKey) => ({
+      id, name: "Hostile Takeover", key: "hostiletakeover", level: 9, status: "Recruiting",
+      slots: [
+        { role: "Engineer", role_key: "engineer", position_id: "P2", player_id: 4001, progress: 1, cpr: 70 },
+        { role, role_key: roleKey, position_id: "P5", player_id: null, progress: 0, cpr: null },
+      ],
+    });
+    const board = (crimes) => ({
+      data: { synced_at: 1900000000, me: { player_id: 1, level: 9, cprs: { hostiletakeover: { muscle: 80 } } }, crimes },
+    });
+
+    let session = await openRecruiting({ before: onlyFullCrimes, api: { "GET /oc/board": board([stalled(7000005, "Muscle", "muscle")]) } });
+    try {
+      await session.page.waitForFunction(() => /Hostile Takeover/.test(document.querySelector("#nfh-oc-bar").innerText));
+      assert.match(await session.page.locator(BAR).innerText(), /Best slot for you: Hostile Takeover \(level 9\), Muscle\./);
+      assert.equal(await session.page.locator(`${BAR} [data-nfh-oc-show]`).innerText(), "Scroll down");
+      assert.deepEqual(session.errors, []);
+    } finally {
+      await session.close();
+    }
+
+    session = await openRecruiting({ before: onlyFullCrimes, api: { "GET /oc/board": board([stalled(7000006, "Negotiator", "negotiator")]) } });
+    try {
+      await session.page.waitForSelector(`${BAR} [data-nfh-oc-stalled-hint]`);
+      const bar = await session.page.locator(BAR).innerText();
+      assert.match(bar, /No open slot is loaded yet\. Scroll down to load more crimes\./);
+      assert.match(bar, /1 stalled crime further down the list has an open slot your CPR is not known for yet\./);
+      assert.deepEqual(session.errors, []);
+    } finally {
+      await session.close();
     }
   });
 

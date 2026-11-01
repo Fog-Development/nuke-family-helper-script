@@ -183,7 +183,7 @@ export function canAskForCrime(memberLevel, config) {
 // Returns { crimes: [{ crime, waitHours, pooled, productive, stalled, slots: [rated] }],
 //           suggestions: [{ rank, crime, rated, waitHours, pooled, productive, stalled,
 //                           thresholdHours, belowLevel, memberLevel }],
-//           withheld }
+//           withheld, hiddenStalled }
 // with `suggestions` best first. A candidate is one slot per crime. A stalled
 // crime (`isStalled`) not below the member's level comes before everything
 // else: its members are idle until it fills, while a fresh crime costs nobody
@@ -273,7 +273,19 @@ export function rateCrimes(crimes, config, member = null) {
     }
   }
 
-  return { crimes: rated, suggestions, withheld };
+  // Stalled crimes Torn has not loaded that might suit the member, but whose
+  // open slots we cannot rate because their CPR for the role is not known:
+  // worth scrolling down for, since the page will show it.
+  const hiddenStalled = rated.filter(
+    (entry) =>
+      entry.crime.offPage &&
+      entry.stalled &&
+      !belowOwnLevel(entry.crime, memberLevel, config) &&
+      !pickSlot(entry.slots) &&
+      entry.slots.some((slot) => slot.status === SlotStatus.Unrated),
+  ).length;
+
+  return { crimes: rated, suggestions, withheld, hiddenStalled };
 }
 
 function suggestion(rank, candidate) {

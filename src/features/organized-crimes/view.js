@@ -282,6 +282,17 @@ export function spawnHtml(spawn) {
   );
 }
 
+// Stalled crimes further down that might suit the member, though we do not
+// know their CPR for the open roles yet (`hiddenStalled` from rateCrimes).
+function stalledHint(count) {
+  if (!count) return "";
+  const crimes = count === 1 ? "1 stalled crime further down the list has" : `${count} stalled crimes further down the list have`;
+  return (
+    ` <span class="nfh-oc-bar-muted" data-nfh-oc-stalled-hint>${escapeHtml(crimes)} an open slot your CPR is not known for yet. ` +
+    "Scroll down to check it.</span>"
+  );
+}
+
 // One line above the crime list saying where to go. `state` is one of:
 //   { kind: "best", suggestions, warning }  there is a slot to recommend;
 //                                  `warning` (optional) is what is wrong with
@@ -295,6 +306,7 @@ export function spawnHtml(spawn) {
 //                                  in a slot there is nothing wrong with
 //   { kind: "blocked" }            Torn is not letting the member join anything
 //   { kind: "full" }               no open slot is loaded
+// "best", "none", "low" and "full" may carry `hiddenStalled` (stalledHint).
 export function barHtml(state) {
   const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
 
@@ -330,7 +342,7 @@ export function barHtml(state) {
       `<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), ` +
       `<strong>${escapeHtml(slot.name)}</strong>. ` +
       `Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ` +
-      `${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}</span>` +
+      `${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}${stalledHint(state.hiddenStalled)}</span>` +
       `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`
     );
   }
@@ -356,7 +368,8 @@ export function barHtml(state) {
     full: "No open slot is loaded yet. Scroll down to load more crimes.",
     low: "The open slots you qualify for are all in crimes below your level, so none is suggested.",
   };
-  return `${label}<span class="nfh-oc-bar-text">${messages[state.kind]}</span>`;
+  const hint = state.kind === "blocked" ? "" : stalledHint(state.hiddenStalled);
+  return `${label}<span class="nfh-oc-bar-text">${messages[state.kind]}${hint}</span>`;
 }
 
 // Put the bar just above Torn's crimes app, outside the part Torn re-renders.
