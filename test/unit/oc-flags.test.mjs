@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { crimeHoursLeft, Flag, hoursUntilTurn, limitsFor, slotFlags } from "../../src/features/organized-crimes/flags.js";
+import { crimeHoursLeft, Flag, hoursUntilTurn, limitsFor, probablyRun, slotFlags } from "../../src/features/organized-crimes/flags.js";
 
 const filled = (name, progress, cpr) => ({ name, cpr, occupied: true, progress });
 const open = (name) => ({ name, cpr: 80, occupied: false, progress: 0 });
@@ -84,5 +84,25 @@ describe("OC slot flags", () => {
 
     // The other flags do not depend on it.
     assert.deepEqual(kinds(slotFlags({ ...crime, level: 5 }, 3, { minCpr: 90 }, 9, from(7))), [Flag.Unqualified, Flag.UnderLevel]);
+  });
+});
+
+describe("probablyRun", () => {
+  const ready = 1_800_000_000;
+  const at = (minutes) => (ready + minutes * 60) * 1000;
+
+  it("assumes a crime ran once its ready time has passed", () => {
+    assert.equal(probablyRun(ready, at(1)), true);
+    assert.equal(probablyRun(ready, at(59)), true);
+  });
+
+  it("does not before the ready time, or without one", () => {
+    assert.equal(probablyRun(ready, at(-1)), false);
+    assert.equal(probablyRun(null, at(5)), false);
+    assert.equal(probablyRun(undefined, at(5)), false);
+  });
+
+  it("trusts the board again once the crime is long overdue", () => {
+    assert.equal(probablyRun(ready, at(61)), false);
   });
 });

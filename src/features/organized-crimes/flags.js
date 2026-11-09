@@ -33,6 +33,21 @@ export function crimeHoursLeft(crime) {
   );
 }
 
+// How long after its ready time the board's copy of a crime is taken to be
+// out of date rather than the crime delayed.
+export const ASSUME_RUN_HOURS = 1;
+
+// Whether a crime the site's board still lists as active has, in all
+// likelihood, already run: Torn runs a crime at its ready time, and the board
+// is minutes behind. Only for `ASSUME_RUN_HOURS` after that time; beyond it a
+// crime still listed is trusted (Torn delays some, and the site may have
+// stopped syncing). `readyAt` is a Unix time in seconds, or null.
+export function probablyRun(readyAt, nowMs = Date.now()) {
+  if (typeof readyAt !== "number") return false;
+  const sinceHours = (nowMs - readyAt * 1000) / 3600000;
+  return sinceHours >= 0 && sinceHours < ASSUME_RUN_HOURS;
+}
+
 // The flags on one filled slot, as [{ flag, text, title }].
 //
 // `rated` is the slot as scoring.js rated it (its `minCpr`), `memberLevel` the

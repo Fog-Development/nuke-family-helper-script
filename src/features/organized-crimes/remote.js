@@ -125,12 +125,13 @@ export function cachedBoard() {
 let boardRequest = null;
 let lastBoardAttempt = 0;
 
-// The faction's board, refetched when the cached copy is over a minute old.
+// The faction's board, refetched when the cached copy is over a minute old
+// (or at once with `force`, still no more than every 30 seconds).
 // Resolves with true when a fresh copy arrived. Never throws.
-export function refreshBoard() {
+export function refreshBoard(force = false) {
   const cached = cachedBoard();
   const now = Date.now();
-  if (cached && now - cached.fetchedAt < BOARD_FRESH_MS) return Promise.resolve(false);
+  if (!force && cached && now - cached.fetchedAt < BOARD_FRESH_MS) return Promise.resolve(false);
   if (boardRequest) return boardRequest;
   if (now - lastBoardAttempt < BOARD_RETRY_MS) return Promise.resolve(false);
 

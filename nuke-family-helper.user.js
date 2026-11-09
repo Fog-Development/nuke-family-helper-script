@@ -4231,10 +4231,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   }
   var boardRequest = null;
   var lastBoardAttempt = 0;
-  function refreshBoard2() {
+  function refreshBoard2(force = false) {
     const cached = cachedBoard2();
     const now = Date.now();
-    if (cached && now - cached.fetchedAt < BOARD_FRESH_MS2) return Promise.resolve(false);
+    if (!force && cached && now - cached.fetchedAt < BOARD_FRESH_MS2) return Promise.resolve(false);
     if (boardRequest) return boardRequest;
     if (now - lastBoardAttempt < BOARD_RETRY_MS) return Promise.resolve(false);
     lastBoardAttempt = now;
@@ -4957,6 +4957,12 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       0
     );
   }
+  var ASSUME_RUN_HOURS = 1;
+  function probablyRun(readyAt, nowMs = Date.now()) {
+    if (typeof readyAt !== "number") return false;
+    const sinceHours = (nowMs - readyAt * 1e3) / 36e5;
+    return sinceHours >= 0 && sinceHours < ASSUME_RUN_HOURS;
+  }
   function slotFlags(crime, index, rated, memberLevel, limits) {
     const slot = crime.slots[index];
     if (!slot || !slot.occupied) return [];
@@ -5383,7 +5389,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const me = String(getUserscriptUsersPlayerId() || "");
     if (!me) return null;
     const onPage = new Set(pageCrimes.map((crime) => String(crime.id)));
-    const boardCrimes = (board && board.crimes || []).filter((crime) => !onPage.has(String(crime.id))).map((crime) => ({
+    const boardCrimes = (board && board.crimes || []).filter((crime) => !onPage.has(String(crime.id))).filter((crime) => !probablyRun(crime.ready_at)).map((crime) => ({
       id: String(crime.id),
       name: crime.name,
       level: crime.level,
@@ -5411,6 +5417,23 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     if (flags.length === 0) return null;
     return `You are in ${crime.name} as ${crime.slots[index].name}, but: ${flags.map((flag) => flag.title).join(" ")}`;
   }
+  function boardIsBehind(cached) {
+    const me = String(getUserscriptUsersPlayerId() || "");
+    if (!cached || !me) return false;
+    return (cached.board.crimes || []).some(
+      (crime) => typeof crime.ready_at === "number" && crime.ready_at * 1e3 <= Date.now() && cached.fetchedAt <= crime.ready_at * 1e3 && crime.slots.some((slot) => String(slot.player_id) === me)
+    );
+  }
+  var readyTimer = null;
+  function watchReadyTime(board) {
+    if (readyTimer) clearTimeout(readyTimer);
+    readyTimer = null;
+    const me = String(getUserscriptUsersPlayerId() || "");
+    if (!board || !me) return;
+    const upcoming = (board.crimes || []).filter((crime) => typeof crime.ready_at === "number" && crime.slots.some((slot) => String(slot.player_id) === me)).map((crime) => crime.ready_at * 1e3 - Date.now()).filter((wait2) => wait2 > 0 && wait2 < 24 * 3600 * 1e3);
+    if (upcoming.length === 0) return;
+    readyTimer = setTimeout(scheduleRender, Math.min(...upcoming) + 2e3);
+  }
   var observer = null;
   var observedRoot = null;
   var renderTimer = null;
@@ -5432,13 +5455,15 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const active = (recruiting || tab === SubTab.Planning) && crimes.length > 0;
     const joining = joinState(crimes);
     if (recruiting) learnCprs(crimes);
+    const cachedNow = active ? cachedBoard2() : null;
     if (active) {
-      refreshBoard2().then((fresh) => {
+      refreshBoard2(boardIsBehind(cachedNow)).then((fresh) => {
         if (fresh) scheduleRender();
       });
     }
     const cached = active ? cachedBoard2() : null;
     const board = cached ? cached.board : null;
+    watchReadyTime(board);
     const features2 = memberFeatures(config);
     const weights = weightsChoice(config, getWeightsPref());
     if (!weights.own && getWeightsPref() !== null && config.faction_id) {

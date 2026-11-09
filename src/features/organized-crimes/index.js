@@ -3,7 +3,7 @@ import { LogInfo } from "../../core/log.js";
 import { IsPage, PageType } from "../../core/pages.js";
 import { getUserscriptUsersPlayerId } from "../../core/torn-page.js";
 import { ocConfigStore } from "./data.js";
-import { crimeHoursLeft, limitsFor, slotFlags } from "./flags.js";
+import { crimeHoursLeft, limitsFor, probablyRun, slotFlags } from "./flags.js";
 import { getStaffPrefs, getWeightsPref, parseOverride, setStaffPrefs, setWeightsPref } from "./prefs.js";
 import { activeSubTab, CRIMES_ROOT_SELECTOR, joinState, JoinState, readCrimes, SubTab } from "./page.js";
 import { cachedBoard, learnCprs, offPageCrimes, refreshBoard, requestSpawn, spawnAskedUntil } from "./remote.js";
@@ -52,6 +52,7 @@ const spawnState = { busy: false, message: null, error: false };
 // truth for the crimes on it (a crime the member joined stays on Recruiting
 // until it fills); the site's board, a few minutes old, is only asked about
 // crimes that are not on the page, which is where a full crime has gone.
+// A board crime past its ready time is taken to have run (`probablyRun`).
 // Torn does not reliably disable the Join buttons of a member already in a
 // crime, so this, not the buttons, is how one is recognised.
 function findOwnSlot(pageCrimes, board) {
@@ -61,6 +62,9 @@ function findOwnSlot(pageCrimes, board) {
   const onPage = new Set(pageCrimes.map((crime) => String(crime.id)));
   const boardCrimes = ((board && board.crimes) || [])
     .filter((crime) => !onPage.has(String(crime.id)))
+    // Past its ready time Torn has run the crime, though the board may not
+    // know yet: the member is free to join another.
+    .filter((crime) => !probablyRun(crime.ready_at))
     .map((crime) => ({
       id: String(crime.id),
       name: crime.name,
@@ -95,6 +99,38 @@ function ownSlotWarning(own, board, config, rate) {
   return `You are in ${crime.name} as ${crime.slots[index].name}, but: ${flags.map((flag) => flag.title).join(" ")}`;
 }
 
+// Whether the cached board was fetched before one of the viewer's crimes
+// reached its ready time, and that time has now passed: the copy still has the
+// crime running, so it is fetched again without waiting out the minute.
+function boardIsBehind(cached) {
+  const me = String(getUserscriptUsersPlayerId() || "");
+  if (!cached || !me) return false;
+  return (cached.board.crimes || []).some(
+    (crime) =>
+      typeof crime.ready_at === "number" &&
+      crime.ready_at * 1000 <= Date.now() &&
+      cached.fetchedAt <= crime.ready_at * 1000 &&
+      crime.slots.some((slot) => String(slot.player_id) === me),
+  );
+}
+
+// The page is re-read when the viewer's crime reaches its ready time, so the
+// bar moves on without a reload.
+let readyTimer = null;
+function watchReadyTime(board) {
+  if (readyTimer) clearTimeout(readyTimer);
+  readyTimer = null;
+  const me = String(getUserscriptUsersPlayerId() || "");
+  if (!board || !me) return;
+
+  const upcoming = (board.crimes || [])
+    .filter((crime) => typeof crime.ready_at === "number" && crime.slots.some((slot) => String(slot.player_id) === me))
+    .map((crime) => crime.ready_at * 1000 - Date.now())
+    .filter((wait) => wait > 0 && wait < 24 * 3600 * 1000);
+  if (upcoming.length === 0) return;
+  readyTimer = setTimeout(scheduleRender, Math.min(...upcoming) + 2000);
+}
+
 let observer = null;
 let observedRoot = null;
 let renderTimer = null;
@@ -123,13 +159,15 @@ function render() {
   if (recruiting) learnCprs(crimes);
   // The board serves the crimes Torn has not loaded, the viewer's own slot
   // and (for staff) every member's level. Cached a minute.
+  const cachedNow = active ? cachedBoard() : null;
   if (active) {
-    refreshBoard().then((fresh) => {
+    refreshBoard(boardIsBehind(cachedNow)).then((fresh) => {
       if (fresh) scheduleRender();
     });
   }
   const cached = active ? cachedBoard() : null;
   const board = cached ? cached.board : null;
+  watchReadyTime(board);
 
   // In a slot staff would flag, with long enough left to be worth moving:
   // the member is warned and shown better slots even though Torn has the
