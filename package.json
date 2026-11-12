@@ -12,8 +12,10 @@
     "watch:debug-site": "node build.mjs --watch --debug-site",
     "test": "node test/run.mjs",
     "fixtures:css": "node test/tools/fetch-torn-css.mjs",
-    "fixtures:sanitize": "node test/tools/sanitize-captures.mjs",
-    "fixtures:css:refresh": "node test/tools/fetch-torn-css.mjs --refresh"
+    "fixtures:css:refresh": "node test/tools/fetch-torn-css.mjs --refresh",
+    "fixtures": "node tools/fixture-recorder/cli.mjs",
+    "recorder": "node tools/fixture-recorder/server.mjs",
+    "recorder:xpi": "node tools/fixture-recorder/pack.mjs"
   },
   "author": "Fogest <nuke@jhvisser.com>",
   "license": "UNLICENSED",

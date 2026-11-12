@@ -1,3 +1,7 @@
 node_modules/
 test/screenshots/
 nuke-family-helper.dev.user.js
+
+# Captured Torn pages: their own private repository, cloned here (test/README.md)
+fixtures/
+tools/fixture-recorder/dist/

@@ -17,7 +17,7 @@ This script runs on torn.com, so Torn's Scripting Abuse rule covers every featur
 - Torn API data comes through nuke.family; the script itself doesn't call Torn's API (as in `ranked-war/`).
 - Torn has three fixed page widths (976 / 784 / 386px). Read the skill's `page-layout.md` before sizing injected UI, and check the 386px (TornPDA) layout.
 - For BSP or FF Scouter markup on the page, load `torn:torn-ffscouter`: `functionality.md` covers coexisting with the FF Scouter userscript and `developer-terms.md` covers its terms. Another script's stored keys belong to its user; never read them.
-- Never open torn.com with browser automation or the browser pane. Test against the fixtures (`npm test`). When something new is needed from a live page, give Justin a console snippet to run and paste back, or a dev build to paste into his userscript manager.
+- Never open torn.com with browser automation or the browser pane. Test against the fixtures (`npm test`). When a new page or state is needed, ask for a recorder capture (`fixtures/wanted.json`, see Automated UI tests); for a one-off value, give Justin a console snippet to run and paste back, or a dev build to paste into his userscript manager.
 
 ## Build System
 
@@ -46,7 +46,12 @@ Before releasing: run through `TESTING.md`, bump `version` in `package.json`, `n
 
 ## Automated UI tests
 
-`npm test` runs Playwright (headless Chromium) against sanitized captures of real Torn pages (profile, faction tabs, hospital) styled with Torn's real CSS, in both light and dark mode, with `GM_*` and the nuke.family API stubbed. Setup once: `npx playwright install chromium`. Torn's CSS is committed in `test/fixtures/torn-css/`; `npm run fixtures:css` fetches stylesheets newly referenced by a fixture, `npm run fixtures:css:refresh` re-downloads everything on request. Screenshots land in `test/screenshots/` (gitignored); read them to check how new UI looks. When adding or changing UI, add/extend a test in `test/features/`, loop over `THEMES`, and add any new API route to `test/fixtures/api/default.json`. Never commit raw captures: new pages go through `npm run fixtures:sanitize` (see `test/README.md`). Fixtures are snapshots, so this does not replace the real-site pass in `TESTING.md`.
+`npm test` runs Playwright (headless Chromium) against captures of real Torn pages styled with Torn's real CSS, in both light and dark mode, with `GM_*` and the nuke.family API stubbed. Setup once: `npx playwright install chromium`. Screenshots land in `test/screenshots/` (gitignored); read them to check how new UI looks. When adding or changing UI, add/extend a test in `test/features/`, loop over `THEMES`, and add any new API route to `test/fixtures/api/default.json`. Fixtures are snapshots, so this does not replace the real-site pass in `TESTING.md`. Details: `test/README.md`.
+
+- **Fixtures are private**: real, unsanitized pages in their own private git repository cloned at `fixtures/` (gitignored here; `NFH_FIXTURES` points elsewhere). Never copy fixture content (names, balances) into this public repository, its tests' assertions included where avoidable, or commit messages.
+- Each fixture is `fixtures/pages/<id>/` with `meta.json` (URL, title, notes, theme, page width, other scripts seen, and per step the actions taken and the subtree that changed), `step-NN.html`, `network/` (Torn's own responses during that step) and `screens/` (a screenshot of the real page: read it to compare against the harness render). `npm run fixtures` lists them; `npm run fixtures -- show <id>` shows one. Tests open a step with `openTornPage({ page, step })`, advance with `gotoStep(page, id, n)` and read responses with `loadNetwork(id, n)`.
+- Captures are made by Justin with the NFH Fixture Recorder (`tools/fixture-recorder/`: Firefox extension + `npm run recorder` companion). **When a feature needs a page or state that has no fixture, add an entry to `fixtures/wanted.json`** (id, title, url, match regex, theme, layout, scenario, instructions, `"status": "open"`) and tell Justin; the recorder shows it on the matching page. Don't ask for raw `outerHTML` pastes.
+- `test/page-contracts.json` lists the Torn selectors each feature relies on; add to it when a feature starts relying on new Torn markup (checked against fixtures by `page-contracts.test.mjs`, and live by the recorder).
 
 ## Code Architecture
 

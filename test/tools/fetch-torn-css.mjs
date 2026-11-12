@@ -1,30 +1,30 @@
-// Maintains test/fixtures/torn-css/: Torn's own stylesheets as referenced by the
-// page fixtures. These ARE committed, so tests never touch the network and keep
-// working even after Torn retires an old build's files. The harness serves them
-// when a fixture asks for them, so pages render with Torn's real styling, light
-// and dark.
+// Fallback for fixtures/torn-css/ (Torn's stylesheets, kept in the private
+// fixtures repository with the pages). The recorder extension saves each
+// stylesheet from the page itself when it captures, so this is only needed for
+// a page saved some other way, or to bring the CSS up to Torn's current styling.
 //
 //   npm run fixtures:css            download any referenced stylesheet that is
 //                                   missing, and delete ones no fixture uses
-//                                   (run after adding or re-capturing a fixture)
-//   npm run fixtures:css:refresh    re-download everything (run when you want the
-//                                   CSS to reflect Torn's current styling; review
-//                                   the git diff afterwards)
+//   npm run fixtures:css:refresh    re-download everything (review the diff in
+//                                   the fixtures repository afterwards)
 //
-// Most files are content-hashed (/builds/...) or versioned (?v=...), so an
-// existing download rarely changes; --refresh also catches in-place edits.
+// These are Torn's static stylesheet files, not pages. Most are content-hashed
+// (/builds/...) or versioned (?v=...), so an existing file rarely changes.
 import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { join } from "node:path";
+import { cssDir, cssFileName, hasFixtures, MISSING_FIXTURES_HELP, pagesDir } from "../../tools/fixture-recorder/store.mjs";
 
-const PAGES = fileURLToPath(new URL("../fixtures/pages/", import.meta.url));
-const OUT = fileURLToPath(new URL("../fixtures/torn-css/", import.meta.url));
+if (!hasFixtures()) {
+  console.error(MISSING_FIXTURES_HELP);
+  process.exit(1);
+}
+const PAGES = pagesDir();
+const OUT = cssDir();
 mkdirSync(OUT, { recursive: true });
 
-export const cssFileName = (pathAndQuery) => encodeURIComponent(pathAndQuery);
-
 const hrefs = new Set();
-for (const file of readdirSync(PAGES).filter((f) => f.endsWith(".html"))) {
+const htmlFiles = readdirSync(PAGES, { recursive: true }).map(String).filter((f) => f.endsWith(".html"));
+for (const file of htmlFiles) {
   const html = readFileSync(join(PAGES, file), "utf8");
   for (const m of html.matchAll(/<link[^>]+href="(\/[^"]+\.css[^"]*)"/g)) {
     hrefs.add(m[1].replaceAll("&amp;", "&"));

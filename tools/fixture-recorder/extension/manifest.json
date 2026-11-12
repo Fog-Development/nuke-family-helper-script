@@ -1,0 +1,37 @@
+{
+  "manifest_version": 2,
+  "name": "NFH Fixture Recorder",
+  "version": "0.1.0",
+  "description": "Developer tool for the Nuke Assistant userscript: captures the Torn page you are viewing (DOM, the page's own network responses, screenshot, stylesheets) as test fixtures, on your click only. Never clicks, types or loads anything on Torn.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "nfh-fixture-recorder@nuke.family",
+      "strict_min_version": "115.0"
+    }
+  },
+  "permissions": [
+    "https://www.torn.com/*",
+    "http://127.0.0.1/*",
+    "<all_urls>",
+    "webRequest",
+    "webRequestBlocking",
+    "storage",
+    "tabs"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.torn.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "snapshot": {
+      "suggested_key": { "default": "Alt+Shift+S" },
+      "description": "Take a snapshot (a new step while a scenario is recording)"
+    }
+  }
+}

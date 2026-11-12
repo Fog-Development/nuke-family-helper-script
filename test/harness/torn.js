@@ -12,6 +12,14 @@ import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 import { makeBuildOptions } from "../../build-options.mjs";
 import { setTheme } from "./theme.js";
+import {
+  cssDir,
+  cssFileName,
+  readMeta,
+  stepHtml,
+  stepNetwork,
+  stepOf,
+} from "../../tools/fixture-recorder/store.mjs";
 
 // fileURLToPath (not .pathname) so this also works on Windows. ROOT ends with a
 // path separator; the forward slashes appended below are fine on every OS.
@@ -39,33 +47,67 @@ export function loadApiFixture(name = "default") {
   );
 }
 
-// Fixture name -> the real Torn URL it is served at (test/fixtures/pages/manifest.json).
-export function fixtureUrl(name) {
-  const manifest = JSON.parse(
-    readFileSync(`${ROOT}test/fixtures/pages/manifest.json`, "utf8"),
-  );
-  if (!manifest[name]) throw new Error(`No URL for fixture "${name}" in manifest.json`);
-  return manifest[name];
+// Fixtures live in the private fixtures repository (tools/fixture-recorder/
+// store.mjs has the layout). meta.json says where each came from.
+export { listFixtures, readMeta as fixtureMeta } from "../../tools/fixture-recorder/store.mjs";
+
+// Fixture name -> the real Torn URL a step is served at.
+export function fixtureUrl(name, step = 0) {
+  const meta = readMeta(name);
+  return stepOf(meta, step).url || meta.url;
 }
 
-// Torn's own stylesheets are committed in fixtures/torn-css (see
-// test/tools/fetch-torn-css.mjs). If a fixture references one that is missing,
-// `npm run fixtures:css` downloads it; without it that page renders unstyled.
-const CSS_DIR = `${ROOT}test/fixtures/torn-css`;
+// Torn's own stylesheets, captured with the pages (fixtures/torn-css). If a
+// fixture references one that is missing the page renders unstyled: capture
+// the page again with the recorder, or run `npm run fixtures:css`.
 let warnedNoCss = false;
 function tornCss(requestUrl) {
   const { pathname, search } = new URL(requestUrl);
-  const file = `${CSS_DIR}/${encodeURIComponent(pathname + search)}`;
+  const file = `${cssDir()}/${cssFileName(pathname + search)}`;
   if (existsSync(file)) return readFileSync(file);
   if (!warnedNoCss) {
     warnedNoCss = true;
-    console.warn(`[harness] Torn CSS not found (${pathname}); run "npm run fixtures:css" for realistic styling.`);
+    console.warn(`[harness] Torn CSS not found (${pathname}); capture the page again or run "npm run fixtures:css".`);
   }
   return null;
 }
 
-export function loadPageFixture(name) {
-  return readFileSync(`${ROOT}test/fixtures/pages/${name}.html`, "utf8");
+export function loadPageFixture(name, step = 0) {
+  return stepHtml(name, step);
+}
+
+// Torn's own XHR/fetch responses recorded with a step (see store.mjs).
+export function loadNetwork(name, step = 0) {
+  return stepNetwork(name, step);
+}
+
+// Move an open fixture page on to a later recorded step, the way Torn's own
+// scripts would have: the subtree that changed (`changedRoot`, recorded by the
+// recorder) is swapped for the step's version, so MutationObservers fire as on
+// the live page, and the URL hash follows the step (firing hashchange). With
+// no changedRoot the whole body is swapped.
+export async function gotoStep(page, name, n) {
+  const step = stepOf(readMeta(name), n);
+  const html = stepHtml(name, n);
+  await page.evaluate(
+    ({ html, root, hash }) => {
+      const next = new DOMParser().parseFromString(html, "text/html");
+      const ours = (el) => el.matches?.('[id^="nfh-"], [class^="nfh-"], [class*=" nfh-"]');
+      if (root) {
+        const live = document.querySelector(root);
+        const fresh = next.querySelector(root);
+        if (!live || !fresh) throw new Error(`gotoStep: "${root}" not found in ${live ? "the step" : "the page"}`);
+        live.replaceWith(document.importNode(fresh, true));
+      } else {
+        // Keep our own injected top-level elements (banner etc.) like Torn would.
+        const keep = [...document.body.children].filter(ours);
+        document.body.replaceChildren(...[...next.body.childNodes].map((c) => document.importNode(c, true)), ...keep);
+      }
+      if (hash !== undefined && hash !== location.hash) location.hash = hash;
+    },
+    { html, root: step.changedRoot || null, hash: step.url ? new URL(step.url).hash : undefined },
+  );
+  return step;
 }
 
 export async function launch() {
@@ -76,7 +118,8 @@ export async function launch() {
 //
 // options:
 //   page        fixture name in test/fixtures/pages (without .html)
-//   url         the Torn URL the fixture is served at (default: manifest.json)
+//   step        which recorded step to load (default 0; see gotoStep)
+//   url         the Torn URL the fixture is served at (default: the step's)
 //   theme       "light" | "dark" (default "light")
 //   api         { "GET /path": body | (details) => body | {status, body} }
 //               merged over test/fixtures/api/default.json
@@ -91,7 +134,8 @@ export async function launch() {
 export async function openTornPage(browser, options) {
   const {
     page: pageName,
-    url = fixtureUrl(options.page),
+    step = 0,
+    url = fixtureUrl(options.page, options.step ?? 0),
     theme = "light",
     api = {},
     gmValues = { apiToken: "x".repeat(50), apiTokenFirstTime: true },
@@ -131,7 +175,7 @@ export async function openTornPage(browser, options) {
     if (requested === url.split("#")[0]) {
       return route.fulfill({
         contentType: "text/html",
-        body: loadPageFixture(pageName),
+        body: loadPageFixture(pageName, step),
       });
     }
     if (new URL(requested).origin === "https://www.torn.com" && /\.css$/.test(new URL(requested).pathname)) {

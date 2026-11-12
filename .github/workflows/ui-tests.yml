@@ -1,7 +1,7 @@
 name: UI tests
 
 # Runs the Playwright harness (see test/README.md): the script is injected into
-# sanitized captures of real Torn pages, with Torn's committed CSS, in light and
+# captures of real Torn pages (a private repository), with Torn's CSS, in light and
 # dark mode. No network access to Torn is needed.
 on:
   push:
@@ -13,8 +13,25 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      # The captured pages are in a private repository (test/README.md). With
+      # a FIXTURES_TOKEN secret (read access to it) the page tests run and
+      # must find it; without one only the unit and recorder tests run.
+      HAS_FIXTURES: ${{ secrets.FIXTURES_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check out the private fixtures
+        if: env.HAS_FIXTURES == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.FIXTURES_REPO || 'Fog-Development/nuke-family-helper-fixtures' }}
+          token: ${{ secrets.FIXTURES_TOKEN }}
+          path: fixtures
+
+      - name: Require the fixtures
+        if: env.HAS_FIXTURES == 'true'
+        run: echo "NFH_REQUIRE_FIXTURES=1" >> "$GITHUB_ENV"
 
       - uses: actions/setup-node@v4
         with:

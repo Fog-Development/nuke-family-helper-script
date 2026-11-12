@@ -1,0 +1,79 @@
+{
+  "about": "The Torn markup each feature relies on. The recorder extension checks these live on the page you are viewing (read only) and flags a contract that no longer holds; test/features/page-contracts.test.mjs checks them against the listed fixtures. When a feature starts relying on a new Torn selector, add it here. url is a regex on the full URL; when (optional) is a selector that must be present before the contract applies (Torn lazy-loads panels); min defaults to 1.",
+  "contracts": [
+    {
+      "id": "profile-status",
+      "feature": "shitlist",
+      "description": "Shitlist section goes after the profile status box",
+      "url": "profiles\\.php\\?XID=",
+      "expect": [{ "selector": ".profile-status.m-top10", "note": "shitlist/profile.js anchor" }],
+      "fixtures": ["profiles"]
+    },
+    {
+      "id": "profile-left",
+      "feature": "reputation / contracts",
+      "description": "Reputation and Active Contract boxes go in the profile's left column",
+      "url": "profiles\\.php\\?XID=",
+      "expect": [{ "selector": "div.profile-left-wrapper" }],
+      "fixtures": ["profiles"]
+    },
+    {
+      "id": "hospital-rows",
+      "feature": "hospital",
+      "description": "Hospital rows with player and faction links",
+      "url": "hospitalview\\.php",
+      "when": ".user-info-list-wrap",
+      "expect": [
+        { "selector": ".user-info-list-wrap > li", "note": "one row per patient" },
+        { "selector": ".user-info-list-wrap > li a.user.name[href*=\"XID=\"]", "note": "player link read for colouring" }
+      ],
+      "fixtures": ["hospitalview"]
+    },
+    {
+      "id": "faction-controls",
+      "feature": "faction-buttons",
+      "description": "NFH buttons go after the first rule in the controls panel",
+      "url": "factions\\.php\\?step=your.*#/tab=controls",
+      "when": "#faction-controls",
+      "expect": [{ "selector": "#faction-controls > hr" }],
+      "fixtures": ["factions-controls"]
+    },
+    {
+      "id": "chain-box",
+      "feature": "chain-watch",
+      "description": "Chain box the watch bar and timer alert read",
+      "url": "factions\\.php\\?step=your[^#]*(#/?)?$",
+      "when": ".chain-box",
+      "expect": [
+        { "selector": ".chain-box-title" },
+        { "selector": ".chain-box-timeleft", "note": "timer the alert watches" },
+        { "selector": ".chain-box-center-stat", "note": "chain count" }
+      ],
+      "fixtures": ["factions-faction"]
+    },
+    {
+      "id": "retals-recent-attacks",
+      "feature": "retals",
+      "description": "Recent attacks list (open chain box) the retal feed reads",
+      "url": "factions\\.php\\?step=your[^#]*(#/?)?$",
+      "when": ".chain-attacks-list",
+      "expect": [{ "selector": ".chain-attacks-list.recent-attacks" }],
+      "fixtures": []
+    },
+    {
+      "id": "oc-crimes",
+      "feature": "organized-crimes",
+      "description": "Crime panels, slots and sub-tabs the OC Assistant reads",
+      "url": "factions\\.php\\?step=your.*#/tab=crimes",
+      "when": "#faction-crimes-root [data-oc-id]",
+      "expect": [
+        { "selector": "#faction-crimes-root [class^=\"tabName___\"]", "min": 3, "note": "Recruiting / Planning / Completed" },
+        { "selector": "#faction-crimes-root [data-oc-id]", "note": "one per crime" },
+        { "selector": "#faction-crimes-root [class^=\"panelTitle___\"]", "note": "crime name" },
+        { "selector": "#faction-crimes-root [class^=\"levelValue___\"]", "note": "crime level" },
+        { "selector": "#faction-crimes-root button[class^=\"slotHeader___\"]", "note": "one per role slot" }
+      ],
+      "fixtures": ["factions-crimes-recruiting", "factions-crimes-planning"]
+    }
+  ]
+}
