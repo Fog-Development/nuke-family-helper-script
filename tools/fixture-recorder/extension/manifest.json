@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "NFH Fixture Recorder",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Developer tool for the Nuke Assistant userscript: captures the Torn page you are viewing (DOM, the page's own network responses, screenshot, stylesheets) as test fixtures, on your click only. Never clicks, types or loads anything on Torn.",
   "browser_specific_settings": {
     "gecko": {
@@ -18,6 +18,9 @@
     "storage",
     "tabs"
   ],
+  "options_ui": {
+    "page": "options.html"
+  },
   "background": {
     "scripts": ["background.js"]
   },

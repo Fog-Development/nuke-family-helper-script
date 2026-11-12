@@ -12,7 +12,10 @@
   window.__nfhRecorderLoaded = true;
 
   const HOST_ID = "nfh-recorder-host";
-  const DEFAULTS = { port: 47821, network: true, screenshot: true, autoSnapshot: true, collapsed: true };
+  const DEFAULTS = { port: 47821, network: true, screenshot: true, autoSnapshot: true, collapsed: true, privateOnly: true };
+  // Window widths for the layout buttons: Torn is mobile at <= 784px, tablet
+  // at <= 1000px (its CSS breakpoints), desktop above.
+  const WIDTHS = { mobile: 412, tablet: 900 };
   const QUIET_MS = 800; // DOM quiet this long after an action => snapshot
   const GIVE_UP_MS = 8000; // an action that changed nothing in this long gets no step
   const MAX_SCREENSHOT_HEIGHT = 16000;
@@ -220,6 +223,9 @@
     replaceOffer: null,
     scenario: null, // { id, steps, actions[], lastSeq, pending, label }
     lastUrl: location.href,
+    // Off until settings are read: stays off in normal windows when
+    // "private windows only" is on.
+    off: true,
   };
 
   // ---- scenario: watching your own actions ----------------------------------
@@ -281,6 +287,7 @@
   );
 
   setInterval(() => {
+    if (state.off) return;
     // URL changes (Torn switches tabs through the hash or pushState).
     if (location.href !== state.lastUrl) {
       state.lastUrl = location.href;
@@ -301,7 +308,7 @@
 
   // Contracts are re-checked while visible (they read the page, nothing more).
   setInterval(() => {
-    if (document.visibilityState === "visible") runContracts();
+    if (!state.off && document.visibilityState === "visible") runContracts();
   }, 5000);
 
   // ---- capturing ---------------------------------------------------------------
@@ -460,6 +467,51 @@
     refreshCoverage();
   }
 
+  // ---- window width (layout captures) ------------------------------------------
+  // Resizes the browser window on your click; Torn's media queries do the rest.
+  // If the window can't get narrow enough, the tab is zoomed instead (the CSS
+  // viewport shrinks the same way). Restore puts both back.
+  const settle = () => new Promise((r) => setTimeout(r, 700));
+
+  function setWidth(name) {
+    return run(async () => {
+      const width = WIDTHS[name];
+      let res = await send({ type: "resize", width, chrome: outerWidth - innerWidth });
+      if (!res || !res.ok) throw new Error((res && res.error) || "could not resize the window");
+      await settle();
+      let how = "window resized";
+      if (layout().name !== name) {
+        res = await send({ type: "zoom", width, cssWidth: innerWidth });
+        if (!res || !res.ok) throw new Error((res && res.error) || "could not zoom the tab");
+        await settle();
+        how = `window as narrow as it goes, tab zoomed to ${Math.round(res.zoom * 100)}%`;
+      }
+      const l = layout();
+      state.resized = true;
+      state.message =
+        l.name === name
+          ? { kind: "ok", text: `Now ${l.name}: ${l.innerWidth}px viewport (${how}). Restore when done.` }
+          : { kind: "warn", text: `Still ${l.name} at ${l.innerWidth}px; try narrowing the window by hand.` };
+    });
+  }
+
+  function restoreWidth() {
+    return run(async () => {
+      const res = await send({ type: "restore" });
+      if (!res || !res.ok) throw new Error((res && res.error) || "could not restore the window");
+      await settle();
+      state.resized = false;
+      state.message = { kind: "ok", text: `Restored: ${layout().name}, ${innerWidth}px.` };
+    });
+  }
+
+  let resizeTimer;
+  addEventListener("resize", () => {
+    if (state.off) return;
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(render, 250);
+  });
+
   // ---- talking to the server -----------------------------------------------------
   async function refreshCoverage() {
     try {
@@ -548,6 +600,11 @@
     }
     const l = layout();
     parts.push(`<div class="muted">${esc(theme())} · ${esc(l.name)} (${esc(l.innerWidth)}px window, content ${esc(l.content ?? "?")}px)${scripts.length ? ` · seen: ${esc(scripts.join(", "))}` : ""}</div>`);
+    const off = state.busy ? "disabled" : "";
+    parts.push(`<div>${Object.keys(WIDTHS)
+      .filter((n) => n !== l.name)
+      .map((n) => `<button data-act="width" data-layout="${n}" ${off}>${n === "mobile" ? "Phone" : "Tablet"} width</button>`)
+      .join("")}${state.resized ? `<button data-act="restore-width" ${off}>Restore window</button>` : ""}</div>`);
     if (scripts.includes("nfh")) parts.push(`<div class="warn">Nuke Assistant UI is on this page. Turn the userscript off and reload before capturing.</div>`);
     if (state.message) parts.push(`<div class="msg ${esc(state.message.kind === "error" ? "bad" : state.message.kind)}">${esc(state.message.text)}</div>`);
     if (state.replaceOffer) parts.push(`<div><button data-act="replace" class="primary">Replace the existing fixture</button></div>`);
@@ -593,7 +650,15 @@
         for (const w of wanted) {
           parts.push(`<div class="row"><b>${esc(w.id)}</b> <span class="muted">${esc(w.theme || "any theme")}${w.layout ? ` · ${esc(w.layout)}` : ""}${w.scenario ? " · scenario" : ""}</span>
             <div>${esc(w.instructions)}</div>
-            <button data-act="use-wanted" data-id="${esc(w.id)}">Use</button></div>`);
+            ${w.theme && w.theme !== theme() ? `<div class="warn">Wants ${esc(w.theme)} mode: switch Torn's theme first.</div>` : ""}
+            ${w.layout && w.layout !== l.name ? `<div class="warn">Wants the ${esc(w.layout)} layout (now ${esc(l.name)}).</div>` : ""}
+            <button data-act="use-wanted" data-id="${esc(w.id)}">Use</button>${
+              w.layout && w.layout !== l.name && WIDTHS[w.layout]
+                ? `<button data-act="width" data-layout="${esc(w.layout)}" ${off}>${w.layout === "mobile" ? "Phone" : "Tablet"} width</button>`
+                : w.layout === "desktop" && l.name !== "desktop" && state.resized
+                  ? `<button data-act="restore-width" ${off}>Restore window</button>`
+                  : ""
+            }</div>`);
         }
       }
     }
@@ -605,8 +670,8 @@
       parts.push(`<textarea data-field="notes" placeholder="Notes for Claude (what you did, what to look at)">${esc(state.form.notes)}</textarea>`);
       parts.push(`<label class="check"><input type="checkbox" data-setting="screenshot" ${state.settings.screenshot ? "checked" : ""}> screenshot</label>`);
       parts.push(`<label class="check"><input type="checkbox" data-setting="network" ${state.settings.network ? "checked" : ""}> page's network responses</label>`);
-      const off = state.busy || state.serverOk === false ? "disabled" : "";
-      parts.push(`<div><button data-act="capture" class="primary" ${off}>Capture page</button><button data-act="start" ${off}>Start scenario</button></div>`);
+      const noCapture = state.busy || state.serverOk === false ? "disabled" : "";
+      parts.push(`<div><button data-act="capture" class="primary" ${noCapture}>Capture page</button><button data-act="start" ${noCapture}>Start scenario</button></div>`);
       if (state.form.wantedId) parts.push(`<div class="muted">For wanted capture ${esc(state.form.wantedId)}</div>`);
     }
     return parts.join("");
@@ -652,6 +717,8 @@
     else if (act === "start") startScenario();
     else if (act === "snapshot") snapshot("manual");
     else if (act === "finish") finishScenario();
+    else if (act === "width") setWidth(el.dataset.layout);
+    else if (act === "restore-width") restoreWidth();
     else if (act === "replace" && state.lastAttempt) {
       const { kind, fixture } = state.lastAttempt;
       kind === "scenario" ? startScenario("replace", fixture) : captureOnce("replace", fixture);
@@ -669,7 +736,7 @@
 
   if (api) {
     api.runtime.onMessage.addListener((message) => {
-      if (message.type === "hotkey") snapshot("manual");
+      if (message.type === "hotkey" && !state.off) snapshot("manual");
     });
   }
 
@@ -678,6 +745,11 @@
 
   (async () => {
     if (api) state.settings = { ...DEFAULTS, ...(await api.storage.local.get(DEFAULTS)) };
+    // Private windows only (the default): in a normal window, where other
+    // scripts and extensions run, the recorder shows nothing and does nothing.
+    const isPrivate = !!(api && api.extension && api.extension.inIncognitoContext);
+    if (state.settings.privateOnly && !isPrivate) return;
+    state.off = false;
     mount();
     render();
     await refreshCoverage();

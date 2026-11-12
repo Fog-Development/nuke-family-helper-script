@@ -180,7 +180,7 @@ describe("recorder panel (content.js)", () => {
       e.target.closest("li").appendChild(d);
     });</script></body></html>`;
 
-  async function open({ contracts = [] } = {}) {
+  async function open({ contracts = [], incognito = true, resizes = true } = {}) {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
     await page.route("**/*", (route) =>
       route.request().url().split("#")[0] === PAGE_URL.split("#")[0]
@@ -189,12 +189,23 @@ describe("recorder panel (content.js)", () => {
     );
     const sent = [];
     await page.exposeFunction("__recorderSent", (m) => sent.push(m));
-    await page.addInitScript((contracts) => {
+    // The window resize the background script would do, as a viewport change.
+    await page.exposeFunction("__recorderResize", (width) => page.setViewportSize({ width, height: 900 }));
+    await page.addInitScript(({ contracts, incognito, resizes }) => {
       let steps = 0;
       const reply = async (m) => {
         window.__recorderSent(m);
         if (m.type === "network") return { entries: [{ seq: 1, url: "https://www.torn.com/x", responseText: "{}" }], lastSeq: 1 };
         if (m.type === "screenshot") return { ok: true, dataUrl: "data:image/png;base64,AAAA" };
+        if (m.type === "resize") {
+          if (resizes) await window.__recorderResize(m.width);
+          return { ok: true };
+        }
+        if (m.type === "zoom") return { ok: true, zoom: m.cssWidth / m.width };
+        if (m.type === "restore") {
+          await window.__recorderResize(1280);
+          return { ok: true };
+        }
         if (m.type !== "server") return undefined;
         if (m.path === "/api/status") return { ok: true, data: { fixtures: 0, wantedOpen: 0, isRepo: true } };
         if (m.path.startsWith("/api/coverage")) return { ok: true, data: { fixtures: [], wanted: [], contracts } };
@@ -206,11 +217,13 @@ describe("recorder panel (content.js)", () => {
       };
       window.browser = {
         runtime: { sendMessage: reply, onMessage: { addListener() {} } },
+        extension: { inIncognitoContext: incognito },
         storage: { local: { get: async (d) => ({ ...d, collapsed: false, screenshot: true }), set: async () => {} } },
       };
-    }, contracts);
+    }, { contracts, incognito, resizes });
     await page.goto(PAGE_URL);
     await page.addScriptTag({ content: CONTENT });
+    if (!incognito) return { page, sent };
     await page.waitForFunction(() => document.getElementById("nfh-recorder-host")?.shadowRoot?.querySelector(".panel"));
     return { page, sent, captures: () => sent.filter((m) => m.path === "/api/capture").map((m) => m.body) };
   }
@@ -257,6 +270,38 @@ describe("recorder panel (content.js)", () => {
     assert.equal(await page.locator(after.step.changedRoot).count(), 1);
     assert.match(after.step.changedRoot, /\[class\*="row___"\]/);
     await shadowButton(page, "finish").click();
+    await page.close();
+  });
+
+  it("stays off in a normal (non-private) window", async () => {
+    const { page, sent } = await open({ incognito: false });
+    await page.waitForTimeout(300);
+    assert.equal(await page.locator("#nfh-recorder-host").count(), 0);
+    assert.equal(sent.length, 0, "nothing sent to the companion");
+    assert.equal(await page.evaluate(() => window.__nfhRecorderTest.state.off), true);
+    await page.close();
+  });
+
+  it("switches to the phone layout by resizing the window, and restores it", async () => {
+    const MOBILE_CSS = `@media (max-width: 784px) { .content-wrapper { width: 386px !important; } }`;
+    const { page, sent } = await open();
+    await page.addStyleTag({ content: MOBILE_CSS });
+    await page.locator('#nfh-recorder-host >> [data-act="width"][data-layout="mobile"]').click();
+    await page.waitForFunction(() => window.__nfhRecorderTest.state.message?.text.startsWith("Now mobile"));
+    assert.ok(!sent.some((m) => m.type === "zoom"), "no zoom needed");
+    assert.equal(await page.evaluate(() => innerWidth), 412);
+    await shadowButton(page, "restore-width").click();
+    await page.waitForFunction(() => window.__nfhRecorderTest.state.message?.text.startsWith("Restored"));
+    assert.equal(await page.evaluate(() => innerWidth), 1280);
+    await page.close();
+  });
+
+  it("zooms the tab when the window will not get narrow enough", async () => {
+    const { page, sent } = await open({ resizes: false });
+    await page.locator('#nfh-recorder-host >> [data-act="width"][data-layout="mobile"]').click();
+    await page.waitForFunction(() => window.__nfhRecorderTest.state.message && !window.__nfhRecorderTest.state.busy);
+    const zoom = sent.find((m) => m.type === "zoom");
+    assert.deepEqual([zoom.width, zoom.cssWidth], [412, 1280]);
     await page.close();
   });
 

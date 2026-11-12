@@ -17,6 +17,9 @@ you didn't make yourself. The recorder only reads the page you're viewing:
   (Firefox's `filterResponseData` passes every byte through unchanged). The
   copy stays in memory and only leaves it inside a capture you started.
 - Captures go only to the companion server on `127.0.0.1`.
+- The width buttons resize the browser window (or zoom the tab), which is a
+  browser action, not a page action: Torn sees the same resize as if you
+  dragged the window edge.
 - Page contract checks are read-only `querySelector` calls, made only while
   the tab is visible. The only result is the badge on the recorder's pill;
   nothing alerts.
@@ -35,7 +38,13 @@ you didn't make yourself. The recorder only reads the page you're viewing:
      build that accepts unsigned add-ons (`xpinstall.signatures.required` =
      false in `about:config`).
 3. Allow the add-on on torn.com if Firefox asks.
-4. **Turn the Nuke Assistant userscript off** while capturing. Its UI would be
+4. **Private windows only (default).** The recorder only appears, and only
+   copies network responses, in private windows, so your usual userscripts
+   and extensions stay out of the captures. Firefox has to allow it there:
+   `about:addons` → NFH Fixture Recorder → **Run in Private Windows** →
+   Allow. To use it in normal windows too, untick "Only run in private
+   windows" in the add-on's Options (then reload the Torn tab).
+5. **Turn the Nuke Assistant userscript off** while capturing. Its UI would be
    in the capture, and the war board reorders rows. The panel warns if it sees
    our UI. Other scripts (BSP, FF Scouter, TornTools) are fine; the step
    records which ones were on the page.
@@ -69,9 +78,16 @@ A "● Fixtures" pill sits bottom-left on Torn pages. Click it for the panel:
   Claude, and refresh the fixtures it lists.
 
 Light mode: switch Torn's theme yourself and capture again (the id gets
-`-light`). Page width: Firefox's Responsive Design Mode (Ctrl+Shift+M) at
-under 784px gives the 386px TornPDA layout; the step records which layout it
-was.
+`-light`). A wanted entry for the other theme says so.
+
+Page width: **Phone width** / **Tablet width** in the panel (also on a wanted
+entry that asks for that layout) resize the window to 412px / 900px of
+viewport, so Torn's own media queries switch to the 386px (TornPDA) or tablet
+layout. If Firefox won't make the window that narrow, the tab is zoomed
+instead until the viewport is. **Restore window** puts the size and zoom back.
+Don't use Responsive Design Mode (Ctrl+Shift+M): it changes the user agent and
+touch support, and Torn's Cloudflare check loops on it. The step records the
+layout and viewport width it was taken at.
 
 ## After capturing
 
@@ -84,11 +100,12 @@ cd fixtures && git add -A && git commit -m "Capture ..." && git push
 ## Files
 
 - `extension/manifest.json`, `background.js` (network copy, screenshots,
-  server calls), `content.js` (the panel, capture, scenario, contracts)
+  window width, server calls), `content.js` (the panel, capture, scenario,
+  contracts), `options.html`/`options.js` (private-only, port)
 - `server.mjs`: the companion server. It only accepts calls from the
   extension, never from web pages.
 - `store.mjs`: the fixture layout, shared with the test harness.
 - `cli.mjs` (`npm run fixtures`), `pack.mjs` (`npm run recorder:xpi`).
 - Tests: `test/recorder/` (server, panel on a made-up page, network log).
   The background page's Firefox-only parts (`filterResponseData`,
-  `captureTab`) can only be checked in Firefox itself.
+  `captureTab`, window resize and zoom) can only be checked in Firefox itself.

@@ -7,9 +7,16 @@
 //    leaves memory inside a capture you started.
 // 2. Talks to the companion server (npm run recorder) for the content script.
 // 3. Full-page screenshots of the tab, on a capture.
+// 4. Window width for layout captures: resizes the browser window (or, when
+//    the window can't get that narrow, zooms the tab) on your click, so Torn's
+//    own media queries switch layout. The user agent is never touched, unlike
+//    Responsive Design Mode, which Cloudflare's checks on Torn trip over.
+//
+// With "private windows only" on (the default), nothing is copied from tabs in
+// normal windows; the content script stays off there too.
 "use strict";
 
-const DEFAULTS = { port: 47821, network: true };
+const DEFAULTS = { port: 47821, network: true, privateOnly: true };
 const MAX_BODY = 3 * 1024 * 1024; // keep at most 3 MB of any one response
 const MAX_ENTRIES = 300; // per tab
 const SECRET_KEYS = /rfcv|password|token|secret|key|sid_?token/i;
@@ -133,6 +140,54 @@ async function server(method, path, body) {
   return json;
 }
 
+// ---- window width ------------------------------------------------------------
+const savedWindows = new Map(); // windowId -> { state, left, top, width, height }
+const zoomedTabs = new Set();
+
+async function resizeWindow(tab, { width, chrome }) {
+  const win = await browser.windows.get(tab.windowId);
+  if (!savedWindows.has(win.id)) {
+    savedWindows.set(win.id, { state: win.state, left: win.left, top: win.top, width: win.width, height: win.height });
+  }
+  if (win.state !== "normal") await browser.windows.update(win.id, { state: "normal" });
+  await browser.windows.update(win.id, { width: Math.round(width + Math.max(0, chrome || 0)) });
+  return { ok: true };
+}
+
+// The tab's CSS viewport becomes `width` px by zooming: zoom = window px / CSS px.
+async function zoomTo(tab, { width, cssWidth }) {
+  const current = await browser.tabs.getZoom(tab.id);
+  const factor = Math.min(5, Math.max(0.3, (current * cssWidth) / width));
+  try {
+    await browser.tabs.setZoomSettings(tab.id, { scope: "per-tab" });
+  } catch {
+    // older Firefox: per-site zoom, undone by Restore all the same
+  }
+  await browser.tabs.setZoom(tab.id, factor);
+  zoomedTabs.add(tab.id);
+  return { ok: true, zoom: factor };
+}
+
+async function restoreWindow(tab) {
+  if (zoomedTabs.delete(tab.id)) await browser.tabs.setZoom(tab.id, 1).catch(() => {});
+  const saved = savedWindows.get(tab.windowId);
+  if (!saved) return { ok: true };
+  savedWindows.delete(tab.windowId);
+  if (saved.state === "normal") {
+    const { state, ...bounds } = saved;
+    await browser.windows.update(tab.windowId, bounds);
+  } else {
+    await browser.windows.update(tab.windowId, { state: saved.state });
+  }
+  return { ok: true };
+}
+
+const reply = (promise) =>
+  promise.then(
+    (value) => value,
+    (error) => ({ ok: false, error: error.message }),
+  );
+
 function wire() {
   browser.storage.local.get(DEFAULTS).then((stored) => {
     settings = { ...DEFAULTS, ...stored };
@@ -154,6 +209,7 @@ function wire() {
   browser.webRequest.onBeforeRequest.addListener(
     (details) => {
       if (!settings.network || details.tabId < 0) return {};
+      if (settings.privateOnly && !details.incognito) return {};
       let stream;
       try {
         stream = browser.webRequest.filterResponseData(details.requestId);
@@ -212,6 +268,12 @@ function wire() {
         );
       case "network":
         return Promise.resolve(network.since(tabId, message.since || 0));
+      case "resize":
+        return reply(resizeWindow(sender.tab, message));
+      case "zoom":
+        return reply(zoomTo(sender.tab, message));
+      case "restore":
+        return reply(restoreWindow(sender.tab));
       case "screenshot":
         return browser.tabs
           .captureTab(tabId, {

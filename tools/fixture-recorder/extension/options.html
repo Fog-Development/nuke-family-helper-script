@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>NFH Fixture Recorder</title>
+  <style>
+    body { font: 13px/1.5 system-ui, sans-serif; margin: 12px; }
+    label { display: block; margin: 8px 0; }
+    .muted { color: #777; font-size: 12px; margin-left: 22px; }
+    input[type=number] { width: 80px; }
+  </style>
+</head>
+<body>
+  <label><input type="checkbox" id="privateOnly"> Only run in private windows</label>
+  <div class="muted">In a normal window the recorder shows nothing on Torn and copies nothing. Firefox must also allow
+    this add-on in private windows (Add-ons Manager → this add-on → Run in Private Windows → Allow).
+    Reload Torn tabs after changing this.</div>
+  <label>Companion port <input type="number" id="port" min="1" max="65535"></label>
+  <div class="muted">Where <code>npm run recorder</code> listens (default 47821).</div>
+  <script src="options.js"></script>
+</body>
+</html>
