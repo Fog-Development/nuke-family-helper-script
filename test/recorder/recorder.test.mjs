@@ -172,7 +172,7 @@ describe("recorder panel (content.js)", () => {
 
   const TEST_PAGE = `<!DOCTYPE html><html><head><title>Factions | TORN</title><script>window.tornThing = 1;</script></head>
     <body class="dark-mode"><div id="mainContainer" style="width:976px"><div class="content-wrapper" style="width:784px">
-      <div id="faction-controls"><hr><input id="search" value=""><iframe id="editor" srcdoc="<p>hello frame</p>"></iframe>
+      <div id="faction-controls"><hr><input id="search" value=""><div id="body" contenteditable="true"></div><iframe id="editor" srcdoc="<p>hello frame</p>"></iframe>
         <ul class="members-list"><li class="row___ab12C">Alice <button class="kick">Kick</button></li></ul></div>
     </div></div>
     <script>document.querySelector(".kick").addEventListener("click", (e) => {
@@ -270,6 +270,35 @@ describe("recorder panel (content.js)", () => {
     assert.equal(await page.locator(after.step.changedRoot).count(), 1);
     assert.match(after.step.changedRoot, /\[class\*="row___"\]/);
     await shadowButton(page, "finish").click();
+    await page.close();
+  });
+
+  it("takes a final step on Finish when text was typed into a rich editor", async () => {
+    const { page, captures } = await open();
+    await shadowButton(page, "start").click();
+    await page.waitForFunction(() => window.__nfhRecorderTest.state.scenario);
+    await page.click("#body");
+    await page.keyboard.type("Hello there");
+    await shadowButton(page, "finish").click();
+    await page.waitForFunction(() => !window.__nfhRecorderTest.state.scenario && !window.__nfhRecorderTest.state.busy);
+    const all = captures();
+    assert.equal(all.length, 2);
+    const last = all[1].step;
+    assert.equal(last.trigger, "finish");
+    assert.match(last.html, /contenteditable="true"[^>]*>Hello there</);
+    const typed = last.actions.find((a) => a.type === "type");
+    assert.equal(typed.value, "Hello there");
+    assert.equal(last.actions.filter((a) => a.type === "type").length, 1, "typing coalesces into one action");
+    await page.close();
+  });
+
+  it("Finish with nothing changed takes no extra step", async () => {
+    const { page, captures } = await open();
+    await shadowButton(page, "start").click();
+    await page.waitForFunction(() => window.__nfhRecorderTest.state.scenario);
+    await shadowButton(page, "finish").click();
+    await page.waitForFunction(() => !window.__nfhRecorderTest.state.scenario);
+    assert.equal(captures().length, 1);
     await page.close();
   });
 

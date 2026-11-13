@@ -231,10 +231,15 @@
   // ---- scenario: watching your own actions ----------------------------------
   let structuralSince = []; // targets of element additions/removals since last step
   let lastStructuralAt = 0;
+  // Any change since the last step, text edits included (typing into Torn's
+  // rich editors changes text only, so it never makes an auto step; Finish
+  // takes a last step instead).
+  let dirtySince = false;
   const observer = new MutationObserver((records) => {
     if (!state.scenario) return;
     for (const r of records) {
       if (ours(r.target)) continue;
+      dirtySince = true;
       const elements = [...r.addedNodes, ...r.removedNodes].some((n) => n.nodeType === 1 && !ours(n));
       if (!elements) continue;
       structuralSince.push(r.target);
@@ -282,6 +287,24 @@
       if (!state.scenario || !event.isTrusted || ours(el) || !(el instanceof Element)) return;
       const value = el.type === "password" ? "(hidden)" : el.type === "checkbox" || el.type === "radio" ? String(el.checked) : String(el.value ?? "").slice(0, 500);
       noteAction({ type: "input", selector: cssPath(el), tag: el.localName, value });
+    },
+    true,
+  );
+
+  // Typing into a rich editor (contenteditable) fires no change event: note it
+  // as one "type" action per editor until the next step.
+  document.addEventListener(
+    "input",
+    (event) => {
+      const el = event.target instanceof Element ? event.target.closest('[contenteditable="true"], [contenteditable=""]') : null;
+      if (!state.scenario || !event.isTrusted || !el || ours(el)) return;
+      const s = state.scenario;
+      const selector = cssPath(el);
+      const value = (el.innerText || "").trim().slice(0, 500);
+      const last = s.actions[s.actions.length - 1];
+      if (last && last.type === "type" && last.selector === selector) last.value = value;
+      else noteAction({ type: "type", selector, tag: el.localName, value });
+      dirtySince = true;
     },
     true,
   );
@@ -426,10 +449,11 @@
     state.lastAttempt = { kind: "scenario", fixture };
     return run(async () => {
       structuralSince = [];
+      dirtySince = false;
       const r = await capture({ mode, trigger: "start", fixture, extra: { label: "start", actions: [] } });
       state.scenario = { fixture, steps: 1, actions: [], lastSeq: r.lastSeq, pending: null, label: "" };
       state.message = { kind: "ok", text: `Recording ${r.id}: step 0 saved. Do the actions; each settles into a step.` };
-      observer.observe(document.documentElement, { childList: true, subtree: true });
+      observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
     });
   }
 
@@ -455,15 +479,26 @@
       s.pending = null;
       s.label = "";
       structuralSince = [];
+      dirtySince = false;
       state.message = { kind: "ok", text: `Step ${r.step} saved (${label})` };
     });
   }
 
-  function finishScenario() {
-    observer.disconnect();
+  // Anything changed since the last step (typed text, an action that gave no
+  // auto step) becomes a final step first.
+  async function finishScenario() {
     const s = state.scenario;
+    if (!s) return;
+    while (state.busy) await new Promise((r) => setTimeout(r, 100)); // a step in progress
+    if (dirtySince || s.actions.length) {
+      if (!s.label.trim() && !s.actions.length) s.label = "final state";
+      await snapshot("finish");
+      if (state.message && state.message.kind === "error") return; // still recording; Finish again
+    }
+    observer.disconnect();
     state.scenario = null;
     state.message = { kind: "ok", text: `Finished ${s.fixture.id}: ${s.steps} step(s)` };
+    render();
     refreshCoverage();
   }
 
