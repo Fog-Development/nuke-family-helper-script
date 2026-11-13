@@ -39,6 +39,7 @@ const LOCAL_KEYS = [
   "nfhOcStaffPrefs",
   "nfhOcWeights",
   "nfhOcItemShow",
+  "nfhOcFinePanel",
 ];
 
 const UNSAVED_KEY = "nfhNativeStorageUnsaved";

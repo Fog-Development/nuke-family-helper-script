@@ -2192,7 +2192,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
 .nfh-ocf-modal {
     position: fixed;
     right: 16px;
-    bottom: 16px;
+    top: 50%;
+    transform: translateY(-50%);
     z-index: 100000;
     width: min(360px, calc(100vw - 32px));
     max-height: calc(100vh - 32px);
@@ -2205,10 +2206,20 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
 }
 
+.nfh-ocf-modal--placed {
+    right: auto;
+    transform: none;
+}
+
 .nfh-ocf-modal__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin: -8px -10px 0;
+    padding: 8px 10px 4px;
+    cursor: move;
+    touch-action: none;
+    user-select: none;
 }
 
 .nfh-ocf-modal__head button,
@@ -2271,7 +2282,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     "nfhRankedWar",
     "nfhOcStaffPrefs",
     "nfhOcWeights",
-    "nfhOcItemShow"
+    "nfhOcItemShow",
+    "nfhOcFinePanel"
   ];
   var UNSAVED_KEY = "nfhNativeStorageUnsaved";
   var LOAD_TIMEOUT_MS = 3e3;
@@ -6534,6 +6546,23 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   function fineChipLabel(fine) {
     return [fine.player_name || `[${fine.player_id}]`, fine.penalty, fine.reason].filter(Boolean).join(" \xB7 ");
   }
+  var PANEL_MARGIN = 8;
+  var PANEL_MIN_BODY = 120;
+  function panelPosition(pos, { width, height }, { panelWidth, headHeight }) {
+    if (!pos || !Number.isFinite(pos.left) || !Number.isFinite(pos.top)) return null;
+    if (pos.left < 0 || pos.top < 0) return null;
+    if (pos.left + panelWidth > width) return null;
+    if (pos.top + headHeight + PANEL_MIN_BODY > height) return null;
+    return { left: Math.round(pos.left), top: Math.round(pos.top) };
+  }
+  function clampPanel(left, top, { width, height }, { panelWidth, headHeight }) {
+    const maxLeft = Math.max(0, width - panelWidth);
+    const maxTop = Math.max(0, height - headHeight - PANEL_MIN_BODY);
+    return {
+      left: Math.round(Math.min(Math.max(left, 0), maxLeft)),
+      top: Math.round(Math.min(Math.max(top, 0), maxTop))
+    };
+  }
   function recipientFor(fine) {
     return fine.player_name ? `${fine.player_name} [${fine.player_id}]` : String(fine.player_id);
   }
@@ -6770,10 +6799,73 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     modal.className = "nfh-ocf-modal";
     modal.setAttribute("role", "dialog");
     modal.setAttribute("aria-label", "Give OC fine");
-    modal.innerHTML = `<div class="nfh-ocf-modal__head"><strong>Give OC fine</strong><button type="button" aria-label="Close">\u2715</button></div><div class="nfh-ocf-modal__body"></div>`;
-    modal.querySelector(".nfh-ocf-modal__head button").addEventListener("click", () => modal.remove());
+    modal.innerHTML = `<div class="nfh-ocf-modal__head" title="Drag to move \xB7 double-click to put back"><strong>Give OC fine</strong><button type="button" aria-label="Close">\u2715</button></div><div class="nfh-ocf-modal__body"></div>`;
+    const head = modal.querySelector(".nfh-ocf-modal__head");
+    const close = () => {
+      window.removeEventListener("resize", onResize);
+      modal.remove();
+    };
+    head.querySelector("button").addEventListener("click", close);
     document.body.appendChild(modal);
-    openFineForm(modal.querySelector(".nfh-ocf-modal__body"), { ...opts, onClose: () => modal.remove() });
+    const sizes = () => ({ panelWidth: modal.offsetWidth, headHeight: head.offsetHeight });
+    const viewport = () => ({ width: window.innerWidth, height: window.innerHeight });
+    const place2 = (pos) => {
+      if (pos) {
+        modal.classList.add("nfh-ocf-modal--placed");
+        modal.style.left = `${pos.left}px`;
+        modal.style.top = `${pos.top}px`;
+        modal.style.maxHeight = `${window.innerHeight - pos.top - PANEL_MARGIN}px`;
+      } else {
+        modal.classList.remove("nfh-ocf-modal--placed");
+        modal.style.left = modal.style.top = modal.style.maxHeight = "";
+      }
+    };
+    place2(panelPosition(loadPanelPosition(), viewport(), sizes()));
+    function onResize() {
+      if (!modal.classList.contains("nfh-ocf-modal--placed")) return;
+      const pos = { left: parseFloat(modal.style.left), top: parseFloat(modal.style.top) };
+      if (!panelPosition(pos, viewport(), sizes())) place2(null);
+    }
+    window.addEventListener("resize", onResize);
+    head.addEventListener("dblclick", (event) => {
+      if (event.target.closest("button")) return;
+      place2(null);
+      savePanelPosition(null);
+    });
+    head.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || event.target.closest("button")) return;
+      const rect = modal.getBoundingClientRect();
+      const offsetX = event.clientX - rect.left;
+      const offsetY = event.clientY - rect.top;
+      let moved = null;
+      head.setPointerCapture(event.pointerId);
+      const onMove = (e) => {
+        moved = clampPanel(e.clientX - offsetX, e.clientY - offsetY, viewport(), sizes());
+        place2(moved);
+      };
+      const onUp = () => {
+        head.removeEventListener("pointermove", onMove);
+        head.removeEventListener("pointerup", onUp);
+        head.removeEventListener("pointercancel", onUp);
+        if (moved) savePanelPosition(moved);
+      };
+      head.addEventListener("pointermove", onMove);
+      head.addEventListener("pointerup", onUp);
+      head.addEventListener("pointercancel", onUp);
+      event.preventDefault();
+    });
+    openFineForm(modal.querySelector(".nfh-ocf-modal__body"), { ...opts, onClose: close });
+  }
+  var PANEL_KEY = "nfhOcFinePanel";
+  function loadPanelPosition() {
+    try {
+      return JSON.parse(getItem(PANEL_KEY) || "null");
+    } catch {
+      return null;
+    }
+  }
+  function savePanelPosition(pos) {
+    setItem(PANEL_KEY, pos ? JSON.stringify(pos) : null);
   }
 
   // src/features/organized-crimes/page.js
@@ -7192,6 +7284,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   function isOwnFactionCrimesTab() {
     return window.location.search.includes("step=your") && IsPage(PageType.FactionCrimes);
   }
+  var permissionsAsked = false;
   function render4() {
     const root3 = document.querySelector(CRIMES_ROOT_SELECTOR);
     if (!root3 || !isOwnFactionCrimesTab()) return;
@@ -7235,7 +7328,12 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const prefs4 = members ? getStaffPrefs() : null;
     const limits = limitsFor(config, prefs4);
     const counts = {};
-    const canFine = Boolean(members) && (cachedPermissions() || []).includes(FINE_PERMISSION);
+    const permissions = cachedPermissions();
+    if (members && permissions === null && !permissionsAsked) {
+      permissionsAsked = true;
+      getOwnPermissions().then(() => scheduleRender());
+    }
+    const canFine = Boolean(members) && (permissions || []).includes(FINE_PERMISSION);
     for (const crime of result.crimes) {
       if (crime.crime.offPage) continue;
       crime.slots.forEach((rated, index) => {

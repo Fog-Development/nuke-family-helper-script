@@ -63,6 +63,32 @@ export function fineChipLabel(fine) {
   return [fine.player_name || `[${fine.player_id}]`, fine.penalty, fine.reason].filter(Boolean).join(" · ");
 }
 
+// Where a dragged fine panel may sit. `pos` is a saved { left, top } in
+// pixels, `headHeight` the panel header's height. A position is kept only
+// while the whole header is on screen with room for some of the form under
+// it; anything else (a smaller window since, a bad value) returns null, and
+// the panel goes back to the middle of the right edge.
+export const PANEL_MARGIN = 8;
+export const PANEL_MIN_BODY = 120;
+
+export function panelPosition(pos, { width, height }, { panelWidth, headHeight }) {
+  if (!pos || !Number.isFinite(pos.left) || !Number.isFinite(pos.top)) return null;
+  if (pos.left < 0 || pos.top < 0) return null;
+  if (pos.left + panelWidth > width) return null;
+  if (pos.top + headHeight + PANEL_MIN_BODY > height) return null;
+  return { left: Math.round(pos.left), top: Math.round(pos.top) };
+}
+
+// Keeps a panel being dragged inside the window.
+export function clampPanel(left, top, { width, height }, { panelWidth, headHeight }) {
+  const maxLeft = Math.max(0, width - panelWidth);
+  const maxTop = Math.max(0, height - headHeight - PANEL_MIN_BODY);
+  return {
+    left: Math.round(Math.min(Math.max(left, 0), maxLeft)),
+    top: Math.round(Math.min(Math.max(top, 0), maxTop)),
+  };
+}
+
 // The recipient box value Torn's compose page expects: "Name [ID]".
 export function recipientFor(fine) {
   return fine.player_name ? `${fine.player_name} [${fine.player_id}]` : String(fine.player_id);

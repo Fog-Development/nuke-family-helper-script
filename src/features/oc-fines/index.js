@@ -2,11 +2,12 @@ import { api } from "../../core/api.js";
 import { getApiToken } from "../../core/auth.js";
 import { escapeHtml, waitForElm } from "../../core/dom.js";
 import { IsPage, PageType } from "../../core/pages.js";
+import { getItem, setItem } from "../../core/storage.js";
 import { getFactionId, getPlayerId, getUserscriptUsersPlayerId } from "../../core/torn-page.js";
 import { getOwnPermissions } from "../../core/user.js";
 import { ocConfigStore } from "../organized-crimes/data.js";
 import { openFineForm } from "./form.js";
-import { bannerText } from "./logic.js";
+import { bannerText, clampPanel, PANEL_MARGIN, panelPosition } from "./logic.js";
 
 // OC fines in the script (docs/oc-fines-plan.md in the site's repository):
 // - a box under the Nuke Family Reputation box on a faction member's profile,
@@ -143,9 +144,82 @@ export function openFineModal(opts) {
   modal.className = "nfh-ocf-modal";
   modal.setAttribute("role", "dialog");
   modal.setAttribute("aria-label", "Give OC fine");
-  modal.innerHTML = `<div class="nfh-ocf-modal__head"><strong>Give OC fine</strong><button type="button" aria-label="Close">✕</button></div><div class="nfh-ocf-modal__body"></div>`;
-  modal.querySelector(".nfh-ocf-modal__head button").addEventListener("click", () => modal.remove());
+  modal.innerHTML = `<div class="nfh-ocf-modal__head" title="Drag to move · double-click to put back"><strong>Give OC fine</strong><button type="button" aria-label="Close">✕</button></div><div class="nfh-ocf-modal__body"></div>`;
+  const head = modal.querySelector(".nfh-ocf-modal__head");
+  const close = () => {
+    window.removeEventListener("resize", onResize);
+    modal.remove();
+  };
+  head.querySelector("button").addEventListener("click", close);
   document.body.appendChild(modal);
 
-  openFineForm(modal.querySelector(".nfh-ocf-modal__body"), { ...opts, onClose: () => modal.remove() });
+  // Placed where the member last left it, else the middle of the right edge
+  // (Torn's chat and its open chat boxes sit bottom right).
+  const sizes = () => ({ panelWidth: modal.offsetWidth, headHeight: head.offsetHeight });
+  const viewport = () => ({ width: window.innerWidth, height: window.innerHeight });
+  const place = (pos) => {
+    if (pos) {
+      modal.classList.add("nfh-ocf-modal--placed");
+      modal.style.left = `${pos.left}px`;
+      modal.style.top = `${pos.top}px`;
+      modal.style.maxHeight = `${window.innerHeight - pos.top - PANEL_MARGIN}px`;
+    } else {
+      modal.classList.remove("nfh-ocf-modal--placed");
+      modal.style.left = modal.style.top = modal.style.maxHeight = "";
+    }
+  };
+  place(panelPosition(loadPanelPosition(), viewport(), sizes()));
+
+  // A window made smaller can leave the panel off screen: put it back.
+  function onResize() {
+    if (!modal.classList.contains("nfh-ocf-modal--placed")) return;
+    const pos = { left: parseFloat(modal.style.left), top: parseFloat(modal.style.top) };
+    if (!panelPosition(pos, viewport(), sizes())) place(null);
+  }
+  window.addEventListener("resize", onResize);
+
+  head.addEventListener("dblclick", (event) => {
+    if (event.target.closest("button")) return;
+    place(null);
+    savePanelPosition(null);
+  });
+
+  head.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || event.target.closest("button")) return;
+    const rect = modal.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left;
+    const offsetY = event.clientY - rect.top;
+    let moved = null;
+    head.setPointerCapture(event.pointerId);
+    const onMove = (e) => {
+      moved = clampPanel(e.clientX - offsetX, e.clientY - offsetY, viewport(), sizes());
+      place(moved);
+    };
+    const onUp = () => {
+      head.removeEventListener("pointermove", onMove);
+      head.removeEventListener("pointerup", onUp);
+      head.removeEventListener("pointercancel", onUp);
+      if (moved) savePanelPosition(moved);
+    };
+    head.addEventListener("pointermove", onMove);
+    head.addEventListener("pointerup", onUp);
+    head.addEventListener("pointercancel", onUp);
+    event.preventDefault();
+  });
+
+  openFineForm(modal.querySelector(".nfh-ocf-modal__body"), { ...opts, onClose: close });
+}
+
+const PANEL_KEY = "nfhOcFinePanel";
+
+function loadPanelPosition() {
+  try {
+    return JSON.parse(getItem(PANEL_KEY) || "null");
+  } catch {
+    return null;
+  }
+}
+
+function savePanelPosition(pos) {
+  setItem(PANEL_KEY, pos ? JSON.stringify(pos) : null);
 }

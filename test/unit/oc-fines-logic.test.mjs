@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { bannerText, crimeChoices, defaultCrimeFor, fineChipLabel, quoteLine, recipientFor, REASON_FOR_FLAG } from "../../src/features/oc-fines/logic.js";
+import { bannerText, clampPanel, crimeChoices, panelPosition, defaultCrimeFor, fineChipLabel, quoteLine, recipientFor, REASON_FOR_FLAG } from "../../src/features/oc-fines/logic.js";
 
 const context = {
   reasons: [
@@ -40,5 +40,18 @@ describe("OC fine logic", () => {
     assert.equal(fineChipLabel({ player_name: "Bob", player_id: 42, penalty: "Warning", reason: "Idle after previous OC" }), "Bob · Warning · Idle after previous OC");
     assert.equal(recipientFor({ player_name: "Bob", player_id: 42 }), "Bob [42]");
     assert.equal(quoteLine(context, "delay_travel"), "Strike 2 on the shared ladder: 10 points");
+  });
+
+  it("keeps a saved panel spot only while its header and some form fit the window", () => {
+    const view = { width: 1000, height: 700 };
+    const size = { panelWidth: 360, headHeight: 30 };
+    assert.deepEqual(panelPosition({ left: 100.4, top: 50 }, view, size), { left: 100, top: 50 });
+    assert.equal(panelPosition(null, view, size), null);
+    assert.equal(panelPosition({ left: "x", top: 1 }, view, size), null);
+    assert.equal(panelPosition({ left: -1, top: 0 }, view, size), null);
+    assert.equal(panelPosition({ left: 700, top: 0 }, view, size), null, "runs off the right");
+    assert.equal(panelPosition({ left: 0, top: 600 }, view, size), null, "no room for the form");
+    assert.deepEqual(clampPanel(-50, 9999, view, size), { left: 0, top: 550 });
+    assert.deepEqual(clampPanel(9999, -5, view, size), { left: 640, top: 0 });
   });
 });

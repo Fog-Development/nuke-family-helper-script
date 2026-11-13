@@ -219,7 +219,8 @@ export async function openTornPage(browser, options) {
     }
     const path = requestUrl.slice(API_PREFIX.length);
     apiCalls.push({ method, path, data: details.data, headers: details.headers || {} });
-    const route = routes[`${method} ${path}`];
+    // An exact route first, then one given without the query string.
+    const route = routes[`${method} ${path}`] ?? routes[`${method} ${path.split("?")[0]}`];
     if (route === undefined) {
       return { status: 404, responseText: JSON.stringify({ message: "no route" }) };
     }

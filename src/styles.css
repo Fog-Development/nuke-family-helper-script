@@ -1978,7 +1978,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
 .nfh-ocf-modal {
     position: fixed;
     right: 16px;
-    bottom: 16px;
+    top: 50%;
+    transform: translateY(-50%);
     z-index: 100000;
     width: min(360px, calc(100vw - 32px));
     max-height: calc(100vh - 32px);
@@ -1991,10 +1992,20 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
 }
 
+.nfh-ocf-modal--placed {
+    right: auto;
+    transform: none;
+}
+
 .nfh-ocf-modal__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin: -8px -10px 0;
+    padding: 8px 10px 4px;
+    cursor: move;
+    touch-action: none;
+    user-select: none;
 }
 
 .nfh-ocf-modal__head button,

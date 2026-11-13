@@ -8,7 +8,7 @@ import { getStaffPrefs, getWeightsPref, parseOverride, setStaffPrefs, setWeights
 import { itemSettings, itemSettingsChanged, onItemSettingsChange } from "../oc-items/index.js";
 import { FINE_PERMISSION, openFineModal } from "../oc-fines/index.js";
 import { REASON_FOR_FLAG } from "../oc-fines/logic.js";
-import { cachedPermissions } from "../../core/user.js";
+import { cachedPermissions, getOwnPermissions } from "../../core/user.js";
 import { resetItemChoices, setItemChoice } from "../oc-items/prefs.js";
 import { activeSubTab, CRIMES_ROOT_SELECTOR, joinState, JoinState, readCrimes, SubTab } from "./page.js";
 import { cachedBoard, learnCprs, offPageCrimes, refreshBoard, requestSpawn, spawnAskedUntil } from "./remote.js";
@@ -145,6 +145,8 @@ function isOwnFactionCrimesTab() {
   return window.location.search.includes("step=your") && IsPage(PageType.FactionCrimes);
 }
 
+let permissionsAsked = false;
+
 function render() {
   const root = document.querySelector(CRIMES_ROOT_SELECTOR);
   if (!root || !isOwnFactionCrimesTab()) return;
@@ -211,7 +213,14 @@ function render() {
   const prefs = members ? getStaffPrefs() : null;
   const limits = limitsFor(config, prefs);
   const counts = {};
-  const canFine = Boolean(members) && (cachedPermissions() || []).includes(FINE_PERMISSION);
+  const permissions = cachedPermissions();
+  // Staff who have not had their permissions fetched yet (no profile visited
+  // since installing): fetch them once, then draw the Fine buttons.
+  if (members && permissions === null && !permissionsAsked) {
+    permissionsAsked = true;
+    getOwnPermissions().then(() => scheduleRender());
+  }
+  const canFine = Boolean(members) && (permissions || []).includes(FINE_PERMISSION);
 
   for (const crime of result.crimes) {
     if (crime.crime.offPage) continue;

@@ -1183,3 +1183,98 @@ describe("OC Assistant on the Planning tab", () => {
     });
   }
 });
+
+describe("OC fine panel from a staff flag", () => {
+  const PANEL = "#nfh-ocf-modal";
+  const fineApi = {
+    "GET /oc/board": staffBoard(),
+    "GET /user/get-own-permissions": { permissions: ["oc_fine.issue"] },
+    "GET /oc-fines/context": {
+      data: {
+        faction: { id: 1, name: "Test Faction" },
+        player: { id: 100124, name: "Member100124", in_faction: true },
+        reasons: [{ key: "unproductive", label: "Unproductive", description: "", crime: "expected", note_required: false, default_crime_id: null }],
+        crimes: [],
+        record: [],
+      },
+    },
+  };
+  const box = (page) => page.locator(PANEL).evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    return { left: Math.round(r.left), top: Math.round(r.top), right: Math.round(r.right), height: Math.round(r.height) };
+  });
+  const openPanel = async (page) => {
+    await page.locator(".nfh-oc-flag-fine, [data-nfh-ocf]").first().click();
+    await page.waitForSelector(`${PANEL} [data-ocf="reason"]`);
+  };
+
+  it("opens in the middle of the right edge, can be dragged, and keeps where it was put", async () => {
+    const { page, errors, close } = await openTornPage(browser, {
+      page: "factions-crimes-planning",
+      viewport: { width: 1280, height: 800 },
+      api: fineApi,
+    });
+    try {
+      await page.waitForSelector("[data-nfh-ocf]");
+      await openPanel(page);
+      const start = await box(page);
+      assert.ok(1280 - start.right <= 20, `against the right edge (right ${start.right})`);
+      assert.ok(Math.abs(start.top + start.height / 2 - 400) <= 2, "centred vertically");
+
+      const head = await page.locator(`${PANEL} .nfh-ocf-modal__head strong`).boundingBox();
+      await page.mouse.move(head.x + 5, head.y + 5);
+      await page.mouse.down();
+      await page.mouse.move(head.x - 495, head.y - 145, { steps: 5 });
+      await page.mouse.up();
+      const moved = await box(page);
+      assert.ok(Math.abs(moved.left - (start.left - 500)) <= 2 && Math.abs(moved.top - (start.top - 150)) <= 2, JSON.stringify({ start, moved }));
+
+      // Dragged far past the edge, it stops at the window.
+      await page.mouse.move(head.x - 495, head.y - 145);
+      await page.mouse.down();
+      await page.mouse.move(-400, -400, { steps: 5 });
+      await page.mouse.up();
+      assert.deepEqual(await box(page).then(({ left, top }) => ({ left, top })), { left: 0, top: 0 });
+
+      // Closed and opened again: the same spot.
+      await page.locator(`${PANEL} .nfh-ocf-modal__head button`).click();
+      await openPanel(page);
+      assert.deepEqual(await box(page).then(({ left, top }) => ({ left, top })), { left: 0, top: 0 });
+
+      // A double-click on the header puts it back.
+      await page.locator(`${PANEL} .nfh-ocf-modal__head strong`).dblclick();
+      assert.ok(1280 - (await box(page)).right <= 20);
+      assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+
+  it("goes back to the right edge when the saved spot is off a smaller window", async () => {
+    const { page, errors, close } = await openTornPage(browser, {
+      page: "factions-crimes-planning",
+      viewport: { width: 900, height: 600 },
+      localStorage: { nfhOcFinePanel: { left: 1500, top: 700 } },
+      api: fineApi,
+    });
+    try {
+      await page.waitForSelector("[data-nfh-ocf]");
+      await openPanel(page);
+      const placed = await box(page);
+      assert.ok(900 - placed.right <= 20 && placed.top >= 0, JSON.stringify(placed));
+
+      // Moved to the bottom, then the window shrinks under it.
+      await page.locator(PANEL).evaluate((el) => {
+        el.classList.add("nfh-ocf-modal--placed");
+        el.style.left = "500px";
+        el.style.top = "400px";
+      });
+      await page.setViewportSize({ width: 700, height: 450 });
+      await page.waitForFunction((sel) => !document.querySelector(sel).classList.contains("nfh-ocf-modal--placed"), PANEL);
+      await screenshot(page, "oc-fine-panel");
+      assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+});
