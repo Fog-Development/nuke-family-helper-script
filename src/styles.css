@@ -1802,3 +1802,81 @@ body.dark-mode .nfh-kr-badge--elevated {
     outline: 2px solid #f5a623;
     outline-offset: 2px;
 }
+
+/* Stock signals on Torn's stock market */
+.nfh-st-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    margin: 0 0 8px;
+    padding: 6px 8px;
+}
+
+.nfh-st-lines {
+    flex: 1 1 300px;
+    min-width: 0;
+}
+
+.nfh-st-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.nfh-st-tag,
+.nfh-st-lot {
+    display: inline-block;
+    padding: 0 5px;
+    border-radius: 3px;
+    font: 700 10px/16px Arial, Helvetica, sans-serif;
+    white-space: nowrap;
+}
+
+.nfh-st-tag--buy {
+    background-color: #2e7d32;
+    color: #fff;
+}
+
+.nfh-st-tag--sell,
+.nfh-st-lot--sell {
+    background-color: #c0392b;
+    color: #fff;
+}
+
+.nfh-st-tag--hold,
+.nfh-st-lot--hold,
+.nfh-st-lot--other {
+    border: 1px solid var(--nfh-border);
+    color: var(--nfh-text);
+    font-weight: 400;
+}
+
+.nfh-st-lotline {
+    padding: 2px 8px 4px;
+    line-height: 16px;
+}
+
+.nfh-st-advice {
+    margin: 6px 8px;
+    padding: 6px 8px;
+}
+
+.nfh-st-buy strong {
+    color: var(--nfh-cw-accent);
+}
+
+.nfh-st-sell strong {
+    color: #c0392b;
+}
+
+body.dark-mode .nfh-st-sell strong {
+    color: #ff7b6b;
+}
+
+ul.nfh-st-row--sell,
+ul.nfh-st-row--sell + .nfh-st-lotline {
+    box-shadow: inset 3px 0 0 #c0392b;
+}

@@ -23,6 +23,7 @@ import organizedCrimes from "./features/organized-crimes/index.js";
 import mailTemplates from "./features/mail-templates/index.js";
 import ocItems from "./features/oc-items/index.js";
 import kickRisk from "./features/kick-risk/index.js";
+import stocks from "./features/stocks/index.js";
 import { ocConfigStore } from "./features/organized-crimes/data.js";
 import rankedWar from "./features/ranked-war/index.js";
 import reputation from "./features/reputation.js";
@@ -49,6 +50,7 @@ const features = [
   mailTemplates,
   ocItems,
   kickRisk,
+  stocks,
 ];
 
 function dispatchFeatures() {

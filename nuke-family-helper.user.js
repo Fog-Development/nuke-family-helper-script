@@ -2015,6 +2015,84 @@ body.dark-mode .nfh-kr-badge--elevated {
     outline: 2px solid #f5a623;
     outline-offset: 2px;
 }
+
+/* Stock signals on Torn's stock market */
+.nfh-st-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    margin: 0 0 8px;
+    padding: 6px 8px;
+}
+
+.nfh-st-lines {
+    flex: 1 1 300px;
+    min-width: 0;
+}
+
+.nfh-st-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.nfh-st-tag,
+.nfh-st-lot {
+    display: inline-block;
+    padding: 0 5px;
+    border-radius: 3px;
+    font: 700 10px/16px Arial, Helvetica, sans-serif;
+    white-space: nowrap;
+}
+
+.nfh-st-tag--buy {
+    background-color: #2e7d32;
+    color: #fff;
+}
+
+.nfh-st-tag--sell,
+.nfh-st-lot--sell {
+    background-color: #c0392b;
+    color: #fff;
+}
+
+.nfh-st-tag--hold,
+.nfh-st-lot--hold,
+.nfh-st-lot--other {
+    border: 1px solid var(--nfh-border);
+    color: var(--nfh-text);
+    font-weight: 400;
+}
+
+.nfh-st-lotline {
+    padding: 2px 8px 4px;
+    line-height: 16px;
+}
+
+.nfh-st-advice {
+    margin: 6px 8px;
+    padding: 6px 8px;
+}
+
+.nfh-st-buy strong {
+    color: var(--nfh-cw-accent);
+}
+
+.nfh-st-sell strong {
+    color: #c0392b;
+}
+
+body.dark-mode .nfh-st-sell strong {
+    color: #ff7b6b;
+}
+
+ul.nfh-st-row--sell,
+ul.nfh-st-row--sell + .nfh-st-lotline {
+    box-shadow: inset 3px 0 0 #c0392b;
+}
 `;
 
   // src/core/storage.js
@@ -2092,14 +2170,14 @@ body.dark-mode .nfh-kr-badge--elevated {
   }
   function withTimeout(promise, ms) {
     return new Promise((resolve, reject) => {
-      const timer2 = setTimeout(() => reject(new Error("timed out")), ms);
+      const timer3 = setTimeout(() => reject(new Error("timed out")), ms);
       Promise.resolve(promise).then(
         (value) => {
-          clearTimeout(timer2);
+          clearTimeout(timer3);
           resolve(value);
         },
         (error) => {
-          clearTimeout(timer2);
+          clearTimeout(timer3);
           reject(error);
         }
       );
@@ -2224,12 +2302,12 @@ body.dark-mode .nfh-kr-badge--elevated {
   }
   var lastState = null;
   function notify() {
-    const state7 = connectionState();
-    if (state7 === lastState) return;
-    lastState = state7;
+    const state8 = connectionState();
+    if (state8 === lastState) return;
+    lastState = state8;
     for (const listener of listeners) {
       try {
-        listener(state7);
+        listener(state8);
       } catch (error) {
         console.error("[NFH] Connection listener failed:", error);
       }
@@ -2592,14 +2670,14 @@ body.dark-mode .nfh-kr-badge--elevated {
       if (document.querySelector(selector)) {
         return resolve(document.querySelector(selector));
       }
-      const observer4 = new MutationObserver(() => {
+      const observer5 = new MutationObserver(() => {
         const elm = document.querySelector(selector);
         if (elm) {
           resolve(elm);
-          observer4.disconnect();
+          observer5.disconnect();
         }
       });
-      observer4.observe(document.body, {
+      observer5.observe(document.body, {
         childList: true,
         subtree: true
       });
@@ -3026,10 +3104,10 @@ body.dark-mode .nfh-kr-badge--elevated {
     } catch (e) {
     }
   }
-  function updateAlert({ timer: timer2, armed, test = false }) {
+  function updateAlert({ timer: timer3, armed, test = false }) {
     const prefs4 = getPrefs();
-    const low = armed && !!timer2 && timer2.active && // An unreadable hit count must not silence the alert.
-    (timer2.hits === null || timer2.hits >= MIN_CHAIN_HITS) && timer2.seconds !== null && timer2.seconds > 0 && timer2.seconds < prefs4.alertSeconds;
+    const low = armed && !!timer3 && timer3.active && // An unreadable hit count must not silence the alert.
+    (timer3.hits === null || timer3.hits >= MIN_CHAIN_HITS) && timer3.seconds !== null && timer3.seconds > 0 && timer3.seconds < prefs4.alertSeconds;
     const alerting = low || test;
     setFlashing(alerting);
     if (alerting && prefs4.beep) {
@@ -3099,8 +3177,8 @@ body.dark-mode .nfh-kr-badge--elevated {
     return date.getTime();
   }
   function usable(watches, now = Date.now()) {
-    return (Array.isArray(watches) ? watches : []).filter((watch4) => {
-      const end = toMs(watch4.end_time);
+    return (Array.isArray(watches) ? watches : []).filter((watch5) => {
+      const end = toMs(watch5.end_time);
       return end === null || end > now;
     }).sort((a, b) => toMs(a.start_time) - toMs(b.start_time));
   }
@@ -3359,21 +3437,21 @@ body.dark-mode .nfh-kr-badge--elevated {
   }
   function renderBar({ board, watches, prefs: prefs4, armed, chainActive, flash, busy: busy2, now }) {
     const summary = board ? summarize(board, now) : null;
-    const state7 = summary ? barState(board, summary, now) : { tone: "", text: '<span class="nfh-cw-muted">No chain watch scheduled</span>', actions: "" };
-    if (summary && summary.started && !summary.myCheckin && chainActive && armed && state7.tone !== "attn") {
-      state7.text = '<span class="nfh-cw-need" title="Check in so your time watching is recorded on the chain watch sheet">Not checked in</span> \xB7 ' + state7.text;
-      state7.actions = button("checkin", "Check in");
+    const state8 = summary ? barState(board, summary, now) : { tone: "", text: '<span class="nfh-cw-muted">No chain watch scheduled</span>', actions: "" };
+    if (summary && summary.started && !summary.myCheckin && chainActive && armed && state8.tone !== "attn") {
+      state8.text = '<span class="nfh-cw-need" title="Check in so your time watching is recorded on the chain watch sheet">Not checked in</span> \xB7 ' + state8.text;
+      state8.actions = button("checkin", "Check in");
     }
     const title = board && board.title ? `<span class="nfh-cw-title">${escapeHtml(board.title)}</span>` : "";
-    const status = flash ? `<span class="${flash.error ? "nfh-cw-error" : "nfh-cw-ok"}">${escapeHtml(flash.text)}</span>` : state7.text;
+    const status = flash ? `<span class="${flash.error ? "nfh-cw-error" : "nfh-cw-ok"}">${escapeHtml(flash.text)}</span>` : state8.text;
     const expandable = !!board;
     const expanded = expandable && prefs4.expanded;
     const picker = watches.length > 1 ? `<select class="nfh-cw-picker" data-role="watch-picker" title="Chain watch">${watches.map(
-      (watch4) => `<option value="${escapeHtml(watch4.id)}"${board && board.id === watch4.id ? " selected" : ""}>${escapeHtml(watch4.title || `Chain watch #${watch4.id}`)}</option>`
+      (watch5) => `<option value="${escapeHtml(watch5.id)}"${board && board.id === watch5.id ? " selected" : ""}>${escapeHtml(watch5.title || `Chain watch #${watch5.id}`)}</option>`
     ).join("")}</select>` : title;
     return {
-      tone: state7.tone,
-      html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy2 ? " is-busy" : ""}">${state7.actions}</span>` + alertChip(prefs4, armed)
+      tone: state8.tone,
+      html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy2 ? " is-busy" : ""}">${state8.actions}</span>` + alertChip(prefs4, armed)
     };
   }
   function overCapNote(slot) {
@@ -3636,7 +3714,7 @@ body.dark-mode .nfh-kr-badge--elevated {
   async function load({ force = false } = {}) {
     state.lastListAt = Date.now();
     state.watches = await getActiveWatches({ force });
-    if (!state.watches.some((watch4) => watch4.id === state.watchId)) {
+    if (!state.watches.some((watch5) => watch5.id === state.watchId)) {
       state.watchId = state.watches.length ? state.watches[0].id : null;
       state.board = null;
     }
@@ -3680,9 +3758,9 @@ body.dark-mode .nfh-kr-badge--elevated {
       return;
     }
     const now = Date.now();
-    const timer2 = readChainTimer();
-    updateAlert({ timer: timer2, armed: isArmed(), test: now < state.testUntil });
-    const chainActive = !!timer2 && timer2.active;
+    const timer3 = readChainTimer();
+    updateAlert({ timer: timer3, armed: isArmed(), test: now < state.testUntil });
+    const chainActive = !!timer3 && timer3.active;
     if (chainActive !== state.chainActive) {
       state.chainActive = chainActive;
       render();
@@ -3982,21 +4060,21 @@ body.dark-mode .nfh-kr-badge--elevated {
     [Connection.Rejected]: "Nuke Family Helper has been disconnected from nuke.family, so this may be missing or out of date.",
     [Connection.Unreachable]: "Nuke Family Helper cannot reach nuke.family right now: this may be missing or out of date."
   };
-  var canConnect = (state7) => state7 === Connection.Missing || state7 === Connection.Rejected;
+  var canConnect = (state8) => state8 === Connection.Missing || state8 === Connection.Rejected;
   function pending() {
     const saved = getValue(PENDING_KEY, null);
     if (!saved || typeof saved !== "object" || !saved.secret || !saved.url) return null;
     return saved.expires > Date.now() ? saved : null;
   }
-  function isHidden(state7) {
+  function isHidden(state8) {
     try {
       const hidden = JSON.parse(localStorage.getItem(HIDDEN_KEY) || "null");
-      return Boolean(hidden) && hidden.state === state7 && Date.now() - hidden.at < HIDE_FOR_MS;
+      return Boolean(hidden) && hidden.state === state8 && Date.now() - hidden.at < HIDE_FOR_MS;
     } catch (e) {
       return false;
     }
   }
-  function bannerHtml(state7) {
+  function bannerHtml(state8) {
     const button3 = (attribute, label) => `<button type="button" class="torn-btn" ${attribute}>${label}</button>`;
     const dismiss = '<button type="button" class="nfh-connect-dismiss" data-nfh-connect-dismiss aria-label="Hide" title="Hide for a day">&times;</button>';
     if (phase && phase.kind === "connected") {
@@ -4010,13 +4088,13 @@ body.dark-mode .nfh-kr-badge--elevated {
       return `<span class="nfh-connect-text"><strong>Finish connecting on nuke.family.</strong> Approve there, then come back: this page picks it up by itself.</span><a class="torn-btn nfh-connect-link" href="${escapeHtml(phase.url)}" target="_blank" rel="noopener" data-nfh-connect-open>Open nuke.family</a>` + button3("data-nfh-connect-cancel", "Cancel");
     }
     const failed = phase && phase.kind === "failed" ? ` <span class="nfh-connect-error">${escapeHtml(phase.message)}</span>` : "";
-    const actions = canConnect(state7) ? button3("data-nfh-connect", state7 === Connection.Rejected ? "Reconnect" : "Connect") + '<button type="button" class="nfh-connect-manual" data-nfh-connect-manual>Enter a key instead</button>' : "";
-    return `<span class="nfh-connect-text">${STATE_TEXT[state7]}${failed}</span>${actions}${dismiss}`;
+    const actions = canConnect(state8) ? button3("data-nfh-connect", state8 === Connection.Rejected ? "Reconnect" : "Connect") + '<button type="button" class="nfh-connect-manual" data-nfh-connect-manual>Enter a key instead</button>' : "";
+    return `<span class="nfh-connect-text">${STATE_TEXT[state8]}${failed}</span>${actions}${dismiss}`;
   }
   function renderBanner() {
-    const state7 = connectionState();
+    const state8 = connectionState();
     const busy2 = phase !== null && phase.kind !== "failed";
-    const show = busy2 || state7 !== Connection.Connected && !isHidden(state7);
+    const show = busy2 || state8 !== Connection.Connected && !isHidden(state8);
     let banner = document.getElementById(BANNER_ID);
     if (!show) {
       if (banner) banner.remove();
@@ -4029,7 +4107,7 @@ body.dark-mode .nfh-kr-badge--elevated {
       banner.setAttribute("role", "status");
       document.body.prepend(banner);
     }
-    const html = bannerHtml(state7);
+    const html = bannerHtml(state8);
     if (banner.__nfhHtml !== html) {
       banner.innerHTML = html;
       banner.__nfhHtml = html;
@@ -4037,8 +4115,8 @@ body.dark-mode .nfh-kr-badge--elevated {
     banner.classList.toggle("nfh-connect-banner--ok", Boolean(phase && phase.kind === "connected"));
   }
   function renderNotes() {
-    const state7 = connectionState();
-    const text = NOTE_TEXT[state7];
+    const state8 = connectionState();
+    const text = NOTE_TEXT[state8];
     for (const host of NOTE_HOSTS) {
       const element = document.querySelector(host.selector);
       if (!element) continue;
@@ -4053,7 +4131,7 @@ body.dark-mode .nfh-kr-badge--elevated {
         note.className = NOTE_CLASS;
         element.insertAdjacentElement(host.place, note);
       }
-      const html = `<span>${text}</span>` + (canConnect(state7) ? ' <button type="button" class="nfh-connect-note-link" data-nfh-connect>Connect</button>' : "");
+      const html = `<span>${text}</span>` + (canConnect(state8) ? ' <button type="button" class="nfh-connect-note-link" data-nfh-connect>Connect</button>' : "");
       if (note.__nfhHtml !== html) {
         note.innerHTML = html;
         note.__nfhHtml = html;
@@ -4563,8 +4641,8 @@ body.dark-mode .nfh-kr-badge--elevated {
     }
   }
   function cprState() {
-    const state7 = readJson2(CPR_KEY);
-    return state7 && state7.known && state7.sent ? state7 : { known: {}, sent: {} };
+    const state8 = readJson2(CPR_KEY);
+    return state8 && state8.known && state8.sent ? state8 : { known: {}, sent: {} };
   }
   var pending2 = /* @__PURE__ */ new Map();
   var uploadTimer = null;
@@ -4575,31 +4653,31 @@ body.dark-mode .nfh-kr-badge--elevated {
     if (batch.length === 0) return;
     try {
       await api("/oc/cpr", { method: "POST", data: { cprs: batch.map(([, entry]) => entry) } });
-      const state7 = cprState();
-      for (const [key, entry] of batch) state7.sent[key] = entry.cpr;
-      localStorage.setItem(CPR_KEY, JSON.stringify(state7));
+      const state8 = cprState();
+      for (const [key, entry] of batch) state8.sent[key] = entry.cpr;
+      localStorage.setItem(CPR_KEY, JSON.stringify(state8));
       LogInfo(`OC Assistant sent ${batch.length} CPRs`);
     } catch (error) {
       console.error("[NFH] Could not send CPRs to nuke.family:", error);
     }
   }
   function learnCprs(crimes) {
-    const state7 = cprState();
+    const state8 = cprState();
     let changed = false;
     for (const crime of crimes) {
       for (const slot of crime.slots) {
         if (slot.occupied || slot.cpr === null) continue;
         const key = `${keyFor(crime.name)}|${keyFor(slot.name)}`;
-        if (state7.known[key] !== slot.cpr) {
-          state7.known[key] = slot.cpr;
+        if (state8.known[key] !== slot.cpr) {
+          state8.known[key] = slot.cpr;
           changed = true;
         }
-        if (state7.sent[key] !== slot.cpr) {
+        if (state8.sent[key] !== slot.cpr) {
           pending2.set(key, { crime: crime.name, role: slot.name, cpr: slot.cpr });
         }
       }
     }
-    if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state7));
+    if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state8));
     if (pending2.size > 0 && !uploadTimer) uploadTimer = setTimeout(upload, UPLOAD_DELAY_MS);
   }
   function knownCpr(board, crimeName2, roleName) {
@@ -5321,11 +5399,11 @@ body.dark-mode .nfh-kr-badge--elevated {
     waitForElm(".user-info-list-wrap").then((userInfoList) => {
       LogInfo("Hospital list found, processing initial rows...");
       processHospitalRows();
-      const observer4 = new MutationObserver(() => {
+      const observer5 = new MutationObserver(() => {
         LogInfo("Hospital list changed, reprocessing rows...");
         processHospitalRows();
       });
-      observer4.observe(userInfoList, {
+      observer5.observe(userInfoList, {
         childList: true,
         subtree: true
       });
@@ -5600,8 +5678,8 @@ body.dark-mode .nfh-kr-badge--elevated {
     }
     if (element.title !== chip.title) element.title = chip.title;
     element.classList.add(CHIP_CLASS);
-    for (const state7 of CHIP_STATES) {
-      element.classList.toggle(`${CHIP_CLASS}--${state7}`, state7 === chip.state);
+    for (const state8 of CHIP_STATES) {
+      element.classList.toggle(`${CHIP_CLASS}--${state8}`, state8 === chip.state);
     }
     if (!existing) slot.headerEl.insertAdjacentElement("afterend", element);
   }
@@ -5724,10 +5802,10 @@ body.dark-mode .nfh-kr-badge--elevated {
     const crimes = count === 1 ? "1 stalled crime further down the list has" : `${count} stalled crimes further down the list have`;
     return ` <span class="nfh-oc-bar-muted" data-nfh-oc-stalled-hint>${escapeHtml(crimes)} an open slot your CPR is not known for yet. Scroll down to check it.</span>`;
   }
-  function barHtml(state7) {
+  function barHtml(state8) {
     const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
-    if (state7.kind === "best") {
-      const [best, ...rest] = state7.suggestions;
+    if (state8.kind === "best") {
+      const [best, ...rest] = state8.suggestions;
       const { slot, minCpr } = best.rated;
       const others = rest.filter((suggestion2) => !suggestion2.crime.offPage);
       const flawed = suggestionCaveats(best).length > 0;
@@ -5737,16 +5815,16 @@ body.dark-mode .nfh-kr-badge--elevated {
       const late = best.productive ? "" : ` <strong class="nfh-oc-bar-warning">That is later than the ${escapeHtml(best.thresholdHours)} hours that count as productive,</strong> <span class="nfh-oc-bar-muted">but nothing open would start you sooner.</span>`;
       const belowLevel = best.belowLevel ? ` <strong class="nfh-oc-bar-warning">This crime is below your level (${escapeHtml(best.memberLevel)}).</strong>` : "";
       let lead = flawed ? "Best slot available: " : "Best slot for you: ";
-      if (state7.warning) {
-        lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state7.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
+      if (state8.warning) {
+        lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state8.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
       }
-      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}${stalledHint(state7.hiddenStalled)}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
+      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}${stalledHint(state8.hiddenStalled)}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
     }
-    if (state7.kind === "joined") {
-      return `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state7.crime)}</strong> (level ${escapeHtml(state7.level ?? "?")}) as <strong>${escapeHtml(state7.role)}</strong>, so no other slot is suggested.</span>`;
+    if (state8.kind === "joined") {
+      return `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state8.crime)}</strong> (level ${escapeHtml(state8.level ?? "?")}) as <strong>${escapeHtml(state8.role)}</strong>, so no other slot is suggested.</span>`;
     }
-    if (state7.kind === "warning") {
-      return `${label}<span class="nfh-oc-bar-text"><strong class="nfh-oc-bar-warning">${escapeHtml(state7.warning)}</strong></span>`;
+    if (state8.kind === "warning") {
+      return `${label}<span class="nfh-oc-bar-text"><strong class="nfh-oc-bar-warning">${escapeHtml(state8.warning)}</strong></span>`;
     }
     const messages = {
       none: "None of the open slots loaded so far meets your faction's minimum CPR for you. Scroll down to load more crimes.",
@@ -5754,8 +5832,8 @@ body.dark-mode .nfh-kr-badge--elevated {
       full: "No open slot is loaded yet. Scroll down to load more crimes.",
       low: "The open slots you qualify for are all in crimes below your level, so none is suggested."
     };
-    const hint = state7.kind === "blocked" ? "" : stalledHint(state7.hiddenStalled);
-    return `${label}<span class="nfh-oc-bar-text">${messages[state7.kind]}${hint}</span>`;
+    const hint = state8.kind === "blocked" ? "" : stalledHint(state8.hiddenStalled);
+    return `${label}<span class="nfh-oc-bar-text">${messages[state8.kind]}${hint}</span>`;
   }
   function renderBar2(root3, html) {
     let bar2 = document.getElementById(BAR_ID);
@@ -5912,16 +5990,16 @@ body.dark-mode .nfh-kr-badge--elevated {
     let memberPart = "";
     if (features2.enabled && recruiting && crimes.length > 0) {
       if (features2.suggest) {
-        let state7;
+        let state8;
         const hiddenStalled = result.hiddenStalled;
-        if (suggestions.length > 0) state7 = { kind: "best", suggestions, warning, hiddenStalled };
-        else if (warning) state7 = { kind: "warning", warning };
-        else if (own) state7 = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
-        else if (joining === JoinState.Blocked) state7 = { kind: "blocked" };
-        else if (joining === JoinState.Open && result.withheld > 0) state7 = { kind: "low", hiddenStalled };
-        else if (joining === JoinState.Full) state7 = { kind: "full", hiddenStalled };
-        else state7 = { kind: "none", hiddenStalled };
-        memberPart = barHtml(state7);
+        if (suggestions.length > 0) state8 = { kind: "best", suggestions, warning, hiddenStalled };
+        else if (warning) state8 = { kind: "warning", warning };
+        else if (own) state8 = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
+        else if (joining === JoinState.Blocked) state8 = { kind: "blocked" };
+        else if (joining === JoinState.Open && result.withheld > 0) state8 = { kind: "low", hiddenStalled };
+        else if (joining === JoinState.Full) state8 = { kind: "full", hiddenStalled };
+        else state8 = { kind: "none", hiddenStalled };
+        memberPart = barHtml(state8);
       } else if (warning) {
         memberPart = barHtml({ kind: "warning", warning });
       }
@@ -6094,7 +6172,7 @@ body.dark-mode .nfh-kr-badge--elevated {
     installBridge();
     const id = nextId++;
     return new Promise((resolve, reject) => {
-      const timer2 = setTimeout(() => {
+      const timer3 = setTimeout(() => {
         document.removeEventListener(RESPONSE, listener);
         reject(new Error("The editor did not answer."));
       }, TIMEOUT_MS);
@@ -6106,7 +6184,7 @@ body.dark-mode .nfh-kr-badge--elevated {
           return;
         }
         if (answer.id !== id) return;
-        clearTimeout(timer2);
+        clearTimeout(timer3);
         document.removeEventListener(RESPONSE, listener);
         if (answer.ok) resolve(answer);
         else reject(new Error(answer.error || "The editor refused."));
@@ -6283,33 +6361,33 @@ body.dark-mode .nfh-kr-badge--elevated {
   function scopeSelect(field, selected) {
     return `<select class="nfh-cw-input" data-field="${field}" aria-label="Where it shows">${Object.entries(SCOPE_LABELS).map(([value, label]) => `<option value="${value}"${value === selected ? " selected" : ""}>${label}</option>`).join("")}</select>`;
   }
-  function formHtml(state7) {
-    const form = state7.form;
+  function formHtml(state8) {
+    const form = state8.form;
     if (!form) return "";
     if (form.mode === "save") {
       return `<div class="nfh-mt-form">
       <input type="text" class="nfh-cw-input" data-field="name" maxlength="80" placeholder="Template name" value="${escapeHtml(form.name)}">
       <label class="nfh-cw-muted">Show in ${scopeSelect("scope", form.scope)}</label>
-      ${button2("save-confirm", "Save", { primary: true, disabled: state7.busy })}${button2("form-cancel", "Cancel")}
-      <div class="nfh-cw-muted nfh-mt-note">Saves the message as it is in the editor${state7.hasSubject ? ", and the subject" : ""}. Only you can see your templates.</div>
+      ${button2("save-confirm", "Save", { primary: true, disabled: state8.busy })}${button2("form-cancel", "Cancel")}
+      <div class="nfh-cw-muted nfh-mt-note">Saves the message as it is in the editor${state8.hasSubject ? ", and the subject" : ""}. Only you can see your templates.</div>
     </div>`;
     }
     return `<div class="nfh-mt-form">
     <input type="text" class="nfh-cw-input" data-field="name" maxlength="80" value="${escapeHtml(form.name)}" aria-label="Template name">
     <label class="nfh-cw-muted">Show in ${scopeSelect("scope", form.scope)}</label>
-    ${button2("rename-confirm", "Save", { primary: true, id: form.id, disabled: state7.busy })}${button2("form-cancel", "Cancel")}
+    ${button2("rename-confirm", "Save", { primary: true, id: form.id, disabled: state8.busy })}${button2("form-cancel", "Cancel")}
   </div>`;
   }
-  function confirmHtml(state7) {
-    const confirm2 = state7.confirm;
+  function confirmHtml(state8) {
+    const confirm2 = state8.confirm;
     if (!confirm2) return "";
     return `<div class="nfh-mt-confirm"><span>${escapeHtml(confirm2.text)}</span>
-    ${button2("confirm-yes", escapeHtml(confirm2.yes), { primary: true, disabled: state7.busy })}${button2("confirm-no", "Cancel")}</div>`;
+    ${button2("confirm-yes", escapeHtml(confirm2.yes), { primary: true, disabled: state8.busy })}${button2("confirm-no", "Cancel")}</div>`;
   }
-  function helpHtml(state7) {
-    if (!state7.help) return "";
-    const rows2 = PLACEHOLDERS.filter((placeholder) => !placeholder.where || placeholder.where === state7.page).map((placeholder) => `<li><code>{${placeholder.key}}</code> ${escapeHtml(placeholder.label)}</li>`).join("");
-    const recipient = state7.page === "messages" ? " Pick the recipient before you use a template with <code>{name}</code> or <code>{id}</code>." : "";
+  function helpHtml(state8) {
+    if (!state8.help) return "";
+    const rows2 = PLACEHOLDERS.filter((placeholder) => !placeholder.where || placeholder.where === state8.page).map((placeholder) => `<li><code>{${placeholder.key}}</code> ${escapeHtml(placeholder.label)}</li>`).join("");
+    const recipient = state8.page === "messages" ? " Pick the recipient before you use a template with <code>{name}</code> or <code>{id}</code>." : "";
     return `<div class="nfh-mt-help">
     <div>Write these in a template (in the message or the subject) and they are filled in when you use it:</div>
     <ul>${rows2}</ul>
@@ -6317,10 +6395,10 @@ body.dark-mode .nfh-kr-badge--elevated {
   </div>`;
   }
   var matches = (query, ...texts) => !query || texts.some((text) => String(text || "").toLowerCase().includes(query));
-  function allHtml(state7) {
-    if (!state7.open || !state7.list) return "";
-    const list = state7.list;
-    const query = state7.query.trim().toLowerCase();
+  function allHtml(state8) {
+    if (!state8.open || !state8.list) return "";
+    const list = state8.list;
+    const query = state8.query.trim().toLowerCase();
     const sections = [];
     const personal = (list.personal || []).filter((template) => matches(query, template.name, template.subject));
     sections.push(`<div class="nfh-mt-section"><div class="nfh-mt-heading">Your templates</div>${personal.length ? personal.map(
@@ -6364,27 +6442,27 @@ body.dark-mode .nfh-kr-badge--elevated {
     }
     const siteLink = list.links && list.links.faction_mail ? `<a href="${escapeHtml(list.links.faction_mail)}" target="_blank" rel="noopener">Faction mail on nuke.family \u2197</a>` : "";
     return `<div class="nfh-mt-all">
-    <input type="search" class="nfh-cw-input nfh-mt-search" data-field="query" placeholder="Search templates" value="${escapeHtml(state7.query)}">
+    <input type="search" class="nfh-cw-input nfh-mt-search" data-field="query" placeholder="Search templates" value="${escapeHtml(state8.query)}">
     ${sections.join("")}
     ${siteLink ? `<div class="nfh-mt-foot">${siteLink}</div>` : ""}
   </div>`;
   }
-  function renderBar3(state7) {
-    const list = state7.list;
+  function renderBar3(state8) {
+    const list = state8.list;
     const total = list ? (list.personal || []).length + (list.faction || []).length : 0;
     const pins = list ? pinnedChips(list) : "";
-    const status = state7.loading ? `<span class="nfh-cw-muted">Loading\u2026</span>` : state7.error && !list ? `<span class="nfh-cw-error">${escapeHtml(state7.error)}</span>` : pins || `<span class="nfh-cw-muted">${total ? "Pin templates (\u2606 in All) to show them here." : "Save a message to use it again later."}</span>`;
-    const message = state7.message ? `<div class="nfh-mt-message nfh-mt-message--${state7.message.tone}" role="status">${escapeHtml(state7.message.text)}</div>` : "";
+    const status = state8.loading ? `<span class="nfh-cw-muted">Loading\u2026</span>` : state8.error && !list ? `<span class="nfh-cw-error">${escapeHtml(state8.error)}</span>` : pins || `<span class="nfh-cw-muted">${total ? "Pin templates (\u2606 in All) to show them here." : "Save a message to use it again later."}</span>`;
+    const message = state8.message ? `<div class="nfh-mt-message nfh-mt-message--${state8.message.tone}" role="status">${escapeHtml(state8.message.text)}</div>` : "";
     return `<div class="nfh-cw-bar nfh-mt-bar">
       <span class="nfh-mt-title">Templates</span>
       <span class="nfh-mt-pins">${status}</span>
       <span class="nfh-cw-actions nfh-mt-buttons">
-        ${button2("toggle-all", `All${total ? ` (${total})` : ""} ${state7.open ? "\u25B4" : "\u25BE"}`, { disabled: !list })}
-        ${button2("save", "Save", { disabled: state7.busy || !list })}
+        ${button2("toggle-all", `All${total ? ` (${total})` : ""} ${state8.open ? "\u25B4" : "\u25BE"}`, { disabled: !list })}
+        ${button2("save", "Save", { disabled: state8.busy || !list })}
         ${button2("help", "?", { title: "Placeholders you can use", extra: ' aria-label="Placeholders"' })}
       </span>
     </div>
-    ${message}${confirmHtml(state7)}${formHtml(state7)}${helpHtml(state7)}${allHtml(state7)}`;
+    ${message}${confirmHtml(state8)}${formHtml(state8)}${helpHtml(state8)}${allHtml(state8)}`;
   }
 
   // src/features/mail-templates/index.js
@@ -6748,7 +6826,7 @@ body.dark-mode .nfh-kr-badge--elevated {
     const url = `/${page}?rfcv=${encodeURIComponent(rfcv)}`;
     const body = new URLSearchParams(fields).toString();
     return new Promise((resolve, reject) => {
-      const timer2 = setTimeout(() => {
+      const timer3 = setTimeout(() => {
         document.removeEventListener(RESPONSE2, listener);
         reject(new Error("Torn did not answer in time. Check the armoury before trying again."));
       }, TIMEOUT_MS2);
@@ -6760,7 +6838,7 @@ body.dark-mode .nfh-kr-badge--elevated {
           return;
         }
         if (answer.id !== id) return;
-        clearTimeout(timer2);
+        clearTimeout(timer3);
         document.removeEventListener(RESPONSE2, listener);
         resolve(answer);
       }
@@ -7610,6 +7688,238 @@ body.dark-mode .nfh-kr-badge--elevated {
     }
   };
 
+  // src/features/stocks/logic.js
+  var BUCKET_LABELS = { personal: "Personal", faction: "Faction" };
+  var money = (value) => {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return "";
+    if (n >= 1e9) return `$${(n / 1e9).toFixed(n >= 1e10 ? 0 : 1)}b`;
+    if (n >= 1e6) return `$${(n / 1e6).toFixed(n >= 1e7 ? 0 : 1)}m`;
+    if (n >= 1e3) return `$${Math.round(n / 1e3)}k`;
+    return `$${Math.round(n)}`;
+  };
+  var shares = (n) => Number(n || 0).toLocaleString("en-US");
+  function parseNumber(text) {
+    const n = Number(String(text || "").replace(/[^0-9.\-]/g, ""));
+    return Number.isFinite(n) ? n : null;
+  }
+  function signalsFor(data, stockId) {
+    const out = [];
+    for (const portfolio of data?.portfolios || []) {
+      const row2 = portfolio.stocks?.[stockId] ?? portfolio.stocks?.[String(stockId)];
+      if (row2 && row2.action) out.push({ bucket: portfolio.bucket, ...row2 });
+    }
+    return out;
+  }
+  function rowTags(signals) {
+    return signals.filter((signal) => ["BUY", "SELL", "HOLD"].includes(signal.action)).map((signal) => ({ bucket: signal.bucket, action: signal.action, loud: signal.action !== "HOLD" }));
+  }
+  function matchTransactions(rows2, lots) {
+    const left = [...lots || []];
+    return rows2.map((row2) => {
+      const index = left.findIndex((lot) => Number(lot.shares) === row2.shares && Math.abs(Number(lot.price) - row2.price) < 0.015);
+      return index === -1 ? null : left.splice(index, 1)[0];
+    });
+  }
+  function lotLabel(lot, multiplePortfolios) {
+    if (!lot) return null;
+    const owner = multiplePortfolios || lot.bucket === "faction" ? `${BUCKET_LABELS[lot.bucket] || lot.bucket} \xB7 ` : "";
+    if (!lot.trading) return { kind: "other", text: `${owner}${lot.category}` };
+    if (lot.signal === "SELL") return { kind: "sell", text: `${owner}SELL` };
+    if (lot.signal === "HOLD") return { kind: "hold", text: `${owner}Hold \u2192 $${Number(lot.sell_at).toFixed(2)}` };
+    return { kind: "other", text: `${owner}${lot.category}` };
+  }
+
+  // src/features/stocks/index.js
+  var ROOT2 = "#stockmarketroot";
+  var BAR_ID3 = "nfh-stock-bar";
+  var CACHE_KEY2 = "nfhStockSignals";
+  var DENIED_KEY2 = "nfhStockSignalsDenied";
+  var CACHE_MS2 = 2 * 60 * 1e3;
+  var DENIED_MS2 = 12 * 60 * 60 * 1e3;
+  var state5 = { data: null, loading: null };
+  var observer4 = null;
+  var observedRoot3 = null;
+  var timer2 = null;
+  function readJson4(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || "null");
+    } catch (error) {
+      return null;
+    }
+  }
+  function writeJson2(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+    }
+  }
+  async function load5() {
+    if (state5.data) return state5.data;
+    if (state5.loading) return state5.loading;
+    const denied = readJson4(DENIED_KEY2);
+    if (denied && Date.now() - denied < DENIED_MS2) return null;
+    const cached = readJson4(CACHE_KEY2);
+    if (cached && Date.now() - cached.at < CACHE_MS2) {
+      state5.data = cached.data;
+      return state5.data;
+    }
+    state5.loading = api("/stocks/signals").then((data) => {
+      state5.data = data;
+      writeJson2(CACHE_KEY2, { at: Date.now(), data });
+      return data;
+    }).catch((error) => {
+      if (error instanceof ApiError && error.status === 403) writeJson2(DENIED_KEY2, Date.now());
+      LogInfo("[stocks]", error);
+      return null;
+    }).finally(() => {
+      state5.loading = null;
+      schedule2(0);
+    });
+    return state5.loading;
+  }
+  var both = () => (state5.data?.portfolios || []).length > 1;
+  var hasAnything = () => (state5.data?.portfolios || []).length > 0 || (state5.data?.lots || []).length > 0;
+  function renderBar4(root3) {
+    let bar2 = document.getElementById(BAR_ID3);
+    if (!hasAnything()) {
+      bar2?.remove();
+      return;
+    }
+    const market = root3.querySelector('[class*="stockMarket___"]');
+    if (!market) return;
+    if (!bar2) {
+      bar2 = document.createElement("div");
+      bar2.id = BAR_ID3;
+      bar2.className = "nfh-cw nfh-st-bar";
+      market.parentElement.insertBefore(bar2, market);
+    }
+    const lines = (state5.data.portfolios || []).map(
+      (portfolio) => `<div><strong>${escapeHtml(BUCKET_LABELS[portfolio.bucket] || portfolio.bucket)}:</strong> ${escapeHtml(portfolio.summary)}</div>`
+    );
+    if (!lines.length) lines.push(`<div class="nfh-cw-muted">Signals are off: your blocks are labelled, but nothing says buy or sell.</div>`);
+    const html = `<div class="nfh-st-lines">${lines.join("")}</div>
+    <a class="nfh-cw-btn" href="${escapeHtml(state5.data.tracker_url)}" target="_blank" rel="noopener">Stock tracker \u2197</a>`;
+    if (bar2.innerHTML !== html) bar2.innerHTML = html;
+  }
+  function tagRows(root3) {
+    for (const row2 of root3.querySelectorAll('ul[id][class*="stock___"]')) {
+      const stockId = Number(row2.id);
+      const tags = rowTags(signalsFor(state5.data, stockId));
+      const host = row2.querySelector('[class*="nameContainer___"]') || row2.querySelector('[class*="stockName___"]');
+      if (!host) continue;
+      let element = host.querySelector(".nfh-st-tags");
+      if (!tags.length) {
+        element?.remove();
+        continue;
+      }
+      const html = tags.map((tag) => `<span class="nfh-st-tag nfh-st-tag--${tag.action.toLowerCase()}">${both() || tag.bucket === "faction" ? `${escapeHtml(BUCKET_LABELS[tag.bucket])} ` : ""}${tag.action === "HOLD" ? "Hold" : tag.action}</span>`).join("");
+      if (!element) {
+        element = document.createElement("span");
+        element.className = "nfh-st-tags";
+        host.appendChild(element);
+      }
+      if (element.innerHTML !== html) element.innerHTML = html;
+    }
+  }
+  function decoratePanel(root3) {
+    const panel = root3.querySelector("#panel-ownedTab");
+    if (!panel) return;
+    const stockRow = panel.previousElementSibling?.matches('ul[id][class*="stock___"]') ? panel.previousElementSibling : panel.closest("[id]")?.previousElementSibling;
+    const stockId = Number(stockRow?.id || panel.parentElement?.querySelector('ul[id][class*="stock___"]')?.id);
+    if (!stockId) return;
+    const signals = signalsFor(state5.data, stockId);
+    const lots = (state5.data.lots || []).filter((lot) => lot.stock_id === stockId);
+    const lines = [];
+    for (const signal of signals) {
+      const who = both() || signal.bucket === "faction" ? `${BUCKET_LABELS[signal.bucket]}: ` : "";
+      if (signal.action === "BUY") lines.push(`<div class="nfh-st-buy">${escapeHtml(who)}<strong>Buy ~${escapeHtml(shares(signal.buy_shares))} shares</strong> (${escapeHtml(money(signal.buy_amount))}).</div>`);
+      else if (signal.action === "SELL") lines.push(`<div class="nfh-st-sell">${escapeHtml(who)}<strong>Sell the blocks marked SELL</strong>${signal.note ? ` <span class="nfh-cw-muted">${escapeHtml(signal.note)}</span>` : ""}</div>`);
+      else if (signal.action === "HOLD") lines.push(`<div>${escapeHtml(who)}Hold${signal.note ? ` <span class="nfh-cw-muted">${escapeHtml(signal.note)}</span>` : ""}</div>`);
+      else if (signal.note) lines.push(`<div class="nfh-cw-muted">${escapeHtml(who)}${escapeHtml(signal.note)}</div>`);
+    }
+    const anchor = panel.querySelector('[class*="transactionsContainer___"]') || panel.querySelector('[class*="manageTab___"]');
+    let box = panel.querySelector(".nfh-st-advice");
+    if (lines.length && anchor) {
+      if (!box) {
+        box = document.createElement("div");
+        box.className = "nfh-cw nfh-st-advice";
+        anchor.parentElement.insertBefore(box, anchor);
+      }
+      const html = lines.join("");
+      if (box.innerHTML !== html) box.innerHTML = html;
+    } else {
+      box?.remove();
+    }
+    const rows2 = [...panel.querySelectorAll('ul[class*="transaction___"]')];
+    const read2 = rows2.map((row2) => ({
+      shares: parseNumber(row2.querySelector('[class*="shares___"]')?.textContent),
+      price: parseNumber(row2.querySelector('[class*="bought___"]')?.textContent)
+    }));
+    const matched = matchTransactions(read2, lots);
+    rows2.forEach((row2, index) => {
+      const label = lotLabel(matched[index], both());
+      const next = row2.nextElementSibling;
+      let line = next?.classList.contains("nfh-st-lotline") ? next : null;
+      row2.classList.toggle("nfh-st-row--sell", label?.kind === "sell");
+      if (!label) {
+        line?.remove();
+        return;
+      }
+      if (!line) {
+        line = document.createElement("div");
+        line.className = "nfh-st-lotline";
+        line.innerHTML = '<span class="nfh-st-lot"></span>';
+        row2.after(line);
+      }
+      const tag = line.firstElementChild;
+      const className = `nfh-st-lot nfh-st-lot--${label.kind}`;
+      if (tag.className !== className) tag.className = className;
+      if (tag.textContent !== label.text) tag.textContent = label.text;
+    });
+  }
+  function redraw2() {
+    const root3 = document.querySelector(ROOT2);
+    if (!root3 || !state5.data) return;
+    renderBar4(root3);
+    tagRows(root3);
+    decoratePanel(root3);
+  }
+  function schedule2(delay = 200) {
+    clearTimeout(timer2);
+    timer2 = setTimeout(redraw2, delay);
+  }
+  function watch3(root3) {
+    if (observedRoot3 === root3) return;
+    observer4?.disconnect();
+    observedRoot3 = root3;
+    observer4 = new MutationObserver((records) => {
+      const ours = records.every(
+        (record) => [...record.addedNodes, ...record.removedNodes].every((node) => node.nodeType !== 1 || /(^|\s)nfh-/.test(node.className || "") || node.id === BAR_ID3)
+      );
+      if (!ours) schedule2();
+    });
+    observer4.observe(root3, { childList: true, subtree: true });
+  }
+  var stocks_default = {
+    name: "Stock signals",
+    pages: [PageType.Stocks],
+    init() {
+      if (!/[?&]sid=stocks\b/.test(location.search)) return;
+      let tries = 20;
+      const attach = () => {
+        const root3 = document.querySelector(ROOT2);
+        if (root3 && root3.querySelector('[class*="stockMarket___"]')) {
+          watch3(root3);
+          load5().then(() => schedule2(0));
+          return;
+        }
+        if (--tries > 0) setTimeout(attach, 400);
+      };
+      attach();
+    }
+  };
+
   // src/features/ranked-war/logic.js
   var Group = {
     Out: 0,
@@ -7848,7 +8158,7 @@ body.dark-mode .nfh-kr-badge--elevated {
   }
 
   // src/features/ranked-war/index.js
-  var BAR_ID3 = "nfh-war-bar";
+  var BAR_ID4 = "nfh-war-bar";
   var ANCHOR_SELECTOR2 = "#faction_war_list_id";
   var LIST_SELECTOR = "#faction_war_list_id .faction-war ul.members-list";
   var STATUS_ATTR = "data-nfh-war";
@@ -7864,7 +8174,7 @@ body.dark-mode .nfh-kr-badge--elevated {
   var UPLOAD_RETRY_MS = 5 * 60 * 1e3;
   var UPLOAD_MAX = 300;
   var STALE_MS = 60 * 1e3;
-  var state5 = {
+  var state6 = {
     target: null,
     // whose war is open: "" for your own faction's, else a faction id
     war: void 0,
@@ -7903,21 +8213,21 @@ body.dark-mode .nfh-kr-badge--elevated {
     const id = params.get("step") === "profile" && params.get("ID");
     return id && /^\d+$/.test(id) ? id : null;
   }
-  function watch3(target) {
-    if (state5.target === target) return;
-    state5.target = target;
-    state5.war = void 0;
-    state5.members = {};
+  function watch4(target) {
+    if (state6.target === target) return;
+    state6.target = target;
+    state6.war = void 0;
+    state6.members = {};
     for (const source of SOURCES) {
-      state5.held[source] = {};
-      state5.fresh[source] = /* @__PURE__ */ new Set();
+      state6.held[source] = {};
+      state6.fresh[source] = /* @__PURE__ */ new Set();
       pending3[source].clear();
     }
-    state5.statsAt = 0;
-    state5.uploadAfter = 0;
-    state5.fetchedAt = 0;
-    state5.nextPollAt = 0;
-    state5.error = false;
+    state6.statsAt = 0;
+    state6.uploadAfter = 0;
+    state6.fetchedAt = 0;
+    state6.nextPollAt = 0;
+    state6.error = false;
     memos.clear();
   }
   function setAttr(element, name, value) {
@@ -7968,9 +8278,9 @@ body.dark-mode .nfh-kr-badge--elevated {
     return cell && Number(cell.textContent.replace(/,/g, "")) || 0;
   }
   function noteForUpload(id, onPage) {
-    if (state5.statsAt === 0 || Date.now() < state5.uploadAfter) return;
+    if (state6.statsAt === 0 || Date.now() < state6.uploadAfter) return;
     for (const source of SOURCES) {
-      if (!onPage[source] || state5.fresh[source].has(id) || pending3[source].has(id)) continue;
+      if (!onPage[source] || state6.fresh[source].has(id) || pending3[source].has(id)) continue;
       pending3[source].set(id, onPage[source]);
       clearTimeout(uploadTimer2);
       uploadTimer2 = setTimeout(upload2, UPLOAD_DELAY_MS2);
@@ -7978,7 +8288,7 @@ body.dark-mode .nfh-kr-badge--elevated {
   }
   async function upload2() {
     uploadTimer2 = null;
-    const target = state5.target;
+    const target = state6.target;
     for (const source of SOURCES) {
       const batch = [...pending3[source].entries()].slice(0, UPLOAD_MAX);
       if (batch.length === 0) continue;
@@ -7992,11 +8302,11 @@ body.dark-mode .nfh-kr-badge--elevated {
             estimates: batch.map(([id, total]) => ({ id: Number(id), total }))
           }
         });
-        if (state5.target !== target) return;
-        for (const [id] of batch) state5.fresh[source].add(id);
+        if (state6.target !== target) return;
+        for (const [id] of batch) state6.fresh[source].add(id);
         LogInfo(`War board sent ${batch.length} ${source} estimates`);
       } catch (error) {
-        state5.uploadAfter = Date.now() + UPLOAD_RETRY_MS;
+        state6.uploadAfter = Date.now() + UPLOAD_RETRY_MS;
         console.error("[NFH] Could not send stat estimates to nuke.family:", error);
       }
     }
@@ -8021,12 +8331,12 @@ body.dark-mode .nfh-kr-badge--elevated {
     written = /* @__PURE__ */ new WeakMap();
   }
   function hasData() {
-    return !!state5.war && Date.now() - state5.fetchedAt < STALE_MS;
+    return !!state6.war && Date.now() - state6.fetchedAt < STALE_MS;
   }
   function decorate2(lists) {
     const prefs4 = getPrefs2();
     const live = hasData();
-    const now = Date.now() + state5.clockOffset;
+    const now = Date.now() + state6.clockOffset;
     const compare = live ? comparatorFor(prefs4.sort, prefs4.then) : null;
     let anyStats = false;
     let heldShown = false;
@@ -8041,10 +8351,10 @@ body.dark-mode .nfh-kr-badge--elevated {
         }
         const statusCell = cellOf(row2, "status");
         const pageKind = pageKindOf(statusCell);
-        const entry = classify(state5.members[id], pageKind, now, memos.get(id));
+        const entry = classify(state6.members[id], pageKind, now, memos.get(id));
         memos.set(id, entry.memo);
         const onPage = pageEstimatesOf(row2);
-        const held = { bsp: state5.held.bsp[id], ffscouter: state5.held.ffscouter[id] };
+        const held = { bsp: state6.held.bsp[id], ffscouter: state6.held.ffscouter[id] };
         const estimate = pickEstimate(onPage, held, prefs4.source);
         noteForUpload(id, onPage);
         for (const source of SOURCES) {
@@ -8069,9 +8379,9 @@ body.dark-mode .nfh-kr-badge--elevated {
       }
       if (compare && !list.closest(FF_BUSY_SELECTOR)) reorder(list, entries, compare);
     }
-    state5.anyStats = anyStats;
-    state5.heldShown = heldShown;
-    state5.sources = sources;
+    state6.anyStats = anyStats;
+    state6.heldShown = heldShown;
+    state6.sources = sources;
   }
   function reorder(list, entries, compare) {
     const sorted = [...entries].sort(compare);
@@ -8081,17 +8391,17 @@ body.dark-mode .nfh-kr-badge--elevated {
     list.insertBefore(fragment, list.firstChild);
   }
   function statusText() {
-    if (state5.war === null) {
-      return state5.target ? "nuke.family found no ranked war on for this faction." : "nuke.family has no ranked war on for your faction yet.";
+    if (state6.war === null) {
+      return state6.target ? "nuke.family found no ranked war on for this faction." : "nuke.family has no ranked war on for your faction yet.";
     }
-    if (state5.error && !hasData()) return "Could not reach nuke.family. Trying again shortly.";
+    if (state6.error && !hasData()) return "Could not reach nuke.family. Trying again shortly.";
     if (!hasData()) return "Loading statuses\u2026";
-    const age = Math.round((Date.now() - state5.fetchedAt) / 1e3);
+    const age = Math.round((Date.now() - state6.fetchedAt) / 1e3);
     return age < 15 ? "Live" : `Updated ${age}s ago`;
   }
   function thenSelect(prefs4) {
     const options = [
-      ...state5.anyStats ? [[Then.StatsAsc, "lowest stats"], [Then.StatsDesc, "highest stats"]] : [],
+      ...state6.anyStats ? [[Then.StatsAsc, "lowest stats"], [Then.StatsDesc, "highest stats"]] : [],
       [Then.ScoreDesc, "highest score"],
       [Then.ScoreAsc, "lowest score"],
       [Then.Recent, "latest out of hospital"]
@@ -8099,25 +8409,25 @@ body.dark-mode .nfh-kr-badge--elevated {
     const chosen = options.some(([value]) => value === prefs4.then) ? prefs4.then : "";
     return '<label title="How members with the same status are ordered">then <select data-pref="then">' + (chosen === "" ? `<option value="" selected>Torn's order</option>` : "") + options.map(([value, label]) => `<option value="${value}"${value === chosen ? " selected" : ""}>${label}</option>`).join("") + "</select></label>";
   }
-  function renderBar4() {
+  function renderBar5() {
     const prefs4 = getPrefs2();
     const chip = (mode, label, title) => `<button type="button" class="nfh-cw-chip${prefs4.sort === mode ? " is-armed" : ""}" data-sort="${mode}" title="${title}">${label}</button>`;
-    return '<div class="nfh-cw-bar"><strong>War board</strong>' + (state5.war ? '<span class="nfh-cw-muted">Sort</span>' + chip(SortMode.Status, "Hospital", "Who can be hit now, then who leaves hospital next") + (state5.anyStats ? chip(SortMode.StatsAsc, "Stats \u25B2", "Lowest battle stat estimate first") + chip(SortMode.StatsDesc, "Stats \u25BC", "Highest battle stat estimate first") : "") + chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them (or BSP / FF Scouter, if you sort with theirs)") + (prefs4.sort === SortMode.Status ? thenSelect(prefs4) : "") + (state5.sources.size > 1 ? `<label title="Whose estimate to use when both are known">Estimates <select data-pref="source"><option value="${Source.Bsp}"${prefs4.source === Source.Bsp ? " selected" : ""}>BSP</option><option value="${Source.FfScouter}"${prefs4.source === Source.FfScouter ? " selected" : ""}>FF Scouter</option></select></label>` : "") + (state5.heldShown || state5.anyStats && !prefs4.showStats ? `<label title="Show the estimates other members' BSP or FF Scouter passed on to nuke.family, where yours shows none"><input type="checkbox" data-pref="showStats"${prefs4.showStats ? " checked" : ""}> Show stats</label>` : "") : "") + `<span class="nfh-cw-status nfh-cw-muted">${statusText()}</span></div>`;
+    return '<div class="nfh-cw-bar"><strong>War board</strong>' + (state6.war ? '<span class="nfh-cw-muted">Sort</span>' + chip(SortMode.Status, "Hospital", "Who can be hit now, then who leaves hospital next") + (state6.anyStats ? chip(SortMode.StatsAsc, "Stats \u25B2", "Lowest battle stat estimate first") + chip(SortMode.StatsDesc, "Stats \u25BC", "Highest battle stat estimate first") : "") + chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them (or BSP / FF Scouter, if you sort with theirs)") + (prefs4.sort === SortMode.Status ? thenSelect(prefs4) : "") + (state6.sources.size > 1 ? `<label title="Whose estimate to use when both are known">Estimates <select data-pref="source"><option value="${Source.Bsp}"${prefs4.source === Source.Bsp ? " selected" : ""}>BSP</option><option value="${Source.FfScouter}"${prefs4.source === Source.FfScouter ? " selected" : ""}>FF Scouter</option></select></label>` : "") + (state6.heldShown || state6.anyStats && !prefs4.showStats ? `<label title="Show the estimates other members' BSP or FF Scouter passed on to nuke.family, where yours shows none"><input type="checkbox" data-pref="showStats"${prefs4.showStats ? " checked" : ""}> Show stats</label>` : "") : "") + `<span class="nfh-cw-status nfh-cw-muted">${statusText()}</span></div>`;
   }
   function ensureBar() {
-    let bar2 = document.getElementById(BAR_ID3);
+    let bar2 = document.getElementById(BAR_ID4);
     if (!bar2) {
       const anchor = document.querySelector(ANCHOR_SELECTOR2);
       if (!anchor) return;
       bar2 = document.createElement("div");
-      bar2.id = BAR_ID3;
+      bar2.id = BAR_ID4;
       bar2.className = "nfh-cw nfh-war-bar";
       bar2.addEventListener("click", onClick4);
       bar2.addEventListener("change", onChange2);
       anchor.insertAdjacentElement("beforebegin", bar2);
       barHtml2 = "";
     }
-    const html = renderBar4();
+    const html = renderBar5();
     if (html !== barHtml2) {
       barHtml2 = html;
       bar2.innerHTML = html;
@@ -8151,39 +8461,39 @@ body.dark-mode .nfh-kr-badge--elevated {
     }
   }
   async function poll2() {
-    const wantStats = Date.now() - state5.statsAt > STATS_REFRESH_MS;
-    const target = state5.target;
+    const wantStats = Date.now() - state6.statsAt > STATS_REFRESH_MS;
+    const target = state6.target;
     const query = [target ? `faction_id=${target}` : "", wantStats ? "stats=1" : ""].filter(Boolean).join("&");
-    state5.loading = true;
+    state6.loading = true;
     try {
       const response = await api("/war/board" + (query ? `?${query}` : ""));
-      if (state5.target !== target) return;
+      if (state6.target !== target) return;
       const data = response.data || {};
-      state5.error = false;
+      state6.error = false;
       if (!data.war) {
-        state5.war = null;
-        state5.nextPollAt = Date.now() + (data.recheck_seconds || 600) * 1e3;
+        state6.war = null;
+        state6.nextPollAt = Date.now() + (data.recheck_seconds || 600) * 1e3;
         return;
       }
-      state5.war = data.war;
-      state5.members = data.members || {};
-      state5.fetchedAt = Date.now();
-      state5.clockOffset = data.server_time * 1e3 - Date.now();
-      state5.nextPollAt = Date.now() + (data.poll_seconds * 1e3 || DEFAULT_POLL_MS);
+      state6.war = data.war;
+      state6.members = data.members || {};
+      state6.fetchedAt = Date.now();
+      state6.clockOffset = data.server_time * 1e3 - Date.now();
+      state6.nextPollAt = Date.now() + (data.poll_seconds * 1e3 || DEFAULT_POLL_MS);
       if (data.estimates) {
         for (const source of SOURCES) {
-          state5.held[source] = data.estimates[source] || {};
-          state5.fresh[source] = new Set(((data.estimates_fresh || {})[source] || []).map(String));
+          state6.held[source] = data.estimates[source] || {};
+          state6.fresh[source] = new Set(((data.estimates_fresh || {})[source] || []).map(String));
         }
-        state5.statsAt = Date.now();
+        state6.statsAt = Date.now();
       }
     } catch (error) {
-      if (state5.target !== target) return;
-      state5.error = true;
-      state5.nextPollAt = Date.now() + ERROR_RETRY_MS;
+      if (state6.target !== target) return;
+      state6.error = true;
+      state6.nextPollAt = Date.now() + ERROR_RETRY_MS;
       console.error("[NFH] Could not load the war board from nuke.family:", error);
     } finally {
-      state5.loading = false;
+      state6.loading = false;
       refresh();
     }
   }
@@ -8193,20 +8503,20 @@ body.dark-mode .nfh-kr-badge--elevated {
       stop2();
       return;
     }
-    watch3(target);
+    watch4(target);
     if (document.hidden) return;
     const lists = document.querySelectorAll(LIST_SELECTOR);
     if (lists.length === 0) return;
     decorate2(lists);
     ensureBar();
-    if (!state5.loading && Date.now() >= state5.nextPollAt) {
+    if (!state6.loading && Date.now() >= state6.nextPollAt) {
       poll2();
     }
   }
   function stop2() {
     clearInterval(ticker2);
     ticker2 = null;
-    const bar2 = document.getElementById(BAR_ID3);
+    const bar2 = document.getElementById(BAR_ID4);
     if (bar2) bar2.remove();
     clearAll2();
     memos.clear();
@@ -8721,8 +9031,8 @@ body.dark-mode .nfh-kr-badge--elevated {
   }
   function retalsToAnnounce(retals, announced, nowSeconds, minSeconds) {
     return visibleRetals(retals, nowSeconds).filter((retal) => {
-      const state7 = retalState(retal, nowSeconds);
-      return (state7 === "free" || state7 === "mine") && retal.expires_at - nowSeconds >= minSeconds && !announced.has(noticeKey(retal));
+      const state8 = retalState(retal, nowSeconds);
+      return (state8 === "free" || state8 === "mine") && retal.expires_at - nowSeconds >= minSeconds && !announced.has(noticeKey(retal));
     });
   }
 
@@ -8730,7 +9040,7 @@ body.dark-mode .nfh-kr-badge--elevated {
   var SENT_KEY = "nfhRetalsSent";
   var SENT_KEEP_SECONDS = WINDOW_SECONDS * 2;
   var sent = null;
-  function load5() {
+  function load6() {
     if (sent) return sent;
     sent = /* @__PURE__ */ new Map();
     try {
@@ -8749,10 +9059,10 @@ body.dark-mode .nfh-kr-badge--elevated {
     }
   }
   function sentIds() {
-    return new Set(load5().keys());
+    return new Set(load6().keys());
   }
   function markSent(attacks) {
-    const list = load5();
+    const list = load6();
     for (const attack2 of attacks) {
       const id = String(attack2.id ?? attack2.publicID);
       const at = attack2.finished_at ?? Math.floor(Number(attack2.finishTimestamp) / 1e3);
@@ -9060,30 +9370,30 @@ body.dark-mode .nfh-kr-badge--elevated {
     const more = list.length > 1 ? ` +${list.length - 1}` : "";
     return `<span class="nfh-rt-muted">hit ${first}${more}</span>`;
   }
-  function buttons(retal, state7, ui) {
+  function buttons(retal, state8, ui) {
     const busy2 = ui.busy === retal.enemy_id ? " disabled" : "";
     const id = escapeHtml(retal.enemy_id);
-    const claim = state7 === "mine" ? `<button type="button" class="nfh-cw-btn" data-action="unclaim" data-enemy="${id}"${busy2}>Unclaim</button>` : state7 === "free" ? `<button type="button" class="nfh-cw-btn" data-action="claim" data-enemy="${id}"${busy2}>Claim</button>` : "";
+    const claim = state8 === "mine" ? `<button type="button" class="nfh-cw-btn" data-action="unclaim" data-enemy="${id}"${busy2}>Unclaim</button>` : state8 === "free" ? `<button type="button" class="nfh-cw-btn" data-action="claim" data-enemy="${id}"${busy2}>Claim</button>` : "";
     const attack2 = `<a class="nfh-cw-btn nfh-cw-btn--primary nfh-rt-attack" href="${attackUrl(retal.enemy_id)}" data-action="attack" data-enemy="${id}">Attack</a>`;
     return `<span class="nfh-rt-actions">${claim}${attack2}</span>`;
   }
   function row(retal, now, ui) {
-    const state7 = retalState(retal, now);
+    const state8 = retalState(retal, now);
     const id = escapeHtml(retal.enemy_id);
-    if (state7 === "done") {
+    if (state8 === "done") {
       const by = retal.done_by && retal.done_by.name ? ` by ${escapeHtml(retal.done_by.name)}` : "";
       return `<li class="nfh-rt-row is-done" data-enemy="${id}"><span class="nfh-rt-main">${enemyName(retal)} <span class="nfh-rt-muted">retal done${by}</span></span></li>`;
     }
     const left = retal.expires_at - now;
-    const hold = state7 === "mine" ? `<span class="nfh-rt-held is-mine">Claimed by you</span>` : state7 === "taken" ? `<span class="nfh-rt-held">Claimed by ${escapeHtml(retal.claimed_by.name || "someone")}</span>` : "";
+    const hold = state8 === "mine" ? `<span class="nfh-rt-held is-mine">Claimed by you</span>` : state8 === "taken" ? `<span class="nfh-rt-held">Claimed by ${escapeHtml(retal.claimed_by.name || "someone")}</span>` : "";
     const warning = ui.warn && ui.warn.enemyId === retal.enemy_id ? `<div class="nfh-rt-warn" role="alert">${escapeHtml(ui.warn.name || "Someone")} has claimed this retal.
           <a class="nfh-cw-btn" href="${attackUrl(retal.enemy_id)}" data-action="attack-anyway" data-enemy="${id}">Attack anyway</a>
           <button type="button" class="nfh-cw-btn" data-action="dismiss" data-enemy="${id}">Cancel</button></div>` : "";
-    return `<li class="nfh-rt-row is-${state7}${left <= 60 ? " is-ending" : ""}" data-enemy="${id}">
+    return `<li class="nfh-rt-row is-${state8}${left <= 60 ? " is-ending" : ""}" data-enemy="${id}">
     <span class="nfh-rt-main">${enemyName(retal)} ${victims(retal)}</span>
     <span class="nfh-rt-left" title="Time left to retaliate">${formatLeft(left)}</span>
     ${hold}
-    ${buttons(retal, state7, ui)}
+    ${buttons(retal, state8, ui)}
     ${warning}
   </li>`;
   }
@@ -9130,7 +9440,7 @@ body.dark-mode .nfh-kr-badge--elevated {
   var POLL_OPEN_MS = 5 * 1e3;
   var POLL_CLOSED_MS = 10 * 1e3;
   var ERROR_MS = 6e3;
-  var state6 = {
+  var state7 = {
     retals: [],
     offset: 0,
     // server clock minus ours, in seconds
@@ -9149,22 +9459,22 @@ body.dark-mode .nfh-kr-badge--elevated {
   var regions2 = null;
   var rendered = {};
   var ticker3 = null;
-  var serverNow = () => Math.floor(Date.now() / 1e3) + state6.offset;
+  var serverNow = () => Math.floor(Date.now() / 1e3) + state7.offset;
   function take(answer) {
     if (!answer || !Array.isArray(answer.retals)) return;
-    state6.retals = answer.retals;
-    if (answer.server_now) state6.offset = answer.server_now - Math.floor(Date.now() / 1e3);
-    state6.lastAnswerAt = Date.now();
-    forgetTags(state6.retals);
-    if (getPrefs3().show) announce(state6.retals, serverNow(), attack);
+    state7.retals = answer.retals;
+    if (answer.server_now) state7.offset = answer.server_now - Math.floor(Date.now() / 1e3);
+    state7.lastAnswerAt = Date.now();
+    forgetTags(state7.retals);
+    if (getPrefs3().show) announce(state7.retals, serverNow(), attack);
     render6();
   }
   function isRefusal(error) {
     return error instanceof ApiError && (error.status === 403 || error.status === 404 && !(error.body && error.body.retals));
   }
   function showError(text) {
-    state6.ui.error = text;
-    state6.errorUntil = Date.now() + ERROR_MS;
+    state7.ui.error = text;
+    state7.errorUntil = Date.now() + ERROR_MS;
     render6();
   }
   function unmount() {
@@ -9174,13 +9484,13 @@ body.dark-mode .nfh-kr-badge--elevated {
     rendered = {};
   }
   function stop3() {
-    state6.refused = true;
+    state7.refused = true;
     if (ticker3) clearInterval(ticker3);
     ticker3 = null;
     unmount();
   }
   function onFeed(feed, source, keys) {
-    if (!isOwnFactionMainTab() || state6.refused) return;
+    if (!isOwnFactionMainTab() || state7.refused) return;
     if (!sourcesSeen.has(source)) {
       sourcesSeen.add(source);
       LogInfo(`[retals] first chain feed from ${source}`, { answer_keys: keys, sample: feed.recentAttacks[0] });
@@ -9234,12 +9544,12 @@ body.dark-mode .nfh-kr-badge--elevated {
   }
   function render6() {
     if (!root2) return;
-    if (state6.ui.error && Date.now() > state6.errorUntil) state6.ui.error = null;
+    if (state7.ui.error && Date.now() > state7.errorUntil) state7.ui.error = null;
     const prefs4 = getPrefs3();
     const now = serverNow();
-    setRegion2("head", renderHead(state6.retals, now, prefs4, state6.ui));
-    setRegion2("settings", state6.ui.settingsOpen ? renderSettings2(prefs4, desktopPermission()) : "");
-    if (setRegion2("list", prefs4.show ? renderList(state6.retals, now, state6.ui) : "")) applyTags(regions2.list);
+    setRegion2("head", renderHead(state7.retals, now, prefs4, state7.ui));
+    setRegion2("settings", state7.ui.settingsOpen ? renderSettings2(prefs4, desktopPermission()) : "");
+    if (setRegion2("list", prefs4.show ? renderList(state7.retals, now, state7.ui) : "")) applyTags(regions2.list);
   }
   function mount3() {
     const anchor = document.querySelector(ANCHOR_SELECTOR3);
@@ -9267,38 +9577,38 @@ body.dark-mode .nfh-kr-badge--elevated {
     return true;
   }
   function start() {
-    if (state6.refused || !getApiToken() || !isOwnFactionMainTab()) return;
+    if (state7.refused || !getApiToken() || !isOwnFactionMainTab()) return;
     mount3();
     if (!ticker3) ticker3 = setInterval(tick3, 1e3);
   }
   function tick3() {
-    if (state6.refused || !isOwnFactionMainTab()) {
+    if (state7.refused || !isOwnFactionMainTab()) {
       clearInterval(ticker3);
       ticker3 = null;
       unmount();
       return;
     }
     const open = mount3();
-    if (open) captureTags(state6.retals);
+    if (open) captureTags(state7.retals);
     const every = open ? POLL_OPEN_MS : POLL_CLOSED_MS;
-    if (getPrefs3().show && !document.hidden && !state6.polling && Date.now() - state6.lastAnswerAt >= every) poll3();
+    if (getPrefs3().show && !document.hidden && !state7.polling && Date.now() - state7.lastAnswerAt >= every) poll3();
   }
   async function poll3() {
-    state6.polling = true;
+    state7.polling = true;
     try {
       take(await fetchRetals());
     } catch (error) {
       if (isRefusal(error)) stop3();
-      state6.lastAnswerAt = Date.now();
+      state7.lastAnswerAt = Date.now();
     } finally {
-      state6.polling = false;
+      state7.polling = false;
     }
   }
   function find(enemyId) {
-    return state6.retals.find((retal) => retal.enemy_id === enemyId);
+    return state7.retals.find((retal) => retal.enemy_id === enemyId);
   }
   async function changeClaim(enemyId, change) {
-    state6.ui.busy = enemyId;
+    state7.ui.busy = enemyId;
     render6();
     try {
       take(await change(enemyId));
@@ -9310,7 +9620,7 @@ body.dark-mode .nfh-kr-badge--elevated {
       if (isRefusal(error)) stop3();
       return { ok: false, failed: true };
     } finally {
-      state6.ui.busy = null;
+      state7.ui.busy = null;
       render6();
     }
   }
@@ -9336,7 +9646,7 @@ body.dark-mode .nfh-kr-badge--elevated {
     const now = serverNow();
     const current = retal ? retalState(retal, now) : "free";
     if (current === "taken") {
-      state6.ui.warn = { enemyId, name: retal.claimed_by.name };
+      state7.ui.warn = { enemyId, name: retal.claimed_by.name };
       render6();
       return;
     }
@@ -9349,7 +9659,7 @@ body.dark-mode .nfh-kr-badge--elevated {
     const result = await changeClaim(enemyId, claimRetal);
     if (result.takenBy) {
       if (tab) tab.close();
-      state6.ui.warn = { enemyId, name: result.takenBy.name };
+      state7.ui.warn = { enemyId, name: result.takenBy.name };
       render6();
       return;
     }
@@ -9366,7 +9676,7 @@ body.dark-mode .nfh-kr-badge--elevated {
     if (action === "claim") {
       changeClaim(enemyId, claimRetal).then((result) => {
         if (result.takenBy) {
-          state6.ui.warn = { enemyId, name: result.takenBy.name };
+          state7.ui.warn = { enemyId, name: result.takenBy.name };
           render6();
         } else if (result.failed) showError("Could not reach nuke.family to claim it.");
       });
@@ -9377,14 +9687,14 @@ body.dark-mode .nfh-kr-badge--elevated {
     } else if (action === "attack") {
       attack(enemyId);
     } else if (action === "attack-anyway") {
-      state6.ui.warn = null;
+      state7.ui.warn = null;
       render6();
       openAttack(enemyId);
     } else if (action === "dismiss") {
-      state6.ui.warn = null;
+      state7.ui.warn = null;
       render6();
     } else if (action === "settings") {
-      state6.ui.settingsOpen = !state6.ui.settingsOpen;
+      state7.ui.settingsOpen = !state7.ui.settingsOpen;
       render6();
     } else if (action === "test-sound") {
       chime(getPrefs3().volume);
@@ -9408,14 +9718,14 @@ body.dark-mode .nfh-kr-badge--elevated {
     } else {
       setPrefs3({ [pref]: Number(input.value) });
     }
-    if (pref === "show" && input.checked) state6.lastAnswerAt = 0;
+    if (pref === "show" && input.checked) state7.lastAnswerAt = 0;
     if (pref !== "volume") render6();
   }
   var retals_default = {
     name: "retals",
     pages: [PageType.Faction],
     init() {
-      if (!isOwnFactionMainTab() || state6.refused) return;
+      if (!isOwnFactionMainTab() || state7.refused) return;
       startCapture(onFeed);
       start();
     }
@@ -9983,7 +10293,7 @@ body.dark-mode .nfh-kr-badge--elevated {
   function initTokenCapture() {
     waitForElm("#token").then((elm) => {
       let token = elm.innerText.trim();
-      const observer4 = new MutationObserver(() => {
+      const observer5 = new MutationObserver(() => {
         const newToken = elm.innerText.trim();
         if (!newToken || newToken === token) return;
         token = newToken;
@@ -9998,7 +10308,7 @@ body.dark-mode .nfh-kr-badge--elevated {
           alert("Nuke Family API token saved. You can now close this tab.");
         }
       });
-      observer4.observe(elm, {
+      observer5.observe(elm, {
         childList: true,
         subtree: true,
         characterData: true
@@ -10019,7 +10329,8 @@ body.dark-mode .nfh-kr-badge--elevated {
     organized_crimes_default,
     mail_templates_default,
     oc_items_default,
-    kick_risk_default
+    kick_risk_default,
+    stocks_default
   ];
   function dispatchFeatures() {
     for (const feature of features) {
