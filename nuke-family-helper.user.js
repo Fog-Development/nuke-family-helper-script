@@ -7,6 +7,8 @@
 // @match        https://www.torn.com/factions.php*
 // @match        https://www.torn.com/profiles.php*
 // @match        https://www.torn.com/hospitalview.php*
+// @match        https://www.torn.com/messages.php*
+// @match        https://www.torn.com/page.php?sid=stocks*
 // @match        https://nuke.family/auth/token-generation*
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAsVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAADAgEIBwIJCAILCQMODAQUEQUYFQcaFgcfGgggGwklIAotJgwyKg46MhA8MxBKPxRQRBZgUhthUhthUxt1ZCB9aiOEcCSIdCaQeyihiSyiiS21mjLBpDXFpzbGqDfHqTfIqjjTszrXtzzZuTzlw0DmxEDnxEDpxkHuy0LxzUNZTIHlAAAAD3RSTlMAAh4tMVtig4WRlqvq8v4ZRfBIAAABcElEQVQ4y4VT2ZKCMBBEReTSVhEX8T5BFMVb8/8ftokhJB5b2w9U9VFkMpnRNImSbpiWZRp6SfuGiu0ih2tXPuyy04CChlN+9at1vKFeVf0aVX5Um5Hai+8np470O6fEVxJVIDgQspKBFSGHAMhPKdfhU5/ce8Lv3Sk9+KjzSh0gIQwbEdg8aQI4z/s3MCEcY+6PczpBg/XDRjPLlV2L+a1dTrMmbNpfFyMisGCBRUFHcEuaDsSFsmeBfUFjQNcMIBXCOehHUT84C54ChmYCNyHM+xdCLv254DfA1Cx4xS/DiH2jsBA8WDSggAdUxWJHSPAjVMVkRaoJWuSLYLBrSnRnYTjrqorOGiWxZjWsFYE2ira6wODBAo+BVGz+WAJbfrmtHM1K/twcU3H9qVAcMTBPtI8icGzng1suRo5hWTSQLLlSVYcawVUGrgE+xhrDTAay4avPF6c5ilP6sLc0HjXfF0eunud9X73/l/fP9f8FWPxZz4MGj9YAAAAASUVORK5CYII=
 // @run-at       document-end
@@ -14,6 +16,7 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_info
+// @grant        unsafeWindow
 // @connect      nuke.family
 // @connect      nuke.test
 // @connect      github.com
@@ -636,6 +639,10 @@ body:not(.dark-mode) .nfh-cw {
     background-color: var(--nfh-cw-accent);
     color: #fff;
     font-weight: 700;
+}
+
+.nfh-cw a.nfh-cw-btn--primary {
+    color: #fff;
 }
 
 .nfh-cw-btn--primary:hover {
@@ -1509,7 +1516,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
 .nfh-rt-toast {
     font-family: Arial, Helvetica, sans-serif;
     position: fixed;
-    right: 16px;
+    left: 16px;
     bottom: 16px;
     z-index: 999999;
     display: flex;
@@ -1518,6 +1525,34 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     max-width: min(420px, calc(100vw - 32px));
     padding: 8px 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* Where the member put the notice (retal settings). Bottom left is the default. */
+.nfh-rt-toast--bottom-right,
+.nfh-rt-toast--middle-right,
+.nfh-rt-toast--top-right {
+    left: auto;
+    right: 16px;
+}
+
+.nfh-rt-toast--top-left,
+.nfh-rt-toast--top-center,
+.nfh-rt-toast--top-right {
+    bottom: auto;
+    top: 16px;
+}
+
+.nfh-rt-toast--middle-left,
+.nfh-rt-toast--middle-right {
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.nfh-rt-toast--bottom-center,
+.nfh-rt-toast--top-center {
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .nfh-rt-toast-text {
@@ -1621,6 +1656,468 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
 .nfh-rt-settings .nfh-cw-settings-row + .nfh-cw-settings-row {
     margin-top: 6px;
 }
+
+/* Mail templates bar (compose page and faction newsletter) */
+.nfh-mt {
+    margin: 0 0 10px;
+}
+
+.nfh-mt-bar {
+    flex-wrap: wrap;
+    padding: 4px 8px;
+}
+
+.nfh-mt-title {
+    font-weight: 700;
+}
+
+.nfh-mt-pins {
+    display: flex;
+    flex: 1 1 200px;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-width: 0;
+}
+
+.nfh-mt-chip {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--nfh-text);
+}
+
+.nfh-mt-badge {
+    display: inline-block;
+    margin-right: 4px;
+    padding: 0 4px;
+    border-radius: 3px;
+    background-color: var(--nfh-cw-accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.nfh-mt-message,
+.nfh-mt-confirm,
+.nfh-mt-form,
+.nfh-mt-help,
+.nfh-mt-all {
+    padding: 6px 8px;
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-mt-confirm,
+.nfh-mt-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.nfh-mt-form input[type="text"] {
+    flex: 1 1 160px;
+    min-width: 0;
+}
+
+.nfh-mt-note {
+    flex-basis: 100%;
+}
+
+.nfh-mt-message--ok {
+    color: var(--nfh-cw-accent);
+}
+
+.nfh-mt-message--warn,
+.nfh-mt-message--error {
+    color: var(--nfh-cw-warn);
+    font-weight: 700;
+}
+
+.nfh-mt-help ul {
+    margin: 4px 0 4px 18px;
+    padding: 0;
+    list-style: disc;
+}
+
+.nfh-mt-help code,
+.nfh-mt-help li code {
+    font-family: Consolas, monospace;
+    font-weight: 700;
+}
+
+.nfh-mt-search {
+    width: 100%;
+    margin-bottom: 6px;
+    box-sizing: border-box;
+}
+
+.nfh-mt-heading {
+    margin: 6px 0 2px;
+    font-weight: 700;
+}
+
+.nfh-mt-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 0;
+    border-bottom: 1px dotted var(--nfh-border);
+}
+
+.nfh-mt-name {
+    flex: 1 1 140px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nfh-mt-scope {
+    white-space: nowrap;
+}
+
+.nfh-mt-foot {
+    margin-top: 6px;
+    text-align: right;
+}
+
+/* OC items panel (own faction's crimes and armoury pages) */
+.nfh-oci {
+    margin: 0 0 10px;
+}
+
+.nfh-oci-body {
+    padding: 4px 8px 8px;
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-oci-mine {
+    margin: 4px 0;
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-oci-mine .nfh-cw-muted {
+    color: var(--nfh-cw-muted);
+}
+
+.nfh-oci-mine a {
+    text-decoration: underline;
+}
+
+.nfh-oci-heading {
+    margin: 6px 0 2px;
+    font-weight: 700;
+}
+
+.nfh-oci-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 3px 0;
+    border-bottom: 1px dotted var(--nfh-border);
+}
+
+.nfh-oci-who {
+    flex: 0 0 120px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nfh-oci-what {
+    flex: 1 1 180px;
+    min-width: 0;
+}
+
+.nfh-oci-foot {
+    margin-top: 6px;
+}
+
+.nfh-oci-message {
+    margin: 4px 0;
+    font-weight: 700;
+}
+
+.nfh-oci-message--ok {
+    color: var(--nfh-cw-accent);
+}
+
+.nfh-oci-message--error {
+    color: var(--nfh-cw-warn);
+}
+
+/* Marks on Torn's armoury rows */
+li.nfh-oci-row--need {
+    box-shadow: inset 3px 0 0 #4caf50;
+}
+
+li.nfh-oci-row--retrieve {
+    box-shadow: inset 3px 0 0 #f5a623;
+}
+
+.nfh-oci-badge {
+    display: inline-block;
+    margin-right: 5px;
+    padding: 0 5px;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    vertical-align: middle;
+}
+
+.nfh-oci-badge--need {
+    background-color: #2e7d32;
+}
+
+.nfh-oci-badge--retrieve {
+    background-color: #a65d00;
+}
+
+.nfh-oci-fill {
+    clear: both;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin: 6px 0 0;
+    padding: 4px 6px;
+    border-left: none;
+}
+
+/* Kick risk on the faction controls Members list */
+.nfh-kr-badge {
+    margin-left: 6px;
+    padding: 0 6px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: none;
+    font: 700 11px/16px Arial, Helvetica, sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.nfh-kr-badge--low {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border-radius: 50%;
+    background-color: #7a7a7a;
+    vertical-align: middle;
+}
+
+.nfh-kr-badge--elevated {
+    border-color: #4a90c2;
+    color: #2b6f9e;
+}
+
+body.dark-mode .nfh-kr-badge--elevated {
+    color: #8cc4ec;
+}
+
+.nfh-kr-badge--moderate {
+    background-color: #b26a00;
+    color: #fff;
+}
+
+.nfh-kr-badge--high {
+    background-color: #c0392b;
+    color: #fff;
+}
+
+.nfh-kr-detail,
+.nfh-kr-kick {
+    margin: 4px 8px 8px;
+    padding: 6px 8px;
+}
+
+.nfh-kr-detail-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+}
+
+.nfh-kr-detail-links {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.nfh-kr-stats,
+.nfh-kr-missed {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-top: 4px;
+}
+
+.nfh-kr-stat--below strong {
+    color: var(--nfh-cw-warn);
+}
+
+.nfh-kr-change--down {
+    color: var(--nfh-cw-warn);
+    font-weight: 700;
+}
+
+.nfh-kr-change--up {
+    color: var(--nfh-cw-accent);
+    font-weight: 700;
+}
+
+.nfh-kr-kick {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+}
+
+.nfh-kr-reason {
+    flex: 1 1 260px;
+    min-width: 0;
+}
+
+.nfh-kr-offer {
+    margin: 0 0 10px;
+}
+
+.nfh-kr-offer-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+}
+
+.nfh-kr-offer-body textarea {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.nfh-kr-return {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999998;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100vw - 32px);
+    margin: 0;
+    padding: 6px 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.nfh-kr-slot {
+    outline: 3px solid #f5a623;
+    outline-offset: 2px;
+    box-shadow: 0 0 12px rgba(245, 166, 35, 0.8);
+}
+
+.nfh-kr-find-note {
+    flex-basis: 100%;
+    color: var(--nfh-cw-warn);
+    font-weight: 700;
+}
+
+/* Stock signals on Torn's stock market */
+.nfh-st-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    margin: 0 0 8px;
+    padding: 6px 8px;
+}
+
+.nfh-st-lines {
+    flex: 1 1 300px;
+    min-width: 0;
+}
+
+.nfh-st-tags {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.nfh-st-tag,
+.nfh-st-lot {
+    display: inline-block;
+    padding: 0 5px;
+    border-radius: 3px;
+    font: 700 10px/16px Arial, Helvetica, sans-serif;
+    white-space: nowrap;
+}
+
+.nfh-st-tag--buy {
+    background-color: #2e7d32;
+    color: #fff;
+}
+
+.nfh-st-tag--sell,
+.nfh-st-lot--sell {
+    background-color: #c0392b;
+    color: #fff;
+}
+
+.nfh-st-tag--hold,
+.nfh-st-lot--hold,
+.nfh-st-lot--other {
+    border: 1px solid var(--nfh-border);
+    color: var(--nfh-text);
+    font-weight: 400;
+}
+
+.nfh-st-lotline {
+    padding: 2px 8px 4px;
+    line-height: 16px;
+}
+
+.nfh-st-advice {
+    margin: 6px 8px;
+    padding: 6px 8px;
+}
+
+.nfh-st-buy strong {
+    color: var(--nfh-cw-accent);
+}
+
+.nfh-st-sell strong {
+    color: #c0392b;
+}
+
+body.dark-mode .nfh-st-sell strong {
+    color: #ff7b6b;
+}
+
+ul.nfh-st-row--sell,
+ul.nfh-st-row--sell + .nfh-st-lotline {
+    box-shadow: inset 3px 0 0 #c0392b;
+}
+
+/* Torn's armoury sub-tab the OC items panel sent the member to */
+a.ui-tabs-anchor.nfh-oci-tab-hint {
+    outline: 2px solid #4caf50;
+    outline-offset: -2px;
+    animation: nfh-oci-pulse 1.2s ease-in-out 3;
+}
+
+@keyframes nfh-oci-pulse {
+    50% {
+        outline-color: transparent;
+    }
+}
 `;
 
   // src/core/storage.js
@@ -1698,14 +2195,14 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   }
   function withTimeout(promise, ms) {
     return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error("timed out")), ms);
+      const timer3 = setTimeout(() => reject(new Error("timed out")), ms);
       Promise.resolve(promise).then(
         (value) => {
-          clearTimeout(timer);
+          clearTimeout(timer3);
           resolve(value);
         },
         (error) => {
-          clearTimeout(timer);
+          clearTimeout(timer3);
           reject(error);
         }
       );
@@ -1830,12 +2327,12 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   }
   var lastState = null;
   function notify() {
-    const state4 = connectionState();
-    if (state4 === lastState) return;
-    lastState = state4;
+    const state8 = connectionState();
+    if (state8 === lastState) return;
+    lastState = state8;
     for (const listener of listeners) {
       try {
-        listener(state4);
+        listener(state8);
       } catch (error) {
         console.error("[NFH] Connection listener failed:", error);
       }
@@ -2075,8 +2572,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     } catch (e) {
     }
     const known = saved && typeof saved.reviving === "boolean";
-    const fresh = known && saved.timestamp && Date.now() - saved.timestamp < PERMISSIONS_CACHE_TTL_MS;
-    if (!fresh && !staleRefreshStarted && getApiToken()) {
+    const fresh2 = known && saved.timestamp && Date.now() - saved.timestamp < PERMISSIONS_CACHE_TTL_MS;
+    if (!fresh2 && !staleRefreshStarted && getApiToken()) {
       staleRefreshStarted = true;
       refreshUserRole();
     }
@@ -2198,14 +2695,14 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       if (document.querySelector(selector)) {
         return resolve(document.querySelector(selector));
       }
-      const observer2 = new MutationObserver(() => {
+      const observer5 = new MutationObserver(() => {
         const elm = document.querySelector(selector);
         if (elm) {
           resolve(elm);
-          observer2.disconnect();
+          observer5.disconnect();
         }
       });
-      observer2.observe(document.body, {
+      observer5.observe(document.body, {
         childList: true,
         subtree: true
       });
@@ -2266,7 +2763,12 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     War: "War",
     ChainReport: "ChainReport",
     RWReport: "RWReport",
-    NukeFamily3rdParty: "NukeFamily3rdParty"
+    NukeFamily3rdParty: "NukeFamily3rdParty",
+    Messages: "Messages",
+    Stocks: "Stocks",
+    FactionNewsletter: "Faction Newsletter",
+    FactionControlMembers: "Faction Control Members",
+    FactionArmoury: "Faction Armoury"
   };
   var mapPageTypeAddress = {
     [PageType.Profile]: "https://www.torn.com/profiles.php",
@@ -2291,14 +2793,19 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     [PageType.War]: "https://www.torn.com/war.php",
     [PageType.ChainReport]: "https://www.torn.com/war.php?step=chainreport",
     [PageType.RWReport]: "https://www.torn.com/war.php?step=rankreport",
-    [PageType.NukeFamily3rdParty]: TOKEN_GENERATION_URL
+    [PageType.NukeFamily3rdParty]: TOKEN_GENERATION_URL,
+    [PageType.Messages]: "https://www.torn.com/messages.php",
+    [PageType.Stocks]: "https://www.torn.com/page.php?sid=stocks"
   };
   var mapPageAddressFragment = {
     [PageType.FactionControl]: "/tab=controls",
     [PageType.FactionArmouryDrug]: "tab=armoury&start=0&sub=drugs",
     [PageType.FactionControlPayday]: "tab=controls&option=pay-day",
     [PageType.FactionControlApplications]: "tab=controls&option=application",
-    [PageType.FactionCrimes]: "tab=crimes"
+    [PageType.FactionCrimes]: "tab=crimes",
+    [PageType.FactionNewsletter]: "option=newsletter",
+    [PageType.FactionControlMembers]: "option=members",
+    [PageType.FactionArmoury]: "tab=armoury"
   };
   function IsPage(pageType) {
     const fragment = mapPageAddressFragment[pageType];
@@ -2495,9 +3002,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     dmReminder: true
   };
   function clamp(value, min, max, fallback) {
-    const number = Number(value);
-    if (!Number.isFinite(number)) return fallback;
-    return Math.min(max, Math.max(min, number));
+    const number2 = Number(value);
+    if (!Number.isFinite(number2)) return fallback;
+    return Math.min(max, Math.max(min, number2));
   }
   function sanitize(raw) {
     const source = raw && typeof raw === "object" ? raw : {};
@@ -2622,10 +3129,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     } catch (e) {
     }
   }
-  function updateAlert({ timer, armed, test = false }) {
+  function updateAlert({ timer: timer3, armed, test = false }) {
     const prefs4 = getPrefs();
-    const low = armed && !!timer && timer.active && // An unreadable hit count must not silence the alert.
-    (timer.hits === null || timer.hits >= MIN_CHAIN_HITS) && timer.seconds !== null && timer.seconds > 0 && timer.seconds < prefs4.alertSeconds;
+    const low = armed && !!timer3 && timer3.active && // An unreadable hit count must not silence the alert.
+    (timer3.hits === null || timer3.hits >= MIN_CHAIN_HITS) && timer3.seconds !== null && timer3.seconds > 0 && timer3.seconds < prefs4.alertSeconds;
     const alerting = low || test;
     setFlashing(alerting);
     if (alerting && prefs4.beep) {
@@ -2695,8 +3202,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     return date.getTime();
   }
   function usable(watches, now = Date.now()) {
-    return (Array.isArray(watches) ? watches : []).filter((watch3) => {
-      const end = toMs(watch3.end_time);
+    return (Array.isArray(watches) ? watches : []).filter((watch5) => {
+      const end = toMs(watch5.end_time);
       return end === null || end > now;
     }).sort((a, b) => toMs(a.start_time) - toMs(b.start_time));
   }
@@ -2835,7 +3342,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     unscheduled: "Unscheduled",
     past_slot: "Past slot, check if active"
   };
-  var pad = (number) => String(number).padStart(2, "0");
+  var pad = (number2) => String(number2).padStart(2, "0");
   var slotStart = (slot) => Date.parse(slot.slot_start_iso);
   function hourLabel(ms) {
     return `${pad(new Date(ms).getUTCHours())}:00`;
@@ -2953,23 +3460,23 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     return `<button type="button" class="nfh-cw-chip${armed ? " is-armed" : ""}" data-action="settings" title="${escapeHtml(title)}">${escapeHtml(label)}</button>`;
   }
-  function renderBar({ board, watches, prefs: prefs4, armed, chainActive, flash, busy, now }) {
+  function renderBar({ board, watches, prefs: prefs4, armed, chainActive, flash, busy: busy2, now }) {
     const summary = board ? summarize(board, now) : null;
-    const state4 = summary ? barState(board, summary, now) : { tone: "", text: '<span class="nfh-cw-muted">No chain watch scheduled</span>', actions: "" };
-    if (summary && summary.started && !summary.myCheckin && chainActive && armed && state4.tone !== "attn") {
-      state4.text = '<span class="nfh-cw-need" title="Check in so your time watching is recorded on the chain watch sheet">Not checked in</span> \xB7 ' + state4.text;
-      state4.actions = button("checkin", "Check in");
+    const state8 = summary ? barState(board, summary, now) : { tone: "", text: '<span class="nfh-cw-muted">No chain watch scheduled</span>', actions: "" };
+    if (summary && summary.started && !summary.myCheckin && chainActive && armed && state8.tone !== "attn") {
+      state8.text = '<span class="nfh-cw-need" title="Check in so your time watching is recorded on the chain watch sheet">Not checked in</span> \xB7 ' + state8.text;
+      state8.actions = button("checkin", "Check in");
     }
     const title = board && board.title ? `<span class="nfh-cw-title">${escapeHtml(board.title)}</span>` : "";
-    const status = flash ? `<span class="${flash.error ? "nfh-cw-error" : "nfh-cw-ok"}">${escapeHtml(flash.text)}</span>` : state4.text;
+    const status = flash ? `<span class="${flash.error ? "nfh-cw-error" : "nfh-cw-ok"}">${escapeHtml(flash.text)}</span>` : state8.text;
     const expandable = !!board;
     const expanded = expandable && prefs4.expanded;
     const picker = watches.length > 1 ? `<select class="nfh-cw-picker" data-role="watch-picker" title="Chain watch">${watches.map(
-      (watch3) => `<option value="${escapeHtml(watch3.id)}"${board && board.id === watch3.id ? " selected" : ""}>${escapeHtml(watch3.title || `Chain watch #${watch3.id}`)}</option>`
+      (watch5) => `<option value="${escapeHtml(watch5.id)}"${board && board.id === watch5.id ? " selected" : ""}>${escapeHtml(watch5.title || `Chain watch #${watch5.id}`)}</option>`
     ).join("")}</select>` : title;
     return {
-      tone: state4.tone,
-      html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy ? " is-busy" : ""}">${state4.actions}</span>` + alertChip(prefs4, armed)
+      tone: state8.tone,
+      html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy2 ? " is-busy" : ""}">${state8.actions}</span>` + alertChip(prefs4, armed)
     };
   }
   function overCapNote(slot) {
@@ -2984,7 +3491,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       return '<div class="nfh-cw-muted">No open slots in the current signup window.</div>';
     }
     const firstRunning = slotStart(slots[0]) <= now;
-    const rows = slots.slice(0, ROSTER_SLOTS).map((slot, index) => {
+    const rows2 = slots.slice(0, ROSTER_SLOTS).map((slot, index) => {
       const running = slot === summary.current;
       const heading = running ? "Now" : index === (firstRunning ? 1 : 0) ? "Up next" : "Then";
       const names = slot.signups.map((signup) => {
@@ -2997,10 +3504,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       });
       return `<div class="nfh-cw-roster-row${running ? " is-now" : ""}"><span class="nfh-cw-roster-when">${heading}</span><span class="nfh-cw-roster-time">${slotLabel(slotStart(slot))}</span><span class="nfh-cw-people">${names.length ? names.join("") : '<span class="nfh-cw-need">nobody signed up</span>'}</span></div>`;
     });
-    return rows.join("");
+    return rows2.join("");
   }
   function checkinSection(summary, board, ui, now) {
-    const rows = summary.checkins.map((checkin) => {
+    const rows2 = summary.checkins.map((checkin) => {
       const staffOut = board.can_manage_attendance && !checkin.is_me ? button("staff-out", "check out", {
         data: { player: checkin.player_id },
         title: `Check ${playerName(checkin)} out`
@@ -3023,13 +3530,13 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       }
       staff = `<div class="nfh-cw-staff"><input type="text" class="nfh-cw-input nfh-cw-search" data-role="member-search" maxlength="50" placeholder="Staff: check a member in or out (name or ID)" value="${escapeHtml(ui.searchQuery)}"><div class="nfh-cw-people">${results}</div></div>`;
     }
-    return `<div class="nfh-cw-people">${rows.length ? rows.join("") : '<span class="nfh-cw-muted">Nobody is checked in right now.</span>'}</div>` + staff;
+    return `<div class="nfh-cw-people">${rows2.length ? rows2.join("") : '<span class="nfh-cw-muted">Nobody is checked in right now.</span>'}</div>` + staff;
   }
   function slotFill(slot) {
     if (slot.total_count === 0) return "empty";
     return slot.paid_count < slot.cap ? "short" : "full";
   }
-  function slotDetail(slot, busy) {
+  function slotDetail(slot, busy2) {
     const start3 = slotStart(slot);
     const isMine = slot.signups.some((signup) => signup.is_me);
     const waitlist = slot.total_count - slot.paid_count;
@@ -3038,9 +3545,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     ).join("");
     const paid = slot.rate > 0;
     const unpaidWarning = !isMine && slot.paid_count >= slot.cap ? paid ? '<span class="nfh-cw-need">Paid spots are full: you would be unpaid unless staff approve it.</span>' : '<span class="nfh-cw-muted">This hour is covered: extra watchers are welcome.</span>' : "";
-    return `<div class="nfh-cw-detail"><div><strong>${slotLabel(start3)}\u2013${hourLabel(start3 + HOUR_MS)} TCT</strong> <span class="nfh-cw-muted">(${escapeHtml(localTime(start3))} your time)</span>` + (paid ? ` \xB7 ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " \u2605" : ""}` : "") + (slot.range_label ? ` \xB7 ${escapeHtml(slot.range_label)}` : "") + ` \xB7 ${escapeHtml(fillText(slot))}` + (waitlist > 0 ? ` (+${waitlist} ${paid ? "unpaid" : "extra"})` : "") + `</div><div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div><div class="nfh-cw-detail-actions${busy ? " is-busy" : ""}">` + (isMine ? button("leave", "Leave this slot", { data: { slot: slot.slot_start_iso } }) : button("signup", "Sign up", { primary: true, data: { slot: slot.slot_start_iso } })) + unpaidWarning + "</div></div>";
+    return `<div class="nfh-cw-detail"><div><strong>${slotLabel(start3)}\u2013${hourLabel(start3 + HOUR_MS)} TCT</strong> <span class="nfh-cw-muted">(${escapeHtml(localTime(start3))} your time)</span>` + (paid ? ` \xB7 ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " \u2605" : ""}` : "") + (slot.range_label ? ` \xB7 ${escapeHtml(slot.range_label)}` : "") + ` \xB7 ${escapeHtml(fillText(slot))}` + (waitlist > 0 ? ` (+${waitlist} ${paid ? "unpaid" : "extra"})` : "") + `</div><div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div><div class="nfh-cw-detail-actions${busy2 ? " is-busy" : ""}">` + (isMine ? button("leave", "Leave this slot", { data: { slot: slot.slot_start_iso } }) : button("signup", "Sign up", { primary: true, data: { slot: slot.slot_start_iso } })) + unpaidWarning + "</div></div>";
   }
-  function slotsSection(summary, ui, busy) {
+  function slotsSection(summary, ui, busy2) {
     const { slots } = summary;
     if (slots.length === 0) return "";
     const days = [];
@@ -3067,18 +3574,18 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     ).join("");
     const selected = slots.find((slot) => slot.slot_start_iso === ui.selectedSlot);
     const mine = summary.mine.length ? `Your slots: ${summary.mine.map((slot) => slotLabel(slotStart(slot))).join(", ")}` : "Pick an hour to see who is on it and sign up.";
-    return `<div class="nfh-cw-muted nfh-cw-mine">${mine}</div>` + grid + (selected ? slotDetail(selected, busy) : "");
+    return `<div class="nfh-cw-muted nfh-cw-mine">${mine}</div>` + grid + (selected ? slotDetail(selected, busy2) : "");
   }
   function section(title, body) {
     return `<div class="nfh-cw-section"><div class="nfh-cw-heading">${title}</div>${body}</div>`;
   }
-  function renderPanel({ board, prefs: prefs4, ui, busy, now }) {
+  function renderPanel({ board, prefs: prefs4, ui, busy: busy2, now }) {
     const summary = summarize(board, now);
     const pays = board.pays !== false;
     const pay = (board.default_rate > 0 ? `${escapeHtml(board.default_rate)} xanax/hr \xB7 ${escapeHtml(board.default_slot_cap)} paid per slot` : `${escapeHtml(board.default_slot_cap)} watchers per slot`) + (pays ? " \xB7 \u2605 pays more" : "");
     return section("On watch", rosterSection(summary, board, now)) + section(`Checked in (${summary.checkins.length})`, checkinSection(summary, board, ui, now)) + section(
       `Slots <span class="nfh-cw-muted">TCT \xB7 ${pay}</span>`,
-      slotsSection(summary, ui, busy)
+      slotsSection(summary, ui, busy2)
     ) + `<div class="nfh-cw-footer"><label title="Applies to slots you sign up for from here"><input type="checkbox" data-pref="dmReminder"${prefs4.dmReminder ? " checked" : ""}> Discord DM reminder before my slots</label>` + button("test-dm", "Test DM", { title: "Send yourself a test reminder on Discord" }) + button("refresh", "Refresh") + (/^https?:\/\//.test(board.signup_url || "") ? `<a class="nfh-cw-link" href="${escapeHtml(board.signup_url)}" target="_blank" rel="noopener">Open on nuke.family</a>` : "") + "</div>";
   }
   var ALERT_MODE_HELP = {
@@ -3185,7 +3692,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     if (!root || !root.isConnected) return;
     const now = Date.now();
     const prefs4 = getPrefs();
-    const bar = renderBar({
+    const bar2 = renderBar({
       board: state.board,
       watches: state.watches,
       prefs: prefs4,
@@ -3195,8 +3702,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       busy: state.busy,
       now
     });
-    setRegion("bar", bar.html);
-    root.className = "nfh-cw" + (bar.tone ? ` nfh-cw--${bar.tone}` : "");
+    setRegion("bar", bar2.html);
+    root.className = "nfh-cw" + (bar2.tone ? ` nfh-cw--${bar2.tone}` : "");
     const showPanel = !!state.board && prefs4.expanded;
     regions.panel.hidden = !showPanel;
     if (showPanel) {
@@ -3232,7 +3739,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   async function load({ force = false } = {}) {
     state.lastListAt = Date.now();
     state.watches = await getActiveWatches({ force });
-    if (!state.watches.some((watch3) => watch3.id === state.watchId)) {
+    if (!state.watches.some((watch5) => watch5.id === state.watchId)) {
       state.watchId = state.watches.length ? state.watches[0].id : null;
       state.board = null;
     }
@@ -3276,9 +3783,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       return;
     }
     const now = Date.now();
-    const timer = readChainTimer();
-    updateAlert({ timer, armed: isArmed(), test: now < state.testUntil });
-    const chainActive = !!timer && timer.active;
+    const timer3 = readChainTimer();
+    updateAlert({ timer: timer3, armed: isArmed(), test: now < state.testUntil });
+    const chainActive = !!timer3 && timer3.active;
     if (chainActive !== state.chainActive) {
       state.chainActive = chainActive;
       render();
@@ -3578,22 +4085,22 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     [Connection.Rejected]: "Nuke Family Helper has been disconnected from nuke.family, so this may be missing or out of date.",
     [Connection.Unreachable]: "Nuke Family Helper cannot reach nuke.family right now: this may be missing or out of date."
   };
-  var canConnect = (state4) => state4 === Connection.Missing || state4 === Connection.Rejected;
+  var canConnect = (state8) => state8 === Connection.Missing || state8 === Connection.Rejected;
   function pending() {
     const saved = getValue(PENDING_KEY, null);
     if (!saved || typeof saved !== "object" || !saved.secret || !saved.url) return null;
     return saved.expires > Date.now() ? saved : null;
   }
-  function isHidden(state4) {
+  function isHidden(state8) {
     try {
       const hidden = JSON.parse(localStorage.getItem(HIDDEN_KEY) || "null");
-      return Boolean(hidden) && hidden.state === state4 && Date.now() - hidden.at < HIDE_FOR_MS;
+      return Boolean(hidden) && hidden.state === state8 && Date.now() - hidden.at < HIDE_FOR_MS;
     } catch (e) {
       return false;
     }
   }
-  function bannerHtml(state4) {
-    const button2 = (attribute, label) => `<button type="button" class="torn-btn" ${attribute}>${label}</button>`;
+  function bannerHtml(state8) {
+    const button3 = (attribute, label) => `<button type="button" class="torn-btn" ${attribute}>${label}</button>`;
     const dismiss = '<button type="button" class="nfh-connect-dismiss" data-nfh-connect-dismiss aria-label="Hide" title="Hide for a day">&times;</button>';
     if (phase && phase.kind === "connected") {
       const who = phase.name ? ` as <strong>${escapeHtml(phase.name)}</strong>` : "";
@@ -3603,16 +4110,16 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       return '<span class="nfh-connect-text">Asking nuke.family for a connection...</span>';
     }
     if (phase && phase.kind === "waiting") {
-      return `<span class="nfh-connect-text"><strong>Finish connecting on nuke.family.</strong> Approve there, then come back: this page picks it up by itself.</span><a class="torn-btn nfh-connect-link" href="${escapeHtml(phase.url)}" target="_blank" rel="noopener" data-nfh-connect-open>Open nuke.family</a>` + button2("data-nfh-connect-cancel", "Cancel");
+      return `<span class="nfh-connect-text"><strong>Finish connecting on nuke.family.</strong> Approve there, then come back: this page picks it up by itself.</span><a class="torn-btn nfh-connect-link" href="${escapeHtml(phase.url)}" target="_blank" rel="noopener" data-nfh-connect-open>Open nuke.family</a>` + button3("data-nfh-connect-cancel", "Cancel");
     }
     const failed = phase && phase.kind === "failed" ? ` <span class="nfh-connect-error">${escapeHtml(phase.message)}</span>` : "";
-    const actions = canConnect(state4) ? button2("data-nfh-connect", state4 === Connection.Rejected ? "Reconnect" : "Connect") + '<button type="button" class="nfh-connect-manual" data-nfh-connect-manual>Enter a key instead</button>' : "";
-    return `<span class="nfh-connect-text">${STATE_TEXT[state4]}${failed}</span>${actions}${dismiss}`;
+    const actions = canConnect(state8) ? button3("data-nfh-connect", state8 === Connection.Rejected ? "Reconnect" : "Connect") + '<button type="button" class="nfh-connect-manual" data-nfh-connect-manual>Enter a key instead</button>' : "";
+    return `<span class="nfh-connect-text">${STATE_TEXT[state8]}${failed}</span>${actions}${dismiss}`;
   }
   function renderBanner() {
-    const state4 = connectionState();
-    const busy = phase !== null && phase.kind !== "failed";
-    const show = busy || state4 !== Connection.Connected && !isHidden(state4);
+    const state8 = connectionState();
+    const busy2 = phase !== null && phase.kind !== "failed";
+    const show = busy2 || state8 !== Connection.Connected && !isHidden(state8);
     let banner = document.getElementById(BANNER_ID);
     if (!show) {
       if (banner) banner.remove();
@@ -3625,7 +4132,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       banner.setAttribute("role", "status");
       document.body.prepend(banner);
     }
-    const html = bannerHtml(state4);
+    const html = bannerHtml(state8);
     if (banner.__nfhHtml !== html) {
       banner.innerHTML = html;
       banner.__nfhHtml = html;
@@ -3633,8 +4140,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     banner.classList.toggle("nfh-connect-banner--ok", Boolean(phase && phase.kind === "connected"));
   }
   function renderNotes() {
-    const state4 = connectionState();
-    const text = NOTE_TEXT[state4];
+    const state8 = connectionState();
+    const text = NOTE_TEXT[state8];
     for (const host of NOTE_HOSTS) {
       const element = document.querySelector(host.selector);
       if (!element) continue;
@@ -3649,7 +4156,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         note.className = NOTE_CLASS;
         element.insertAdjacentElement(host.place, note);
       }
-      const html = `<span>${text}</span>` + (canConnect(state4) ? ' <button type="button" class="nfh-connect-note-link" data-nfh-connect>Connect</button>' : "");
+      const html = `<span>${text}</span>` + (canConnect(state8) ? ' <button type="button" class="nfh-connect-note-link" data-nfh-connect>Connect</button>' : "");
       if (note.__nfhHtml !== html) {
         note.innerHTML = html;
         note.__nfhHtml = html;
@@ -3739,9 +4246,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       wait(connection);
     } catch (error) {
       if (tab) tab.close();
-      const busy = error instanceof ApiError && error.status === 429;
+      const busy2 = error instanceof ApiError && error.status === 429;
       fail(
-        busy ? "Too many attempts from here. Wait a few minutes and try again." : "Could not reach nuke.family to start. Check your connection and try again."
+        busy2 ? "Too many attempts from here. Wait a few minutes and try again." : "Could not reach nuke.family to start. Check your connection and try again."
       );
     }
   }
@@ -4159,8 +4666,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
   }
   function cprState() {
-    const state4 = readJson2(CPR_KEY);
-    return state4 && state4.known && state4.sent ? state4 : { known: {}, sent: {} };
+    const state8 = readJson2(CPR_KEY);
+    return state8 && state8.known && state8.sent ? state8 : { known: {}, sent: {} };
   }
   var pending2 = /* @__PURE__ */ new Map();
   var uploadTimer = null;
@@ -4171,31 +4678,31 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     if (batch.length === 0) return;
     try {
       await api("/oc/cpr", { method: "POST", data: { cprs: batch.map(([, entry]) => entry) } });
-      const state4 = cprState();
-      for (const [key, entry] of batch) state4.sent[key] = entry.cpr;
-      localStorage.setItem(CPR_KEY, JSON.stringify(state4));
+      const state8 = cprState();
+      for (const [key, entry] of batch) state8.sent[key] = entry.cpr;
+      localStorage.setItem(CPR_KEY, JSON.stringify(state8));
       LogInfo(`OC Assistant sent ${batch.length} CPRs`);
     } catch (error) {
       console.error("[NFH] Could not send CPRs to nuke.family:", error);
     }
   }
   function learnCprs(crimes) {
-    const state4 = cprState();
+    const state8 = cprState();
     let changed = false;
     for (const crime of crimes) {
       for (const slot of crime.slots) {
         if (slot.occupied || slot.cpr === null) continue;
         const key = `${keyFor(crime.name)}|${keyFor(slot.name)}`;
-        if (state4.known[key] !== slot.cpr) {
-          state4.known[key] = slot.cpr;
+        if (state8.known[key] !== slot.cpr) {
+          state8.known[key] = slot.cpr;
           changed = true;
         }
-        if (state4.sent[key] !== slot.cpr) {
+        if (state8.sent[key] !== slot.cpr) {
           pending2.set(key, { crime: crime.name, role: slot.name, cpr: slot.cpr });
         }
       }
     }
-    if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state4));
+    if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state8));
     if (pending2.size > 0 && !uploadTimer) uploadTimer = setTimeout(upload, UPLOAD_DELAY_MS);
   }
   function knownCpr(board, crimeName2, roleName) {
@@ -4917,11 +5424,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     waitForElm(".user-info-list-wrap").then((userInfoList) => {
       LogInfo("Hospital list found, processing initial rows...");
       processHospitalRows();
-      const observer2 = new MutationObserver(() => {
+      const observer5 = new MutationObserver(() => {
         LogInfo("Hospital list changed, reprocessing rows...");
         processHospitalRows();
       });
-      observer2.observe(userInfoList, {
+      observer5.observe(userInfoList, {
         childList: true,
         subtree: true
       });
@@ -5038,9 +5545,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     setItem(WEIGHTS_KEY, pref === null ? "null" : JSON.stringify(pref));
   }
   function parseOverride(value, min, max) {
-    const number = parseInt(value, 10);
-    if (Number.isNaN(number)) return null;
-    return Math.min(max, Math.max(min, number));
+    const number2 = parseInt(value, 10);
+    if (Number.isNaN(number2)) return null;
+    return Math.min(max, Math.max(min, number2));
   }
 
   // src/features/organized-crimes/page.js
@@ -5052,8 +5559,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   };
   function activeSubTab(root3) {
     for (const name of root3.querySelectorAll('[class^="tabName___"]')) {
-      const button2 = name.closest("button");
-      if (button2 && /(^|\s)active___/.test(button2.className)) {
+      const button3 = name.closest("button");
+      if (button3 && /(^|\s)active___/.test(button3.className)) {
         return name.textContent.trim().toLowerCase();
       }
     }
@@ -5133,7 +5640,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       (crime) => crime.slots.map((slot) => slot.joinButton).filter(Boolean)
     );
     if (buttons2.length === 0) return JoinState.Full;
-    return buttons2.some((button2) => !button2.disabled) ? JoinState.Open : JoinState.Blocked;
+    return buttons2.some((button3) => !button3.disabled) ? JoinState.Open : JoinState.Blocked;
   }
 
   // src/features/organized-crimes/view.js
@@ -5196,8 +5703,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
     if (element.title !== chip.title) element.title = chip.title;
     element.classList.add(CHIP_CLASS);
-    for (const state4 of CHIP_STATES) {
-      element.classList.toggle(`${CHIP_CLASS}--${state4}`, state4 === chip.state);
+    for (const state8 of CHIP_STATES) {
+      element.classList.toggle(`${CHIP_CLASS}--${state8}`, state8 === chip.state);
     }
     if (!existing) slot.headerEl.insertAdjacentElement("afterend", element);
   }
@@ -5235,12 +5742,12 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     return '<div class="nfh-oc-settings-group"><span class="nfh-oc-settings-heading">Staff flags</span>' + toggles + override("thresholdHours", "Not productive after (hours)", staff.prefs.thresholdHours, staff.factionLimits.thresholdHours) + override("levelGap", "Under-levelled from (levels below)", staff.prefs.levelGap, staff.factionLimits.levelGap) + `<span class="nfh-oc-bar-muted">Leave a number blank to use your faction's. These choices are yours alone.</span></div>`;
   }
   function settingsHtml({ open, weights, staff }) {
-    const button2 = `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-settings-toggle aria-expanded="${open ? "true" : "false"}">Settings</button>`;
-    if (!open) return { button: button2, panel: "" };
+    const button3 = `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-settings-toggle aria-expanded="${open ? "true" : "false"}">Settings</button>`;
+    if (!open) return { button: button3, panel: "" };
     const faction = `Your faction ${weights.factionShows ? "shows" : "hides"} them by default.`;
     const note = weights.own ? `You changed this. ${faction} <button type="button" class="nfh-oc-link-button" data-nfh-oc-weights-reset>Use your faction's choice</button>` : faction;
     const weightsGroup = `<div class="nfh-oc-settings-group"><label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-weights${weights.show ? " checked" : ""}> Show role weights</label><span class="nfh-oc-bar-muted">${note}</span></div>`;
-    return { button: button2, panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${staff ? staffSettingsHtml(staff) : ""}</div>` };
+    return { button: button3, panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${staff ? staffSettingsHtml(staff) : ""}</div>` };
   }
   var TAG_TEXT = { [Rank.Best]: "Best for you", [Rank.Good]: "Good for you" };
   var TAG_TEXT_FLAWED = { [Rank.Best]: "Best available", [Rank.Good]: "Also available" };
@@ -5320,10 +5827,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const crimes = count === 1 ? "1 stalled crime further down the list has" : `${count} stalled crimes further down the list have`;
     return ` <span class="nfh-oc-bar-muted" data-nfh-oc-stalled-hint>${escapeHtml(crimes)} an open slot your CPR is not known for yet. Scroll down to check it.</span>`;
   }
-  function barHtml(state4) {
+  function barHtml(state8) {
     const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
-    if (state4.kind === "best") {
-      const [best, ...rest] = state4.suggestions;
+    if (state8.kind === "best") {
+      const [best, ...rest] = state8.suggestions;
       const { slot, minCpr } = best.rated;
       const others = rest.filter((suggestion2) => !suggestion2.crime.offPage);
       const flawed = suggestionCaveats(best).length > 0;
@@ -5333,16 +5840,16 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       const late = best.productive ? "" : ` <strong class="nfh-oc-bar-warning">That is later than the ${escapeHtml(best.thresholdHours)} hours that count as productive,</strong> <span class="nfh-oc-bar-muted">but nothing open would start you sooner.</span>`;
       const belowLevel = best.belowLevel ? ` <strong class="nfh-oc-bar-warning">This crime is below your level (${escapeHtml(best.memberLevel)}).</strong>` : "";
       let lead = flawed ? "Best slot available: " : "Best slot for you: ";
-      if (state4.warning) {
-        lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state4.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
+      if (state8.warning) {
+        lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state8.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
       }
-      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}${stalledHint(state4.hiddenStalled)}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
+      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}${stalledHint(state8.hiddenStalled)}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
     }
-    if (state4.kind === "joined") {
-      return `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state4.crime)}</strong> (level ${escapeHtml(state4.level ?? "?")}) as <strong>${escapeHtml(state4.role)}</strong>, so no other slot is suggested.</span>`;
+    if (state8.kind === "joined") {
+      return `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state8.crime)}</strong> (level ${escapeHtml(state8.level ?? "?")}) as <strong>${escapeHtml(state8.role)}</strong>, so no other slot is suggested.</span>`;
     }
-    if (state4.kind === "warning") {
-      return `${label}<span class="nfh-oc-bar-text"><strong class="nfh-oc-bar-warning">${escapeHtml(state4.warning)}</strong></span>`;
+    if (state8.kind === "warning") {
+      return `${label}<span class="nfh-oc-bar-text"><strong class="nfh-oc-bar-warning">${escapeHtml(state8.warning)}</strong></span>`;
     }
     const messages = {
       none: "None of the open slots loaded so far meets your faction's minimum CPR for you. Scroll down to load more crimes.",
@@ -5350,26 +5857,26 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       full: "No open slot is loaded yet. Scroll down to load more crimes.",
       low: "The open slots you qualify for are all in crimes below your level, so none is suggested."
     };
-    const hint = state4.kind === "blocked" ? "" : stalledHint(state4.hiddenStalled);
-    return `${label}<span class="nfh-oc-bar-text">${messages[state4.kind]}${hint}</span>`;
+    const hint = state8.kind === "blocked" ? "" : stalledHint(state8.hiddenStalled);
+    return `${label}<span class="nfh-oc-bar-text">${messages[state8.kind]}${hint}</span>`;
   }
   function renderBar2(root3, html) {
-    let bar = document.getElementById(BAR_ID);
-    if (!bar) {
-      bar = document.createElement("div");
-      bar.id = BAR_ID;
-      bar.className = "nfh-oc-bar";
-      root3.parentElement.insertBefore(bar, root3);
+    let bar2 = document.getElementById(BAR_ID);
+    if (!bar2) {
+      bar2 = document.createElement("div");
+      bar2.id = BAR_ID;
+      bar2.className = "nfh-oc-bar";
+      root3.parentElement.insertBefore(bar2, root3);
     }
-    if (bar.dataset.nfhHtml !== html) {
-      bar.dataset.nfhHtml = html;
-      bar.innerHTML = html;
+    if (bar2.dataset.nfhHtml !== html) {
+      bar2.dataset.nfhHtml = html;
+      bar2.innerHTML = html;
     }
-    return bar;
+    return bar2;
   }
   function removeBar() {
-    const bar = document.getElementById(BAR_ID);
-    if (bar) bar.remove();
+    const bar2 = document.getElementById(BAR_ID);
+    if (bar2) bar2.remove();
   }
   function clearAll(root3) {
     removeBar();
@@ -5457,8 +5964,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     if (recruiting) learnCprs(crimes);
     const cachedNow = active ? cachedBoard2() : null;
     if (active) {
-      refreshBoard2(boardIsBehind(cachedNow)).then((fresh) => {
-        if (fresh) scheduleRender();
+      refreshBoard2(boardIsBehind(cachedNow)).then((fresh2) => {
+        if (fresh2) scheduleRender();
       });
     }
     const cached = active ? cachedBoard2() : null;
@@ -5508,16 +6015,16 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     let memberPart = "";
     if (features2.enabled && recruiting && crimes.length > 0) {
       if (features2.suggest) {
-        let state4;
+        let state8;
         const hiddenStalled = result.hiddenStalled;
-        if (suggestions.length > 0) state4 = { kind: "best", suggestions, warning, hiddenStalled };
-        else if (warning) state4 = { kind: "warning", warning };
-        else if (own) state4 = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
-        else if (joining === JoinState.Blocked) state4 = { kind: "blocked" };
-        else if (joining === JoinState.Open && result.withheld > 0) state4 = { kind: "low", hiddenStalled };
-        else if (joining === JoinState.Full) state4 = { kind: "full", hiddenStalled };
-        else state4 = { kind: "none", hiddenStalled };
-        memberPart = barHtml(state4);
+        if (suggestions.length > 0) state8 = { kind: "best", suggestions, warning, hiddenStalled };
+        else if (warning) state8 = { kind: "warning", warning };
+        else if (own) state8 = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
+        else if (joining === JoinState.Blocked) state8 = { kind: "blocked" };
+        else if (joining === JoinState.Open && result.withheld > 0) state8 = { kind: "low", hiddenStalled };
+        else if (joining === JoinState.Full) state8 = { kind: "full", hiddenStalled };
+        else state8 = { kind: "none", hiddenStalled };
+        memberPart = barHtml(state8);
       } else if (warning) {
         memberPart = barHtml({ kind: "warning", warning });
       }
@@ -5532,10 +6039,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       removeBar();
       return;
     }
-    const bar = renderBar2(root3, memberPart + (staffPart || settings.button) + settings.panel);
-    if (!bar.dataset.nfhBound) {
-      bar.dataset.nfhBound = "1";
-      bar.addEventListener("change", (event) => {
+    const bar2 = renderBar2(root3, memberPart + (staffPart || settings.button) + settings.panel);
+    if (!bar2.dataset.nfhBound) {
+      bar2.dataset.nfhBound = "1";
+      bar2.addEventListener("change", (event) => {
         const flag = event.target.getAttribute("data-nfh-oc-flag");
         const limit = event.target.getAttribute("data-nfh-oc-limit");
         if (event.target.hasAttribute("data-nfh-oc-weights")) {
@@ -5551,7 +6058,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         }
         scheduleRender();
       });
-      bar.addEventListener("click", (event) => {
+      bar2.addEventListener("click", (event) => {
         if (event.target.closest("[data-nfh-oc-settings-toggle]")) {
           settingsOpen = !settingsOpen;
           scheduleRender();
@@ -5629,6 +6136,1974 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     init: init4
   };
 
+  // src/core/page-script.js
+  var nonce;
+  function pageNonce() {
+    if (nonce !== void 0) return nonce;
+    nonce = null;
+    for (const script of document.querySelectorAll("script")) {
+      const value = script.nonce || script.getAttribute("nonce");
+      if (value) {
+        nonce = value;
+        break;
+      }
+    }
+    return nonce;
+  }
+  function runInPage(source) {
+    const tag = document.createElement("script");
+    const value = pageNonce();
+    if (value) {
+      tag.nonce = value;
+      tag.setAttribute("nonce", value);
+    }
+    tag.textContent = source;
+    (document.head || document.documentElement).appendChild(tag);
+    tag.remove();
+  }
+  function pageWindow() {
+    try {
+      if (typeof unsafeWindow !== "undefined" && unsafeWindow) return unsafeWindow;
+    } catch (error) {
+    }
+    return window;
+  }
+
+  // src/core/torn-editor.js
+  var REQUEST = "nfh:editor-request";
+  var RESPONSE = "nfh:editor-response";
+  var TIMEOUT_MS = 1500;
+  var bridgeInstalled = false;
+  var nextId = 1;
+  function pageBridge(requestEvent, responseEvent) {
+    if (window.__nfhEditorBridge) return;
+    window.__nfhEditorBridge = true;
+    document.documentElement.setAttribute("data-nfh-editor-bridge", "1");
+    document.addEventListener(requestEvent, (event) => {
+      let request2;
+      try {
+        request2 = JSON.parse(event.detail);
+      } catch (error) {
+        return;
+      }
+      const element = document.getElementById(request2.elementId);
+      const mce = window.tinymce;
+      let editor = null;
+      try {
+        editor = mce ? mce.get(request2.elementId) || (mce.activeEditor && mce.activeEditor.getElement() === element ? mce.activeEditor : null) : null;
+      } catch (error) {
+        editor = null;
+      }
+      let answer = { id: request2.id, ok: true, via: editor ? "tinymce" : "element" };
+      try {
+        if (request2.op === "get") {
+          answer.html = editor ? editor.getContent() : element ? element.innerHTML : "";
+        } else if (request2.op === "set") {
+          if (editor) {
+            editor.focus();
+            if (editor.undoManager) editor.undoManager.transact(() => editor.setContent(request2.html));
+            else editor.setContent(request2.html);
+            editor.fire("change");
+            editor.fire("input");
+            if (editor.nodeChanged) editor.nodeChanged();
+          } else if (element) {
+            element.innerHTML = request2.html;
+            element.dispatchEvent(new Event("input", { bubbles: true }));
+          } else {
+            answer = { id: request2.id, ok: false, error: "The editor was not found." };
+          }
+        }
+      } catch (error) {
+        answer = { id: request2.id, ok: false, error: String(error && error.message || error) };
+      }
+      document.dispatchEvent(new CustomEvent(responseEvent, { detail: JSON.stringify(answer) }));
+    });
+  }
+  function installBridge() {
+    if (bridgeInstalled) return;
+    bridgeInstalled = true;
+    try {
+      runInPage(`(${pageBridge.toString()})(${JSON.stringify(REQUEST)}, ${JSON.stringify(RESPONSE)});`);
+    } catch (error) {
+    }
+  }
+  function directEditor(element) {
+    try {
+      const mce = pageWindow().tinymce;
+      if (!mce || !element.id) return null;
+      const editor = mce.get(element.id);
+      if (editor) return editor;
+      const active = mce.activeEditor;
+      return active && active.getElement && active.getElement() === element ? active : null;
+    } catch (error) {
+      return null;
+    }
+  }
+  function setElement(element, html) {
+    element.innerHTML = html;
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+  function ask(elementId, op, html) {
+    installBridge();
+    if (!document.documentElement.hasAttribute("data-nfh-editor-bridge")) return Promise.reject(new Error("The page script did not run."));
+    const id = nextId++;
+    return new Promise((resolve, reject) => {
+      const timer3 = setTimeout(() => {
+        document.removeEventListener(RESPONSE, listener);
+        reject(new Error("The editor did not answer."));
+      }, TIMEOUT_MS);
+      function listener(event) {
+        let answer;
+        try {
+          answer = JSON.parse(event.detail);
+        } catch (error) {
+          return;
+        }
+        if (answer.id !== id) return;
+        clearTimeout(timer3);
+        document.removeEventListener(RESPONSE, listener);
+        if (answer.ok) resolve(answer);
+        else reject(new Error(answer.error || "The editor refused."));
+      }
+      document.addEventListener(RESPONSE, listener);
+      document.dispatchEvent(new CustomEvent(REQUEST, { detail: JSON.stringify({ id, op, elementId, html }) }));
+    });
+  }
+  function findEditor(root3) {
+    return root3 ? root3.querySelector('.mce-content-body[contenteditable="true"], [contenteditable="true"]') : null;
+  }
+  async function getEditorHtml(element) {
+    if (!element) throw new Error("The editor was not found.");
+    const editor = directEditor(element);
+    if (editor) {
+      try {
+        return String(editor.getContent());
+      } catch (error) {
+      }
+    }
+    if (element.id) {
+      try {
+        return (await ask(element.id, "get")).html ?? element.innerHTML;
+      } catch (error) {
+      }
+    }
+    return element.innerHTML;
+  }
+  async function setEditorHtml(element, html) {
+    if (!element) throw new Error("The editor was not found.");
+    const editor = directEditor(element);
+    if (editor) {
+      try {
+        editor.focus();
+        if (editor.undoManager) editor.undoManager.add();
+        editor.setContent(html);
+        if (editor.undoManager) editor.undoManager.add();
+        editor.fire("change");
+        editor.fire("input");
+        if (editor.nodeChanged) editor.nodeChanged();
+        return;
+      } catch (error) {
+      }
+    }
+    if (element.id) {
+      try {
+        await ask(element.id, "set", html);
+        return;
+      } catch (error) {
+      }
+    }
+    setElement(element, html);
+  }
+  function editorHasContent(element) {
+    if (!element) return false;
+    return element.textContent.trim() !== "" || element.querySelector("img") !== null;
+  }
+  function setInputValue(input, value) {
+    if (!input) return;
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+    setter.call(input, value);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  // src/features/mail-templates/data.js
+  var TTL_MS = 5 * 60 * 1e3;
+  var LIST_KEY2 = "nfhMailTemplateList";
+  var BODY_KEY = "nfhMailTemplateBodies";
+  var memory = { list: {}, bodies: {} };
+  function readStore(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || "{}") || {};
+    } catch (error) {
+      return {};
+    }
+  }
+  function writeStore(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+    }
+  }
+  var fresh = (entry) => entry && Date.now() - entry.at < TTL_MS;
+  function forgetCaches() {
+    memory.list = {};
+    memory.bodies = {};
+    try {
+      localStorage.removeItem(LIST_KEY2);
+      localStorage.removeItem(BODY_KEY);
+    } catch (error) {
+    }
+  }
+  async function listTemplates(page, { force = false } = {}) {
+    if (!force) {
+      const cached = memory.list[page] || readStore(LIST_KEY2)[page];
+      if (fresh(cached)) {
+        memory.list[page] = cached;
+        return cached.data;
+      }
+    }
+    const data = await api(`/mail-templates?page=${encodeURIComponent(page)}`);
+    const entry = { at: Date.now(), data };
+    memory.list[page] = entry;
+    const stored = readStore(LIST_KEY2);
+    stored[page] = entry;
+    writeStore(LIST_KEY2, stored);
+    return data;
+  }
+  async function personalBody(id) {
+    const cached = memory.bodies[id] || readStore(BODY_KEY)[id];
+    if (fresh(cached)) return cached.data;
+    const data = await api(`/mail-templates/personal/${id}`);
+    const entry = { at: Date.now(), data };
+    memory.bodies[id] = entry;
+    const stored = Object.fromEntries(Object.entries(readStore(BODY_KEY)).filter(([, value]) => fresh(value)));
+    stored[id] = entry;
+    writeStore(BODY_KEY, stored);
+    return data;
+  }
+  async function savePersonal(fields) {
+    const result = await api("/mail-templates/personal", { method: "POST", data: fields });
+    forgetCaches();
+    return result;
+  }
+  async function updatePersonal(id, fields) {
+    const result = await api(`/mail-templates/personal/${id}`, { method: "POST", data: fields });
+    forgetCaches();
+    return result;
+  }
+  async function deletePersonal(id) {
+    const result = await api(`/mail-templates/personal/${id}/delete`, { method: "POST" });
+    forgetCaches();
+    return result;
+  }
+  var renderFaction = (id) => api(`/mail-templates/faction/${id}`);
+  var factionMessage = (uuid) => api(`/mail-templates/messages/${encodeURIComponent(uuid)}`);
+  async function pinFaction(id, pinned) {
+    const result = await api(`/mail-templates/faction/${id}/pin`, { method: "POST", data: { pinned } });
+    forgetCaches();
+    return result;
+  }
+
+  // src/features/mail-templates/placeholders.js
+  var PLACEHOLDERS = [
+    { key: "name", label: "the recipient's name", where: "messages" },
+    { key: "id", label: "the recipient's player ID", where: "messages" },
+    { key: "me", label: "your name" },
+    { key: "myid", label: "your player ID" },
+    { key: "date", label: "today's date in Torn time, e.g. 13/11/26" },
+    { key: "time", label: "the Torn time now, e.g. 18:05" }
+  ];
+  var KNOWN = new Set(PLACEHOLDERS.map((placeholder) => placeholder.key));
+  var PATTERN = /\{(\w+)\}/g;
+  var escapeHtml2 = (value) => String(value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  function tornDate(now = /* @__PURE__ */ new Date()) {
+    const two = (n) => String(n).padStart(2, "0");
+    return {
+      date: `${two(now.getUTCDate())}/${two(now.getUTCMonth() + 1)}/${two(now.getUTCFullYear() % 100)}`,
+      time: `${two(now.getUTCHours())}:${two(now.getUTCMinutes())}`
+    };
+  }
+  function parseRecipient(value) {
+    const text = String(value || "").trim();
+    const match = text.match(/^(.*?)\s*\[(\d+)\]\s*$/);
+    if (match) return { name: match[1].trim() || null, id: match[2] };
+    if (/^\d+$/.test(text)) return { name: null, id: text };
+    return { name: text || null, id: null };
+  }
+  function fill(text, values, { html = false } = {}) {
+    const missing = /* @__PURE__ */ new Set();
+    const out = String(text ?? "").replace(PATTERN, (whole, key) => {
+      const lower = key.toLowerCase();
+      if (!KNOWN.has(lower)) return whole;
+      const value = values[lower];
+      if (value === null || value === void 0 || value === "") {
+        missing.add(lower);
+        return whole;
+      }
+      return html ? escapeHtml2(value) : String(value);
+    });
+    return { text: out, missing: [...missing] };
+  }
+
+  // src/features/mail-templates/view.js
+  var SCOPE_LABELS = { messages: "Messages", newsletter: "Newsletter", both: "Both" };
+  var button2 = (act2, label, { primary = false, id = "", kind = "", title = "", disabled = false, extra = "" } = {}) => `<button type="button" class="nfh-cw-btn${primary ? " nfh-cw-btn--primary" : ""}" data-act="${act2}"${id !== "" ? ` data-id="${escapeHtml(id)}"` : ""}${kind ? ` data-kind="${kind}"` : ""}${title ? ` title="${escapeHtml(title)}"` : ""}${disabled ? " disabled" : ""}${extra}>${label}</button>`;
+  var star = (pinned) => pinned ? "\u2605" : "\u2606";
+  function pinnedChips(list) {
+    const chips = [];
+    for (const template of list.personal || []) {
+      if (template.pinned) chips.push(chipFor2("personal", template.id, template.name, "Your template"));
+    }
+    for (const template of list.faction || []) {
+      if (template.pinned) chips.push(chipFor2("faction", template.id, template.name, `Faction template \xB7 ${template.audience}`));
+    }
+    return chips.join("");
+  }
+  var chipFor2 = (kind, id, name, title) => `<button type="button" class="nfh-cw-chip nfh-mt-chip nfh-mt-chip--${kind}" data-act="use" data-kind="${kind}" data-id="${escapeHtml(id)}" title="${escapeHtml(
+    `${title}: put it in the editor`
+  )}">${kind === "faction" ? '<span class="nfh-mt-badge" aria-label="Faction">F</span>' : ""}${escapeHtml(name)}</button>`;
+  function scopeSelect(field, selected) {
+    return `<select class="nfh-cw-input" data-field="${field}" aria-label="Where it shows">${Object.entries(SCOPE_LABELS).map(([value, label]) => `<option value="${value}"${value === selected ? " selected" : ""}>${label}</option>`).join("")}</select>`;
+  }
+  function formHtml(state8) {
+    const form = state8.form;
+    if (!form) return "";
+    if (form.mode === "save") {
+      return `<div class="nfh-mt-form">
+      <input type="text" class="nfh-cw-input" data-field="name" maxlength="80" placeholder="Template name" value="${escapeHtml(form.name)}">
+      <label class="nfh-cw-muted">Show in ${scopeSelect("scope", form.scope)}</label>
+      ${button2("save-confirm", state8.busy ? "Saving\u2026" : "Save template", { primary: true, disabled: state8.busy })}${button2("form-cancel", "Cancel")}
+      <div class="nfh-cw-muted nfh-mt-note">Saves the message as it is in the editor${state8.hasSubject ? ", and the subject" : ""}. Only you can see your templates.</div>
+    </div>`;
+    }
+    return `<div class="nfh-mt-form">
+    <input type="text" class="nfh-cw-input" data-field="name" maxlength="80" value="${escapeHtml(form.name)}" aria-label="Template name">
+    <label class="nfh-cw-muted">Show in ${scopeSelect("scope", form.scope)}</label>
+    ${button2("rename-confirm", "Save", { primary: true, id: form.id, disabled: state8.busy })}${button2("form-cancel", "Cancel")}
+  </div>`;
+  }
+  function confirmHtml(state8) {
+    const confirm2 = state8.confirm;
+    if (!confirm2) return "";
+    return `<div class="nfh-mt-confirm"><span>${escapeHtml(confirm2.text)}</span>
+    ${button2("confirm-yes", escapeHtml(confirm2.yes), { primary: true, disabled: state8.busy })}${button2("confirm-no", "Cancel")}</div>`;
+  }
+  function helpHtml(state8) {
+    if (!state8.help) return "";
+    const rows2 = PLACEHOLDERS.filter((placeholder) => !placeholder.where || placeholder.where === state8.page).map((placeholder) => `<li><code>{${placeholder.key}}</code> ${escapeHtml(placeholder.label)}</li>`).join("");
+    const recipient = state8.page === "messages" ? " Pick the recipient before you use a template with <code>{name}</code> or <code>{id}</code>." : "";
+    return `<div class="nfh-mt-help">
+    <div>Write these in a template (in the message or the subject) and they are filled in when you use it:</div>
+    <ul>${rows2}</ul>
+    <div class="nfh-cw-muted">Anything that can't be filled in yet is left as it is, and you are told.${recipient}</div>
+  </div>`;
+  }
+  var matches = (query, ...texts) => !query || texts.some((text) => String(text || "").toLowerCase().includes(query));
+  function allHtml(state8) {
+    if (!state8.open || !state8.list) return "";
+    const list = state8.list;
+    const query = state8.query.trim().toLowerCase();
+    const sections = [];
+    const personal = (list.personal || []).filter((template) => matches(query, template.name, template.subject));
+    sections.push(`<div class="nfh-mt-section"><div class="nfh-mt-heading">Your templates</div>${personal.length ? personal.map(
+      (template) => `<div class="nfh-mt-row">
+              <span class="nfh-mt-name" title="${escapeHtml(template.subject || "")}">${escapeHtml(template.name)}</span>
+              <span class="nfh-cw-muted nfh-mt-scope">${SCOPE_LABELS[template.scope] || ""}</span>
+              <span class="nfh-cw-actions">
+                ${button2("use", "Use", { primary: true, id: template.id, kind: "personal" })}
+                ${button2("pin", star(template.pinned), { id: template.id, kind: "personal", title: template.pinned ? "Unpin" : "Pin to the bar" })}
+                ${button2("rename", "Rename", { id: template.id })}
+                ${button2("overwrite", "Update", { id: template.id, title: "Replace it with what is in the editor now" })}
+                ${button2("delete", "Delete", { id: template.id })}
+              </span></div>`
+    ).join("") : `<div class="nfh-cw-muted">${query ? "None match." : "None yet: write a message and press Save."}</div>`}</div>`);
+    if (list.faction) {
+      const faction = list.faction.filter((template) => matches(query, template.name, template.audience));
+      sections.push(`<div class="nfh-mt-section"><div class="nfh-mt-heading">Faction templates</div>${faction.length ? faction.map(
+        (template) => `<div class="nfh-mt-row">
+                <span class="nfh-mt-name">${escapeHtml(template.name)}</span>
+                <span class="nfh-cw-muted nfh-mt-scope">${escapeHtml(template.audience)}</span>
+                <span class="nfh-cw-actions">
+                  ${button2("use", "Use", { primary: true, id: template.id, kind: "faction", title: "Rendered now by nuke.family, with today's figures" })}
+                  ${button2("pin", star(template.pinned), { id: template.id, kind: "faction", title: template.pinned ? "Unpin" : "Pin to the bar" })}
+                  ${template.edit_url ? `<a class="nfh-cw-btn" href="${escapeHtml(template.edit_url)}" target="_blank" rel="noopener">Edit \u2197</a>` : ""}
+                </span></div>`
+      ).join("") : `<div class="nfh-cw-muted">${query ? "None match." : "None."}</div>`}</div>`);
+    }
+    if (list.messages && list.messages.length) {
+      const messages = list.messages.filter((message) => matches(query, message.subject, message.author));
+      if (messages.length) {
+        sections.push(`<div class="nfh-mt-section"><div class="nfh-mt-heading">Recent faction mail</div>${messages.map(
+          (message) => `<div class="nfh-mt-row">
+            <span class="nfh-mt-name">${escapeHtml(message.subject || "(no subject)")}</span>
+            <span class="nfh-cw-muted nfh-mt-scope">${message.status === "draft" ? "Your draft" : `Sent${message.author ? ` by ${escapeHtml(message.author)}` : ""}`}</span>
+            <span class="nfh-cw-actions">
+              ${button2("use", "Use", { primary: true, id: message.id, kind: "message" })}
+              <a class="nfh-cw-btn" href="${escapeHtml(message.url)}" target="_blank" rel="noopener">Open \u2197</a>
+            </span></div>`
+        ).join("")}</div>`);
+      }
+    }
+    const siteLink = list.links && list.links.faction_mail ? `<a href="${escapeHtml(list.links.faction_mail)}" target="_blank" rel="noopener">Faction mail on nuke.family \u2197</a>` : "";
+    return `<div class="nfh-mt-all">
+    <input type="search" class="nfh-cw-input nfh-mt-search" data-field="query" placeholder="Search templates" value="${escapeHtml(state8.query)}">
+    ${sections.join("")}
+    ${siteLink ? `<div class="nfh-mt-foot">${siteLink}</div>` : ""}
+  </div>`;
+  }
+  function renderBar3(state8) {
+    const list = state8.list;
+    const total = list ? (list.personal || []).length + (list.faction || []).length : 0;
+    const pins = list ? pinnedChips(list) : "";
+    const status = state8.loading ? `<span class="nfh-cw-muted">Loading\u2026</span>` : state8.error && !list ? `<span class="nfh-cw-error">${escapeHtml(state8.error)}</span>` : pins || `<span class="nfh-cw-muted">${total ? "Pin templates (\u2606 in All) to show them here." : "Save a message to use it again later."}</span>`;
+    const message = state8.message ? `<div class="nfh-mt-message nfh-mt-message--${state8.message.tone}" role="status">${escapeHtml(state8.message.text)}</div>` : "";
+    return `<div class="nfh-cw-bar nfh-mt-bar">
+      <span class="nfh-mt-title">Templates</span>
+      <span class="nfh-mt-pins">${status}</span>
+      <span class="nfh-cw-actions nfh-mt-buttons">
+        ${button2("toggle-all", `All${total ? ` (${total})` : ""} ${state8.open ? "\u25B4" : "\u25BE"}`, { disabled: !list })}
+        ${button2("save", state8.form?.mode === "save" ? "Save template" : "Save", { disabled: state8.busy || !list, primary: state8.form?.mode === "save" })}
+        ${button2("help", "?", { title: "Placeholders you can use", extra: ' aria-label="Placeholders"' })}
+      </span>
+    </div>
+    ${message}${confirmHtml(state8)}${formHtml(state8)}${helpHtml(state8)}${allHtml(state8)}`;
+  }
+
+  // src/features/mail-templates/index.js
+  var BAR_ID2 = "nfh-mail-templates";
+  var PAGES = {
+    messages: {
+      container: "#editor-form",
+      anchor: (container) => container.closest(".mailbox-container") || container,
+      root: () => document.getElementById("editor-form"),
+      subject: (root3) => root3 && root3.querySelector('input[name="subject"]'),
+      recipient: (root3) => root3 && root3.querySelector('input[name="sendto"]')
+    },
+    newsletter: {
+      container: "#react-root-faction-newsletter",
+      anchor: (container) => container,
+      root: () => document.getElementById("react-root-faction-newsletter"),
+      subject: (root3) => root3 && root3.querySelector('input[class*="titleField"]'),
+      recipient: () => null
+    }
+  };
+  var state2 = freshState(null);
+  function freshState(page) {
+    return { page, list: null, loading: false, error: null, open: false, query: "", form: null, confirm: null, help: false, message: null, busy: false, hasSubject: false };
+  }
+  function currentPage() {
+    const { pathname, hash } = window.location;
+    if (pathname === "/messages.php" && /p=compose/.test(hash)) return "messages";
+    if (pathname === "/factions.php" && /option=newsletter/.test(hash)) return "newsletter";
+    return null;
+  }
+  function bar() {
+    return document.getElementById(BAR_ID2);
+  }
+  function render4() {
+    const element = bar();
+    if (!element) return;
+    const focused = document.activeElement && element.contains(document.activeElement) ? document.activeElement.dataset.field : null;
+    const caret = focused && document.activeElement.selectionStart;
+    const page = PAGES[state2.page];
+    const subject = page && page.subject(page.root());
+    state2.hasSubject = !!(subject && subject.value.trim());
+    element.innerHTML = renderBar3(state2);
+    if (focused) {
+      const input = element.querySelector(`[data-field="${focused}"]`);
+      if (input) {
+        input.focus();
+        if (typeof caret === "number" && input.setSelectionRange) input.setSelectionRange(caret, caret);
+      }
+    }
+  }
+  function say(tone, text) {
+    state2.message = { tone, text };
+    render4();
+  }
+  function describeError(error) {
+    if (error instanceof ApiError) {
+      if (error.status === 401) return "nuke.family did not accept your key. Reconnect the script.";
+      if (error.status === 403) return "You don't have access to that template.";
+      if (error.status === 404) return "That template is gone. The list has been refreshed.";
+      const reason = error.body && (error.body.error || error.body.message);
+      if (reason) return reason;
+    }
+    return "nuke.family could not be reached. Try again in a moment.";
+  }
+  async function load2(force = false) {
+    if (connectionState() === "missing") {
+      state2.error = "Connect the script to nuke.family to use templates.";
+      render4();
+      return;
+    }
+    state2.loading = !state2.list;
+    render4();
+    try {
+      state2.list = await listTemplates(state2.page, { force });
+      state2.error = null;
+    } catch (error) {
+      state2.error = describeError(error);
+    } finally {
+      state2.loading = false;
+      render4();
+    }
+  }
+  function placeholderValues() {
+    const page = PAGES[state2.page];
+    const recipient = parseRecipient(page.recipient(page.root())?.value);
+    const { date, time } = tornDate();
+    return {
+      name: recipient.name,
+      id: recipient.id,
+      me: getUserscriptUsersPlayerName() || null,
+      myid: getUserscriptUsersPlayerId() || null,
+      date,
+      time
+    };
+  }
+  async function fetchContent(kind, id) {
+    if (kind === "personal") {
+      const template = await personalBody(id);
+      return { name: template.name, subject: template.subject, html: template.body };
+    }
+    if (kind === "faction") {
+      const template = await renderFaction(id);
+      return { name: template.name, subject: template.subject, html: template.html };
+    }
+    const message = await factionMessage(id);
+    return { name: message.subject || "the mail", subject: message.subject, html: message.html };
+  }
+  async function insert(content) {
+    const page = PAGES[state2.page];
+    const root3 = page.root();
+    const editor = findEditor(root3);
+    if (!editor) throw new Error("Torn's editor was not found on the page.");
+    const values = placeholderValues();
+    const body = fill(content.html, values, { html: true });
+    await setEditorHtml(editor, body.text);
+    const missing = new Set(body.missing);
+    if (content.subject) {
+      const subject = fill(content.subject, values);
+      subject.missing.forEach((key) => missing.add(key));
+      setInputValue(page.subject(root3), subject.text);
+    }
+    if (missing.size) {
+      const keys = [...missing].map((key) => `{${key}}`).join(", ");
+      const recipientNote = missing.has("name") || missing.has("id") ? " Pick the recipient, then use it again." : "";
+      say("warn", `Put "${content.name}" in the editor. ${keys} left as is.${recipientNote}`);
+    } else {
+      say("ok", `Put "${content.name}" in the editor. Check it, then send it yourself.`);
+    }
+  }
+  async function use(kind, id, { replace = false } = {}) {
+    const editor = findEditor(PAGES[state2.page].root());
+    if (!replace && editorHasContent(editor)) {
+      state2.confirm = { action: "use", kind, id, text: "Replace what is in the editor now?", yes: "Replace" };
+      render4();
+      return;
+    }
+    await busy(async () => {
+      const content = await fetchContent(kind, id);
+      await insert(content);
+    });
+  }
+  async function busy(work) {
+    if (state2.busy) return;
+    state2.busy = true;
+    state2.confirm = null;
+    render4();
+    try {
+      await work();
+    } catch (error) {
+      LogInfo("[mail-templates]", error);
+      say("error", error instanceof ApiError || !error?.message ? describeError(error) : error.message);
+      if (error instanceof ApiError && error.status === 404) load2(true);
+    } finally {
+      state2.busy = false;
+      render4();
+    }
+  }
+  async function editorContents() {
+    const page = PAGES[state2.page];
+    const root3 = page.root();
+    const editor = findEditor(root3);
+    if (!editorHasContent(editor)) throw new Error("The editor is empty: write the message first.");
+    const html = await getEditorHtml(editor);
+    const subject = page.subject(root3)?.value.trim() || null;
+    return { body: html, subject };
+  }
+  function findPersonal(id) {
+    return (state2.list?.personal || []).find((template) => String(template.id) === String(id));
+  }
+  async function onClick3(event) {
+    const target = event.target.closest("[data-act]");
+    if (!target || target.disabled) return;
+    const { act: act2, id, kind } = target.dataset;
+    switch (act2) {
+      case "toggle-all":
+        state2.open = !state2.open;
+        if (state2.open) load2();
+        render4();
+        return;
+      case "help":
+        state2.help = !state2.help;
+        render4();
+        return;
+      case "save":
+        if (state2.form?.mode === "save") return bar()?.querySelector('[data-act="save-confirm"]')?.click();
+        state2.form = { mode: "save", name: "", scope: state2.page };
+        state2.confirm = null;
+        render4();
+        bar()?.querySelector('[data-field="name"]')?.focus();
+        return;
+      case "form-cancel":
+      case "confirm-no":
+        state2.form = null;
+        state2.confirm = null;
+        render4();
+        return;
+      case "save-confirm":
+        if (!state2.form.name.trim()) return say("error", "Give the template a name.");
+        return busy(async () => {
+          const contents = await editorContents();
+          await savePersonal({ name: state2.form.name.trim(), scope: state2.form.scope, ...contents });
+          const name = state2.form.name.trim();
+          state2.form = null;
+          await load2(true);
+          say("ok", `Saved "${name}". Pin it with \u2606 under All to keep it on the bar.`);
+        });
+      case "rename": {
+        const template = findPersonal(id);
+        if (!template) return;
+        state2.form = { mode: "rename", id, name: template.name, scope: template.scope };
+        render4();
+        return;
+      }
+      case "rename-confirm":
+        if (!state2.form.name.trim()) return say("error", "Give the template a name.");
+        return busy(async () => {
+          await updatePersonal(id, { name: state2.form.name.trim(), scope: state2.form.scope });
+          state2.form = null;
+          await load2(true);
+          say("ok", "Saved.");
+        });
+      case "overwrite": {
+        const template = findPersonal(id);
+        if (!template) return;
+        state2.confirm = { action: "overwrite", id, text: `Replace "${template.name}" with what is in the editor now?`, yes: "Update" };
+        render4();
+        return;
+      }
+      case "delete": {
+        const template = findPersonal(id);
+        if (!template) return;
+        state2.confirm = { action: "delete", id, text: `Delete "${template.name}"? This can't be undone.`, yes: "Delete" };
+        render4();
+        return;
+      }
+      case "confirm-yes":
+        return confirmed();
+      case "pin":
+        return busy(async () => {
+          if (kind === "faction") {
+            const template = (state2.list?.faction || []).find((entry) => String(entry.id) === String(id));
+            await pinFaction(id, !template?.pinned);
+          } else {
+            await updatePersonal(id, { pinned: !findPersonal(id)?.pinned });
+          }
+          await load2(true);
+        });
+      case "use":
+        return use(kind, id);
+      default:
+    }
+  }
+  async function confirmed() {
+    const confirm2 = state2.confirm;
+    if (!confirm2) return;
+    if (confirm2.action === "use") return use(confirm2.kind, confirm2.id, { replace: true });
+    if (confirm2.action === "overwrite") {
+      return busy(async () => {
+        const contents = await editorContents();
+        await updatePersonal(confirm2.id, contents);
+        await load2(true);
+        say("ok", "Updated with what is in the editor.");
+      });
+    }
+    if (confirm2.action === "delete") {
+      return busy(async () => {
+        await deletePersonal(confirm2.id);
+        await load2(true);
+        say("ok", "Deleted.");
+      });
+    }
+  }
+  function onInput2(event) {
+    const field = event.target.dataset.field;
+    if (!field) return;
+    if (field === "query") {
+      state2.query = event.target.value;
+      render4();
+    } else if (state2.form && (field === "name" || field === "scope")) {
+      state2.form[field] = event.target.value;
+    }
+  }
+  function onKeydown(event) {
+    if (event.key !== "Enter" || !state2.form || event.target.dataset.field !== "name") return;
+    event.preventDefault();
+    bar()?.querySelector(state2.form.mode === "save" ? '[data-act="save-confirm"]' : '[data-act="rename-confirm"]')?.click();
+  }
+  function mount2(container) {
+    const page = PAGES[state2.page];
+    const element = document.createElement("div");
+    element.id = BAR_ID2;
+    element.className = "nfh-cw nfh-mt";
+    element.dataset.page = state2.page;
+    element.addEventListener("click", onClick3);
+    element.addEventListener("input", onInput2);
+    element.addEventListener("change", onInput2);
+    element.addEventListener("keydown", onKeydown);
+    const anchor = page.anchor(container);
+    anchor.parentNode.insertBefore(element, anchor);
+    render4();
+    if (!state2.list) load2();
+  }
+  var mail_templates_default = {
+    name: "Mail templates",
+    pages: [PageType.Messages, PageType.FactionNewsletter],
+    init() {
+      const page = currentPage();
+      if (!page) {
+        bar()?.remove();
+        return;
+      }
+      if (state2.page !== page) Object.assign(state2, freshState(page));
+      ensureInjected({
+        containerSelector: PAGES[page].container,
+        isPresent: () => bar()?.dataset.page === page,
+        inject: (container) => {
+          bar()?.remove();
+          mount2(container);
+        }
+      });
+    }
+  };
+
+  // src/core/torn-action.js
+  var REQUEST2 = "nfh:torn-action";
+  var RESPONSE2 = "nfh:torn-action-done";
+  var TIMEOUT_MS2 = 15e3;
+  var installed = false;
+  var nextId2 = 1;
+  function pageBridge2(requestEvent, responseEvent) {
+    if (window.__nfhTornAction) return;
+    window.__nfhTornAction = true;
+    document.documentElement.setAttribute("data-nfh-torn-action", "1");
+    document.addEventListener(requestEvent, (event) => {
+      let request2;
+      try {
+        request2 = JSON.parse(event.detail);
+      } catch (error) {
+        return;
+      }
+      const answer = (payload) => document.dispatchEvent(new CustomEvent(responseEvent, { detail: JSON.stringify({ id: request2.id, ...payload }) }));
+      fetch(request2.url, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "X-Requested-With": "XMLHttpRequest" },
+        body: request2.body
+      }).then((response) => response.text().then((text) => answer({ ok: response.ok, status: response.status, text }))).catch((error) => answer({ ok: false, status: 0, text: String(error && error.message || error) }));
+    });
+  }
+  function install() {
+    if (installed) return;
+    installed = true;
+    runInPage(`(${pageBridge2.toString()})(${JSON.stringify(REQUEST2)}, ${JSON.stringify(RESPONSE2)});`);
+  }
+  function postTornAction(page, fields) {
+    const rfcv = getCookie("rfc_v");
+    if (!rfcv) return Promise.reject(new Error("Torn's page token was not found. Reload the page and try again."));
+    install();
+    if (!document.documentElement.hasAttribute("data-nfh-torn-action")) {
+      return Promise.reject(new Error("Torn's page blocked the script that sends it. Use the Loan box on the row instead."));
+    }
+    const id = nextId2++;
+    const url = `/${page}?rfcv=${encodeURIComponent(rfcv)}`;
+    const body = new URLSearchParams(fields).toString();
+    return new Promise((resolve, reject) => {
+      const timer3 = setTimeout(() => {
+        document.removeEventListener(RESPONSE2, listener);
+        reject(new Error("Torn did not answer in time (or the page blocked the request). Check the armoury before trying again."));
+      }, TIMEOUT_MS2);
+      function listener(event) {
+        let answer;
+        try {
+          answer = JSON.parse(event.detail);
+        } catch (error) {
+          return;
+        }
+        if (answer.id !== id) return;
+        clearTimeout(timer3);
+        document.removeEventListener(RESPONSE2, listener);
+        resolve(answer);
+      }
+      document.addEventListener(RESPONSE2, listener);
+      document.dispatchEvent(new CustomEvent(REQUEST2, { detail: JSON.stringify({ id, url, body }) }));
+    });
+  }
+
+  // src/features/oc-items/armoury.js
+  var tabSelector = (tab) => `[id="tab=armoury&sub=${tab}"]`;
+  function readArmoury(tabs) {
+    const live = {};
+    for (const tab of tabs) {
+      const container = document.querySelector(tabSelector(tab));
+      if (!container) continue;
+      const rows2 = [...container.querySelectorAll("li .img-wrap[data-itemid]")].map((wrap) => readRow(wrap.closest("li"), wrap));
+      const empty = !rows2.length && /no items in this category/i.test(container.textContent);
+      if (rows2.length || empty) live[tab] = rows2;
+    }
+    return live;
+  }
+  function readRow(li, wrap) {
+    const link = li.querySelector('.loaned a[href*="profiles.php?XID="]');
+    const holder = link ? Number(new URL(link.getAttribute("href"), location.origin).searchParams.get("XID")) : null;
+    const name = (li.querySelector(".name")?.childNodes[0]?.textContent || li.querySelector(".name")?.textContent || "").replace(/\s+x?\s*$/, "").trim();
+    return {
+      li,
+      itemId: Number(wrap.dataset.itemid),
+      armoryId: wrap.dataset.armoryid,
+      name,
+      type: (li.querySelector(".type")?.textContent || "").trim(),
+      loanedTo: holder || null,
+      loanedName: link ? link.textContent.trim() : null,
+      canLoan: !!li.querySelector('.item-action a.loan.active, .item-action [data-role="loan"].active'),
+      hasBonus: !!li.querySelector(".bonuses, .item-bonuses, [class*='bonus-attachment']")
+    };
+  }
+  function openActionBox(tab) {
+    const container = document.querySelector(tabSelector(tab));
+    if (!container) return null;
+    const li = container.querySelector("li.item-loan-act, li.item-give-act");
+    if (!li) return null;
+    const kind = li.classList.contains("item-loan-act") ? "loan" : "give";
+    const box = li.querySelector(`.${kind}-cont.action-cont`);
+    const input = box?.querySelector('input[name="user"]');
+    if (!box || !input) return null;
+    return { li, kind, box, input, itemId: Number(box.dataset.itemid || li.querySelector(".img-wrap")?.dataset.itemid) };
+  }
+
+  // src/features/oc-items/logic.js
+  var TAB_LABELS = {
+    weapons: "Weapons",
+    armour: "Armour",
+    temporary: "Temporary",
+    medical: "Medical",
+    drugs: "Drugs",
+    boosters: "Boosters",
+    consumables: "Consumables",
+    utilities: "Utilities"
+  };
+  var tabLabel = (tab) => TAB_LABELS[tab] || "Utilities";
+  var armouryHash = (tab) => `#/tab=armoury&start=0&sub=${tab}`;
+  function tabInHash(hash) {
+    const match = String(hash || "").match(/tab=armoury.*?sub=(\w+)/);
+    return match ? match[1] : null;
+  }
+  function currentLoans(siteLoans, live) {
+    const liveTabs = new Set(Object.keys(live || {}));
+    const loans = (siteLoans || []).filter((loan2) => !liveTabs.has(loan2.tab));
+    for (const [tab, rows2] of Object.entries(live || {})) {
+      for (const row2 of rows2) {
+        if (!row2.loanedTo) continue;
+        loans.push({ item_id: row2.itemId, item_name: row2.name, tab, player_id: row2.loanedTo, player_name: row2.loanedName || "", live: true });
+      }
+    }
+    return loans;
+  }
+  function unusedLoans(loans, needs, ocItemIds) {
+    const oc = new Set((ocItemIds || []).map(Number));
+    const seen = /* @__PURE__ */ new Set();
+    const out = [];
+    for (const loan2 of loans || []) {
+      const itemId = Number(loan2.item_id);
+      if (!oc.has(itemId)) continue;
+      const needed = needs && needs[loan2.player_id] || null;
+      if (needed && needed.map(Number).includes(itemId)) continue;
+      const key = `${loan2.player_id}:${itemId}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push({ ...loan2, reason: needed ? "their crime doesn't need it" : "not in a crime" });
+    }
+    return out.sort((a, b) => String(a.player_name).localeCompare(String(b.player_name)) || String(a.item_name).localeCompare(String(b.item_name)));
+  }
+  function stillMissing(missing, loanedNow) {
+    return (missing || []).filter((entry) => !loanedNow.has(`${entry.player_id}:${entry.item_id}`));
+  }
+  function needersByItem(missing) {
+    const byItem = /* @__PURE__ */ new Map();
+    for (const entry of missing || []) {
+      if (!byItem.has(entry.item_id)) byItem.set(entry.item_id, []);
+      byItem.get(entry.item_id).push(entry);
+    }
+    return byItem;
+  }
+  function availableCopy(rows2, itemId) {
+    const free = (rows2 || []).filter((row2) => row2.itemId === Number(itemId) && !row2.loanedTo && row2.canLoan);
+    return free.find((row2) => !row2.hasBonus) || free[0] || null;
+  }
+  function readLoanAnswer(text) {
+    const raw = String(text || "");
+    try {
+      const json = JSON.parse(raw);
+      if (json && typeof json === "object") {
+        const message2 = stripTags(json.message || json.msg || json.text || "");
+        const ok = json.success === true || json.success === "true" || json.success === void 0 && /success/i.test(raw) && !json.error;
+        return { ok, message: message2 || (json.error ? stripTags(String(json.error)) : "") };
+      }
+    } catch (error) {
+    }
+    const message = stripTags(raw).slice(0, 200);
+    return { ok: /success|you loaned|loaned .* to/i.test(raw) && !/error|not allowed|cannot|can't/i.test(raw), message };
+  }
+  function stripTags(html) {
+    return String(html).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  }
+
+  // src/features/oc-items/index.js
+  var PANEL_ID = "nfh-oc-items";
+  var WANTED_TAB_KEY = "nfhOcItemsTab";
+  var FILL_CLASS = "nfh-oci-fill";
+  var BADGE_CLASS = "nfh-oci-badge";
+  var COLLAPSED_KEY = "nfhOcItemsCollapsed";
+  var FRESH_MS = 60 * 1e3;
+  var PLACES = {
+    crimes: { container: "#faction-crimes-root", insert: (container) => container.parentElement.insertBefore(panelElement(), container) },
+    armoury: { container: "#faction-armoury-tabs", insert: (container) => container.parentElement.insertBefore(panelElement(), container) }
+  };
+  var state3 = {
+    data: null,
+    fetchedAt: 0,
+    loading: null,
+    error: null,
+    message: null,
+    busy: /* @__PURE__ */ new Set(),
+    loanedNow: /* @__PURE__ */ new Set()
+  };
+  var observer2 = null;
+  var observed = null;
+  var redrawTimer = null;
+  function place() {
+    if (!location.search.includes("step=your")) return null;
+    if (/tab=crimes/.test(location.hash)) return "crimes";
+    if (/tab=armoury/.test(location.hash)) return "armoury";
+    return null;
+  }
+  function collapsed() {
+    try {
+      return localStorage.getItem(COLLAPSED_KEY) === "1";
+    } catch (error) {
+      return false;
+    }
+  }
+  function panelElement() {
+    const panel = document.createElement("div");
+    panel.id = PANEL_ID;
+    panel.className = "nfh-cw nfh-oci";
+    panel.addEventListener("click", onPanelClick);
+    return panel;
+  }
+  async function load3() {
+    if (state3.loading) return state3.loading;
+    if (state3.data && Date.now() - state3.fetchedAt < FRESH_MS) return state3.data;
+    state3.loading = api("/oc/items").then((answer) => {
+      state3.data = answer.data || answer;
+      state3.fetchedAt = Date.now();
+      state3.error = null;
+      return state3.data;
+    }).catch((error) => {
+      state3.error = error instanceof ApiError && error.status === 403 ? null : "nuke.family could not be reached for OC items.";
+      LogInfo("[oc-items]", error);
+      return null;
+    }).finally(() => {
+      state3.loading = null;
+      redraw();
+    });
+    return state3.loading;
+  }
+  function view() {
+    const data = state3.data;
+    if (!data || !data.enabled) return null;
+    const where = place();
+    const tab = where === "armoury" ? openArmouryTab() : null;
+    const staff = data.staff;
+    const live = where === "armoury" ? readArmoury(Object.keys(TAB_LABELS)) : {};
+    const missing = staff ? stillMissing(staff.missing, state3.loanedNow) : [];
+    const mine = (data.mine || []).filter((entry) => !state3.loanedNow.has(`${entry.player_id}:${entry.item_id}`));
+    const unused = staff && where === "armoury" ? unusedLoans(currentLoans(staff.loans, live), staff.needs, staff.oc_item_ids) : [];
+    return { where, tab, staff, live, missing, mine, unused };
+  }
+  function tabLink(tab, label = `${tabLabel(tab)} \u203A`, className = "nfh-cw-btn") {
+    return `<a class="${className}" href="${escapeHtml(armouryHash(tab))}" data-act="go-tab" data-tab="${escapeHtml(tab)}">${escapeHtml(label)}</a>`;
+  }
+  function openArmouryTab() {
+    const active = document.querySelector('#faction-armoury-tabs li.ui-tabs-active[aria-controls^="tab=armoury&sub="]');
+    return active ? active.getAttribute("aria-controls").split("sub=")[1] : tabInHash(location.hash);
+  }
+  var tornTabAnchor = (tab) => document.querySelector(`#faction-armoury-tabs a.ui-tabs-anchor[href="#tab=armoury&sub=${tab}"]`);
+  function wantedTab() {
+    try {
+      return sessionStorage.getItem(WANTED_TAB_KEY);
+    } catch (error) {
+      return null;
+    }
+  }
+  function setWantedTab(tab) {
+    try {
+      if (tab) sessionStorage.setItem(WANTED_TAB_KEY, tab);
+      else sessionStorage.removeItem(WANTED_TAB_KEY);
+    } catch (error) {
+    }
+  }
+  function wantedTabHint(v) {
+    const tab = wantedTab();
+    document.querySelectorAll(".nfh-oci-tab-hint").forEach((element) => {
+      if (element !== tornTabAnchor(tab)) element.classList.remove("nfh-oci-tab-hint");
+    });
+    if (!tab || v?.where !== "armoury") return "";
+    if (v.tab === tab) {
+      setWantedTab(null);
+      tornTabAnchor(tab)?.classList.remove("nfh-oci-tab-hint");
+      return "";
+    }
+    const anchor = tornTabAnchor(tab);
+    if (!anchor) return "";
+    anchor.classList.add("nfh-oci-tab-hint");
+    return `<div class="nfh-oci-message nfh-oci-message--ok">The ${escapeHtml(tabLabel(tab))} tab is highlighted below. ${tabLink(tab, `Open ${tabLabel(tab)}`)}</div>`;
+  }
+  function renderMine(mine, where) {
+    return mine.map((entry) => {
+      const how = entry.reusable ? "It isn't used up, so it can be loaned." : "The crime uses it up.";
+      const go = where === "armoury" && entry.tab ? "" : ` ${tabLink(entry.tab, `${tabLabel(entry.tab)} armoury \u203A`, "")}`;
+      return `<div class="nfh-oci-mine"><strong>Your slot needs ${escapeHtml(entry.item_name || `item ${entry.item_id}`)}</strong>, which you don't have
+        <span class="nfh-cw-muted">(${escapeHtml(entry.position)} in ${escapeHtml(entry.crime)}). ${how}</span>${go}</div>`;
+    }).join("");
+  }
+  function missingAction(entry, v) {
+    const tab = entry.tab;
+    if (v.where !== "armoury" || v.tab !== tab) {
+      return `${tabLink(tab)}`;
+    }
+    if (!entry.reusable) return `<span class="nfh-cw-muted">Used up by the crime: give one (row marked Need)</span>`;
+    const copy = availableCopy(v.live[tab], entry.item_id);
+    if (!copy) return `<span class="nfh-cw-muted">None free in the armoury</span>`;
+    const key = `${entry.player_id}:${entry.item_id}`;
+    const name = entry.player_name || `#${entry.player_id}`;
+    return `<button type="button" class="nfh-cw-btn nfh-cw-btn--primary" data-act="loan" data-key="${escapeHtml(key)}"${state3.busy.has(key) ? " disabled" : ""}
+    title="Sends Torn one loan request now, as if you used the Loan box">${state3.busy.has(key) ? "Loaning\u2026" : `Loan to ${escapeHtml(name)}`}</button>`;
+  }
+  function renderStaff(v) {
+    const parts = [];
+    parts.push(`<div class="nfh-oci-heading">Missing items${v.missing.length ? ` (${v.missing.length})` : ""}</div>`);
+    if (!v.missing.length) parts.push(`<div class="nfh-cw-muted">Everyone in a crime has their item.</div>`);
+    for (const entry of v.missing) {
+      parts.push(`<div class="nfh-oci-row">
+      <span class="nfh-oci-who"><a href="/profiles.php?XID=${entry.player_id}">${escapeHtml(entry.player_name || `#${entry.player_id}`)}</a></span>
+      <span class="nfh-oci-what"><strong>${escapeHtml(entry.item_name || `Item ${entry.item_id}`)}</strong>
+        <span class="nfh-cw-muted">${escapeHtml(entry.position)} \xB7 ${escapeHtml(entry.crime)}</span></span>
+      <span class="nfh-cw-actions">${missingAction(entry, v)}</span></div>`);
+    }
+    if (v.where === "armoury") {
+      parts.push(`<div class="nfh-oci-heading">Loaned, not needed${v.unused.length ? ` (${v.unused.length})` : ""}</div>`);
+      if (!v.unused.length) parts.push(`<div class="nfh-cw-muted">No OC items are out with members who don't need them.</div>`);
+      for (const loan2 of v.unused) {
+        const action = v.tab === loan2.tab ? `<span class="nfh-cw-muted">Retrieve it on the marked row</span>` : `${tabLink(loan2.tab)}`;
+        parts.push(`<div class="nfh-oci-row">
+        <span class="nfh-oci-who"><a href="/profiles.php?XID=${loan2.player_id}">${escapeHtml(loan2.player_name || `#${loan2.player_id}`)}</a></span>
+        <span class="nfh-oci-what"><strong>${escapeHtml(loan2.item_name)}</strong> <span class="nfh-cw-muted">${escapeHtml(loan2.reason)}</span></span>
+        <span class="nfh-cw-actions">${action}</span></div>`);
+      }
+      const staff = v.staff;
+      const when = staff.loans_at ? new Date(staff.loans_at * 1e3).toISOString().slice(11, 16) : null;
+      parts.push(
+        `<div class="nfh-cw-muted nfh-oci-foot">${staff.loans_error ? escapeHtml(staff.loans_error) + " Open each armoury tab to check it here." : `Loans from Torn's armoury list${when ? ` at ${when} TCT` : ""} (Torn updates it up to hourly). Tabs you open here are read live.`}</div>`
+      );
+    }
+    return parts.join("");
+  }
+  function render5(v) {
+    const panel = document.getElementById(PANEL_ID);
+    if (!panel) return;
+    const show = v && (v.mine.length || v.staff);
+    panel.hidden = !show && !state3.error;
+    if (!show) {
+      panel.innerHTML = state3.error ? `<div class="nfh-cw-bar"><span class="nfh-cw-error">${escapeHtml(state3.error)}</span></div>` : "";
+      return;
+    }
+    const counts = [];
+    if (v.mine.length) counts.push("your slot needs an item");
+    if (v.staff) counts.push(`${v.missing.length} missing`);
+    if (v.staff && v.where === "armoury") counts.push(`${v.unused.length} to retrieve`);
+    const attention = v.mine.length || v.missing.length || v.unused.length;
+    panel.classList.toggle("nfh-cw--attn", !!attention);
+    const isCollapsed = collapsed();
+    const message = state3.message ? `<div class="nfh-oci-message nfh-oci-message--${state3.message.tone}" role="status">${escapeHtml(state3.message.text)}</div>` : "";
+    const hint = wantedTabHint(v);
+    const html = `<div class="nfh-cw-bar">
+      <button type="button" class="nfh-cw-toggle" data-act="toggle" aria-expanded="${!isCollapsed}"><span class="nfh-cw-caret">${isCollapsed ? "\u25B8" : "\u25BE"}</span> OC items</button>
+      <span class="nfh-cw-status">${escapeHtml(counts.join(" \xB7 "))}</span>
+    </div>${isCollapsed ? "" : `<div class="nfh-oci-body">${hint}${message}${renderMine(v.mine, v.where)}${v.staff ? renderStaff(v) : ""}</div>`}`;
+    if (panel.innerHTML !== html) panel.innerHTML = html;
+  }
+  function decorate(v) {
+    if (!v || !v.staff || v.where !== "armoury" || !v.tab) return;
+    const rows2 = v.live[v.tab] || [];
+    const needers = needersByItem(v.missing.filter((entry) => entry.tab === v.tab));
+    const retrieve = new Map(v.unused.filter((loan2) => loan2.tab === v.tab).map((loan2) => [`${loan2.player_id}:${loan2.item_id}`, loan2]));
+    for (const row2 of rows2) {
+      let badge = null;
+      if (!row2.loanedTo && needers.has(row2.itemId)) {
+        const who = needers.get(row2.itemId);
+        badge = { kind: "need", text: `Need \xD7${who.length}`, title: `Needed by ${who.map((entry) => `${entry.player_name || entry.player_id} (${entry.position}, ${entry.crime})`).join(", ")}` };
+      } else if (row2.loanedTo && retrieve.has(`${row2.loanedTo}:${row2.itemId}`)) {
+        const loan2 = retrieve.get(`${row2.loanedTo}:${row2.itemId}`);
+        badge = { kind: "retrieve", text: "Retrieve", title: `${loan2.player_name || loan2.player_id}: ${loan2.reason}` };
+      }
+      setBadge(row2.li, badge);
+    }
+    const box = openActionBox(v.tab);
+    document.querySelectorAll(`.${FILL_CLASS}`).forEach((fill2) => {
+      if (!box || !box.box.contains(fill2)) fill2.remove();
+    });
+    if (box && needers.has(box.itemId)) {
+      const who = needers.get(box.itemId);
+      const html = `<span class="nfh-cw-muted">Fill in:</span> ${who.map((entry) => `<button type="button" class="nfh-cw-chip" data-fill="${escapeHtml(`${entry.player_name} [${entry.player_id}]`)}">${escapeHtml(entry.player_name || entry.player_id)}</button>`).join(" ")}`;
+      let fill2 = box.box.querySelector(`.${FILL_CLASS}`);
+      if (!fill2) {
+        fill2 = document.createElement("div");
+        fill2.className = `nfh-cw ${FILL_CLASS}`;
+        fill2.addEventListener("click", (event) => {
+          const chip = event.target.closest("[data-fill]");
+          if (!chip) return;
+          event.preventDefault();
+          setInputValue(box.input, chip.dataset.fill);
+          box.input.focus();
+        });
+        box.box.appendChild(fill2);
+      }
+      if (fill2.innerHTML !== html) fill2.innerHTML = html;
+    }
+  }
+  function setBadge(li, badge) {
+    const name = li.querySelector(".name") || li;
+    const existing = name.querySelector(`.${BADGE_CLASS}`);
+    li.classList.toggle("nfh-oci-row--need", badge?.kind === "need");
+    li.classList.toggle("nfh-oci-row--retrieve", badge?.kind === "retrieve");
+    if (!badge) {
+      existing?.remove();
+      return;
+    }
+    if (existing && existing.textContent === badge.text && existing.title === badge.title) return;
+    const element = existing || document.createElement("span");
+    element.className = `${BADGE_CLASS} ${BADGE_CLASS}--${badge.kind}`;
+    element.textContent = badge.text;
+    element.title = badge.title;
+    if (!existing) name.prepend(element);
+  }
+  function redraw() {
+    const v = view();
+    render5(v);
+    decorate(v);
+  }
+  function scheduleRedraw() {
+    clearTimeout(redrawTimer);
+    redrawTimer = setTimeout(redraw, 250);
+  }
+  var ourNode = (node) => node.nodeType !== 1 || node.id === PANEL_ID || node.classList.contains(BADGE_CLASS) || node.classList.contains(FILL_CLASS) || !!node.closest?.(`#${PANEL_ID}`);
+  function isOurs(record) {
+    if (record.type === "attributes") {
+      const before = new Set(String(record.oldValue || "").split(/\s+/).filter((name) => name && !name.startsWith("nfh-")));
+      const after = new Set([...record.target.classList].filter((name) => !name.startsWith("nfh-")));
+      return before.size === after.size && [...before].every((name) => after.has(name));
+    }
+    if (ourNode(record.target)) return true;
+    return [...record.addedNodes, ...record.removedNodes].every(ourNode);
+  }
+  function watch2(container) {
+    if (observed === container) return;
+    observer2?.disconnect();
+    observed = container;
+    observer2 = new MutationObserver((records) => {
+      if (!records.every(isOurs)) scheduleRedraw();
+    });
+    observer2.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"], attributeOldValue: true });
+  }
+  async function loan(key) {
+    const v = view();
+    const entry = v?.missing.find((candidate) => `${candidate.player_id}:${candidate.item_id}` === key);
+    if (!entry || state3.busy.has(key)) return;
+    const copy = availableCopy(v.live[entry.tab], entry.item_id);
+    if (!copy) return;
+    state3.busy.add(key);
+    state3.message = null;
+    redraw();
+    try {
+      const answer = await postTornAction("factions.php", {
+        ajax: "true",
+        step: "armouryActionItem",
+        role: "loan",
+        item: copy.armoryId,
+        itemID: String(entry.item_id),
+        type: copy.type,
+        user: `${entry.player_name} [${entry.player_id}]`,
+        quantity: "1"
+      });
+      const result = readLoanAnswer(answer.text);
+      if (answer.ok && result.ok) {
+        state3.loanedNow.add(key);
+        state3.message = { tone: "ok", text: result.message || `Loaned ${entry.item_name} to ${entry.player_name}. The armoury list updates when Torn redraws it.` };
+      } else {
+        state3.message = { tone: "error", text: `Torn did not loan it${result.message ? `: ${result.message}` : ` (status ${answer.status})`}. Use the Loan box on the row instead.` };
+      }
+    } catch (error) {
+      state3.message = { tone: "error", text: error.message };
+    } finally {
+      state3.busy.delete(key);
+      redraw();
+    }
+  }
+  function onPanelClick(event) {
+    const target = event.target.closest("[data-act]");
+    if (!target || target.disabled) return;
+    if (target.dataset.act === "toggle") {
+      try {
+        localStorage.setItem(COLLAPSED_KEY, collapsed() ? "0" : "1");
+      } catch (error) {
+      }
+      redraw();
+    } else if (target.dataset.act === "loan") {
+      loan(target.dataset.key);
+    } else if (target.dataset.act === "go-tab") {
+      const tab = target.dataset.tab;
+      const anchor = tornTabAnchor(tab);
+      if (anchor) {
+        event.preventDefault();
+        setWantedTab(null);
+        anchor.click();
+      } else {
+        setWantedTab(tab);
+      }
+    }
+  }
+  var oc_items_default = {
+    name: "OC items",
+    pages: [PageType.FactionCrimes, PageType.FactionArmoury],
+    init() {
+      const where = place();
+      if (!where) {
+        document.getElementById(PANEL_ID)?.remove();
+        observer2?.disconnect();
+        observed = null;
+        return;
+      }
+      const settle = (container2) => {
+        if (!document.getElementById(PANEL_ID)) PLACES[where].insert(container2);
+        watch2(where === "armoury" ? document.getElementById("faction-armoury") || container2 : container2.parentElement || container2);
+        redraw();
+        load3();
+      };
+      const container = document.querySelector(PLACES[where].container);
+      if (container) settle(container);
+      let tries = 10;
+      const again = () => {
+        const now = document.querySelector(PLACES[where].container);
+        if (now && (!document.getElementById(PANEL_ID) || document.getElementById(PANEL_ID).nextElementSibling !== now)) {
+          document.getElementById(PANEL_ID)?.remove();
+          settle(now);
+        }
+        if (--tries > 0 && place() === where) setTimeout(again, 400);
+      };
+      setTimeout(again, 400);
+    }
+  };
+
+  // src/features/kick-risk/logic.js
+  function riskTier(kick) {
+    if (kick === null || kick === void 0) return null;
+    if (kick >= 35) return "high";
+    if (kick >= 25) return "moderate";
+    if (kick >= 15) return "elevated";
+    return "low";
+  }
+  var REASON_LIMIT = 200;
+  var NEW_MEMBER_DAYS = 100;
+  var SHORT = {
+    avg_daily_energy_spend_7: "avgE7",
+    avg_daily_energy_spend_30: "avgE30",
+    average_daily_xanax_taken_30_days: "xanDaily"
+  };
+  function number(value) {
+    if (value === null || value === void 0) return null;
+    const n = Number(value);
+    if (!Number.isFinite(n)) return null;
+    return Math.abs(n) >= 10 || Number.isInteger(n) ? String(Math.round(n)) : String(Math.round(n * 10) / 10);
+  }
+  function part(stat) {
+    const label = SHORT[stat.key] || String(stat.label || stat.key).replace(/\s+/g, "");
+    const value = number(stat.value) ?? (stat.shown ? String(stat.shown).replace(/\s+/g, " ").trim() : null);
+    return value === null ? null : `${label}(${value})`;
+  }
+  function kickReason(member) {
+    const lead = "Failing to meet faction standards - ";
+    const always = (member.stats || []).map(part).filter(Boolean);
+    const missed = (member.missed || []).map(part).filter(Boolean);
+    const days = member.days_in_faction;
+    let tail = days !== null && days !== void 0 && days < NEW_MEMBER_DAYS ? [`days(${Math.round(days)})`] : [];
+    const text = () => lead + [...always, ...missed, ...tail].join(", ");
+    while (missed.length && text().length > REASON_LIMIT) missed.pop();
+    if (text().length > REASON_LIMIT) tail = [];
+    return text().slice(0, REASON_LIMIT);
+  }
+  function changeText(percent) {
+    if (percent === null || percent === void 0) return "";
+    if (percent === 0) return "\xB1 0%";
+    return `${percent < 0 ? "\u2193" : "\u2191"} ${Math.abs(percent)}%`;
+  }
+  function formatStat(stat) {
+    const value = number(stat.value);
+    return value === null ? stat.shown || "\u2014" : value;
+  }
+
+  // src/features/kick-risk/index.js
+  var ROOT = "#option-members-root";
+  var CACHE_KEY = "nfhKickRisk";
+  var DENIED_KEY = "nfhKickRiskDenied";
+  var RETURN_KEY = "nfhKickReturn";
+  var CACHE_MS = 10 * 60 * 1e3;
+  var DENIED_MS = 12 * 60 * 60 * 1e3;
+  var KICK_WAIT_MS = 30 * 1e3;
+  var state4 = {
+    data: null,
+    loading: null,
+    open: /* @__PURE__ */ new Set(),
+    pendingKick: null,
+    offer: null
+    // { id, name, reason, welcome, busy, done, error }
+  };
+  var observer3 = null;
+  var observedRoot2 = null;
+  var timer = null;
+  function readJson3(storage, key) {
+    try {
+      return JSON.parse(storage.getItem(key) || "null");
+    } catch (error) {
+      return null;
+    }
+  }
+  function writeJson(storage, key, value) {
+    try {
+      if (value === null) storage.removeItem(key);
+      else storage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+    }
+  }
+  async function load4() {
+    if (state4.data) return state4.data;
+    if (state4.loading) return state4.loading;
+    const denied = readJson3(localStorage, DENIED_KEY);
+    if (denied && Date.now() - denied < DENIED_MS) return null;
+    const cached = readJson3(localStorage, CACHE_KEY);
+    if (cached && Date.now() - cached.at < CACHE_MS) {
+      state4.data = cached.data;
+      return state4.data;
+    }
+    state4.loading = api("/faction-monitor/members").then((data) => {
+      state4.data = data;
+      writeJson(localStorage, CACHE_KEY, { at: Date.now(), data });
+      return data;
+    }).catch((error) => {
+      if (error instanceof ApiError && (error.status === 403 || error.status === 404)) writeJson(localStorage, DENIED_KEY, Date.now());
+      LogInfo("[kick-risk]", error);
+      return null;
+    }).finally(() => {
+      state4.loading = null;
+      schedule();
+    });
+    return state4.loading;
+  }
+  var memberById = (id) => (state4.data?.members || []).find((member) => member.player_id === Number(id)) || null;
+  function rows(root3) {
+    return [...root3.querySelectorAll('[class*="rowWrapper___"]')].map((element) => {
+      const link = element.querySelector('[class*="member___"] a[href*="profiles.php?XID="]');
+      const id = link ? Number(new URL(link.getAttribute("href"), location.origin).searchParams.get("XID")) : null;
+      return { element, id, name: link ? link.textContent.trim() : null };
+    });
+  }
+  function badgeHtml(member) {
+    const tier = riskTier(member.kick_risk);
+    const percent = Math.round(member.kick_risk);
+    const text = tier === "low" ? "" : tier === "elevated" ? `${percent}%` : `Kick ${percent}%`;
+    return { tier, text, title: `Kick risk ${percent}% (faction monitor)${member.kick_risk_note ? ` \xB7 ${member.kick_risk_note}` : ""}. Click for details.` };
+  }
+  function decorateRow(row2) {
+    const member = row2.id ? memberById(row2.id) : null;
+    const host = row2.element.querySelector('[class*="userInfoBox___"]') || row2.element.querySelector('[class*="member___"]');
+    let badge = row2.element.querySelector(".nfh-kr-badge");
+    if (!member || member.kick_risk === null || !host) {
+      badge?.remove();
+    } else {
+      const { tier, text, title } = badgeHtml(member);
+      if (!badge) {
+        badge = document.createElement("button");
+        badge.type = "button";
+        badge.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          state4.open.has(row2.id) ? state4.open.delete(row2.id) : state4.open.add(row2.id);
+          schedule(0);
+        });
+        host.appendChild(badge);
+      }
+      badge.dataset.player = row2.id;
+      const className = `nfh-kr-badge nfh-kr-badge--${tier}`;
+      if (badge.className !== className) badge.className = className;
+      if (badge.textContent !== text) badge.textContent = text;
+      if (badge.title !== title) badge.title = title;
+      badge.setAttribute("aria-label", title);
+    }
+    let detail = row2.element.querySelector(":scope > .nfh-kr-detail");
+    if (member && state4.open.has(row2.id)) {
+      const html = detailHtml(member);
+      if (!detail) {
+        detail = document.createElement("div");
+        detail.className = "nfh-cw nfh-kr-detail";
+        detail.addEventListener("click", (event) => {
+          if (event.target.closest('[data-kr="close"]')) {
+            state4.open.delete(row2.id);
+            schedule(0);
+          }
+        });
+        row2.element.appendChild(detail);
+      }
+      if (detail.innerHTML !== html) detail.innerHTML = html;
+    } else {
+      detail?.remove();
+    }
+    decorateConfirm(row2, member);
+  }
+  function statHtml(stat, change) {
+    const extra = change !== void 0 && change !== null ? ` <span class="nfh-kr-change nfh-kr-change--${change < 0 ? "down" : "up"}">${escapeHtml(changeText(change))}</span>` : "";
+    const target = stat.target !== null && stat.target !== void 0 ? ` <span class="nfh-cw-muted">target ${escapeHtml(formatStat({ value: stat.target }))}</span>` : "";
+    return `<span class="nfh-kr-stat${stat.below_target ? " nfh-kr-stat--below" : ""}"><span class="nfh-cw-muted">${escapeHtml(stat.label)}</span> <strong>${escapeHtml(
+      formatStat(stat)
+    )}</strong>${extra}${stat.below_target ? target : ""}</span>`;
+  }
+  function detailHtml(member) {
+    const stats = member.stats.map((stat) => statHtml(stat, stat.key === "avg_daily_energy_spend_7" ? member.energy_change_pct : void 0)).join("");
+    const missed = member.missed.length ? `<div class="nfh-kr-missed"><span class="nfh-cw-muted">Below target:</span> ${member.missed.map((stat) => statHtml(stat)).join("")}</div>` : "";
+    const monitor = state4.data?.monitor_url ? `<a href="${escapeHtml(state4.data.monitor_url)}" target="_blank" rel="noopener">Full monitor \u2197</a>` : "";
+    return `<div class="nfh-kr-detail-head"><strong>Kick risk ${Math.round(member.kick_risk)}%</strong>
+      ${member.kick_risk_note ? `<span class="nfh-cw-muted">${escapeHtml(member.kick_risk_note)}</span>` : ""}
+      <span class="nfh-kr-detail-links">${monitor} <button type="button" class="nfh-cw-btn" data-kr="close" aria-label="Close">\u2715</button></span></div>
+    <div class="nfh-kr-stats">${stats}</div>${missed}`;
+  }
+  function decorateConfirm(row2, member) {
+    const confirm2 = row2.element.querySelector('[class*="confirm___"]');
+    let area = confirm2?.querySelector(".nfh-kr-kick");
+    if (!confirm2) return;
+    const inOc = !!confirm2.querySelector('[class*="kickError___"]') && /organi[sz]ed crime/i.test(confirm2.textContent);
+    const reason = member ? kickReason(member) : null;
+    let html;
+    if (inOc) {
+      html = `<span>In an organized crime: remove them from it, then come back.</span>
+      <a class="nfh-cw-btn" href="#/tab=crimes" data-kr="to-crimes">Find their crime \u203A</a>`;
+    } else if (reason) {
+      html = `<span class="nfh-kr-reason"><span class="nfh-cw-muted">Suggested reason:</span> ${escapeHtml(reason)}</span>
+      <button type="button" class="nfh-cw-btn nfh-cw-btn--primary" data-kr="fill">Fill in</button>
+      ${state4.data?.monitor_url ? `<a class="nfh-cw-muted" href="${escapeHtml(state4.data.monitor_url)}" target="_blank" rel="noopener" title="Targets are set on the faction monitor">${state4.data.has_targets ? "Targets" : "Set targets"} on the monitor \u2197</a>` : ""}`;
+    } else {
+      area?.remove();
+      return;
+    }
+    if (!area) {
+      area = document.createElement("div");
+      area.className = "nfh-cw nfh-kr-kick";
+      area.addEventListener("click", (event) => {
+        const action = event.target.closest("[data-kr]")?.dataset.kr;
+        if (action === "fill") {
+          event.preventDefault();
+          const input = confirm2.querySelector('input[class*="reasonInput___"]');
+          setInputValue(input, area.dataset.reason || "");
+          input?.focus();
+        } else if (action === "to-crimes") {
+          writeJson(sessionStorage, RETURN_KEY, { id: row2.id, name: row2.name });
+        }
+      });
+      confirm2.appendChild(area);
+    }
+    area.dataset.reason = reason || "";
+    if (area.innerHTML !== html) area.innerHTML = html;
+  }
+  function watchKick(root3) {
+    root3.addEventListener(
+      "click",
+      (event) => {
+        const button3 = event.target.closest('[class*="confirm___"] button');
+        if (!event.isTrusted || !button3 || button3.disabled || button3.textContent.trim() !== "Yes") return;
+        const element = button3.closest('[class*="rowWrapper___"]');
+        const row2 = rows(root3).find((candidate) => candidate.element === element);
+        if (!row2?.id) return;
+        const input = element.querySelector('input[class*="reasonInput___"]');
+        const member = memberById(row2.id);
+        state4.pendingKick = { id: row2.id, name: row2.name, reason: input?.value.trim() || (member ? kickReason(member) : ""), at: Date.now() };
+      },
+      true
+    );
+  }
+  function checkKick(root3) {
+    const pending4 = state4.pendingKick;
+    if (!pending4) return;
+    if (Date.now() - pending4.at > KICK_WAIT_MS) {
+      state4.pendingKick = null;
+      return;
+    }
+    if (rows(root3).some((row2) => row2.id === pending4.id)) return;
+    state4.pendingKick = null;
+    state4.offer = { id: pending4.id, name: pending4.name, reason: pending4.reason, welcome: false, busy: false, done: false, error: null };
+  }
+  function renderOffer(root3) {
+    let panel = document.getElementById("nfh-kr-blacklist");
+    const offer = state4.offer;
+    if (!offer) {
+      panel?.remove();
+      return;
+    }
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.id = "nfh-kr-blacklist";
+      panel.className = "nfh-cw nfh-cw--attn nfh-kr-offer";
+      panel.addEventListener("click", onOfferClick);
+      panel.addEventListener("input", (event) => {
+        if (event.target.dataset.kr === "reason") offer.reason = event.target.value;
+        if (event.target.dataset.kr === "welcome") offer.welcome = event.target.checked;
+      });
+      root3.parentElement.insertBefore(panel, root3);
+    }
+    const name = escapeHtml(offer.name || `#${offer.id}`);
+    if (offer.done) {
+      panel.innerHTML = `<div class="nfh-cw-bar"><span class="nfh-cw-ok">Added ${name} to the faction blacklist.</span>
+      <button type="button" class="nfh-cw-btn" data-kr="dismiss">OK</button></div>`;
+      return;
+    }
+    if (panel.querySelector('[data-kr="reason"]') && !offer.error && !offer.refresh) return;
+    offer.refresh = false;
+    panel.innerHTML = `<div class="nfh-kr-offer-body">
+      <div><strong>${name} was kicked.</strong> Add them to the faction blacklist?</div>
+      <textarea class="nfh-cw-input" data-kr="reason" rows="2" maxlength="1000" aria-label="Blacklist reason">${escapeHtml(offer.reason)}</textarea>
+      <label><input type="checkbox" data-kr="welcome"${offer.welcome ? " checked" : ""}> Welcome back in Nuke later</label>
+      ${offer.error ? `<div class="nfh-cw-error">${escapeHtml(offer.error)}</div>` : ""}
+      <div class="nfh-cw-actions"><button type="button" class="nfh-cw-btn nfh-cw-btn--primary" data-kr="blacklist"${offer.busy ? " disabled" : ""}>Add to blacklist</button>
+      <button type="button" class="nfh-cw-btn" data-kr="dismiss">No thanks</button></div>
+    </div>`;
+  }
+  async function onOfferClick(event) {
+    const action = event.target.closest("[data-kr]")?.dataset.kr;
+    const offer = state4.offer;
+    if (!offer) return;
+    if (action === "dismiss") {
+      state4.offer = null;
+      schedule(0);
+    } else if (action === "blacklist" && !offer.busy) {
+      if (!offer.reason.trim()) {
+        offer.error = "Give a reason.";
+        schedule(0);
+        return;
+      }
+      offer.busy = true;
+      offer.error = null;
+      offer.refresh = true;
+      schedule(0);
+      try {
+        const data = { player_id: offer.id, reason: offer.reason.trim() };
+        if (offer.welcome) data.is_welcome_to_rejoin = true;
+        await api("/script/faction-blacklist", { method: "POST", data });
+        offer.done = true;
+      } catch (error) {
+        offer.error = error instanceof ApiError && error.status === 403 ? "You can't add to the blacklist." : "nuke.family could not be reached. Try again, or add it on the site.";
+      } finally {
+        offer.busy = false;
+        offer.refresh = true;
+        schedule(0);
+      }
+    }
+  }
+  function redrawMembers() {
+    const root3 = document.querySelector(ROOT);
+    if (!root3) return;
+    checkKick(root3);
+    if (state4.data) for (const row2 of rows(root3)) decorateRow(row2);
+    renderOffer(root3);
+  }
+  function crimeOf(playerId) {
+    const board = cachedBoard2()?.board;
+    for (const crime of board?.crimes || []) {
+      const slot = (crime.slots || []).find((candidate) => Number(candidate.player_id) === Number(playerId));
+      if (slot) return { name: crime.name, status: crime.status, role: slot.role };
+    }
+    return null;
+  }
+  var findMessage = "";
+  function renderReturn() {
+    const target = readJson3(sessionStorage, RETURN_KEY);
+    let chip = document.getElementById("nfh-kr-return");
+    if (!target) {
+      chip?.remove();
+      return;
+    }
+    if (!chip) {
+      chip = document.createElement("div");
+      chip.id = "nfh-kr-return";
+      chip.className = "nfh-cw nfh-kr-return";
+      chip.addEventListener("click", (event) => {
+        const action = event.target.closest("[data-kr]")?.dataset.kr;
+        if (action === "find") {
+          const slot2 = findSlot(target.id);
+          if (slot2) {
+            findMessage = "";
+            slot2.scrollIntoView({ block: "center", behavior: "smooth" });
+            slot2.classList.add("nfh-kr-slot");
+          } else {
+            const crime2 = crimeOf(target.id);
+            findMessage = crime2 && crime2.status && activeSubTab(document.querySelector(CRIMES_ROOT_SELECTOR) || document) !== crime2.status.toLowerCase() ? `Open the ${crime2.status} tab: their crime is there.` : "Not on the page yet: scroll down so Torn loads more crimes, then press Find again.";
+          }
+          renderReturn();
+        } else if (action === "back" || action === "dismiss") {
+          writeJson(sessionStorage, RETURN_KEY, null);
+          findMessage = "";
+          chip.remove();
+        }
+      });
+      document.body.appendChild(chip);
+      refreshBoard2().then(() => renderReturn());
+    }
+    const crime = crimeOf(target.id);
+    const where = crime ? ` They're in <strong>${escapeHtml(crime.name)}</strong> (${escapeHtml(crime.status)}) as ${escapeHtml(crime.role)}.` : "";
+    const html = `<span>Kicking <strong>${escapeHtml(target.name || `#${target.id}`)}</strong>: remove them from their crime first.${where}</span>
+    <button type="button" class="nfh-cw-btn" data-kr="find">Find them</button>
+    <a class="nfh-cw-btn nfh-cw-btn--primary" href="#/tab=controls&option=members" data-kr="back">Back to Members</a>
+    <button type="button" class="nfh-cw-btn" data-kr="dismiss" aria-label="Dismiss">\u2715</button>
+    ${findMessage ? `<span class="nfh-kr-find-note">${escapeHtml(findMessage)}</span>` : ""}`;
+    if (chip.innerHTML !== html) chip.innerHTML = html;
+    const slot = findSlot(target.id);
+    document.querySelectorAll(".nfh-kr-slot").forEach((element) => element !== slot && element.classList.remove("nfh-kr-slot"));
+    slot?.classList.add("nfh-kr-slot");
+  }
+  function findSlot(id) {
+    const link = document.querySelector(`${CRIMES_ROOT_SELECTOR} a[href*="profiles.php?XID=${id}"]`);
+    if (!link) return null;
+    let element = link.parentElement;
+    while (element && element.id !== "faction-crimes-root") {
+      if (/(^|\s)wrapper___/.test(element.className) && element.querySelector('[class^="slotHeader___"]')) return element;
+      element = element.parentElement;
+    }
+    return link;
+  }
+  function schedule(delay = 200) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (/option=members/.test(location.hash)) redrawMembers();
+      if (/tab=crimes/.test(location.hash)) renderReturn();
+    }, delay);
+  }
+  function observe(element) {
+    if (observedRoot2 === element) return;
+    observer3?.disconnect();
+    observedRoot2 = element;
+    observer3 = new MutationObserver((records) => {
+      const ours = records.every(
+        (record) => [...record.addedNodes, ...record.removedNodes].every((node) => node.nodeType !== 1 || /(^|\s)nfh-/.test(node.className || "") || node.closest?.('[class*="nfh-kr"]'))
+      );
+      if (!ours) schedule();
+    });
+    observer3.observe(element, { childList: true, subtree: true });
+  }
+  var kick_risk_default = {
+    name: "Kick risk",
+    pages: [PageType.FactionControlMembers, PageType.FactionCrimes, PageType.Faction],
+    init() {
+      if (!location.search.includes("step=your")) return;
+      const onMembers = /tab=controls/.test(location.hash) && /option=members/.test(location.hash);
+      const onCrimes = /tab=crimes/.test(location.hash);
+      if (!onCrimes) {
+        document.getElementById("nfh-kr-return")?.remove();
+        document.querySelectorAll(".nfh-kr-slot").forEach((element) => element.classList.remove("nfh-kr-slot"));
+        if (!onMembers) writeJson(sessionStorage, RETURN_KEY, null);
+      }
+      if (onMembers) writeJson(sessionStorage, RETURN_KEY, null);
+      if (onCrimes) {
+        if (!readJson3(sessionStorage, RETURN_KEY)) return;
+        renderReturn();
+        const root3 = document.querySelector("#faction-crimes-root");
+        if (root3) observe(root3);
+        return;
+      }
+      if (!onMembers) {
+        observer3?.disconnect();
+        observedRoot2 = null;
+        return;
+      }
+      let tries = 15;
+      const attach = () => {
+        const root3 = document.querySelector(ROOT);
+        if (root3) {
+          if (!root3.dataset.nfhKr) {
+            root3.dataset.nfhKr = "1";
+            watchKick(root3);
+          }
+          observe(root3.parentElement || root3);
+          load4().then(() => schedule(0));
+          schedule(0);
+          return;
+        }
+        if (--tries > 0) setTimeout(attach, 400);
+      };
+      attach();
+    }
+  };
+
+  // src/features/stocks/logic.js
+  var BUCKET_LABELS = { personal: "Personal", faction: "Faction" };
+  var money = (value) => {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return "";
+    if (n >= 1e9) return `$${(n / 1e9).toFixed(n >= 1e10 ? 0 : 1)}b`;
+    if (n >= 1e6) return `$${(n / 1e6).toFixed(n >= 1e7 ? 0 : 1)}m`;
+    if (n >= 1e3) return `$${Math.round(n / 1e3)}k`;
+    return `$${Math.round(n)}`;
+  };
+  var shares = (n) => Number(n || 0).toLocaleString("en-US");
+  function parseNumber(text) {
+    const n = Number(String(text || "").replace(/[^0-9.\-]/g, ""));
+    return Number.isFinite(n) ? n : null;
+  }
+  function signalsFor(data, stockId) {
+    const out = [];
+    for (const portfolio of data?.portfolios || []) {
+      const row2 = portfolio.stocks?.[stockId] ?? portfolio.stocks?.[String(stockId)];
+      if (row2 && row2.action) out.push({ bucket: portfolio.bucket, ...row2 });
+    }
+    return out;
+  }
+  function rowTags(signals) {
+    return signals.filter((signal) => ["BUY", "SELL", "HOLD"].includes(signal.action)).map((signal) => ({ bucket: signal.bucket, action: signal.action, loud: signal.action !== "HOLD" }));
+  }
+  function matchTransactions(rows2, lots) {
+    const left = [...lots || []];
+    return rows2.map((row2) => {
+      const index = left.findIndex((lot) => Number(lot.shares) === row2.shares && Math.abs(Number(lot.price) - row2.price) < 0.015);
+      return index === -1 ? null : left.splice(index, 1)[0];
+    });
+  }
+  function lotLabel(lot, multiplePortfolios) {
+    if (!lot) return null;
+    const owner = multiplePortfolios || lot.bucket === "faction" ? `${BUCKET_LABELS[lot.bucket] || lot.bucket} \xB7 ` : "";
+    if (!lot.trading) return { kind: "other", text: `${owner}${lot.category}` };
+    if (lot.signal === "SELL") return { kind: "sell", text: `${owner}SELL` };
+    if (lot.signal === "HOLD") return { kind: "hold", text: `${owner}Hold \u2192 $${Number(lot.sell_at).toFixed(2)}` };
+    return { kind: "other", text: `${owner}${lot.category}` };
+  }
+
+  // src/features/stocks/index.js
+  var ROOT2 = "#stockmarketroot";
+  var BAR_ID3 = "nfh-stock-bar";
+  var CACHE_KEY2 = "nfhStockSignals";
+  var DENIED_KEY2 = "nfhStockSignalsDenied";
+  var CACHE_MS2 = 2 * 60 * 1e3;
+  var DENIED_MS2 = 12 * 60 * 60 * 1e3;
+  var state5 = { data: null, loading: null };
+  var observer4 = null;
+  var observedRoot3 = null;
+  var timer2 = null;
+  function readJson4(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || "null");
+    } catch (error) {
+      return null;
+    }
+  }
+  function writeJson2(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+    }
+  }
+  async function load5() {
+    if (state5.data) return state5.data;
+    if (state5.loading) return state5.loading;
+    const denied = readJson4(DENIED_KEY2);
+    if (denied && Date.now() - denied < DENIED_MS2) return null;
+    const cached = readJson4(CACHE_KEY2);
+    if (cached && Date.now() - cached.at < CACHE_MS2) {
+      state5.data = cached.data;
+      return state5.data;
+    }
+    state5.loading = api("/stocks/signals").then((data) => {
+      state5.data = data;
+      writeJson2(CACHE_KEY2, { at: Date.now(), data });
+      return data;
+    }).catch((error) => {
+      if (error instanceof ApiError && error.status === 403) writeJson2(DENIED_KEY2, Date.now());
+      LogInfo("[stocks]", error);
+      return null;
+    }).finally(() => {
+      state5.loading = null;
+      schedule2(0);
+    });
+    return state5.loading;
+  }
+  var both = () => (state5.data?.portfolios || []).length > 1;
+  var hasAnything = () => (state5.data?.portfolios || []).length > 0 || (state5.data?.lots || []).length > 0;
+  function renderBar4(root3) {
+    let bar2 = document.getElementById(BAR_ID3);
+    if (!hasAnything()) {
+      bar2?.remove();
+      return;
+    }
+    const market = root3.querySelector('[class*="stockMarket___"]');
+    if (!market) return;
+    if (!bar2) {
+      bar2 = document.createElement("div");
+      bar2.id = BAR_ID3;
+      bar2.className = "nfh-cw nfh-st-bar";
+      market.parentElement.insertBefore(bar2, market);
+    }
+    const lines = (state5.data.portfolios || []).map(
+      (portfolio) => `<div><strong>${escapeHtml(BUCKET_LABELS[portfolio.bucket] || portfolio.bucket)}:</strong> ${escapeHtml(portfolio.summary)}</div>`
+    );
+    if (!lines.length) lines.push(`<div class="nfh-cw-muted">Signals are off: your blocks are labelled, but nothing says buy or sell.</div>`);
+    const html = `<div class="nfh-st-lines">${lines.join("")}</div>
+    <a class="nfh-cw-btn" href="${escapeHtml(state5.data.tracker_url)}" target="_blank" rel="noopener">Stock tracker \u2197</a>`;
+    if (bar2.innerHTML !== html) bar2.innerHTML = html;
+  }
+  function tagRows(root3) {
+    for (const row2 of root3.querySelectorAll('ul[id][class*="stock___"]')) {
+      const stockId = Number(row2.id);
+      const tags = rowTags(signalsFor(state5.data, stockId));
+      const host = row2.querySelector('[class*="nameContainer___"]') || row2.querySelector('[class*="stockName___"]');
+      if (!host) continue;
+      let element = host.querySelector(".nfh-st-tags");
+      if (!tags.length) {
+        element?.remove();
+        continue;
+      }
+      const html = tags.map((tag) => `<span class="nfh-st-tag nfh-st-tag--${tag.action.toLowerCase()}">${both() || tag.bucket === "faction" ? `${escapeHtml(BUCKET_LABELS[tag.bucket])} ` : ""}${tag.action === "HOLD" ? "Hold" : tag.action}</span>`).join("");
+      if (!element) {
+        element = document.createElement("span");
+        element.className = "nfh-st-tags";
+        host.appendChild(element);
+      }
+      if (element.innerHTML !== html) element.innerHTML = html;
+    }
+  }
+  function decoratePanel(root3) {
+    const panel = root3.querySelector("#panel-ownedTab");
+    if (!panel) return;
+    const stockRow = panel.previousElementSibling?.matches('ul[id][class*="stock___"]') ? panel.previousElementSibling : panel.closest("[id]")?.previousElementSibling;
+    const stockId = Number(stockRow?.id || panel.parentElement?.querySelector('ul[id][class*="stock___"]')?.id);
+    if (!stockId) return;
+    const signals = signalsFor(state5.data, stockId);
+    const lots = (state5.data.lots || []).filter((lot) => lot.stock_id === stockId);
+    const lines = [];
+    for (const signal of signals) {
+      const who = both() || signal.bucket === "faction" ? `${BUCKET_LABELS[signal.bucket]}: ` : "";
+      if (signal.action === "BUY") lines.push(`<div class="nfh-st-buy">${escapeHtml(who)}<strong>Buy ~${escapeHtml(shares(signal.buy_shares))} shares</strong> (${escapeHtml(money(signal.buy_amount))}).</div>`);
+      else if (signal.action === "SELL") lines.push(`<div class="nfh-st-sell">${escapeHtml(who)}<strong>Sell the blocks marked SELL</strong>${signal.note ? ` <span class="nfh-cw-muted">${escapeHtml(signal.note)}</span>` : ""}</div>`);
+      else if (signal.action === "HOLD") lines.push(`<div>${escapeHtml(who)}Hold${signal.note ? ` <span class="nfh-cw-muted">${escapeHtml(signal.note)}</span>` : ""}</div>`);
+      else if (signal.note) lines.push(`<div class="nfh-cw-muted">${escapeHtml(who)}${escapeHtml(signal.note)}</div>`);
+    }
+    const anchor = panel.querySelector('[class*="transactionsContainer___"]') || panel.querySelector('[class*="manageTab___"]');
+    let box = panel.querySelector(".nfh-st-advice");
+    if (lines.length && anchor) {
+      if (!box) {
+        box = document.createElement("div");
+        box.className = "nfh-cw nfh-st-advice";
+        anchor.parentElement.insertBefore(box, anchor);
+      }
+      const html = lines.join("");
+      if (box.innerHTML !== html) box.innerHTML = html;
+    } else {
+      box?.remove();
+    }
+    const rows2 = [...panel.querySelectorAll('ul[class*="transaction___"]')];
+    const read2 = rows2.map((row2) => ({
+      shares: parseNumber(row2.querySelector('[class*="shares___"]')?.textContent),
+      price: parseNumber(row2.querySelector('[class*="bought___"]')?.textContent)
+    }));
+    const matched = matchTransactions(read2, lots);
+    rows2.forEach((row2, index) => {
+      const label = lotLabel(matched[index], both());
+      const next = row2.nextElementSibling;
+      let line = next?.classList.contains("nfh-st-lotline") ? next : null;
+      row2.classList.toggle("nfh-st-row--sell", label?.kind === "sell");
+      if (!label) {
+        line?.remove();
+        return;
+      }
+      if (!line) {
+        line = document.createElement("div");
+        line.className = "nfh-st-lotline";
+        line.innerHTML = '<span class="nfh-st-lot"></span>';
+        row2.after(line);
+      }
+      const tag = line.firstElementChild;
+      const className = `nfh-st-lot nfh-st-lot--${label.kind}`;
+      if (tag.className !== className) tag.className = className;
+      if (tag.textContent !== label.text) tag.textContent = label.text;
+    });
+  }
+  function redraw2() {
+    const root3 = document.querySelector(ROOT2);
+    if (!root3 || !state5.data) return;
+    renderBar4(root3);
+    tagRows(root3);
+    decoratePanel(root3);
+  }
+  function schedule2(delay = 200) {
+    clearTimeout(timer2);
+    timer2 = setTimeout(redraw2, delay);
+  }
+  function watch3(root3) {
+    if (observedRoot3 === root3) return;
+    observer4?.disconnect();
+    observedRoot3 = root3;
+    observer4 = new MutationObserver((records) => {
+      const ours = records.every(
+        (record) => [...record.addedNodes, ...record.removedNodes].every((node) => node.nodeType !== 1 || /(^|\s)nfh-/.test(node.className || "") || node.id === BAR_ID3)
+      );
+      if (!ours) schedule2();
+    });
+    observer4.observe(root3, { childList: true, subtree: true });
+  }
+  var stocks_default = {
+    name: "Stock signals",
+    pages: [PageType.Stocks],
+    init() {
+      if (!/[?&]sid=stocks\b/.test(location.search)) return;
+      let tries = 20;
+      const attach = () => {
+        const root3 = document.querySelector(ROOT2);
+        if (root3 && root3.querySelector('[class*="stockMarket___"]')) {
+          watch3(root3);
+          load5().then(() => schedule2(0));
+          return;
+        }
+        if (--tries > 0) setTimeout(attach, 400);
+      };
+      attach();
+    }
+  };
+
   // src/features/ranked-war/logic.js
   var Group = {
     Out: 0,
@@ -5674,8 +8149,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     "south africa": "SA",
     torn: "TC"
   };
-  function placeCode(place) {
-    const name = String(place).trim();
+  function placeCode(place2) {
+    const name = String(place2).trim();
     return PLACE_CODES[name.toLowerCase()] || name;
   }
   function parseRoute(description) {
@@ -5867,7 +8342,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   }
 
   // src/features/ranked-war/index.js
-  var BAR_ID2 = "nfh-war-bar";
+  var BAR_ID4 = "nfh-war-bar";
   var ANCHOR_SELECTOR2 = "#faction_war_list_id";
   var LIST_SELECTOR = "#faction_war_list_id .faction-war ul.members-list";
   var STATUS_ATTR = "data-nfh-war";
@@ -5883,7 +8358,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   var UPLOAD_RETRY_MS = 5 * 60 * 1e3;
   var UPLOAD_MAX = 300;
   var STALE_MS = 60 * 1e3;
-  var state2 = {
+  var state6 = {
     target: null,
     // whose war is open: "" for your own faction's, else a faction id
     war: void 0,
@@ -5922,21 +8397,21 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const id = params.get("step") === "profile" && params.get("ID");
     return id && /^\d+$/.test(id) ? id : null;
   }
-  function watch2(target) {
-    if (state2.target === target) return;
-    state2.target = target;
-    state2.war = void 0;
-    state2.members = {};
+  function watch4(target) {
+    if (state6.target === target) return;
+    state6.target = target;
+    state6.war = void 0;
+    state6.members = {};
     for (const source of SOURCES) {
-      state2.held[source] = {};
-      state2.fresh[source] = /* @__PURE__ */ new Set();
+      state6.held[source] = {};
+      state6.fresh[source] = /* @__PURE__ */ new Set();
       pending3[source].clear();
     }
-    state2.statsAt = 0;
-    state2.uploadAfter = 0;
-    state2.fetchedAt = 0;
-    state2.nextPollAt = 0;
-    state2.error = false;
+    state6.statsAt = 0;
+    state6.uploadAfter = 0;
+    state6.fetchedAt = 0;
+    state6.nextPollAt = 0;
+    state6.error = false;
     memos.clear();
   }
   function setAttr(element, name, value) {
@@ -5987,9 +8462,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     return cell && Number(cell.textContent.replace(/,/g, "")) || 0;
   }
   function noteForUpload(id, onPage) {
-    if (state2.statsAt === 0 || Date.now() < state2.uploadAfter) return;
+    if (state6.statsAt === 0 || Date.now() < state6.uploadAfter) return;
     for (const source of SOURCES) {
-      if (!onPage[source] || state2.fresh[source].has(id) || pending3[source].has(id)) continue;
+      if (!onPage[source] || state6.fresh[source].has(id) || pending3[source].has(id)) continue;
       pending3[source].set(id, onPage[source]);
       clearTimeout(uploadTimer2);
       uploadTimer2 = setTimeout(upload2, UPLOAD_DELAY_MS2);
@@ -5997,7 +8472,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   }
   async function upload2() {
     uploadTimer2 = null;
-    const target = state2.target;
+    const target = state6.target;
     for (const source of SOURCES) {
       const batch = [...pending3[source].entries()].slice(0, UPLOAD_MAX);
       if (batch.length === 0) continue;
@@ -6011,11 +8486,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
             estimates: batch.map(([id, total]) => ({ id: Number(id), total }))
           }
         });
-        if (state2.target !== target) return;
-        for (const [id] of batch) state2.fresh[source].add(id);
+        if (state6.target !== target) return;
+        for (const [id] of batch) state6.fresh[source].add(id);
         LogInfo(`War board sent ${batch.length} ${source} estimates`);
       } catch (error) {
-        state2.uploadAfter = Date.now() + UPLOAD_RETRY_MS;
+        state6.uploadAfter = Date.now() + UPLOAD_RETRY_MS;
         console.error("[NFH] Could not send stat estimates to nuke.family:", error);
       }
     }
@@ -6040,12 +8515,12 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     written = /* @__PURE__ */ new WeakMap();
   }
   function hasData() {
-    return !!state2.war && Date.now() - state2.fetchedAt < STALE_MS;
+    return !!state6.war && Date.now() - state6.fetchedAt < STALE_MS;
   }
-  function decorate(lists) {
+  function decorate2(lists) {
     const prefs4 = getPrefs2();
     const live = hasData();
-    const now = Date.now() + state2.clockOffset;
+    const now = Date.now() + state6.clockOffset;
     const compare = live ? comparatorFor(prefs4.sort, prefs4.then) : null;
     let anyStats = false;
     let heldShown = false;
@@ -6060,10 +8535,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         }
         const statusCell = cellOf(row2, "status");
         const pageKind = pageKindOf(statusCell);
-        const entry = classify(state2.members[id], pageKind, now, memos.get(id));
+        const entry = classify(state6.members[id], pageKind, now, memos.get(id));
         memos.set(id, entry.memo);
         const onPage = pageEstimatesOf(row2);
-        const held = { bsp: state2.held.bsp[id], ffscouter: state2.held.ffscouter[id] };
+        const held = { bsp: state6.held.bsp[id], ffscouter: state6.held.ffscouter[id] };
         const estimate = pickEstimate(onPage, held, prefs4.source);
         noteForUpload(id, onPage);
         for (const source of SOURCES) {
@@ -6088,9 +8563,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       }
       if (compare && !list.closest(FF_BUSY_SELECTOR)) reorder(list, entries, compare);
     }
-    state2.anyStats = anyStats;
-    state2.heldShown = heldShown;
-    state2.sources = sources;
+    state6.anyStats = anyStats;
+    state6.heldShown = heldShown;
+    state6.sources = sources;
   }
   function reorder(list, entries, compare) {
     const sorted = [...entries].sort(compare);
@@ -6100,17 +8575,17 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     list.insertBefore(fragment, list.firstChild);
   }
   function statusText() {
-    if (state2.war === null) {
-      return state2.target ? "nuke.family found no ranked war on for this faction." : "nuke.family has no ranked war on for your faction yet.";
+    if (state6.war === null) {
+      return state6.target ? "nuke.family found no ranked war on for this faction." : "nuke.family has no ranked war on for your faction yet.";
     }
-    if (state2.error && !hasData()) return "Could not reach nuke.family. Trying again shortly.";
+    if (state6.error && !hasData()) return "Could not reach nuke.family. Trying again shortly.";
     if (!hasData()) return "Loading statuses\u2026";
-    const age = Math.round((Date.now() - state2.fetchedAt) / 1e3);
+    const age = Math.round((Date.now() - state6.fetchedAt) / 1e3);
     return age < 15 ? "Live" : `Updated ${age}s ago`;
   }
   function thenSelect(prefs4) {
     const options = [
-      ...state2.anyStats ? [[Then.StatsAsc, "lowest stats"], [Then.StatsDesc, "highest stats"]] : [],
+      ...state6.anyStats ? [[Then.StatsAsc, "lowest stats"], [Then.StatsDesc, "highest stats"]] : [],
       [Then.ScoreDesc, "highest score"],
       [Then.ScoreAsc, "lowest score"],
       [Then.Recent, "latest out of hospital"]
@@ -6118,34 +8593,34 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const chosen = options.some(([value]) => value === prefs4.then) ? prefs4.then : "";
     return '<label title="How members with the same status are ordered">then <select data-pref="then">' + (chosen === "" ? `<option value="" selected>Torn's order</option>` : "") + options.map(([value, label]) => `<option value="${value}"${value === chosen ? " selected" : ""}>${label}</option>`).join("") + "</select></label>";
   }
-  function renderBar3() {
+  function renderBar5() {
     const prefs4 = getPrefs2();
     const chip = (mode, label, title) => `<button type="button" class="nfh-cw-chip${prefs4.sort === mode ? " is-armed" : ""}" data-sort="${mode}" title="${title}">${label}</button>`;
-    return '<div class="nfh-cw-bar"><strong>War board</strong>' + (state2.war ? '<span class="nfh-cw-muted">Sort</span>' + chip(SortMode.Status, "Hospital", "Who can be hit now, then who leaves hospital next") + (state2.anyStats ? chip(SortMode.StatsAsc, "Stats \u25B2", "Lowest battle stat estimate first") + chip(SortMode.StatsDesc, "Stats \u25BC", "Highest battle stat estimate first") : "") + chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them (or BSP / FF Scouter, if you sort with theirs)") + (prefs4.sort === SortMode.Status ? thenSelect(prefs4) : "") + (state2.sources.size > 1 ? `<label title="Whose estimate to use when both are known">Estimates <select data-pref="source"><option value="${Source.Bsp}"${prefs4.source === Source.Bsp ? " selected" : ""}>BSP</option><option value="${Source.FfScouter}"${prefs4.source === Source.FfScouter ? " selected" : ""}>FF Scouter</option></select></label>` : "") + (state2.heldShown || state2.anyStats && !prefs4.showStats ? `<label title="Show the estimates other members' BSP or FF Scouter passed on to nuke.family, where yours shows none"><input type="checkbox" data-pref="showStats"${prefs4.showStats ? " checked" : ""}> Show stats</label>` : "") : "") + `<span class="nfh-cw-status nfh-cw-muted">${statusText()}</span></div>`;
+    return '<div class="nfh-cw-bar"><strong>War board</strong>' + (state6.war ? '<span class="nfh-cw-muted">Sort</span>' + chip(SortMode.Status, "Hospital", "Who can be hit now, then who leaves hospital next") + (state6.anyStats ? chip(SortMode.StatsAsc, "Stats \u25B2", "Lowest battle stat estimate first") + chip(SortMode.StatsDesc, "Stats \u25BC", "Highest battle stat estimate first") : "") + chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them (or BSP / FF Scouter, if you sort with theirs)") + (prefs4.sort === SortMode.Status ? thenSelect(prefs4) : "") + (state6.sources.size > 1 ? `<label title="Whose estimate to use when both are known">Estimates <select data-pref="source"><option value="${Source.Bsp}"${prefs4.source === Source.Bsp ? " selected" : ""}>BSP</option><option value="${Source.FfScouter}"${prefs4.source === Source.FfScouter ? " selected" : ""}>FF Scouter</option></select></label>` : "") + (state6.heldShown || state6.anyStats && !prefs4.showStats ? `<label title="Show the estimates other members' BSP or FF Scouter passed on to nuke.family, where yours shows none"><input type="checkbox" data-pref="showStats"${prefs4.showStats ? " checked" : ""}> Show stats</label>` : "") : "") + `<span class="nfh-cw-status nfh-cw-muted">${statusText()}</span></div>`;
   }
   function ensureBar() {
-    let bar = document.getElementById(BAR_ID2);
-    if (!bar) {
+    let bar2 = document.getElementById(BAR_ID4);
+    if (!bar2) {
       const anchor = document.querySelector(ANCHOR_SELECTOR2);
       if (!anchor) return;
-      bar = document.createElement("div");
-      bar.id = BAR_ID2;
-      bar.className = "nfh-cw nfh-war-bar";
-      bar.addEventListener("click", onClick3);
-      bar.addEventListener("change", onChange2);
-      anchor.insertAdjacentElement("beforebegin", bar);
+      bar2 = document.createElement("div");
+      bar2.id = BAR_ID4;
+      bar2.className = "nfh-cw nfh-war-bar";
+      bar2.addEventListener("click", onClick4);
+      bar2.addEventListener("change", onChange2);
+      anchor.insertAdjacentElement("beforebegin", bar2);
       barHtml2 = "";
     }
-    const html = renderBar3();
+    const html = renderBar5();
     if (html !== barHtml2) {
       barHtml2 = html;
-      bar.innerHTML = html;
+      bar2.innerHTML = html;
     }
   }
-  function onClick3(event) {
-    const button2 = event.target.closest("[data-sort]");
-    if (!button2) return;
-    setPrefs2({ sort: button2.dataset.sort });
+  function onClick4(event) {
+    const button3 = event.target.closest("[data-sort]");
+    if (!button3) return;
+    setPrefs2({ sort: button3.dataset.sort });
     refresh();
   }
   function onChange2(event) {
@@ -6165,44 +8640,44 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   function refresh() {
     const lists = document.querySelectorAll(LIST_SELECTOR);
     if (lists.length > 0) {
-      decorate(lists);
+      decorate2(lists);
       ensureBar();
     }
   }
   async function poll2() {
-    const wantStats = Date.now() - state2.statsAt > STATS_REFRESH_MS;
-    const target = state2.target;
+    const wantStats = Date.now() - state6.statsAt > STATS_REFRESH_MS;
+    const target = state6.target;
     const query = [target ? `faction_id=${target}` : "", wantStats ? "stats=1" : ""].filter(Boolean).join("&");
-    state2.loading = true;
+    state6.loading = true;
     try {
       const response = await api("/war/board" + (query ? `?${query}` : ""));
-      if (state2.target !== target) return;
+      if (state6.target !== target) return;
       const data = response.data || {};
-      state2.error = false;
+      state6.error = false;
       if (!data.war) {
-        state2.war = null;
-        state2.nextPollAt = Date.now() + (data.recheck_seconds || 600) * 1e3;
+        state6.war = null;
+        state6.nextPollAt = Date.now() + (data.recheck_seconds || 600) * 1e3;
         return;
       }
-      state2.war = data.war;
-      state2.members = data.members || {};
-      state2.fetchedAt = Date.now();
-      state2.clockOffset = data.server_time * 1e3 - Date.now();
-      state2.nextPollAt = Date.now() + (data.poll_seconds * 1e3 || DEFAULT_POLL_MS);
+      state6.war = data.war;
+      state6.members = data.members || {};
+      state6.fetchedAt = Date.now();
+      state6.clockOffset = data.server_time * 1e3 - Date.now();
+      state6.nextPollAt = Date.now() + (data.poll_seconds * 1e3 || DEFAULT_POLL_MS);
       if (data.estimates) {
         for (const source of SOURCES) {
-          state2.held[source] = data.estimates[source] || {};
-          state2.fresh[source] = new Set(((data.estimates_fresh || {})[source] || []).map(String));
+          state6.held[source] = data.estimates[source] || {};
+          state6.fresh[source] = new Set(((data.estimates_fresh || {})[source] || []).map(String));
         }
-        state2.statsAt = Date.now();
+        state6.statsAt = Date.now();
       }
     } catch (error) {
-      if (state2.target !== target) return;
-      state2.error = true;
-      state2.nextPollAt = Date.now() + ERROR_RETRY_MS;
+      if (state6.target !== target) return;
+      state6.error = true;
+      state6.nextPollAt = Date.now() + ERROR_RETRY_MS;
       console.error("[NFH] Could not load the war board from nuke.family:", error);
     } finally {
-      state2.loading = false;
+      state6.loading = false;
       refresh();
     }
   }
@@ -6212,21 +8687,21 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       stop2();
       return;
     }
-    watch2(target);
+    watch4(target);
     if (document.hidden) return;
     const lists = document.querySelectorAll(LIST_SELECTOR);
     if (lists.length === 0) return;
-    decorate(lists);
+    decorate2(lists);
     ensureBar();
-    if (!state2.loading && Date.now() >= state2.nextPollAt) {
+    if (!state6.loading && Date.now() >= state6.nextPollAt) {
       poll2();
     }
   }
   function stop2() {
     clearInterval(ticker2);
     ticker2 = null;
-    const bar = document.getElementById(BAR_ID2);
-    if (bar) bar.remove();
+    const bar2 = document.getElementById(BAR_ID4);
+    if (bar2) bar2.remove();
     clearAll2();
     memos.clear();
     clearTimeout(uploadTimer2);
@@ -6642,10 +9117,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       onFeed2(detail.feed, detail.source, detail.keys);
     });
     try {
-      const tag = document.createElement("script");
-      tag.textContent = `(${pageTap.toString()})(${JSON.stringify(EVENT)});`;
-      (document.head || document.documentElement).appendChild(tag);
-      tag.remove();
+      runInPage(`(${pageTap.toString()})(${JSON.stringify(EVENT)});`);
     } catch (e) {
       LogInfo("[retals] could not add the page script", e);
     }
@@ -6740,8 +9212,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   }
   function retalsToAnnounce(retals, announced, nowSeconds, minSeconds) {
     return visibleRetals(retals, nowSeconds).filter((retal) => {
-      const state4 = retalState(retal, nowSeconds);
-      return (state4 === "free" || state4 === "mine") && retal.expires_at - nowSeconds >= minSeconds && !announced.has(noticeKey(retal));
+      const state8 = retalState(retal, nowSeconds);
+      return (state8 === "free" || state8 === "mine") && retal.expires_at - nowSeconds >= minSeconds && !announced.has(noticeKey(retal));
     });
   }
 
@@ -6749,7 +9221,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   var SENT_KEY = "nfhRetalsSent";
   var SENT_KEEP_SECONDS = WINDOW_SECONDS * 2;
   var sent = null;
-  function load2() {
+  function load6() {
     if (sent) return sent;
     sent = /* @__PURE__ */ new Map();
     try {
@@ -6768,10 +9240,10 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     }
   }
   function sentIds() {
-    return new Set(load2().keys());
+    return new Set(load6().keys());
   }
   function markSent(attacks) {
-    const list = load2();
+    const list = load6();
     for (const attack2 of attacks) {
       const id = String(attack2.id ?? attack2.publicID);
       const at = attack2.finished_at ?? Math.floor(Number(attack2.finishTimestamp) / 1e3);
@@ -6804,14 +9276,26 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     volume: 0.5,
     desktop: false,
     // a desktop notification as well (where the browser allows it)
-    minSeconds: 30
+    minSeconds: 30,
     // a retal with less time left than this is not announced
+    position: "bottom-left"
+    // where the notice sits on the screen (bottom right covers Torn's chat)
+  };
+  var POSITIONS = {
+    "bottom-left": "Bottom left",
+    "bottom-center": "Bottom middle",
+    "bottom-right": "Bottom right",
+    "middle-left": "Middle left",
+    "middle-right": "Middle right",
+    "top-left": "Top left",
+    "top-center": "Top middle",
+    "top-right": "Top right"
   };
   var MAX_MIN_SECONDS = 240;
   function clamp2(value, min, max, fallback) {
-    const number = Number(value);
-    if (!Number.isFinite(number)) return fallback;
-    return Math.min(max, Math.max(min, number));
+    const number2 = Number(value);
+    if (!Number.isFinite(number2)) return fallback;
+    return Math.min(max, Math.max(min, number2));
   }
   function sanitize3(raw) {
     const source = raw && typeof raw === "object" ? raw : {};
@@ -6821,7 +9305,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       sound: source.sound === true,
       volume: clamp2(source.volume, 0.05, 1, DEFAULTS4.volume),
       desktop: source.desktop === true,
-      minSeconds: Math.round(clamp2(source.minSeconds, 0, MAX_MIN_SECONDS, DEFAULTS4.minSeconds))
+      minSeconds: Math.round(clamp2(source.minSeconds, 0, MAX_MIN_SECONDS, DEFAULTS4.minSeconds)),
+      position: Object.hasOwn(POSITIONS, source.position) ? source.position : DEFAULTS4.position
     };
   }
   var prefs3 = null;
@@ -6912,7 +9397,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     hideToast();
     const toast = document.createElement("div");
     toast.id = TOAST_ID;
-    toast.className = "nfh-cw nfh-rt-toast";
+    toast.className = `nfh-cw nfh-rt-toast nfh-rt-toast--${getPrefs3().position}`;
     toast.setAttribute("role", "status");
     if (retals.length === 1) {
       const retal = retals[0];
@@ -6926,9 +9411,9 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       <span class="nfh-rt-actions"><button type="button" class="nfh-cw-btn" data-toast="close" aria-label="Dismiss">\u2715</button></span>`;
     }
     toast.addEventListener("click", (event) => {
-      const button2 = event.target.closest("[data-toast]");
-      if (!button2) return;
-      if (button2.dataset.toast === "attack") onAttack(retals[0].enemy_id);
+      const button3 = event.target.closest("[data-toast]");
+      if (!button3) return;
+      if (button3.dataset.toast === "attack") onAttack(retals[0].enemy_id);
       hideToast();
     });
     document.body.appendChild(toast);
@@ -6951,14 +9436,28 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   function announce(retals, nowSeconds, onAttack) {
     const prefs4 = getPrefs3();
     const announced = loadAnnounced();
-    const fresh = retalsToAnnounce(retals, new Set(Object.keys(announced)), nowSeconds, prefs4.minSeconds);
-    if (!fresh.length) return;
-    for (const retal of fresh) announced[noticeKey(retal)] = nowSeconds;
+    const fresh2 = retalsToAnnounce(retals, new Set(Object.keys(announced)), nowSeconds, prefs4.minSeconds);
+    if (!fresh2.length) return;
+    for (const retal of fresh2) announced[noticeKey(retal)] = nowSeconds;
     saveAnnounced(announced, nowSeconds);
     if (!prefs4.notify) return;
-    showToast(fresh, nowSeconds, onAttack);
+    showToast(fresh2, nowSeconds, onAttack);
     if (prefs4.sound) chime(prefs4.volume);
-    if (prefs4.desktop) showDesktop(fresh, nowSeconds);
+    if (prefs4.desktop) showDesktop(fresh2, nowSeconds);
+  }
+  function previewPosition() {
+    hideToast();
+    const toast = document.createElement("div");
+    toast.id = TOAST_ID;
+    toast.className = `nfh-cw nfh-rt-toast nfh-rt-toast--${getPrefs3().position}`;
+    toast.setAttribute("role", "status");
+    toast.innerHTML = `<div class="nfh-rt-toast-text"><strong>Retal notices</strong><span class="nfh-rt-muted">will show here</span></div>
+    <span class="nfh-rt-actions"><button type="button" class="nfh-cw-btn" data-toast="close" aria-label="Dismiss">\u2715</button></span>`;
+    toast.addEventListener("click", (event) => {
+      if (event.target.closest("[data-toast]")) hideToast();
+    });
+    document.body.appendChild(toast);
+    toastTimer = setTimeout(hideToast, 3e3);
   }
 
   // src/features/retals/stats.js
@@ -7052,30 +9551,30 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const more = list.length > 1 ? ` +${list.length - 1}` : "";
     return `<span class="nfh-rt-muted">hit ${first}${more}</span>`;
   }
-  function buttons(retal, state4, ui) {
-    const busy = ui.busy === retal.enemy_id ? " disabled" : "";
+  function buttons(retal, state8, ui) {
+    const busy2 = ui.busy === retal.enemy_id ? " disabled" : "";
     const id = escapeHtml(retal.enemy_id);
-    const claim = state4 === "mine" ? `<button type="button" class="nfh-cw-btn" data-action="unclaim" data-enemy="${id}"${busy}>Unclaim</button>` : state4 === "free" ? `<button type="button" class="nfh-cw-btn" data-action="claim" data-enemy="${id}"${busy}>Claim</button>` : "";
+    const claim = state8 === "mine" ? `<button type="button" class="nfh-cw-btn" data-action="unclaim" data-enemy="${id}"${busy2}>Unclaim</button>` : state8 === "free" ? `<button type="button" class="nfh-cw-btn" data-action="claim" data-enemy="${id}"${busy2}>Claim</button>` : "";
     const attack2 = `<a class="nfh-cw-btn nfh-cw-btn--primary nfh-rt-attack" href="${attackUrl(retal.enemy_id)}" data-action="attack" data-enemy="${id}">Attack</a>`;
     return `<span class="nfh-rt-actions">${claim}${attack2}</span>`;
   }
   function row(retal, now, ui) {
-    const state4 = retalState(retal, now);
+    const state8 = retalState(retal, now);
     const id = escapeHtml(retal.enemy_id);
-    if (state4 === "done") {
+    if (state8 === "done") {
       const by = retal.done_by && retal.done_by.name ? ` by ${escapeHtml(retal.done_by.name)}` : "";
       return `<li class="nfh-rt-row is-done" data-enemy="${id}"><span class="nfh-rt-main">${enemyName(retal)} <span class="nfh-rt-muted">retal done${by}</span></span></li>`;
     }
     const left = retal.expires_at - now;
-    const hold = state4 === "mine" ? `<span class="nfh-rt-held is-mine">Claimed by you</span>` : state4 === "taken" ? `<span class="nfh-rt-held">Claimed by ${escapeHtml(retal.claimed_by.name || "someone")}</span>` : "";
+    const hold = state8 === "mine" ? `<span class="nfh-rt-held is-mine">Claimed by you</span>` : state8 === "taken" ? `<span class="nfh-rt-held">Claimed by ${escapeHtml(retal.claimed_by.name || "someone")}</span>` : "";
     const warning = ui.warn && ui.warn.enemyId === retal.enemy_id ? `<div class="nfh-rt-warn" role="alert">${escapeHtml(ui.warn.name || "Someone")} has claimed this retal.
           <a class="nfh-cw-btn" href="${attackUrl(retal.enemy_id)}" data-action="attack-anyway" data-enemy="${id}">Attack anyway</a>
           <button type="button" class="nfh-cw-btn" data-action="dismiss" data-enemy="${id}">Cancel</button></div>` : "";
-    return `<li class="nfh-rt-row is-${state4}${left <= 60 ? " is-ending" : ""}" data-enemy="${id}">
+    return `<li class="nfh-rt-row is-${state8}${left <= 60 ? " is-ending" : ""}" data-enemy="${id}">
     <span class="nfh-rt-main">${enemyName(retal)} ${victims(retal)}</span>
     <span class="nfh-rt-left" title="Time left to retaliate">${formatLeft(left)}</span>
     ${hold}
-    ${buttons(retal, state4, ui)}
+    ${buttons(retal, state8, ui)}
     ${warning}
   </li>`;
   }
@@ -7112,6 +9611,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       <input type="range" min="0.05" max="1" step="0.05" value="${prefs4.volume}" data-pref="volume" aria-label="Volume"${quiet || !prefs4.sound ? " disabled" : ""}>
       <button type="button" class="nfh-cw-btn" data-action="test-sound"${quiet || !prefs4.sound ? " disabled" : ""}>Test</button></div>
     ${desktopRow}
+    <div class="nfh-cw-settings-row"><label>Notice position <select data-pref="position"${quiet ? " disabled" : ""}>${Object.entries(POSITIONS).map(([key, label]) => `<option value="${key}"${key === prefs4.position ? " selected" : ""}>${label}</option>`).join("")}</select></label></div>
   </div>`;
   }
 
@@ -7121,7 +9621,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   var POLL_OPEN_MS = 5 * 1e3;
   var POLL_CLOSED_MS = 10 * 1e3;
   var ERROR_MS = 6e3;
-  var state3 = {
+  var state7 = {
     retals: [],
     offset: 0,
     // server clock minus ours, in seconds
@@ -7140,23 +9640,23 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   var regions2 = null;
   var rendered = {};
   var ticker3 = null;
-  var serverNow = () => Math.floor(Date.now() / 1e3) + state3.offset;
+  var serverNow = () => Math.floor(Date.now() / 1e3) + state7.offset;
   function take(answer) {
     if (!answer || !Array.isArray(answer.retals)) return;
-    state3.retals = answer.retals;
-    if (answer.server_now) state3.offset = answer.server_now - Math.floor(Date.now() / 1e3);
-    state3.lastAnswerAt = Date.now();
-    forgetTags(state3.retals);
-    if (getPrefs3().show) announce(state3.retals, serverNow(), attack);
-    render4();
+    state7.retals = answer.retals;
+    if (answer.server_now) state7.offset = answer.server_now - Math.floor(Date.now() / 1e3);
+    state7.lastAnswerAt = Date.now();
+    forgetTags(state7.retals);
+    if (getPrefs3().show) announce(state7.retals, serverNow(), attack);
+    render6();
   }
   function isRefusal(error) {
     return error instanceof ApiError && (error.status === 403 || error.status === 404 && !(error.body && error.body.retals));
   }
   function showError(text) {
-    state3.ui.error = text;
-    state3.errorUntil = Date.now() + ERROR_MS;
-    render4();
+    state7.ui.error = text;
+    state7.errorUntil = Date.now() + ERROR_MS;
+    render6();
   }
   function unmount() {
     if (root2) root2.remove();
@@ -7165,13 +9665,13 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     rendered = {};
   }
   function stop3() {
-    state3.refused = true;
+    state7.refused = true;
     if (ticker3) clearInterval(ticker3);
     ticker3 = null;
     unmount();
   }
   function onFeed(feed, source, keys) {
-    if (!isOwnFactionMainTab() || state3.refused) return;
+    if (!isOwnFactionMainTab() || state7.refused) return;
     if (!sourcesSeen.has(source)) {
       sourcesSeen.add(source);
       LogInfo(`[retals] first chain feed from ${source}`, { answer_keys: keys, sample: feed.recentAttacks[0] });
@@ -7223,16 +9723,16 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     regions2[name].hidden = html === "";
     return true;
   }
-  function render4() {
+  function render6() {
     if (!root2) return;
-    if (state3.ui.error && Date.now() > state3.errorUntil) state3.ui.error = null;
+    if (state7.ui.error && Date.now() > state7.errorUntil) state7.ui.error = null;
     const prefs4 = getPrefs3();
     const now = serverNow();
-    setRegion2("head", renderHead(state3.retals, now, prefs4, state3.ui));
-    setRegion2("settings", state3.ui.settingsOpen ? renderSettings2(prefs4, desktopPermission()) : "");
-    if (setRegion2("list", prefs4.show ? renderList(state3.retals, now, state3.ui) : "")) applyTags(regions2.list);
+    setRegion2("head", renderHead(state7.retals, now, prefs4, state7.ui));
+    setRegion2("settings", state7.ui.settingsOpen ? renderSettings2(prefs4, desktopPermission()) : "");
+    if (setRegion2("list", prefs4.show ? renderList(state7.retals, now, state7.ui) : "")) applyTags(regions2.list);
   }
-  function mount2() {
+  function mount3() {
     const anchor = document.querySelector(ANCHOR_SELECTOR3);
     if (!anchor) {
       unmount();
@@ -7249,48 +9749,48 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
         regions2[name].dataset.region = name;
         root2.appendChild(regions2[name]);
       }
-      root2.addEventListener("click", onClick4);
+      root2.addEventListener("click", onClick5);
       root2.addEventListener("change", onChange3);
       root2.addEventListener("input", onChange3);
       anchor.insertAdjacentElement("afterend", root2);
     }
-    render4();
+    render6();
     return true;
   }
   function start() {
-    if (state3.refused || !getApiToken() || !isOwnFactionMainTab()) return;
-    mount2();
+    if (state7.refused || !getApiToken() || !isOwnFactionMainTab()) return;
+    mount3();
     if (!ticker3) ticker3 = setInterval(tick3, 1e3);
   }
   function tick3() {
-    if (state3.refused || !isOwnFactionMainTab()) {
+    if (state7.refused || !isOwnFactionMainTab()) {
       clearInterval(ticker3);
       ticker3 = null;
       unmount();
       return;
     }
-    const open = mount2();
-    if (open) captureTags(state3.retals);
+    const open = mount3();
+    if (open) captureTags(state7.retals);
     const every = open ? POLL_OPEN_MS : POLL_CLOSED_MS;
-    if (getPrefs3().show && !document.hidden && !state3.polling && Date.now() - state3.lastAnswerAt >= every) poll3();
+    if (getPrefs3().show && !document.hidden && !state7.polling && Date.now() - state7.lastAnswerAt >= every) poll3();
   }
   async function poll3() {
-    state3.polling = true;
+    state7.polling = true;
     try {
       take(await fetchRetals());
     } catch (error) {
       if (isRefusal(error)) stop3();
-      state3.lastAnswerAt = Date.now();
+      state7.lastAnswerAt = Date.now();
     } finally {
-      state3.polling = false;
+      state7.polling = false;
     }
   }
   function find(enemyId) {
-    return state3.retals.find((retal) => retal.enemy_id === enemyId);
+    return state7.retals.find((retal) => retal.enemy_id === enemyId);
   }
   async function changeClaim(enemyId, change) {
-    state3.ui.busy = enemyId;
-    render4();
+    state7.ui.busy = enemyId;
+    render6();
     try {
       take(await change(enemyId));
       return { ok: true };
@@ -7301,8 +9801,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       if (isRefusal(error)) stop3();
       return { ok: false, failed: true };
     } finally {
-      state3.ui.busy = null;
-      render4();
+      state7.ui.busy = null;
+      render6();
     }
   }
   function openAttack(enemyId, tab = null) {
@@ -7327,8 +9827,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const now = serverNow();
     const current = retal ? retalState(retal, now) : "free";
     if (current === "taken") {
-      state3.ui.warn = { enemyId, name: retal.claimed_by.name };
-      render4();
+      state7.ui.warn = { enemyId, name: retal.claimed_by.name };
+      render6();
       return;
     }
     if (current === "mine" || current === "done") {
@@ -7340,14 +9840,14 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     const result = await changeClaim(enemyId, claimRetal);
     if (result.takenBy) {
       if (tab) tab.close();
-      state3.ui.warn = { enemyId, name: result.takenBy.name };
-      render4();
+      state7.ui.warn = { enemyId, name: result.takenBy.name };
+      render6();
       return;
     }
     if (result.failed) showError("Could not claim it on nuke.family; attacking anyway.");
     openAttack(enemyId, tab);
   }
-  function onClick4(event) {
+  function onClick5(event) {
     const target = event.target.closest("[data-action]");
     if (!target || !root2.contains(target)) return;
     const enemyId = Number(target.dataset.enemy);
@@ -7357,8 +9857,8 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     if (action === "claim") {
       changeClaim(enemyId, claimRetal).then((result) => {
         if (result.takenBy) {
-          state3.ui.warn = { enemyId, name: result.takenBy.name };
-          render4();
+          state7.ui.warn = { enemyId, name: result.takenBy.name };
+          render6();
         } else if (result.failed) showError("Could not reach nuke.family to claim it.");
       });
     } else if (action === "unclaim") {
@@ -7368,15 +9868,15 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     } else if (action === "attack") {
       attack(enemyId);
     } else if (action === "attack-anyway") {
-      state3.ui.warn = null;
-      render4();
+      state7.ui.warn = null;
+      render6();
       openAttack(enemyId);
     } else if (action === "dismiss") {
-      state3.ui.warn = null;
-      render4();
+      state7.ui.warn = null;
+      render6();
     } else if (action === "settings") {
-      state3.ui.settingsOpen = !state3.ui.settingsOpen;
-      render4();
+      state7.ui.settingsOpen = !state7.ui.settingsOpen;
+      render6();
     } else if (action === "test-sound") {
       chime(getPrefs3().volume);
     }
@@ -7393,17 +9893,20 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
       } else {
         setPrefs3({ [pref]: input.checked });
       }
+    } else if (pref === "position") {
+      setPrefs3({ position: input.value });
+      previewPosition();
     } else {
       setPrefs3({ [pref]: Number(input.value) });
     }
-    if (pref === "show" && input.checked) state3.lastAnswerAt = 0;
-    if (pref !== "volume") render4();
+    if (pref === "show" && input.checked) state7.lastAnswerAt = 0;
+    if (pref !== "volume") render6();
   }
   var retals_default = {
     name: "retals",
     pages: [PageType.Faction],
     init() {
-      if (!isOwnFactionMainTab() || state3.refused) return;
+      if (!isOwnFactionMainTab() || state7.refused) return;
       startCapture(onFeed);
       start();
     }
@@ -7971,7 +10474,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
   function initTokenCapture() {
     waitForElm("#token").then((elm) => {
       let token = elm.innerText.trim();
-      const observer2 = new MutationObserver(() => {
+      const observer5 = new MutationObserver(() => {
         const newToken = elm.innerText.trim();
         if (!newToken || newToken === token) return;
         token = newToken;
@@ -7986,7 +10489,7 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
           alert("Nuke Family API token saved. You can now close this tab.");
         }
       });
-      observer2.observe(elm, {
+      observer5.observe(elm, {
         childList: true,
         subtree: true,
         characterData: true
@@ -8004,7 +10507,11 @@ body:not(.dark-mode) .nfh-connect-banner--ok {
     chain_watch_default,
     retals_default,
     ranked_war_default,
-    organized_crimes_default
+    organized_crimes_default,
+    mail_templates_default,
+    oc_items_default,
+    kick_risk_default,
+    stocks_default
   ];
   function dispatchFeatures() {
     for (const feature of features) {

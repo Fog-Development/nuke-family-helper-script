@@ -5,6 +5,8 @@ import { getUserscriptUsersPlayerId } from "../../core/torn-page.js";
 import { ocConfigStore } from "./data.js";
 import { crimeHoursLeft, limitsFor, probablyRun, slotFlags } from "./flags.js";
 import { getStaffPrefs, getWeightsPref, parseOverride, setStaffPrefs, setWeightsPref } from "./prefs.js";
+import { itemSettings, itemSettingsChanged, onItemSettingsChange } from "../oc-items/index.js";
+import { resetItemChoices, setItemChoice } from "../oc-items/prefs.js";
 import { activeSubTab, CRIMES_ROOT_SELECTOR, joinState, JoinState, readCrimes, SubTab } from "./page.js";
 import { cachedBoard, learnCprs, offPageCrimes, refreshBoard, requestSpawn, spawnAskedUntil } from "./remote.js";
 import { canAskForCrime, memberFeatures, rateCrimes, spawnTierToRequest, weightsChoice } from "./scoring.js";
@@ -227,7 +229,7 @@ function render() {
   renderSuggestions(root, suggestions);
 
   const staff = members && active ? { counts, prefs, factionLimits: limitsFor(config) } : null;
-  const settings = settingsHtml({ open: settingsOpen, weights, staff });
+  const settings = settingsHtml({ open: settingsOpen, weights, staff, items: itemSettings() });
   const staffPart = staff ? staffHtml(staff, settings.button) : "";
 
   const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
@@ -275,7 +277,13 @@ function render() {
     bar.addEventListener("change", (event) => {
       const flag = event.target.getAttribute("data-nfh-oc-flag");
       const limit = event.target.getAttribute("data-nfh-oc-limit");
-      if (event.target.hasAttribute("data-nfh-oc-weights")) {
+      const item = event.target.getAttribute("data-nfh-oc-item");
+      if (item) {
+        const items = itemSettings();
+        if (!items) return;
+        setItemChoice(items.factionId, item, event.target.checked);
+        itemSettingsChanged();
+      } else if (event.target.hasAttribute("data-nfh-oc-weights")) {
         const current = ocConfigStore.data;
         if (!current || !current.faction_id) return;
         setWeightsPref({ show: event.target.checked, factionId: current.faction_id });
@@ -291,6 +299,12 @@ function render() {
     bar.addEventListener("click", (event) => {
       if (event.target.closest("[data-nfh-oc-settings-toggle]")) {
         settingsOpen = !settingsOpen;
+        scheduleRender();
+        return;
+      }
+      if (event.target.closest("[data-nfh-oc-items-reset]")) {
+        resetItemChoices();
+        itemSettingsChanged();
         scheduleRender();
         return;
       }
@@ -366,6 +380,8 @@ function init() {
   if (!subscribed) {
     subscribed = true;
     ocConfigStore.subscribe(() => scheduleRender());
+    // The OC items choices appear in Settings once /oc/items has answered.
+    onItemSettingsChange(() => scheduleRender());
   }
 
   waitForElm(CRIMES_ROOT_SELECTOR).then((root) => {

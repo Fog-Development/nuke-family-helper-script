@@ -114,6 +114,13 @@ export async function launch() {
   return chromium.launch();
 }
 
+// A step captured in Torn's phone layout (784px or narrower) opens at the
+// width it was captured at, so the page shows that layout here too.
+function capturedViewport(name, step) {
+  const width = stepOf(readMeta(name), step)?.layout?.innerWidth;
+  return width && width <= 784 ? { width, height: 900 } : { width: 1280, height: 1000 };
+}
+
 // Open a fixture page with the script injected.
 //
 // options:
@@ -129,6 +136,8 @@ export async function launch() {
 //               is set, but before the script is injected (to tweak the DOM,
 //               e.g. give the profile a faction link)
 //   cookies     extra cookies (uid defaults to 1)
+//   viewport    { width, height }; defaults to 1280 wide, or the captured
+//               width when the step was taken in Torn's phone layout
 //
 // Returns { page, apiCalls, dialogs, errors, close }.
 export async function openTornPage(browser, options) {
@@ -141,7 +150,7 @@ export async function openTornPage(browser, options) {
     gmValues = { apiToken: "x".repeat(50), apiTokenFirstTime: true },
     localStorage = {},
     before,
-    viewport = { width: 1280, height: 1000 },
+    viewport = capturedViewport(options.page, options.step ?? 0),
   } = options;
 
   const context = await browser.newContext({ viewport });

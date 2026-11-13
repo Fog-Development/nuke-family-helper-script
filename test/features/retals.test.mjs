@@ -520,6 +520,29 @@ describe("retal notices", () => {
     }
   });
 
+  it("sit bottom left by default, or where the member chose", async () => {
+    for (const [position, expect] of [
+      [undefined, { left: true, bottom: true }],
+      ["top-right", { left: false, bottom: false }],
+      ["bottom-center", { center: true, bottom: true }],
+    ]) {
+      const site = siteWith([retal()]);
+      const localStorage = position ? { nfhRetals: { position } } : {};
+      const { page, close } = await openTornPage(browser, { page: "factions-faction", api: site.api, localStorage });
+      try {
+        await page.waitForSelector(TOAST, { timeout: 3000 });
+        const box = await page.locator(TOAST).boundingBox();
+        const { width, height } = page.viewportSize();
+        const middle = box.x + box.width / 2;
+        if ("center" in expect) assert.ok(Math.abs(middle - width / 2) < 2, `${position} centred`);
+        else assert.equal(middle < width / 2, expect.left, `${position ?? "default"} left/right`);
+        assert.equal(box.y + box.height / 2 > height / 2, expect.bottom, `${position ?? "default"} top/bottom`);
+      } finally {
+        await close();
+      }
+    }
+  });
+
   it("stay quiet with notices off, and can add a desktop notification", async () => {
     const site = siteWith([]);
     const { page, close } = await openList(site.api, { localStorage: { nfhRetals: { notify: false } } });

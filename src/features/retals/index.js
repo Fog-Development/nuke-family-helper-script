@@ -7,7 +7,7 @@ import { isOwnFactionMainTab } from "../../core/torn-page.js";
 import { startCapture } from "./capture.js";
 import { claimRetal, fetchRetals, markSent, report, sentIds, unclaimRetal } from "./data.js";
 import { attacksToReport, feedFactionId, retalState } from "./logic.js";
-import { announce, askDesktopPermission, chime, desktopPermission } from "./notify.js";
+import { announce, askDesktopPermission, chime, desktopPermission, previewPosition } from "./notify.js";
 import { getPrefs, setPrefs } from "./prefs.js";
 import { applyTags, captureTags, forgetTags } from "./stats.js";
 import { attackUrl, renderHead, renderList, renderSettings } from "./view.js";
@@ -368,6 +368,9 @@ async function onChange(event) {
     } else {
       setPrefs({ [pref]: input.checked });
     }
+  } else if (pref === "position") {
+    setPrefs({ position: input.value });
+    previewPosition();
   } else {
     setPrefs({ [pref]: Number(input.value) });
   }

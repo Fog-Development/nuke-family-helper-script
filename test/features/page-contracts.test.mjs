@@ -25,14 +25,16 @@ describe("page contracts", () => {
   });
 
   for (const contract of contracts) {
-    for (const id of contract.fixtures || []) {
-      it(`${contract.id} holds on ${id}`, async () => {
+    // A fixture is "id", or "id@n" for a later recorded step (a dialog that only opens after a click).
+    for (const entry of contract.fixtures || []) {
+      const [id, step = "0"] = entry.split("@");
+      it(`${contract.id} holds on ${entry}`, async () => {
         const meta = fixtureMeta(id);
-        assert.match(fixtureUrl(id), new RegExp(contract.url), `${id}'s URL is not one the contract applies to`);
+        assert.match(fixtureUrl(id, Number(step)), new RegExp(contract.url), `${entry}'s URL is not one the contract applies to`);
         const page = await browser.newPage();
         try {
           await page.route("**/*", (route) => route.abort());
-          await page.setContent(loadPageFixture(id), { waitUntil: "domcontentloaded" });
+          await page.setContent(loadPageFixture(id, Number(step)), { waitUntil: "domcontentloaded" });
           if (contract.when) {
             assert.ok(await page.$(contract.when), `${id} (${meta.title}) lacks the contract's "when" ${contract.when}`);
           }

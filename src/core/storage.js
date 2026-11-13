@@ -38,6 +38,7 @@ const LOCAL_KEYS = [
   "nfhRankedWar",
   "nfhOcStaffPrefs",
   "nfhOcWeights",
+  "nfhOcItemShow",
 ];
 
 const UNSAVED_KEY = "nfhNativeStorageUnsaved";

@@ -1,21 +1,34 @@
 {
-  "about": "The Torn markup each feature relies on. The recorder extension checks these live on the page you are viewing (read only) and flags a contract that no longer holds; test/features/page-contracts.test.mjs checks them against the listed fixtures. When a feature starts relying on a new Torn selector, add it here. url is a regex on the full URL; when (optional) is a selector that must be present before the contract applies (Torn lazy-loads panels); min defaults to 1.",
+  "about": "The Torn markup each feature relies on. The recorder extension checks these live on the page you are viewing (read only) and flags a contract that no longer holds; test/features/page-contracts.test.mjs checks them against the listed fixtures. When a feature starts relying on a new Torn selector, add it here. url is a regex on the full URL; when (optional) is a selector that must be present before the contract applies (Torn lazy-loads panels); min defaults to 1. A fixture \"id@n\" is checked at recorded step n.",
   "contracts": [
     {
       "id": "profile-status",
       "feature": "shitlist",
       "description": "Shitlist section goes after the profile status box",
       "url": "profiles\\.php\\?XID=",
-      "expect": [{ "selector": ".profile-status.m-top10", "note": "shitlist/profile.js anchor" }],
-      "fixtures": ["profiles"]
+      "expect": [
+        {
+          "selector": ".profile-status.m-top10",
+          "note": "shitlist/profile.js anchor"
+        }
+      ],
+      "fixtures": [
+        "profiles"
+      ]
     },
     {
       "id": "profile-left",
       "feature": "reputation / contracts",
       "description": "Reputation and Active Contract boxes go in the profile's left column",
       "url": "profiles\\.php\\?XID=",
-      "expect": [{ "selector": "div.profile-left-wrapper" }],
-      "fixtures": ["profiles"]
+      "expect": [
+        {
+          "selector": "div.profile-left-wrapper"
+        }
+      ],
+      "fixtures": [
+        "profiles"
+      ]
     },
     {
       "id": "hospital-rows",
@@ -24,10 +37,18 @@
       "url": "hospitalview\\.php",
       "when": ".user-info-list-wrap",
       "expect": [
-        { "selector": ".user-info-list-wrap > li", "note": "one row per patient" },
-        { "selector": ".user-info-list-wrap > li a.user.name[href*=\"XID=\"]", "note": "player link read for colouring" }
+        {
+          "selector": ".user-info-list-wrap > li",
+          "note": "one row per patient"
+        },
+        {
+          "selector": ".user-info-list-wrap > li a.user.name[href*=\"XID=\"]",
+          "note": "player link read for colouring"
+        }
       ],
-      "fixtures": ["hospitalview"]
+      "fixtures": [
+        "hospitalview"
+      ]
     },
     {
       "id": "faction-controls",
@@ -35,8 +56,14 @@
       "description": "NFH buttons go after the first rule in the controls panel",
       "url": "factions\\.php\\?step=your.*#/tab=controls",
       "when": "#faction-controls",
-      "expect": [{ "selector": "#faction-controls > hr" }],
-      "fixtures": ["factions-controls"]
+      "expect": [
+        {
+          "selector": "#faction-controls > hr"
+        }
+      ],
+      "fixtures": [
+        "factions-controls"
+      ]
     },
     {
       "id": "chain-box",
@@ -45,11 +72,21 @@
       "url": "factions\\.php\\?step=your[^#]*(#/?)?$",
       "when": ".chain-box",
       "expect": [
-        { "selector": ".chain-box-title" },
-        { "selector": ".chain-box-timeleft", "note": "timer the alert watches" },
-        { "selector": ".chain-box-center-stat", "note": "chain count" }
+        {
+          "selector": ".chain-box-title"
+        },
+        {
+          "selector": ".chain-box-timeleft",
+          "note": "timer the alert watches"
+        },
+        {
+          "selector": ".chain-box-center-stat",
+          "note": "chain count"
+        }
       ],
-      "fixtures": ["factions-faction"]
+      "fixtures": [
+        "factions-faction"
+      ]
     },
     {
       "id": "retals-recent-attacks",
@@ -57,7 +94,11 @@
       "description": "Recent attacks list (open chain box) the retal feed reads",
       "url": "factions\\.php\\?step=your[^#]*(#/?)?$",
       "when": ".chain-attacks-list",
-      "expect": [{ "selector": ".chain-attacks-list.recent-attacks" }],
+      "expect": [
+        {
+          "selector": ".chain-attacks-list.recent-attacks"
+        }
+      ],
       "fixtures": []
     },
     {
@@ -67,13 +108,197 @@
       "url": "factions\\.php\\?step=your.*#/tab=crimes",
       "when": "#faction-crimes-root [data-oc-id]",
       "expect": [
-        { "selector": "#faction-crimes-root [class^=\"tabName___\"]", "min": 3, "note": "Recruiting / Planning / Completed" },
-        { "selector": "#faction-crimes-root [data-oc-id]", "note": "one per crime" },
-        { "selector": "#faction-crimes-root [class^=\"panelTitle___\"]", "note": "crime name" },
-        { "selector": "#faction-crimes-root [class^=\"levelValue___\"]", "note": "crime level" },
-        { "selector": "#faction-crimes-root button[class^=\"slotHeader___\"]", "note": "one per role slot" }
+        {
+          "selector": "#faction-crimes-root [class^=\"tabName___\"]",
+          "min": 3,
+          "note": "Recruiting / Planning / Completed"
+        },
+        {
+          "selector": "#faction-crimes-root [data-oc-id]",
+          "note": "one per crime"
+        },
+        {
+          "selector": "#faction-crimes-root [class^=\"panelTitle___\"]",
+          "note": "crime name"
+        },
+        {
+          "selector": "#faction-crimes-root [class^=\"levelValue___\"]",
+          "note": "crime level"
+        },
+        {
+          "selector": "#faction-crimes-root button[class^=\"slotHeader___\"]",
+          "note": "one per role slot"
+        }
       ],
-      "fixtures": ["factions-crimes-recruiting", "factions-crimes-planning"]
+      "fixtures": [
+        "factions-crimes-recruiting",
+        "factions-crimes-planning"
+      ]
+    },
+    {
+      "id": "mail-compose",
+      "feature": "mail templates",
+      "description": "Compose form: recipient, subject and Torn's TinyMCE editor",
+      "url": "messages\\.php#/p=compose",
+      "when": "#editor-form",
+      "expect": [
+        {
+          "selector": "#editor-form",
+          "note": "bar goes above its .mailbox-container"
+        },
+        {
+          "selector": "#editor-form input[name=\"sendto\"]",
+          "note": "recipient for {name}/{id}"
+        },
+        {
+          "selector": "#editor-form input[name=\"subject\"]"
+        },
+        {
+          "selector": "#editor-form .mce-content-body[contenteditable=\"true\"]",
+          "note": "TinyMCE inline editor (id used by the page bridge)"
+        }
+      ],
+      "fixtures": [
+        "messages-compose",
+        "messages-compose-mobile"
+      ]
+    },
+    {
+      "id": "faction-newsletter",
+      "feature": "mail templates",
+      "description": "Faction newsletter form",
+      "url": "factions\\.php\\?step=your.*option=newsletter",
+      "when": "#react-root-faction-newsletter",
+      "expect": [
+        {
+          "selector": "#react-root-faction-newsletter input[class*=\"titleField\"]",
+          "note": "subject"
+        },
+        {
+          "selector": "#react-root-faction-newsletter [contenteditable=\"true\"]"
+        }
+      ],
+      "fixtures": [
+        "controls-newsletter"
+      ]
+    },
+    {
+      "id": "armoury-rows",
+      "feature": "oc items",
+      "description": "Armoury sub-tab rows with item, armoury id, type and loan state",
+      "url": "factions\\.php\\?step=your.*tab=armoury",
+      "when": "[id^=\"tab=armoury&sub=\"] li .img-wrap[data-itemid]",
+      "expect": [
+        {
+          "selector": "[id^=\"tab=armoury&sub=\"] li .img-wrap[data-itemid][data-armoryid]"
+        },
+        {
+          "selector": "[id^=\"tab=armoury&sub=\"] li .type"
+        },
+        {
+          "selector": "[id^=\"tab=armoury&sub=\"] li .loaned"
+        },
+        {
+          "selector": "[id^=\"tab=armoury&sub=\"] li .item-action [data-role=\"loan\"]"
+        },
+        {
+          "selector": "#faction-armoury-tabs",
+          "note": "panel goes above it"
+        }
+      ],
+      "fixtures": [
+        "armoury-tabs@11",
+        "armoury-item-panel"
+      ]
+    },
+    {
+      "id": "armoury-loan-box",
+      "feature": "oc items",
+      "description": "An open Loan box: the row gets item-loan-act and has the member field",
+      "url": "factions\\.php\\?step=your.*tab=armoury",
+      "when": "li.item-loan-act",
+      "expect": [
+        {
+          "selector": "li.item-loan-act .loan-cont.action-cont[data-itemid] input[name=\"user\"]"
+        }
+      ],
+      "fixtures": [
+        "armoury-item-panel@1"
+      ]
+    },
+    {
+      "id": "members-list",
+      "feature": "kick risk",
+      "description": "Controls Members rows with profile links",
+      "url": "factions\\.php\\?step=your.*option=members",
+      "when": "#option-members-root",
+      "expect": [
+        {
+          "selector": "#option-members-root [class*=\"rowWrapper___\"]"
+        },
+        {
+          "selector": "#option-members-root [class*=\"member___\"] a[href*=\"profiles.php?XID=\"]"
+        },
+        {
+          "selector": "#option-members-root [class*=\"userInfoBox___\"]",
+          "note": "badge goes here"
+        }
+      ],
+      "fixtures": [
+        "controls-members",
+        "controls-members-kick"
+      ]
+    },
+    {
+      "id": "kick-confirm",
+      "feature": "kick risk",
+      "description": "Kick confirmation with its reason box",
+      "url": "factions\\.php\\?step=your.*option=members",
+      "when": "#option-members-root [class*=\"confirm___\"]",
+      "expect": [
+        {
+          "selector": "#option-members-root [class*=\"confirm___\"] input[class*=\"reasonInput___\"]"
+        }
+      ],
+      "fixtures": [
+        "controls-members-kick@3",
+        "controls-members-kick@5"
+      ]
+    },
+    {
+      "id": "stock-market",
+      "feature": "stock signals",
+      "description": "Stock rows by stock id",
+      "url": "page\\.php\\?sid=stocks",
+      "when": "#stockmarketroot [class*=\"stockMarket___\"]",
+      "expect": [
+        {
+          "selector": "#stockmarketroot ul[id][class*=\"stock___\"] [class*=\"nameContainer___\"]",
+          "min": 30
+        }
+      ],
+      "fixtures": [
+        "stocks",
+        "stocks-light"
+      ]
+    },
+    {
+      "id": "stock-blocks",
+      "feature": "stock signals",
+      "description": "An open holding's blocks with shares and buy price",
+      "url": "page\\.php\\?sid=stocks",
+      "when": "#panel-ownedTab",
+      "expect": [
+        {
+          "selector": "#panel-ownedTab ul[class*=\"transaction___\"] [class*=\"shares___\"]"
+        },
+        {
+          "selector": "#panel-ownedTab ul[class*=\"transaction___\"] [class*=\"bought___\"]"
+        }
+      ],
+      "fixtures": [
+        "stocks-expanded@1"
+      ]
     }
   ]
 }
