@@ -20,6 +20,7 @@ import contracts, { contractsStore } from "./features/contracts.js";
 import factionButtons from "./features/faction-buttons.js";
 import hospital from "./features/hospital.js";
 import organizedCrimes from "./features/organized-crimes/index.js";
+import ocFines from "./features/oc-fines/index.js";
 import mailTemplates from "./features/mail-templates/index.js";
 import ocItems from "./features/oc-items/index.js";
 import kickRisk from "./features/kick-risk/index.js";
@@ -41,6 +42,7 @@ const features = [
   shitlistProfile,
   contracts,
   reputation,
+  ocFines,
   hospital,
   factionButtons,
   chainWatch,

@@ -101,3 +101,14 @@ export async function pinFaction(id, pinned) {
   forgetCaches();
   return result;
 }
+
+// OC fines (docs/oc-fines-plan.md in the site's repository): the list above
+// carries staff's recent unmailed fines; their mail is rendered by the site
+// when used, and the member marks it mailed after sending it.
+export const fineMail = (id) => api(`/oc-fines/${id}/mail`);
+
+export async function markFineMailed(id) {
+  const result = await api(`/oc-fines/${id}/mailed`, { method: "POST", data: { mailed: true, via: "script" } });
+  forgetCaches();
+  return result;
+}

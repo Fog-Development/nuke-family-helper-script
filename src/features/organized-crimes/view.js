@@ -92,7 +92,9 @@ export function renderMinimum(rated, showMinimum = true, showWeight = false) {
 }
 
 // The flags under a filled slot (staff only). An empty list removes them.
-export function renderFlags(slot, flags) {
+// `fineOffer`, for staff who may give OC fines, adds a "Fine" button that
+// opens the fine form with the flag's reason and the slot's figures filled in.
+export function renderFlags(slot, flags, fineOffer = null) {
   const existing = slot.el.querySelector(`:scope > .${FLAGS_CLASS}`);
   if (flags.length === 0) {
     if (existing) existing.remove();
@@ -105,7 +107,10 @@ export function renderFlags(slot, flags) {
         `<span class="nfh-oc-flag nfh-oc-flag--${flag.flag}" title="${escapeHtml(`${FLAG_LABELS[flag.flag]}: ${flag.title}`)}">` +
         `<span aria-hidden="true">${FLAG_SYMBOLS[flag.flag]}</span> ${escapeHtml(flag.text)}</span>`,
     )
-    .join("");
+    .join("") +
+    (fineOffer
+      ? `<button type="button" class="nfh-oc-flag nfh-ocf-flag-btn" data-nfh-ocf="${escapeHtml(JSON.stringify(fineOffer))}" title="Give this member an OC fine">⚖ Fine</button>`
+      : "");
 
   const element = existing || document.createElement("div");
   if (element.dataset.nfhHtml !== html) {
