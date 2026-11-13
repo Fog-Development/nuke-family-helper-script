@@ -243,6 +243,46 @@ describe("OC items on the crimes page", () => {
     }
   });
 
+  it("lets a staff member pick where items show in the OC Assistant's Settings, starting from the faction's defaults", async () => {
+    const api = items();
+    api["GET /oc/items"].data.staff.show = { missing_panel: true, missing_tags: true, retrieve_panel: false, retrieve_tags: true };
+    api["GET /oc/items"].data.staff.kinds = { missing: true, retrieve: true };
+    const { page, errors, close } = await openTornPage(browser, { page: "factions-crimes-planning", api });
+    try {
+      await page.waitForSelector(`${PANEL} .nfh-oci-row`);
+      await page.locator("#nfh-oc-bar [data-nfh-oc-settings-toggle]").click();
+      const group = page.locator("#nfh-oc-bar .nfh-oc-settings-group", { hasText: "OC items" });
+      await group.waitFor();
+      assert.equal(await group.locator('[data-nfh-oc-item="missing_panel"]').isChecked(), true);
+      assert.equal(await group.locator('[data-nfh-oc-item="retrieve_panel"]').isChecked(), false, "the faction's default");
+      assert.match(await group.innerText(), /Your faction's defaults/);
+
+      await group.locator('[data-nfh-oc-item="missing_panel"]').uncheck();
+      await page.waitForFunction((panel) => !document.querySelector(`${panel} .nfh-oci-row`), PANEL);
+      const saved = JSON.parse(await page.evaluate(() => localStorage.getItem("nfhOcItemShow")));
+      assert.deepEqual(saved, { factionId: 5678, choices: { missing_panel: false } });
+      await page.locator("#nfh-oc-bar [data-nfh-oc-items-reset]").click();
+      await page.waitForSelector(`${PANEL} .nfh-oci-row`);
+      assert.deepEqual(errors, []);
+    } finally {
+      await close();
+    }
+  });
+
+  it("offers no choice for a kind the faction switched off", async () => {
+    const api = items();
+    api["GET /oc/items"].data.staff.kinds = { missing: true, retrieve: false };
+    const before = (page) => page.evaluate(() => localStorage.setItem("nfhOcItemShow", JSON.stringify({ factionId: 5678, choices: { retrieve_panel: true } })));
+    const { page, close } = await openTornPage(browser, { page: "armoury-tabs", step: 11, api, before });
+    try {
+      await page.waitForSelector(`${PANEL} .nfh-oci-row`);
+      assert.doesNotMatch(await page.locator(PANEL).innerText(), /Loaned, not needed/, "the member's old choice doesn't bring it back");
+      assert.equal(await page.locator(".nfh-oci-row--retrieve").count(), 0);
+    } finally {
+      await close();
+    }
+  });
+
   it("stays away when there is nothing for a member", async () => {
     const { page, close } = await openTornPage(browser, { page: "factions-crimes-planning", api: items({ staff: false }) });
     try {

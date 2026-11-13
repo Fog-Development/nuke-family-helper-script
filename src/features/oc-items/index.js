@@ -5,6 +5,7 @@ import { PageType } from "../../core/pages.js";
 import { setInputValue } from "../../core/torn-editor.js";
 import { postTornAction } from "../../core/torn-action.js";
 import { openActionBox, readArmoury } from "./armoury.js";
+import { itemShow, ownItemChoices } from "./prefs.js";
 import {
   armouryHash,
   availableCopy,
@@ -92,6 +93,7 @@ async function load() {
       state.data = answer.data || answer;
       state.fetchedAt = Date.now();
       state.error = null;
+      settingsListeners.forEach((listener) => listener());
       return state.data;
     })
     .catch((error) => {
@@ -121,12 +123,40 @@ function view() {
   return { where, tab, staff, live, missing, mine, unused, show: shown(staff) };
 }
 
-// What the faction's staff chose to see (OC Assistant settings on nuke.family):
-// each kind in the panel and as armoury tags. A site that doesn't say shows all.
+// What this staff member sees of each kind, in the panel and as armoury tags:
+// their own choice (the OC Assistant bar's Settings), else the faction's default.
 function shown(staff) {
-  const show = staff?.show || {};
-  const on = (key) => show[key] !== false;
-  return { missingPanel: on("missing_panel"), missingTags: on("missing_tags"), retrievePanel: on("retrieve_panel"), retrieveTags: on("retrieve_tags") };
+  const show = itemShow(staff, state.data?.faction_id);
+  return { missingPanel: show.missing_panel, missingTags: show.missing_tags, retrievePanel: show.retrieve_panel, retrieveTags: show.retrieve_tags };
+}
+
+const settingsListeners = new Set();
+
+// For the OC Assistant bar's Settings: what this staff member sees, the
+// faction's defaults and which kinds the faction has on, or null for a member
+// who isn't OC staff (or before /oc/items has answered).
+export function itemSettings() {
+  const data = state.data;
+  if (!data || !data.enabled || !data.staff) return null;
+  const own = ownItemChoices(data.faction_id);
+  return {
+    factionId: data.faction_id,
+    show: itemShow(data.staff, data.faction_id),
+    defaults: itemShow({ show: data.staff.show, kinds: data.staff.kinds }, null),
+    kinds: { missing: data.staff.kinds?.missing !== false, retrieve: data.staff.kinds?.retrieve !== false },
+    changed: Object.keys(own).length > 0,
+  };
+}
+
+// Called with no arguments whenever itemSettings() may have changed.
+export function onItemSettingsChange(listener) {
+  settingsListeners.add(listener);
+  return () => settingsListeners.delete(listener);
+}
+
+// After the member changes a choice in the bar.
+export function itemSettingsChanged() {
+  redraw();
 }
 
 // A link to an armoury sub-tab. Torn switches sub-tabs with its own tab links

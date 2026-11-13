@@ -152,10 +152,39 @@ function staffSettingsHtml(staff) {
   );
 }
 
+const ITEM_OPTIONS = [
+  ["missing", "Missing items", [["missing_panel", "In the OC Items panel"], ["missing_tags", "Tagged Need on the armoury"]]],
+  ["retrieve", "Loaned, not needed", [["retrieve_panel", "In the OC Items panel"], ["retrieve_tags", "Tagged Retrieve on the armoury"]]],
+];
+
+// For OC staff: where the required items help shows each kind (`items` is
+// itemSettings() from oc-items). A kind the faction switched off isn't offered.
+function itemSettingsHtml(items) {
+  const on = (value) => (value ? "on" : "off");
+  const groups = ITEM_OPTIONS.filter(([kind]) => items.kinds[kind])
+    .map(
+      ([, title, options]) =>
+        `<span class="nfh-oc-bar-muted">${title}:</span>` +
+        options
+          .map(
+            ([key, label]) =>
+              `<label class="nfh-oc-staff-option" title="Your faction's default: ${on(items.defaults[key])}"><input type="checkbox" data-nfh-oc-item="${key}"${items.show[key] ? " checked" : ""}> ${label}</label>`,
+          )
+          .join(""),
+    )
+    .join("");
+  if (!groups) return "";
+  const note = items.changed
+    ? `You changed these; your faction's defaults are shown on hover. <button type="button" class="nfh-oc-link-button" data-nfh-oc-items-reset>Use your faction's choices</button>`
+    : "Your faction's defaults. Changes are yours alone, in this browser.";
+  return `<div class="nfh-oc-settings-group"><span class="nfh-oc-settings-heading">OC items</span>${groups}<span class="nfh-oc-bar-muted">${note}</span></div>`;
+}
+
 // The Settings button, and its panel when open: the role weights choice
-// (`weights` is weightsChoice()'s answer) and, for staff, the flag settings.
+// (`weights` is weightsChoice()'s answer) and, for staff, the flag settings
+// and where OC items show (`items`, or null).
 // Returns { button, panel }.
-export function settingsHtml({ open, weights, staff }) {
+export function settingsHtml({ open, weights, staff, items = null }) {
   const button =
     `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-settings-toggle ` +
     `aria-expanded="${open ? "true" : "false"}">Settings</button>`;
@@ -170,7 +199,10 @@ export function settingsHtml({ open, weights, staff }) {
     `<label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-weights${weights.show ? " checked" : ""}> Show role weights</label>` +
     `<span class="nfh-oc-bar-muted">${note}</span></div>`;
 
-  return { button, panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${staff ? staffSettingsHtml(staff) : ""}</div>` };
+  return {
+    button,
+    panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${staff ? staffSettingsHtml(staff) : ""}${items ? itemSettingsHtml(items) : ""}</div>`,
+  };
 }
 
 const TAG_TEXT = { [Rank.Best]: "Best for you", [Rank.Good]: "Good for you" };
