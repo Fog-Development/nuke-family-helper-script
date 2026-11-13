@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.20.1
+// @version      2.21.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -2130,7 +2130,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     "nfhRetals",
     "nfhRankedWar",
     "nfhOcStaffPrefs",
-    "nfhOcWeights"
+    "nfhOcWeights",
+    "nfhOcItemShow"
   ];
   var UNSAVED_KEY = "nfhNativeStorageUnsaved";
   var LOAD_TIMEOUT_MS = 3e3;
@@ -2360,7 +2361,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   // src/core/config.js
   var DEBUG = false;
   var DEBUG_SITE = false;
-  var DEFAULT_VERSION = "2.20.1";
+  var DEFAULT_VERSION = "2.21.0";
   var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : DEFAULT_VERSION;
   var API_URL = DEBUG_SITE ? "http://nuke.test/api" : "https://nuke.family/api";
   var TOKEN_GENERATION_URL = DEBUG_SITE ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
@@ -2536,8 +2537,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var PERMISSIONS_CACHE_TTL_MS = 12 * 60 * 60 * 1e3;
   function getUserRole() {
     try {
-      const saved = JSON.parse(localStorage.getItem(ROLE_CACHE_KEY) || "null");
-      return saved && saved.role || "";
+      const saved2 = JSON.parse(localStorage.getItem(ROLE_CACHE_KEY) || "null");
+      return saved2 && saved2.role || "";
     } catch (e) {
       return "";
     }
@@ -2566,18 +2567,18 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   var staleRefreshStarted = false;
   function inRevivingFaction() {
-    let saved = null;
+    let saved2 = null;
     try {
-      saved = JSON.parse(localStorage.getItem(ROLE_CACHE_KEY) || "null");
+      saved2 = JSON.parse(localStorage.getItem(ROLE_CACHE_KEY) || "null");
     } catch (e) {
     }
-    const known = saved && typeof saved.reviving === "boolean";
-    const fresh2 = known && saved.timestamp && Date.now() - saved.timestamp < PERMISSIONS_CACHE_TTL_MS;
+    const known = saved2 && typeof saved2.reviving === "boolean";
+    const fresh2 = known && saved2.timestamp && Date.now() - saved2.timestamp < PERMISSIONS_CACHE_TTL_MS;
     if (!fresh2 && !staleRefreshStarted && getApiToken()) {
       staleRefreshStarted = true;
       refreshUserRole();
     }
-    return known ? saved.reviving : null;
+    return known ? saved2.reviving : null;
   }
   var RECRUITING_PERMISSION = "recruiting.predict";
   function cachedPermissions() {
@@ -4087,9 +4088,9 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   };
   var canConnect = (state8) => state8 === Connection.Missing || state8 === Connection.Rejected;
   function pending() {
-    const saved = getValue(PENDING_KEY, null);
-    if (!saved || typeof saved !== "object" || !saved.secret || !saved.url) return null;
-    return saved.expires > Date.now() ? saved : null;
+    const saved2 = getValue(PENDING_KEY, null);
+    if (!saved2 || typeof saved2 !== "object" || !saved2.secret || !saved2.url) return null;
+    return saved2.expires > Date.now() ? saved2 : null;
   }
   function isHidden(state8) {
     try {
@@ -4286,8 +4287,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       event.preventDefault();
       startConnect();
     } else if (target.closest("[data-nfh-connect-manual]")) {
-      enterKeyByHand().then((saved) => {
-        if (saved) window.location.reload();
+      enterKeyByHand().then((saved2) => {
+        if (saved2) window.location.reload();
       });
     } else if (target.closest("[data-nfh-connect-cancel]")) {
       stopPolling();
@@ -4432,10 +4433,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       // discarded (the next refresh repopulates them) instead of alerting.
       load() {
         try {
-          const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
-          if (saved && typeof saved === "object") {
-            data = saved[dataField] ?? emptyValue;
-            timestamp = saved.timestamp || 0;
+          const saved2 = JSON.parse(localStorage.getItem(storageKey) || "null");
+          if (saved2 && typeof saved2 === "object") {
+            data = saved2[dataField] ?? emptyValue;
+            timestamp = saved2.timestamp || 0;
           }
         } catch (error) {
           console.error(`Error loading cached ${storageKey}:`, error);
@@ -4715,8 +4716,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   var SPAWN_KEY = "nfhOcSpawnAsked";
   function spawnAskedUntil() {
-    const saved = readJson2(SPAWN_KEY);
-    return saved && saved.until > Date.now() ? saved.until : 0;
+    const saved2 = readJson2(SPAWN_KEY);
+    return saved2 && saved2.until > Date.now() ? saved2.until : 0;
   }
   async function requestSpawn() {
     try {
@@ -4800,11 +4801,11 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       spawn: enabled && Boolean(settings.spawn_requests_enabled)
     };
   }
-  function weightsChoice(config, saved) {
+  function weightsChoice(config, saved2) {
     const factionShows = Boolean(config && config.settings && config.settings.show_role_weights);
     const factionId = config ? config.faction_id : null;
-    const own = Boolean(saved) && typeof saved.show === "boolean" && factionId !== null && factionId !== void 0 && String(saved.factionId) === String(factionId);
-    return { show: own ? saved.show : factionShows, own, factionShows };
+    const own = Boolean(saved2) && typeof saved2.show === "boolean" && factionId !== null && factionId !== void 0 && String(saved2.factionId) === String(factionId);
+    return { show: own ? saved2.show : factionShows, own, factionShows };
   }
   var HIGHEST_LEVEL = 10;
   function productiveFromLevel(config) {
@@ -5516,16 +5517,16 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     levelGap: null
   };
   function getStaffPrefs() {
-    let saved = null;
+    let saved2 = null;
     try {
-      saved = JSON.parse(getItem(KEY) || "null");
+      saved2 = JSON.parse(getItem(KEY) || "null");
     } catch (e) {
-      saved = null;
+      saved2 = null;
     }
     return {
       ...DEFAULTS2,
-      ...saved || {},
-      show: { ...DEFAULTS2.show, ...saved && saved.show || {} }
+      ...saved2 || {},
+      show: { ...DEFAULTS2.show, ...saved2 && saved2.show || {} }
     };
   }
   function setStaffPrefs(changes) {
@@ -5549,6 +5550,804 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     if (Number.isNaN(number2)) return null;
     return Math.min(max, Math.max(min, number2));
   }
+
+  // src/core/page-script.js
+  var nonce;
+  function pageNonce() {
+    if (nonce !== void 0) return nonce;
+    nonce = null;
+    for (const script of document.querySelectorAll("script")) {
+      const value = script.nonce || script.getAttribute("nonce");
+      if (value) {
+        nonce = value;
+        break;
+      }
+    }
+    return nonce;
+  }
+  function runInPage(source) {
+    const tag = document.createElement("script");
+    const value = pageNonce();
+    if (value) {
+      tag.nonce = value;
+      tag.setAttribute("nonce", value);
+    }
+    tag.textContent = source;
+    (document.head || document.documentElement).appendChild(tag);
+    tag.remove();
+  }
+  function pageWindow() {
+    try {
+      if (typeof unsafeWindow !== "undefined" && unsafeWindow) return unsafeWindow;
+    } catch (error) {
+    }
+    return window;
+  }
+
+  // src/core/torn-editor.js
+  var REQUEST = "nfh:editor-request";
+  var RESPONSE = "nfh:editor-response";
+  var TIMEOUT_MS = 1500;
+  var bridgeInstalled = false;
+  var nextId = 1;
+  function pageBridge(requestEvent, responseEvent) {
+    if (window.__nfhEditorBridge) return;
+    window.__nfhEditorBridge = true;
+    document.documentElement.setAttribute("data-nfh-editor-bridge", "1");
+    document.addEventListener(requestEvent, (event) => {
+      let request2;
+      try {
+        request2 = JSON.parse(event.detail);
+      } catch (error) {
+        return;
+      }
+      const element = document.getElementById(request2.elementId);
+      const mce = window.tinymce;
+      let editor = null;
+      try {
+        editor = mce ? mce.get(request2.elementId) || (mce.activeEditor && mce.activeEditor.getElement() === element ? mce.activeEditor : null) : null;
+      } catch (error) {
+        editor = null;
+      }
+      let answer = { id: request2.id, ok: true, via: editor ? "tinymce" : "element" };
+      try {
+        if (request2.op === "get") {
+          answer.html = editor ? editor.getContent() : element ? element.innerHTML : "";
+        } else if (request2.op === "set") {
+          if (editor) {
+            editor.focus();
+            if (editor.undoManager) editor.undoManager.transact(() => editor.setContent(request2.html));
+            else editor.setContent(request2.html);
+            editor.fire("change");
+            editor.fire("input");
+            if (editor.nodeChanged) editor.nodeChanged();
+          } else if (element) {
+            element.innerHTML = request2.html;
+            element.dispatchEvent(new Event("input", { bubbles: true }));
+          } else {
+            answer = { id: request2.id, ok: false, error: "The editor was not found." };
+          }
+        }
+      } catch (error) {
+        answer = { id: request2.id, ok: false, error: String(error && error.message || error) };
+      }
+      document.dispatchEvent(new CustomEvent(responseEvent, { detail: JSON.stringify(answer) }));
+    });
+  }
+  function installBridge() {
+    if (bridgeInstalled) return;
+    bridgeInstalled = true;
+    try {
+      runInPage(`(${pageBridge.toString()})(${JSON.stringify(REQUEST)}, ${JSON.stringify(RESPONSE)});`);
+    } catch (error) {
+    }
+  }
+  function directEditor(element) {
+    try {
+      const mce = pageWindow().tinymce;
+      if (!mce || !element.id) return null;
+      const editor = mce.get(element.id);
+      if (editor) return editor;
+      const active = mce.activeEditor;
+      return active && active.getElement && active.getElement() === element ? active : null;
+    } catch (error) {
+      return null;
+    }
+  }
+  function setElement(element, html) {
+    element.innerHTML = html;
+    element.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+  function ask(elementId, op, html) {
+    installBridge();
+    if (!document.documentElement.hasAttribute("data-nfh-editor-bridge")) return Promise.reject(new Error("The page script did not run."));
+    const id = nextId++;
+    return new Promise((resolve, reject) => {
+      const timer3 = setTimeout(() => {
+        document.removeEventListener(RESPONSE, listener);
+        reject(new Error("The editor did not answer."));
+      }, TIMEOUT_MS);
+      function listener(event) {
+        let answer;
+        try {
+          answer = JSON.parse(event.detail);
+        } catch (error) {
+          return;
+        }
+        if (answer.id !== id) return;
+        clearTimeout(timer3);
+        document.removeEventListener(RESPONSE, listener);
+        if (answer.ok) resolve(answer);
+        else reject(new Error(answer.error || "The editor refused."));
+      }
+      document.addEventListener(RESPONSE, listener);
+      document.dispatchEvent(new CustomEvent(REQUEST, { detail: JSON.stringify({ id, op, elementId, html }) }));
+    });
+  }
+  function findEditor(root3) {
+    return root3 ? root3.querySelector('.mce-content-body[contenteditable="true"], [contenteditable="true"]') : null;
+  }
+  async function getEditorHtml(element) {
+    if (!element) throw new Error("The editor was not found.");
+    const editor = directEditor(element);
+    if (editor) {
+      try {
+        return String(editor.getContent());
+      } catch (error) {
+      }
+    }
+    if (element.id) {
+      try {
+        return (await ask(element.id, "get")).html ?? element.innerHTML;
+      } catch (error) {
+      }
+    }
+    return element.innerHTML;
+  }
+  async function setEditorHtml(element, html) {
+    if (!element) throw new Error("The editor was not found.");
+    const editor = directEditor(element);
+    if (editor) {
+      try {
+        editor.focus();
+        if (editor.undoManager) editor.undoManager.add();
+        editor.setContent(html);
+        if (editor.undoManager) editor.undoManager.add();
+        editor.fire("change");
+        editor.fire("input");
+        if (editor.nodeChanged) editor.nodeChanged();
+        return;
+      } catch (error) {
+      }
+    }
+    if (element.id) {
+      try {
+        await ask(element.id, "set", html);
+        return;
+      } catch (error) {
+      }
+    }
+    setElement(element, html);
+  }
+  function editorHasContent(element) {
+    if (!element) return false;
+    return element.textContent.trim() !== "" || element.querySelector("img") !== null;
+  }
+  function setInputValue(input, value) {
+    if (!input) return;
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+    setter.call(input, value);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  // src/core/torn-action.js
+  var REQUEST2 = "nfh:torn-action";
+  var RESPONSE2 = "nfh:torn-action-done";
+  var TIMEOUT_MS2 = 15e3;
+  var installed = false;
+  var nextId2 = 1;
+  function pageBridge2(requestEvent, responseEvent) {
+    if (window.__nfhTornAction) return;
+    window.__nfhTornAction = true;
+    document.documentElement.setAttribute("data-nfh-torn-action", "1");
+    document.addEventListener(requestEvent, (event) => {
+      let request2;
+      try {
+        request2 = JSON.parse(event.detail);
+      } catch (error) {
+        return;
+      }
+      const answer = (payload) => document.dispatchEvent(new CustomEvent(responseEvent, { detail: JSON.stringify({ id: request2.id, ...payload }) }));
+      fetch(request2.url, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "X-Requested-With": "XMLHttpRequest" },
+        body: request2.body
+      }).then((response) => response.text().then((text) => answer({ ok: response.ok, status: response.status, text }))).catch((error) => answer({ ok: false, status: 0, text: String(error && error.message || error) }));
+    });
+  }
+  function install() {
+    if (installed) return;
+    installed = true;
+    runInPage(`(${pageBridge2.toString()})(${JSON.stringify(REQUEST2)}, ${JSON.stringify(RESPONSE2)});`);
+  }
+  function postTornAction(page, fields) {
+    const rfcv = getCookie("rfc_v");
+    if (!rfcv) return Promise.reject(new Error("Torn's page token was not found. Reload the page and try again."));
+    install();
+    if (!document.documentElement.hasAttribute("data-nfh-torn-action")) {
+      return Promise.reject(new Error("Torn's page blocked the script that sends it. Use the Loan box on the row instead."));
+    }
+    const id = nextId2++;
+    const url = `/${page}?rfcv=${encodeURIComponent(rfcv)}`;
+    const body = new URLSearchParams(fields).toString();
+    return new Promise((resolve, reject) => {
+      const timer3 = setTimeout(() => {
+        document.removeEventListener(RESPONSE2, listener);
+        reject(new Error("Torn did not answer in time (or the page blocked the request). Check the armoury before trying again."));
+      }, TIMEOUT_MS2);
+      function listener(event) {
+        let answer;
+        try {
+          answer = JSON.parse(event.detail);
+        } catch (error) {
+          return;
+        }
+        if (answer.id !== id) return;
+        clearTimeout(timer3);
+        document.removeEventListener(RESPONSE2, listener);
+        resolve(answer);
+      }
+      document.addEventListener(RESPONSE2, listener);
+      document.dispatchEvent(new CustomEvent(REQUEST2, { detail: JSON.stringify({ id, url, body }) }));
+    });
+  }
+
+  // src/features/oc-items/armoury.js
+  var tabSelector = (tab) => `[id="tab=armoury&sub=${tab}"]`;
+  function readArmoury(tabs) {
+    const live = {};
+    for (const tab of tabs) {
+      const container = document.querySelector(tabSelector(tab));
+      if (!container) continue;
+      const rows2 = [...container.querySelectorAll("li .img-wrap[data-itemid]")].map((wrap) => readRow(wrap.closest("li"), wrap));
+      const empty = !rows2.length && /no items in this category/i.test(container.textContent);
+      if (rows2.length || empty) live[tab] = rows2;
+    }
+    return live;
+  }
+  function readRow(li, wrap) {
+    const link = li.querySelector('.loaned a[href*="profiles.php?XID="]');
+    const holder = link ? Number(new URL(link.getAttribute("href"), location.origin).searchParams.get("XID")) : null;
+    const name = (li.querySelector(".name")?.childNodes[0]?.textContent || li.querySelector(".name")?.textContent || "").replace(/\s+x?\s*$/, "").trim();
+    return {
+      li,
+      itemId: Number(wrap.dataset.itemid),
+      armoryId: wrap.dataset.armoryid,
+      name,
+      type: (li.querySelector(".type")?.textContent || "").trim(),
+      loanedTo: holder || null,
+      loanedName: link ? link.textContent.trim() : null,
+      canLoan: !!li.querySelector('.item-action a.loan.active, .item-action [data-role="loan"].active'),
+      hasBonus: !!li.querySelector(".bonuses, .item-bonuses, [class*='bonus-attachment']")
+    };
+  }
+  function openActionBox(tab) {
+    const container = document.querySelector(tabSelector(tab));
+    if (!container) return null;
+    const li = container.querySelector("li.item-loan-act, li.item-give-act");
+    if (!li) return null;
+    const kind = li.classList.contains("item-loan-act") ? "loan" : "give";
+    const box = li.querySelector(`.${kind}-cont.action-cont`);
+    const input = box?.querySelector('input[name="user"]');
+    if (!box || !input) return null;
+    return { li, kind, box, input, itemId: Number(box.dataset.itemid || li.querySelector(".img-wrap")?.dataset.itemid) };
+  }
+
+  // src/features/oc-items/prefs.js
+  var KEY2 = "nfhOcItemShow";
+  var ITEM_SHOW_KEYS = ["missing_panel", "missing_tags", "retrieve_panel", "retrieve_tags"];
+  function saved() {
+    try {
+      const value = JSON.parse(getItem(KEY2) || "null");
+      return value && typeof value === "object" && value.choices ? value : null;
+    } catch (error) {
+      return null;
+    }
+  }
+  function ownItemChoices(factionId) {
+    const pref = saved();
+    return pref && pref.factionId === factionId ? pref.choices : {};
+  }
+  function itemShow(staff, factionId) {
+    const defaults = staff && staff.show || {};
+    const kinds = staff && staff.kinds || {};
+    const own = ownItemChoices(factionId);
+    const result = {};
+    for (const key of ITEM_SHOW_KEYS) {
+      const kind = key.split("_")[0];
+      if (kinds[kind] === false) {
+        result[key] = false;
+        continue;
+      }
+      result[key] = typeof own[key] === "boolean" ? own[key] : defaults[key] !== false;
+    }
+    return result;
+  }
+  function setItemChoice(factionId, key, value) {
+    const choices = { ...ownItemChoices(factionId), [key]: !!value };
+    setItem(KEY2, JSON.stringify({ factionId, choices }));
+  }
+  function resetItemChoices() {
+    setItem(KEY2, "null");
+  }
+
+  // src/features/oc-items/logic.js
+  var TAB_LABELS = {
+    weapons: "Weapons",
+    armour: "Armour",
+    temporary: "Temporary",
+    medical: "Medical",
+    drugs: "Drugs",
+    boosters: "Boosters",
+    consumables: "Consumables",
+    utilities: "Utilities"
+  };
+  var tabLabel = (tab) => TAB_LABELS[tab] || "Utilities";
+  var armouryHash = (tab) => `#/tab=armoury&start=0&sub=${tab}`;
+  function tabInHash(hash) {
+    const match = String(hash || "").match(/tab=armoury.*?sub=(\w+)/);
+    return match ? match[1] : null;
+  }
+  function currentLoans(siteLoans, live) {
+    const liveTabs = new Set(Object.keys(live || {}));
+    const loans = (siteLoans || []).filter((loan2) => !liveTabs.has(loan2.tab));
+    for (const [tab, rows2] of Object.entries(live || {})) {
+      for (const row2 of rows2) {
+        if (!row2.loanedTo) continue;
+        loans.push({ item_id: row2.itemId, item_name: row2.name, tab, player_id: row2.loanedTo, player_name: row2.loanedName || "", live: true });
+      }
+    }
+    return loans;
+  }
+  function unusedLoans(loans, needs, ocItemIds) {
+    const oc = new Set((ocItemIds || []).map(Number));
+    const seen = /* @__PURE__ */ new Set();
+    const out = [];
+    for (const loan2 of loans || []) {
+      const itemId = Number(loan2.item_id);
+      if (!oc.has(itemId)) continue;
+      const needed = needs && needs[loan2.player_id] || null;
+      if (needed && needed.map(Number).includes(itemId)) continue;
+      const key = `${loan2.player_id}:${itemId}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push({ ...loan2, reason: needed ? "their crime doesn't need it" : "not in a crime" });
+    }
+    return out.sort((a, b) => String(a.player_name).localeCompare(String(b.player_name)) || String(a.item_name).localeCompare(String(b.item_name)));
+  }
+  function stillMissing(missing, loanedNow) {
+    return (missing || []).filter((entry) => !loanedNow.has(`${entry.player_id}:${entry.item_id}`));
+  }
+  function needersByItem(missing) {
+    const byItem = /* @__PURE__ */ new Map();
+    for (const entry of missing || []) {
+      if (!byItem.has(entry.item_id)) byItem.set(entry.item_id, []);
+      byItem.get(entry.item_id).push(entry);
+    }
+    return byItem;
+  }
+  function availableCopy(rows2, itemId) {
+    const free = (rows2 || []).filter((row2) => row2.itemId === Number(itemId) && !row2.loanedTo && row2.canLoan);
+    return free.find((row2) => !row2.hasBonus) || free[0] || null;
+  }
+  function readLoanAnswer(text) {
+    const raw = String(text || "");
+    try {
+      const json = JSON.parse(raw);
+      if (json && typeof json === "object") {
+        const message2 = stripTags(json.message || json.msg || json.text || "");
+        const ok = json.success === true || json.success === "true" || json.success === void 0 && /success/i.test(raw) && !json.error;
+        return { ok, message: message2 || (json.error ? stripTags(String(json.error)) : "") };
+      }
+    } catch (error) {
+    }
+    const message = stripTags(raw).slice(0, 200);
+    return { ok: /success|you loaned|loaned .* to/i.test(raw) && !/error|not allowed|cannot|can't/i.test(raw), message };
+  }
+  function stripTags(html) {
+    return String(html).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  }
+
+  // src/features/oc-items/index.js
+  var PANEL_ID = "nfh-oc-items";
+  var WANTED_TAB_KEY = "nfhOcItemsTab";
+  var FILL_CLASS = "nfh-oci-fill";
+  var BADGE_CLASS = "nfh-oci-badge";
+  var COLLAPSED_KEY = "nfhOcItemsCollapsed";
+  var FRESH_MS = 60 * 1e3;
+  var PLACES = {
+    crimes: { container: "#faction-crimes-root", insert: (container) => container.parentElement.insertBefore(panelElement(), container) },
+    armoury: { container: "#faction-armoury-tabs", insert: (container) => container.parentElement.insertBefore(panelElement(), container) }
+  };
+  var state2 = {
+    data: null,
+    fetchedAt: 0,
+    loading: null,
+    error: null,
+    message: null,
+    busy: /* @__PURE__ */ new Set(),
+    loanedNow: /* @__PURE__ */ new Set()
+  };
+  var observer = null;
+  var observed = null;
+  var redrawTimer = null;
+  function place() {
+    if (!location.search.includes("step=your")) return null;
+    if (/tab=crimes/.test(location.hash)) return "crimes";
+    if (/tab=armoury/.test(location.hash)) return "armoury";
+    return null;
+  }
+  function collapsed() {
+    try {
+      return localStorage.getItem(COLLAPSED_KEY) === "1";
+    } catch (error) {
+      return false;
+    }
+  }
+  function panelElement() {
+    const panel = document.createElement("div");
+    panel.id = PANEL_ID;
+    panel.className = "nfh-cw nfh-oci";
+    panel.addEventListener("click", onPanelClick);
+    return panel;
+  }
+  async function load2() {
+    if (state2.loading) return state2.loading;
+    if (state2.data && Date.now() - state2.fetchedAt < FRESH_MS) return state2.data;
+    state2.loading = api("/oc/items").then((answer) => {
+      state2.data = answer.data || answer;
+      state2.fetchedAt = Date.now();
+      state2.error = null;
+      settingsListeners.forEach((listener) => listener());
+      return state2.data;
+    }).catch((error) => {
+      state2.error = error instanceof ApiError && error.status === 403 ? null : "nuke.family could not be reached for OC items.";
+      LogInfo("[oc-items]", error);
+      return null;
+    }).finally(() => {
+      state2.loading = null;
+      redraw();
+    });
+    return state2.loading;
+  }
+  function view() {
+    const data = state2.data;
+    if (!data || !data.enabled) return null;
+    const where = place();
+    const tab = where === "armoury" ? openArmouryTab() : null;
+    const staff = data.staff;
+    const live = where === "armoury" ? readArmoury(Object.keys(TAB_LABELS)) : {};
+    const missing = staff ? stillMissing(staff.missing, state2.loanedNow) : [];
+    const mine = (data.mine || []).filter((entry) => !state2.loanedNow.has(`${entry.player_id}:${entry.item_id}`));
+    const unused = staff && where === "armoury" ? unusedLoans(currentLoans(staff.loans, live), staff.needs, staff.oc_item_ids) : [];
+    return { where, tab, staff, live, missing, mine, unused, show: shown(staff) };
+  }
+  function shown(staff) {
+    const show = itemShow(staff, state2.data?.faction_id);
+    return { missingPanel: show.missing_panel, missingTags: show.missing_tags, retrievePanel: show.retrieve_panel, retrieveTags: show.retrieve_tags };
+  }
+  var settingsListeners = /* @__PURE__ */ new Set();
+  function itemSettings() {
+    const data = state2.data;
+    if (!data || !data.enabled || !data.staff) return null;
+    const own = ownItemChoices(data.faction_id);
+    return {
+      factionId: data.faction_id,
+      show: itemShow(data.staff, data.faction_id),
+      defaults: itemShow({ show: data.staff.show, kinds: data.staff.kinds }, null),
+      kinds: { missing: data.staff.kinds?.missing !== false, retrieve: data.staff.kinds?.retrieve !== false },
+      changed: Object.keys(own).length > 0
+    };
+  }
+  function onItemSettingsChange(listener) {
+    settingsListeners.add(listener);
+    return () => settingsListeners.delete(listener);
+  }
+  function itemSettingsChanged() {
+    redraw();
+  }
+  function tabLink(tab, label = `${tabLabel(tab)} \u203A`, className = "nfh-cw-btn") {
+    return `<a class="${className}" href="${escapeHtml(armouryHash(tab))}" data-act="go-tab" data-tab="${escapeHtml(tab)}">${escapeHtml(label)}</a>`;
+  }
+  function openArmouryTab() {
+    const active = document.querySelector('#faction-armoury-tabs li.ui-tabs-active[aria-controls^="tab=armoury&sub="]');
+    return active ? active.getAttribute("aria-controls").split("sub=")[1] : tabInHash(location.hash);
+  }
+  var tornTabAnchor = (tab) => document.querySelector(`#faction-armoury-tabs a.ui-tabs-anchor[href="#tab=armoury&sub=${tab}"]`);
+  function wantedTab() {
+    try {
+      return sessionStorage.getItem(WANTED_TAB_KEY);
+    } catch (error) {
+      return null;
+    }
+  }
+  function setWantedTab(tab) {
+    try {
+      if (tab) sessionStorage.setItem(WANTED_TAB_KEY, tab);
+      else sessionStorage.removeItem(WANTED_TAB_KEY);
+    } catch (error) {
+    }
+  }
+  function wantedTabHint(v) {
+    const tab = wantedTab();
+    document.querySelectorAll(".nfh-oci-tab-hint").forEach((element) => {
+      if (element !== tornTabAnchor(tab)) element.classList.remove("nfh-oci-tab-hint");
+    });
+    if (!tab || v?.where !== "armoury") return "";
+    if (v.tab === tab) {
+      setWantedTab(null);
+      tornTabAnchor(tab)?.classList.remove("nfh-oci-tab-hint");
+      return "";
+    }
+    const anchor = tornTabAnchor(tab);
+    if (!anchor) return "";
+    anchor.classList.add("nfh-oci-tab-hint");
+    return `<div class="nfh-oci-message nfh-oci-message--ok">The ${escapeHtml(tabLabel(tab))} tab is highlighted below. ${tabLink(tab, `Open ${tabLabel(tab)}`)}</div>`;
+  }
+  function renderMine(mine, where) {
+    return mine.map((entry) => {
+      const how = entry.reusable ? "It isn't used up, so it can be loaned." : "The crime uses it up.";
+      const go = where === "armoury" && entry.tab ? "" : ` ${tabLink(entry.tab, `${tabLabel(entry.tab)} armoury \u203A`, "")}`;
+      return `<div class="nfh-oci-mine"><strong>Your slot needs ${escapeHtml(entry.item_name || `item ${entry.item_id}`)}</strong>, which you don't have
+        <span class="nfh-cw-muted">(${escapeHtml(entry.position)} in ${escapeHtml(entry.crime)}). ${how}</span>${go}</div>`;
+    }).join("");
+  }
+  function missingAction(entry, v) {
+    const tab = entry.tab;
+    if (v.where !== "armoury" || v.tab !== tab) {
+      return `${tabLink(tab)}`;
+    }
+    if (!entry.reusable) return `<span class="nfh-cw-muted">Used up by the crime: give one (row marked Need)</span>`;
+    const copy = availableCopy(v.live[tab], entry.item_id);
+    if (!copy) return `<span class="nfh-cw-muted">None free in the armoury</span>`;
+    const key = `${entry.player_id}:${entry.item_id}`;
+    const name = entry.player_name || `#${entry.player_id}`;
+    return `<button type="button" class="nfh-cw-btn nfh-cw-btn--primary" data-act="loan" data-key="${escapeHtml(key)}"${state2.busy.has(key) ? " disabled" : ""}
+    title="Sends Torn one loan request now, as if you used the Loan box">${state2.busy.has(key) ? "Loaning\u2026" : `Loan to ${escapeHtml(name)}`}</button>`;
+  }
+  function renderMissing(v) {
+    const parts = [`<div class="nfh-oci-heading">Missing items${v.missing.length ? ` (${v.missing.length})` : ""}</div>`];
+    if (!v.missing.length) parts.push(`<div class="nfh-cw-muted">Everyone in a crime has their item.</div>`);
+    for (const entry of v.missing) {
+      parts.push(`<div class="nfh-oci-row">
+      <span class="nfh-oci-who"><a href="/profiles.php?XID=${entry.player_id}">${escapeHtml(entry.player_name || `#${entry.player_id}`)}</a></span>
+      <span class="nfh-oci-what"><strong>${escapeHtml(entry.item_name || `Item ${entry.item_id}`)}</strong>
+        <span class="nfh-cw-muted">${escapeHtml(entry.position)} \xB7 ${escapeHtml(entry.crime)}</span></span>
+      <span class="nfh-cw-actions">${missingAction(entry, v)}</span></div>`);
+    }
+    return parts;
+  }
+  function renderStaff(v) {
+    const parts = [];
+    if (v.show.missingPanel) parts.push(...renderMissing(v));
+    if (v.where === "armoury" && v.show.retrievePanel) {
+      parts.push(`<div class="nfh-oci-heading">Loaned, not needed${v.unused.length ? ` (${v.unused.length})` : ""}</div>`);
+      if (!v.unused.length) parts.push(`<div class="nfh-cw-muted">No OC items are out with members who don't need them.</div>`);
+      for (const loan2 of v.unused) {
+        const action = v.tab === loan2.tab ? `<span class="nfh-cw-muted">${v.show.retrieveTags ? "Retrieve it on the marked row" : "Retrieve it on this tab"}</span>` : `${tabLink(loan2.tab)}`;
+        parts.push(`<div class="nfh-oci-row">
+        <span class="nfh-oci-who"><a href="/profiles.php?XID=${loan2.player_id}">${escapeHtml(loan2.player_name || `#${loan2.player_id}`)}</a></span>
+        <span class="nfh-oci-what"><strong>${escapeHtml(loan2.item_name)}</strong> <span class="nfh-cw-muted">${escapeHtml(loan2.reason)}</span></span>
+        <span class="nfh-cw-actions">${action}</span></div>`);
+      }
+      const staff = v.staff;
+      const when = staff.loans_at ? new Date(staff.loans_at * 1e3).toISOString().slice(11, 16) : null;
+      parts.push(
+        `<div class="nfh-cw-muted nfh-oci-foot">${staff.loans_error ? escapeHtml(staff.loans_error) + " Open each armoury tab to check it here." : `Loans from Torn's armoury list${when ? ` at ${when} TCT` : ""} (Torn updates it up to hourly). Tabs you open here are read live.`}</div>`
+      );
+    }
+    return parts.join("");
+  }
+  function render3(v) {
+    const panel = document.getElementById(PANEL_ID);
+    if (!panel) return;
+    const staffPanel = v?.staff && (v.show.missingPanel || v.where === "armoury" && v.show.retrievePanel);
+    const show = v && (v.mine.length || staffPanel);
+    panel.hidden = !show && !state2.error;
+    if (!show) {
+      panel.innerHTML = state2.error ? `<div class="nfh-cw-bar"><span class="nfh-cw-error">${escapeHtml(state2.error)}</span></div>` : "";
+      return;
+    }
+    const counts = [];
+    if (v.mine.length) counts.push("your slot needs an item");
+    const missingShown = v.staff && v.show.missingPanel;
+    const retrieveShown = v.staff && v.where === "armoury" && v.show.retrievePanel;
+    if (missingShown) counts.push(`${v.missing.length} missing`);
+    if (retrieveShown) counts.push(`${v.unused.length} to retrieve`);
+    const attention = v.mine.length || missingShown && v.missing.length || retrieveShown && v.unused.length;
+    panel.classList.toggle("nfh-cw--attn", !!attention);
+    const isCollapsed = collapsed();
+    const message = state2.message ? `<div class="nfh-oci-message nfh-oci-message--${state2.message.tone}" role="status">${escapeHtml(state2.message.text)}</div>` : "";
+    const hint = wantedTabHint(v);
+    const html = `<div class="nfh-cw-bar">
+      <button type="button" class="nfh-cw-toggle" data-act="toggle" aria-expanded="${!isCollapsed}"><span class="nfh-cw-caret">${isCollapsed ? "\u25B8" : "\u25BE"}</span> OC items</button>
+      <span class="nfh-cw-status">${escapeHtml(counts.join(" \xB7 "))}</span>
+    </div>${isCollapsed ? "" : `<div class="nfh-oci-body">${hint}${message}${renderMine(v.mine, v.where)}${staffPanel ? renderStaff(v) : ""}</div>`}`;
+    if (panel.innerHTML !== html) panel.innerHTML = html;
+  }
+  function decorate(v) {
+    if (!v || !v.staff || v.where !== "armoury" || !v.tab) return;
+    const rows2 = v.live[v.tab] || [];
+    const needers = needersByItem(v.missing.filter((entry) => entry.tab === v.tab));
+    const retrieve = new Map(v.unused.filter((loan2) => loan2.tab === v.tab).map((loan2) => [`${loan2.player_id}:${loan2.item_id}`, loan2]));
+    for (const row2 of rows2) {
+      let badge = null;
+      if (!row2.loanedTo && v.show.missingTags && needers.has(row2.itemId)) {
+        const who = needers.get(row2.itemId);
+        badge = { kind: "need", text: `Need \xD7${who.length}`, title: `Needed by ${who.map((entry) => `${entry.player_name || entry.player_id} (${entry.position}, ${entry.crime})`).join(", ")}` };
+      } else if (row2.loanedTo && v.show.retrieveTags && retrieve.has(`${row2.loanedTo}:${row2.itemId}`)) {
+        const loan2 = retrieve.get(`${row2.loanedTo}:${row2.itemId}`);
+        badge = { kind: "retrieve", text: "Retrieve", title: `${loan2.player_name || loan2.player_id}: ${loan2.reason}` };
+      }
+      setBadge(row2.li, badge);
+    }
+    const box = openActionBox(v.tab);
+    document.querySelectorAll(`.${FILL_CLASS}`).forEach((fill2) => {
+      if (!box || !box.box.contains(fill2)) fill2.remove();
+    });
+    if (box && needers.has(box.itemId)) {
+      const who = needers.get(box.itemId);
+      const html = `<span class="nfh-cw-muted">Fill in:</span> ${who.map((entry) => `<button type="button" class="nfh-cw-chip" data-fill="${escapeHtml(`${entry.player_name} [${entry.player_id}]`)}">${escapeHtml(entry.player_name || entry.player_id)}</button>`).join(" ")}`;
+      let fill2 = box.box.querySelector(`.${FILL_CLASS}`);
+      if (!fill2) {
+        fill2 = document.createElement("div");
+        fill2.className = `nfh-cw ${FILL_CLASS}`;
+        fill2.addEventListener("click", (event) => {
+          const chip = event.target.closest("[data-fill]");
+          if (!chip) return;
+          event.preventDefault();
+          setInputValue(box.input, chip.dataset.fill);
+          box.input.focus();
+        });
+        box.box.appendChild(fill2);
+      }
+      if (fill2.innerHTML !== html) fill2.innerHTML = html;
+    }
+  }
+  function setBadge(li, badge) {
+    const name = li.querySelector(".name") || li;
+    const existing = name.querySelector(`.${BADGE_CLASS}`);
+    li.classList.toggle("nfh-oci-row--need", badge?.kind === "need");
+    li.classList.toggle("nfh-oci-row--retrieve", badge?.kind === "retrieve");
+    if (!badge) {
+      existing?.remove();
+      return;
+    }
+    if (existing && existing.textContent === badge.text && existing.title === badge.title) return;
+    const element = existing || document.createElement("span");
+    element.className = `${BADGE_CLASS} ${BADGE_CLASS}--${badge.kind}`;
+    element.textContent = badge.text;
+    element.title = badge.title;
+    if (!existing) name.prepend(element);
+  }
+  function redraw() {
+    const v = view();
+    render3(v);
+    decorate(v);
+  }
+  function scheduleRedraw() {
+    clearTimeout(redrawTimer);
+    redrawTimer = setTimeout(redraw, 250);
+  }
+  var ourNode = (node) => node.nodeType !== 1 || node.id === PANEL_ID || node.classList.contains(BADGE_CLASS) || node.classList.contains(FILL_CLASS) || !!node.closest?.(`#${PANEL_ID}`);
+  function isOurs(record) {
+    if (record.type === "attributes") {
+      const before = new Set(String(record.oldValue || "").split(/\s+/).filter((name) => name && !name.startsWith("nfh-")));
+      const after = new Set([...record.target.classList].filter((name) => !name.startsWith("nfh-")));
+      return before.size === after.size && [...before].every((name) => after.has(name));
+    }
+    if (ourNode(record.target)) return true;
+    return [...record.addedNodes, ...record.removedNodes].every(ourNode);
+  }
+  function watch(container) {
+    if (observed === container) return;
+    observer?.disconnect();
+    observed = container;
+    observer = new MutationObserver((records) => {
+      if (!records.every(isOurs)) scheduleRedraw();
+    });
+    observer.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"], attributeOldValue: true });
+  }
+  async function loan(key) {
+    const v = view();
+    const entry = v?.missing.find((candidate) => `${candidate.player_id}:${candidate.item_id}` === key);
+    if (!entry || state2.busy.has(key)) return;
+    const copy = availableCopy(v.live[entry.tab], entry.item_id);
+    if (!copy) return;
+    state2.busy.add(key);
+    state2.message = null;
+    redraw();
+    try {
+      const answer = await postTornAction("factions.php", {
+        ajax: "true",
+        step: "armouryActionItem",
+        role: "loan",
+        item: copy.armoryId,
+        itemID: String(entry.item_id),
+        type: copy.type,
+        user: `${entry.player_name} [${entry.player_id}]`,
+        quantity: "1"
+      });
+      const result = readLoanAnswer(answer.text);
+      if (answer.ok && result.ok) {
+        state2.loanedNow.add(key);
+        state2.message = { tone: "ok", text: result.message || `Loaned ${entry.item_name} to ${entry.player_name}. The armoury list updates when Torn redraws it.` };
+      } else {
+        state2.message = { tone: "error", text: `Torn did not loan it${result.message ? `: ${result.message}` : ` (status ${answer.status})`}. Use the Loan box on the row instead.` };
+      }
+    } catch (error) {
+      state2.message = { tone: "error", text: error.message };
+    } finally {
+      state2.busy.delete(key);
+      redraw();
+    }
+  }
+  function onPanelClick(event) {
+    const target = event.target.closest("[data-act]");
+    if (!target || target.disabled) return;
+    if (target.dataset.act === "toggle") {
+      try {
+        localStorage.setItem(COLLAPSED_KEY, collapsed() ? "0" : "1");
+      } catch (error) {
+      }
+      redraw();
+    } else if (target.dataset.act === "loan") {
+      loan(target.dataset.key);
+    } else if (target.dataset.act === "go-tab") {
+      const tab = target.dataset.tab;
+      const anchor = tornTabAnchor(tab);
+      if (anchor) {
+        event.preventDefault();
+        setWantedTab(null);
+        anchor.click();
+      } else {
+        setWantedTab(tab);
+      }
+    }
+  }
+  var oc_items_default = {
+    name: "OC items",
+    pages: [PageType.FactionCrimes, PageType.FactionArmoury],
+    init() {
+      const where = place();
+      if (!where) {
+        document.getElementById(PANEL_ID)?.remove();
+        observer?.disconnect();
+        observed = null;
+        return;
+      }
+      const settle = (container2) => {
+        if (!document.getElementById(PANEL_ID)) PLACES[where].insert(container2);
+        watch(where === "armoury" ? document.getElementById("faction-armoury") || container2 : container2.parentElement || container2);
+        redraw();
+        load2();
+      };
+      const container = document.querySelector(PLACES[where].container);
+      if (container) settle(container);
+      let tries = 10;
+      const again = () => {
+        const now = document.querySelector(PLACES[where].container);
+        if (now && (!document.getElementById(PANEL_ID) || document.getElementById(PANEL_ID).nextElementSibling !== now)) {
+          document.getElementById(PANEL_ID)?.remove();
+          settle(now);
+        }
+        if (--tries > 0 && place() === where) setTimeout(again, 400);
+      };
+      setTimeout(again, 400);
+    }
+  };
 
   // src/features/organized-crimes/page.js
   var CRIMES_ROOT_SELECTOR = "#faction-crimes-root";
@@ -5730,8 +6529,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   var FLAG_KINDS = [Flag.Unqualified, Flag.Unproductive, Flag.UnderLevel];
   function staffHtml(staff, after = "") {
-    const shown = FLAG_KINDS.filter((kind) => staff.prefs.show[kind]);
-    const summary = shown.length === 0 ? "all hidden" : shown.map((kind) => `${staff.counts[kind] || 0} ${FLAG_LABELS[kind].toLowerCase()}`).join(", ");
+    const shown2 = FLAG_KINDS.filter((kind) => staff.prefs.show[kind]);
+    const summary = shown2.length === 0 ? "all hidden" : shown2.map((kind) => `${staff.counts[kind] || 0} ${FLAG_LABELS[kind].toLowerCase()}`).join(", ");
     return `<span class="nfh-oc-staff"><span class="nfh-oc-bar-muted">Staff flags on this page:</span> ${escapeHtml(summary)} ${after}</span>`;
   }
   function staffSettingsHtml(staff) {
@@ -5741,13 +6540,31 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const override = (name, label, value, fallback) => `<label class="nfh-oc-staff-option">${label} <input type="number" min="1" class="nfh-oc-staff-number" data-nfh-oc-limit="${name}" value="${escapeHtml(value ?? "")}" placeholder="${escapeHtml(fallback)}"></label>`;
     return '<div class="nfh-oc-settings-group"><span class="nfh-oc-settings-heading">Staff flags</span>' + toggles + override("thresholdHours", "Not productive after (hours)", staff.prefs.thresholdHours, staff.factionLimits.thresholdHours) + override("levelGap", "Under-levelled from (levels below)", staff.prefs.levelGap, staff.factionLimits.levelGap) + `<span class="nfh-oc-bar-muted">Leave a number blank to use your faction's. These choices are yours alone.</span></div>`;
   }
-  function settingsHtml({ open, weights, staff }) {
+  var ITEM_OPTIONS = [
+    ["missing", "Missing items", [["missing_panel", "In the OC Items panel"], ["missing_tags", "Tagged Need on the armoury"]]],
+    ["retrieve", "Loaned, not needed", [["retrieve_panel", "In the OC Items panel"], ["retrieve_tags", "Tagged Retrieve on the armoury"]]]
+  ];
+  function itemSettingsHtml(items) {
+    const on = (value) => value ? "on" : "off";
+    const groups = ITEM_OPTIONS.filter(([kind]) => items.kinds[kind]).map(
+      ([, title, options]) => `<span class="nfh-oc-bar-muted">${title}:</span>` + options.map(
+        ([key, label]) => `<label class="nfh-oc-staff-option" title="Your faction's default: ${on(items.defaults[key])}"><input type="checkbox" data-nfh-oc-item="${key}"${items.show[key] ? " checked" : ""}> ${label}</label>`
+      ).join("")
+    ).join("");
+    if (!groups) return "";
+    const note = items.changed ? `You changed these; your faction's defaults are shown on hover. <button type="button" class="nfh-oc-link-button" data-nfh-oc-items-reset>Use your faction's choices</button>` : "Your faction's defaults. Changes are yours alone, in this browser.";
+    return `<div class="nfh-oc-settings-group"><span class="nfh-oc-settings-heading">OC items</span>${groups}<span class="nfh-oc-bar-muted">${note}</span></div>`;
+  }
+  function settingsHtml({ open, weights, staff, items = null }) {
     const button3 = `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-settings-toggle aria-expanded="${open ? "true" : "false"}">Settings</button>`;
     if (!open) return { button: button3, panel: "" };
     const faction = `Your faction ${weights.factionShows ? "shows" : "hides"} them by default.`;
     const note = weights.own ? `You changed this. ${faction} <button type="button" class="nfh-oc-link-button" data-nfh-oc-weights-reset>Use your faction's choice</button>` : faction;
     const weightsGroup = `<div class="nfh-oc-settings-group"><label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-weights${weights.show ? " checked" : ""}> Show role weights</label><span class="nfh-oc-bar-muted">${note}</span></div>`;
-    return { button: button3, panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${staff ? staffSettingsHtml(staff) : ""}</div>` };
+    return {
+      button: button3,
+      panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${staff ? staffSettingsHtml(staff) : ""}${items ? itemSettingsHtml(items) : ""}</div>`
+    };
   }
   var TAG_TEXT = { [Rank.Best]: "Best for you", [Rank.Good]: "Good for you" };
   var TAG_TEXT_FLAWED = { [Rank.Best]: "Best available", [Rank.Good]: "Also available" };
@@ -5941,14 +6758,14 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     if (upcoming.length === 0) return;
     readyTimer = setTimeout(scheduleRender, Math.min(...upcoming) + 2e3);
   }
-  var observer = null;
+  var observer2 = null;
   var observedRoot = null;
   var renderTimer = null;
   var subscribed = false;
   function isOwnFactionCrimesTab() {
     return window.location.search.includes("step=your") && IsPage(PageType.FactionCrimes);
   }
-  function render3() {
+  function render4() {
     const root3 = document.querySelector(CRIMES_ROOT_SELECTOR);
     if (!root3 || !isOwnFactionCrimesTab()) return;
     const config = ocConfigStore.data;
@@ -6009,7 +6826,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const suggestions = suggesting ? result.suggestions : [];
     renderSuggestions(root3, suggestions);
     const staff = members && active ? { counts, prefs: prefs4, factionLimits: limitsFor(config) } : null;
-    const settings = settingsHtml({ open: settingsOpen, weights, staff });
+    const settings = settingsHtml({ open: settingsOpen, weights, staff, items: itemSettings() });
     const staffPart = staff ? staffHtml(staff, settings.button) : "";
     const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
     let memberPart = "";
@@ -6045,7 +6862,13 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       bar2.addEventListener("change", (event) => {
         const flag = event.target.getAttribute("data-nfh-oc-flag");
         const limit = event.target.getAttribute("data-nfh-oc-limit");
-        if (event.target.hasAttribute("data-nfh-oc-weights")) {
+        const item = event.target.getAttribute("data-nfh-oc-item");
+        if (item) {
+          const items = itemSettings();
+          if (!items) return;
+          setItemChoice(items.factionId, item, event.target.checked);
+          itemSettingsChanged();
+        } else if (event.target.hasAttribute("data-nfh-oc-weights")) {
           const current = ocConfigStore.data;
           if (!current || !current.faction_id) return;
           setWeightsPref({ show: event.target.checked, factionId: current.faction_id });
@@ -6061,6 +6884,12 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       bar2.addEventListener("click", (event) => {
         if (event.target.closest("[data-nfh-oc-settings-toggle]")) {
           settingsOpen = !settingsOpen;
+          scheduleRender();
+          return;
+        }
+        if (event.target.closest("[data-nfh-oc-items-reset]")) {
+          resetItemChoices();
+          itemSettingsChanged();
           scheduleRender();
           return;
         }
@@ -6097,7 +6926,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     renderTimer = setTimeout(() => {
       renderTimer = null;
       try {
-        render3();
+        render4();
       } catch (error) {
         console.error("[NFH] OC Assistant failed to render:", error);
       }
@@ -6107,16 +6936,16 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const nodes = [...mutation.addedNodes, ...mutation.removedNodes];
     return nodes.length > 0 && nodes.every(isOwnElement);
   }
-  function watch(root3) {
+  function watch2(root3) {
     if (observedRoot === root3 && root3.isConnected) return;
-    if (observer) observer.disconnect();
+    if (observer2) observer2.disconnect();
     observedRoot = root3;
-    observer = new MutationObserver((mutations) => {
+    observer2 = new MutationObserver((mutations) => {
       if (!isOwnFactionCrimesTab()) return;
       if (mutations.every(isOwnMutation)) return;
       scheduleRender();
     });
-    observer.observe(root3, { childList: true, subtree: true });
+    observer2.observe(root3, { childList: true, subtree: true });
     LogInfo("OC Assistant watching the crimes list");
   }
   function init4() {
@@ -6124,9 +6953,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     if (!subscribed) {
       subscribed = true;
       ocConfigStore.subscribe(() => scheduleRender());
+      onItemSettingsChange(() => scheduleRender());
     }
     waitForElm(CRIMES_ROOT_SELECTOR).then((root3) => {
-      watch(root3);
+      watch2(root3);
       scheduleRender();
     });
   }
@@ -6135,196 +6965,6 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     pages: [PageType.FactionCrimes],
     init: init4
   };
-
-  // src/core/page-script.js
-  var nonce;
-  function pageNonce() {
-    if (nonce !== void 0) return nonce;
-    nonce = null;
-    for (const script of document.querySelectorAll("script")) {
-      const value = script.nonce || script.getAttribute("nonce");
-      if (value) {
-        nonce = value;
-        break;
-      }
-    }
-    return nonce;
-  }
-  function runInPage(source) {
-    const tag = document.createElement("script");
-    const value = pageNonce();
-    if (value) {
-      tag.nonce = value;
-      tag.setAttribute("nonce", value);
-    }
-    tag.textContent = source;
-    (document.head || document.documentElement).appendChild(tag);
-    tag.remove();
-  }
-  function pageWindow() {
-    try {
-      if (typeof unsafeWindow !== "undefined" && unsafeWindow) return unsafeWindow;
-    } catch (error) {
-    }
-    return window;
-  }
-
-  // src/core/torn-editor.js
-  var REQUEST = "nfh:editor-request";
-  var RESPONSE = "nfh:editor-response";
-  var TIMEOUT_MS = 1500;
-  var bridgeInstalled = false;
-  var nextId = 1;
-  function pageBridge(requestEvent, responseEvent) {
-    if (window.__nfhEditorBridge) return;
-    window.__nfhEditorBridge = true;
-    document.documentElement.setAttribute("data-nfh-editor-bridge", "1");
-    document.addEventListener(requestEvent, (event) => {
-      let request2;
-      try {
-        request2 = JSON.parse(event.detail);
-      } catch (error) {
-        return;
-      }
-      const element = document.getElementById(request2.elementId);
-      const mce = window.tinymce;
-      let editor = null;
-      try {
-        editor = mce ? mce.get(request2.elementId) || (mce.activeEditor && mce.activeEditor.getElement() === element ? mce.activeEditor : null) : null;
-      } catch (error) {
-        editor = null;
-      }
-      let answer = { id: request2.id, ok: true, via: editor ? "tinymce" : "element" };
-      try {
-        if (request2.op === "get") {
-          answer.html = editor ? editor.getContent() : element ? element.innerHTML : "";
-        } else if (request2.op === "set") {
-          if (editor) {
-            editor.focus();
-            if (editor.undoManager) editor.undoManager.transact(() => editor.setContent(request2.html));
-            else editor.setContent(request2.html);
-            editor.fire("change");
-            editor.fire("input");
-            if (editor.nodeChanged) editor.nodeChanged();
-          } else if (element) {
-            element.innerHTML = request2.html;
-            element.dispatchEvent(new Event("input", { bubbles: true }));
-          } else {
-            answer = { id: request2.id, ok: false, error: "The editor was not found." };
-          }
-        }
-      } catch (error) {
-        answer = { id: request2.id, ok: false, error: String(error && error.message || error) };
-      }
-      document.dispatchEvent(new CustomEvent(responseEvent, { detail: JSON.stringify(answer) }));
-    });
-  }
-  function installBridge() {
-    if (bridgeInstalled) return;
-    bridgeInstalled = true;
-    try {
-      runInPage(`(${pageBridge.toString()})(${JSON.stringify(REQUEST)}, ${JSON.stringify(RESPONSE)});`);
-    } catch (error) {
-    }
-  }
-  function directEditor(element) {
-    try {
-      const mce = pageWindow().tinymce;
-      if (!mce || !element.id) return null;
-      const editor = mce.get(element.id);
-      if (editor) return editor;
-      const active = mce.activeEditor;
-      return active && active.getElement && active.getElement() === element ? active : null;
-    } catch (error) {
-      return null;
-    }
-  }
-  function setElement(element, html) {
-    element.innerHTML = html;
-    element.dispatchEvent(new Event("input", { bubbles: true }));
-  }
-  function ask(elementId, op, html) {
-    installBridge();
-    if (!document.documentElement.hasAttribute("data-nfh-editor-bridge")) return Promise.reject(new Error("The page script did not run."));
-    const id = nextId++;
-    return new Promise((resolve, reject) => {
-      const timer3 = setTimeout(() => {
-        document.removeEventListener(RESPONSE, listener);
-        reject(new Error("The editor did not answer."));
-      }, TIMEOUT_MS);
-      function listener(event) {
-        let answer;
-        try {
-          answer = JSON.parse(event.detail);
-        } catch (error) {
-          return;
-        }
-        if (answer.id !== id) return;
-        clearTimeout(timer3);
-        document.removeEventListener(RESPONSE, listener);
-        if (answer.ok) resolve(answer);
-        else reject(new Error(answer.error || "The editor refused."));
-      }
-      document.addEventListener(RESPONSE, listener);
-      document.dispatchEvent(new CustomEvent(REQUEST, { detail: JSON.stringify({ id, op, elementId, html }) }));
-    });
-  }
-  function findEditor(root3) {
-    return root3 ? root3.querySelector('.mce-content-body[contenteditable="true"], [contenteditable="true"]') : null;
-  }
-  async function getEditorHtml(element) {
-    if (!element) throw new Error("The editor was not found.");
-    const editor = directEditor(element);
-    if (editor) {
-      try {
-        return String(editor.getContent());
-      } catch (error) {
-      }
-    }
-    if (element.id) {
-      try {
-        return (await ask(element.id, "get")).html ?? element.innerHTML;
-      } catch (error) {
-      }
-    }
-    return element.innerHTML;
-  }
-  async function setEditorHtml(element, html) {
-    if (!element) throw new Error("The editor was not found.");
-    const editor = directEditor(element);
-    if (editor) {
-      try {
-        editor.focus();
-        if (editor.undoManager) editor.undoManager.add();
-        editor.setContent(html);
-        if (editor.undoManager) editor.undoManager.add();
-        editor.fire("change");
-        editor.fire("input");
-        if (editor.nodeChanged) editor.nodeChanged();
-        return;
-      } catch (error) {
-      }
-    }
-    if (element.id) {
-      try {
-        await ask(element.id, "set", html);
-        return;
-      } catch (error) {
-      }
-    }
-    setElement(element, html);
-  }
-  function editorHasContent(element) {
-    if (!element) return false;
-    return element.textContent.trim() !== "" || element.querySelector("img") !== null;
-  }
-  function setInputValue(input, value) {
-    if (!input) return;
-    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
-    setter.call(input, value);
-    input.dispatchEvent(new Event("input", { bubbles: true }));
-    input.dispatchEvent(new Event("change", { bubbles: true }));
-  }
 
   // src/features/mail-templates/data.js
   var TTL_MS = 5 * 60 * 1e3;
@@ -6587,7 +7227,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       recipient: () => null
     }
   };
-  var state2 = freshState(null);
+  var state3 = freshState(null);
   function freshState(page) {
     return { page, list: null, loading: false, error: null, open: false, query: "", form: null, confirm: null, help: false, message: null, busy: false, hasSubject: false };
   }
@@ -6600,15 +7240,15 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   function bar() {
     return document.getElementById(BAR_ID2);
   }
-  function render4() {
+  function render5() {
     const element = bar();
     if (!element) return;
     const focused = document.activeElement && element.contains(document.activeElement) ? document.activeElement.dataset.field : null;
     const caret = focused && document.activeElement.selectionStart;
-    const page = PAGES[state2.page];
+    const page = PAGES[state3.page];
     const subject = page && page.subject(page.root());
-    state2.hasSubject = !!(subject && subject.value.trim());
-    element.innerHTML = renderBar3(state2);
+    state3.hasSubject = !!(subject && subject.value.trim());
+    element.innerHTML = renderBar3(state3);
     if (focused) {
       const input = element.querySelector(`[data-field="${focused}"]`);
       if (input) {
@@ -6618,8 +7258,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
   }
   function say(tone, text) {
-    state2.message = { tone, text };
-    render4();
+    state3.message = { tone, text };
+    render5();
   }
   function describeError(error) {
     if (error instanceof ApiError) {
@@ -6631,26 +7271,26 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
     return "nuke.family could not be reached. Try again in a moment.";
   }
-  async function load2(force = false) {
+  async function load3(force = false) {
     if (connectionState() === "missing") {
-      state2.error = "Connect the script to nuke.family to use templates.";
-      render4();
+      state3.error = "Connect the script to nuke.family to use templates.";
+      render5();
       return;
     }
-    state2.loading = !state2.list;
-    render4();
+    state3.loading = !state3.list;
+    render5();
     try {
-      state2.list = await listTemplates(state2.page, { force });
-      state2.error = null;
+      state3.list = await listTemplates(state3.page, { force });
+      state3.error = null;
     } catch (error) {
-      state2.error = describeError(error);
+      state3.error = describeError(error);
     } finally {
-      state2.loading = false;
-      render4();
+      state3.loading = false;
+      render5();
     }
   }
   function placeholderValues() {
-    const page = PAGES[state2.page];
+    const page = PAGES[state3.page];
     const recipient = parseRecipient(page.recipient(page.root())?.value);
     const { date, time } = tornDate();
     return {
@@ -6675,7 +7315,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     return { name: message.subject || "the mail", subject: message.subject, html: message.html };
   }
   async function insert(content) {
-    const page = PAGES[state2.page];
+    const page = PAGES[state3.page];
     const root3 = page.root();
     const editor = findEditor(root3);
     if (!editor) throw new Error("Torn's editor was not found on the page.");
@@ -6697,10 +7337,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
   }
   async function use(kind, id, { replace = false } = {}) {
-    const editor = findEditor(PAGES[state2.page].root());
+    const editor = findEditor(PAGES[state3.page].root());
     if (!replace && editorHasContent(editor)) {
-      state2.confirm = { action: "use", kind, id, text: "Replace what is in the editor now?", yes: "Replace" };
-      render4();
+      state3.confirm = { action: "use", kind, id, text: "Replace what is in the editor now?", yes: "Replace" };
+      render5();
       return;
     }
     await busy(async () => {
@@ -6709,23 +7349,23 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     });
   }
   async function busy(work) {
-    if (state2.busy) return;
-    state2.busy = true;
-    state2.confirm = null;
-    render4();
+    if (state3.busy) return;
+    state3.busy = true;
+    state3.confirm = null;
+    render5();
     try {
       await work();
     } catch (error) {
       LogInfo("[mail-templates]", error);
       say("error", error instanceof ApiError || !error?.message ? describeError(error) : error.message);
-      if (error instanceof ApiError && error.status === 404) load2(true);
+      if (error instanceof ApiError && error.status === 404) load3(true);
     } finally {
-      state2.busy = false;
-      render4();
+      state3.busy = false;
+      render5();
     }
   }
   async function editorContents() {
-    const page = PAGES[state2.page];
+    const page = PAGES[state3.page];
     const root3 = page.root();
     const editor = findEditor(root3);
     if (!editorHasContent(editor)) throw new Error("The editor is empty: write the message first.");
@@ -6734,7 +7374,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     return { body: html, subject };
   }
   function findPersonal(id) {
-    return (state2.list?.personal || []).find((template) => String(template.id) === String(id));
+    return (state3.list?.personal || []).find((template) => String(template.id) === String(id));
   }
   async function onClick3(event) {
     const target = event.target.closest("[data-act]");
@@ -6742,64 +7382,64 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const { act: act2, id, kind } = target.dataset;
     switch (act2) {
       case "toggle-all":
-        state2.open = !state2.open;
-        if (state2.open) load2();
-        render4();
+        state3.open = !state3.open;
+        if (state3.open) load3();
+        render5();
         return;
       case "help":
-        state2.help = !state2.help;
-        render4();
+        state3.help = !state3.help;
+        render5();
         return;
       case "save":
-        if (state2.form?.mode === "save") return bar()?.querySelector('[data-act="save-confirm"]')?.click();
-        state2.form = { mode: "save", name: "", scope: state2.page };
-        state2.confirm = null;
-        render4();
+        if (state3.form?.mode === "save") return bar()?.querySelector('[data-act="save-confirm"]')?.click();
+        state3.form = { mode: "save", name: "", scope: state3.page };
+        state3.confirm = null;
+        render5();
         bar()?.querySelector('[data-field="name"]')?.focus();
         return;
       case "form-cancel":
       case "confirm-no":
-        state2.form = null;
-        state2.confirm = null;
-        render4();
+        state3.form = null;
+        state3.confirm = null;
+        render5();
         return;
       case "save-confirm":
-        if (!state2.form.name.trim()) return say("error", "Give the template a name.");
+        if (!state3.form.name.trim()) return say("error", "Give the template a name.");
         return busy(async () => {
           const contents = await editorContents();
-          await savePersonal({ name: state2.form.name.trim(), scope: state2.form.scope, ...contents });
-          const name = state2.form.name.trim();
-          state2.form = null;
-          await load2(true);
+          await savePersonal({ name: state3.form.name.trim(), scope: state3.form.scope, ...contents });
+          const name = state3.form.name.trim();
+          state3.form = null;
+          await load3(true);
           say("ok", `Saved "${name}". Pin it with \u2606 under All to keep it on the bar.`);
         });
       case "rename": {
         const template = findPersonal(id);
         if (!template) return;
-        state2.form = { mode: "rename", id, name: template.name, scope: template.scope };
-        render4();
+        state3.form = { mode: "rename", id, name: template.name, scope: template.scope };
+        render5();
         return;
       }
       case "rename-confirm":
-        if (!state2.form.name.trim()) return say("error", "Give the template a name.");
+        if (!state3.form.name.trim()) return say("error", "Give the template a name.");
         return busy(async () => {
-          await updatePersonal(id, { name: state2.form.name.trim(), scope: state2.form.scope });
-          state2.form = null;
-          await load2(true);
+          await updatePersonal(id, { name: state3.form.name.trim(), scope: state3.form.scope });
+          state3.form = null;
+          await load3(true);
           say("ok", "Saved.");
         });
       case "overwrite": {
         const template = findPersonal(id);
         if (!template) return;
-        state2.confirm = { action: "overwrite", id, text: `Replace "${template.name}" with what is in the editor now?`, yes: "Update" };
-        render4();
+        state3.confirm = { action: "overwrite", id, text: `Replace "${template.name}" with what is in the editor now?`, yes: "Update" };
+        render5();
         return;
       }
       case "delete": {
         const template = findPersonal(id);
         if (!template) return;
-        state2.confirm = { action: "delete", id, text: `Delete "${template.name}"? This can't be undone.`, yes: "Delete" };
-        render4();
+        state3.confirm = { action: "delete", id, text: `Delete "${template.name}"? This can't be undone.`, yes: "Delete" };
+        render5();
         return;
       }
       case "confirm-yes":
@@ -6807,12 +7447,12 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       case "pin":
         return busy(async () => {
           if (kind === "faction") {
-            const template = (state2.list?.faction || []).find((entry) => String(entry.id) === String(id));
+            const template = (state3.list?.faction || []).find((entry) => String(entry.id) === String(id));
             await pinFaction(id, !template?.pinned);
           } else {
             await updatePersonal(id, { pinned: !findPersonal(id)?.pinned });
           }
-          await load2(true);
+          await load3(true);
         });
       case "use":
         return use(kind, id);
@@ -6820,21 +7460,21 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
   }
   async function confirmed() {
-    const confirm2 = state2.confirm;
+    const confirm2 = state3.confirm;
     if (!confirm2) return;
     if (confirm2.action === "use") return use(confirm2.kind, confirm2.id, { replace: true });
     if (confirm2.action === "overwrite") {
       return busy(async () => {
         const contents = await editorContents();
         await updatePersonal(confirm2.id, contents);
-        await load2(true);
+        await load3(true);
         say("ok", "Updated with what is in the editor.");
       });
     }
     if (confirm2.action === "delete") {
       return busy(async () => {
         await deletePersonal(confirm2.id);
-        await load2(true);
+        await load3(true);
         say("ok", "Deleted.");
       });
     }
@@ -6843,31 +7483,31 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const field = event.target.dataset.field;
     if (!field) return;
     if (field === "query") {
-      state2.query = event.target.value;
-      render4();
-    } else if (state2.form && (field === "name" || field === "scope")) {
-      state2.form[field] = event.target.value;
+      state3.query = event.target.value;
+      render5();
+    } else if (state3.form && (field === "name" || field === "scope")) {
+      state3.form[field] = event.target.value;
     }
   }
   function onKeydown(event) {
-    if (event.key !== "Enter" || !state2.form || event.target.dataset.field !== "name") return;
+    if (event.key !== "Enter" || !state3.form || event.target.dataset.field !== "name") return;
     event.preventDefault();
-    bar()?.querySelector(state2.form.mode === "save" ? '[data-act="save-confirm"]' : '[data-act="rename-confirm"]')?.click();
+    bar()?.querySelector(state3.form.mode === "save" ? '[data-act="save-confirm"]' : '[data-act="rename-confirm"]')?.click();
   }
   function mount2(container) {
-    const page = PAGES[state2.page];
+    const page = PAGES[state3.page];
     const element = document.createElement("div");
     element.id = BAR_ID2;
     element.className = "nfh-cw nfh-mt";
-    element.dataset.page = state2.page;
+    element.dataset.page = state3.page;
     element.addEventListener("click", onClick3);
     element.addEventListener("input", onInput2);
     element.addEventListener("change", onInput2);
     element.addEventListener("keydown", onKeydown);
     const anchor = page.anchor(container);
     anchor.parentNode.insertBefore(element, anchor);
-    render4();
-    if (!state2.list) load2();
+    render5();
+    if (!state3.list) load3();
   }
   var mail_templates_default = {
     name: "Mail templates",
@@ -6878,7 +7518,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
         bar()?.remove();
         return;
       }
-      if (state2.page !== page) Object.assign(state2, freshState(page));
+      if (state3.page !== page) Object.assign(state3, freshState(page));
       ensureInjected({
         containerSelector: PAGES[page].container,
         isPresent: () => bar()?.dataset.page === page,
@@ -6887,544 +7527,6 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
           mount2(container);
         }
       });
-    }
-  };
-
-  // src/core/torn-action.js
-  var REQUEST2 = "nfh:torn-action";
-  var RESPONSE2 = "nfh:torn-action-done";
-  var TIMEOUT_MS2 = 15e3;
-  var installed = false;
-  var nextId2 = 1;
-  function pageBridge2(requestEvent, responseEvent) {
-    if (window.__nfhTornAction) return;
-    window.__nfhTornAction = true;
-    document.documentElement.setAttribute("data-nfh-torn-action", "1");
-    document.addEventListener(requestEvent, (event) => {
-      let request2;
-      try {
-        request2 = JSON.parse(event.detail);
-      } catch (error) {
-        return;
-      }
-      const answer = (payload) => document.dispatchEvent(new CustomEvent(responseEvent, { detail: JSON.stringify({ id: request2.id, ...payload }) }));
-      fetch(request2.url, {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "X-Requested-With": "XMLHttpRequest" },
-        body: request2.body
-      }).then((response) => response.text().then((text) => answer({ ok: response.ok, status: response.status, text }))).catch((error) => answer({ ok: false, status: 0, text: String(error && error.message || error) }));
-    });
-  }
-  function install() {
-    if (installed) return;
-    installed = true;
-    runInPage(`(${pageBridge2.toString()})(${JSON.stringify(REQUEST2)}, ${JSON.stringify(RESPONSE2)});`);
-  }
-  function postTornAction(page, fields) {
-    const rfcv = getCookie("rfc_v");
-    if (!rfcv) return Promise.reject(new Error("Torn's page token was not found. Reload the page and try again."));
-    install();
-    if (!document.documentElement.hasAttribute("data-nfh-torn-action")) {
-      return Promise.reject(new Error("Torn's page blocked the script that sends it. Use the Loan box on the row instead."));
-    }
-    const id = nextId2++;
-    const url = `/${page}?rfcv=${encodeURIComponent(rfcv)}`;
-    const body = new URLSearchParams(fields).toString();
-    return new Promise((resolve, reject) => {
-      const timer3 = setTimeout(() => {
-        document.removeEventListener(RESPONSE2, listener);
-        reject(new Error("Torn did not answer in time (or the page blocked the request). Check the armoury before trying again."));
-      }, TIMEOUT_MS2);
-      function listener(event) {
-        let answer;
-        try {
-          answer = JSON.parse(event.detail);
-        } catch (error) {
-          return;
-        }
-        if (answer.id !== id) return;
-        clearTimeout(timer3);
-        document.removeEventListener(RESPONSE2, listener);
-        resolve(answer);
-      }
-      document.addEventListener(RESPONSE2, listener);
-      document.dispatchEvent(new CustomEvent(REQUEST2, { detail: JSON.stringify({ id, url, body }) }));
-    });
-  }
-
-  // src/features/oc-items/armoury.js
-  var tabSelector = (tab) => `[id="tab=armoury&sub=${tab}"]`;
-  function readArmoury(tabs) {
-    const live = {};
-    for (const tab of tabs) {
-      const container = document.querySelector(tabSelector(tab));
-      if (!container) continue;
-      const rows2 = [...container.querySelectorAll("li .img-wrap[data-itemid]")].map((wrap) => readRow(wrap.closest("li"), wrap));
-      const empty = !rows2.length && /no items in this category/i.test(container.textContent);
-      if (rows2.length || empty) live[tab] = rows2;
-    }
-    return live;
-  }
-  function readRow(li, wrap) {
-    const link = li.querySelector('.loaned a[href*="profiles.php?XID="]');
-    const holder = link ? Number(new URL(link.getAttribute("href"), location.origin).searchParams.get("XID")) : null;
-    const name = (li.querySelector(".name")?.childNodes[0]?.textContent || li.querySelector(".name")?.textContent || "").replace(/\s+x?\s*$/, "").trim();
-    return {
-      li,
-      itemId: Number(wrap.dataset.itemid),
-      armoryId: wrap.dataset.armoryid,
-      name,
-      type: (li.querySelector(".type")?.textContent || "").trim(),
-      loanedTo: holder || null,
-      loanedName: link ? link.textContent.trim() : null,
-      canLoan: !!li.querySelector('.item-action a.loan.active, .item-action [data-role="loan"].active'),
-      hasBonus: !!li.querySelector(".bonuses, .item-bonuses, [class*='bonus-attachment']")
-    };
-  }
-  function openActionBox(tab) {
-    const container = document.querySelector(tabSelector(tab));
-    if (!container) return null;
-    const li = container.querySelector("li.item-loan-act, li.item-give-act");
-    if (!li) return null;
-    const kind = li.classList.contains("item-loan-act") ? "loan" : "give";
-    const box = li.querySelector(`.${kind}-cont.action-cont`);
-    const input = box?.querySelector('input[name="user"]');
-    if (!box || !input) return null;
-    return { li, kind, box, input, itemId: Number(box.dataset.itemid || li.querySelector(".img-wrap")?.dataset.itemid) };
-  }
-
-  // src/features/oc-items/logic.js
-  var TAB_LABELS = {
-    weapons: "Weapons",
-    armour: "Armour",
-    temporary: "Temporary",
-    medical: "Medical",
-    drugs: "Drugs",
-    boosters: "Boosters",
-    consumables: "Consumables",
-    utilities: "Utilities"
-  };
-  var tabLabel = (tab) => TAB_LABELS[tab] || "Utilities";
-  var armouryHash = (tab) => `#/tab=armoury&start=0&sub=${tab}`;
-  function tabInHash(hash) {
-    const match = String(hash || "").match(/tab=armoury.*?sub=(\w+)/);
-    return match ? match[1] : null;
-  }
-  function currentLoans(siteLoans, live) {
-    const liveTabs = new Set(Object.keys(live || {}));
-    const loans = (siteLoans || []).filter((loan2) => !liveTabs.has(loan2.tab));
-    for (const [tab, rows2] of Object.entries(live || {})) {
-      for (const row2 of rows2) {
-        if (!row2.loanedTo) continue;
-        loans.push({ item_id: row2.itemId, item_name: row2.name, tab, player_id: row2.loanedTo, player_name: row2.loanedName || "", live: true });
-      }
-    }
-    return loans;
-  }
-  function unusedLoans(loans, needs, ocItemIds) {
-    const oc = new Set((ocItemIds || []).map(Number));
-    const seen = /* @__PURE__ */ new Set();
-    const out = [];
-    for (const loan2 of loans || []) {
-      const itemId = Number(loan2.item_id);
-      if (!oc.has(itemId)) continue;
-      const needed = needs && needs[loan2.player_id] || null;
-      if (needed && needed.map(Number).includes(itemId)) continue;
-      const key = `${loan2.player_id}:${itemId}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      out.push({ ...loan2, reason: needed ? "their crime doesn't need it" : "not in a crime" });
-    }
-    return out.sort((a, b) => String(a.player_name).localeCompare(String(b.player_name)) || String(a.item_name).localeCompare(String(b.item_name)));
-  }
-  function stillMissing(missing, loanedNow) {
-    return (missing || []).filter((entry) => !loanedNow.has(`${entry.player_id}:${entry.item_id}`));
-  }
-  function needersByItem(missing) {
-    const byItem = /* @__PURE__ */ new Map();
-    for (const entry of missing || []) {
-      if (!byItem.has(entry.item_id)) byItem.set(entry.item_id, []);
-      byItem.get(entry.item_id).push(entry);
-    }
-    return byItem;
-  }
-  function availableCopy(rows2, itemId) {
-    const free = (rows2 || []).filter((row2) => row2.itemId === Number(itemId) && !row2.loanedTo && row2.canLoan);
-    return free.find((row2) => !row2.hasBonus) || free[0] || null;
-  }
-  function readLoanAnswer(text) {
-    const raw = String(text || "");
-    try {
-      const json = JSON.parse(raw);
-      if (json && typeof json === "object") {
-        const message2 = stripTags(json.message || json.msg || json.text || "");
-        const ok = json.success === true || json.success === "true" || json.success === void 0 && /success/i.test(raw) && !json.error;
-        return { ok, message: message2 || (json.error ? stripTags(String(json.error)) : "") };
-      }
-    } catch (error) {
-    }
-    const message = stripTags(raw).slice(0, 200);
-    return { ok: /success|you loaned|loaned .* to/i.test(raw) && !/error|not allowed|cannot|can't/i.test(raw), message };
-  }
-  function stripTags(html) {
-    return String(html).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-  }
-
-  // src/features/oc-items/index.js
-  var PANEL_ID = "nfh-oc-items";
-  var WANTED_TAB_KEY = "nfhOcItemsTab";
-  var FILL_CLASS = "nfh-oci-fill";
-  var BADGE_CLASS = "nfh-oci-badge";
-  var COLLAPSED_KEY = "nfhOcItemsCollapsed";
-  var FRESH_MS = 60 * 1e3;
-  var PLACES = {
-    crimes: { container: "#faction-crimes-root", insert: (container) => container.parentElement.insertBefore(panelElement(), container) },
-    armoury: { container: "#faction-armoury-tabs", insert: (container) => container.parentElement.insertBefore(panelElement(), container) }
-  };
-  var state3 = {
-    data: null,
-    fetchedAt: 0,
-    loading: null,
-    error: null,
-    message: null,
-    busy: /* @__PURE__ */ new Set(),
-    loanedNow: /* @__PURE__ */ new Set()
-  };
-  var observer2 = null;
-  var observed = null;
-  var redrawTimer = null;
-  function place() {
-    if (!location.search.includes("step=your")) return null;
-    if (/tab=crimes/.test(location.hash)) return "crimes";
-    if (/tab=armoury/.test(location.hash)) return "armoury";
-    return null;
-  }
-  function collapsed() {
-    try {
-      return localStorage.getItem(COLLAPSED_KEY) === "1";
-    } catch (error) {
-      return false;
-    }
-  }
-  function panelElement() {
-    const panel = document.createElement("div");
-    panel.id = PANEL_ID;
-    panel.className = "nfh-cw nfh-oci";
-    panel.addEventListener("click", onPanelClick);
-    return panel;
-  }
-  async function load3() {
-    if (state3.loading) return state3.loading;
-    if (state3.data && Date.now() - state3.fetchedAt < FRESH_MS) return state3.data;
-    state3.loading = api("/oc/items").then((answer) => {
-      state3.data = answer.data || answer;
-      state3.fetchedAt = Date.now();
-      state3.error = null;
-      return state3.data;
-    }).catch((error) => {
-      state3.error = error instanceof ApiError && error.status === 403 ? null : "nuke.family could not be reached for OC items.";
-      LogInfo("[oc-items]", error);
-      return null;
-    }).finally(() => {
-      state3.loading = null;
-      redraw();
-    });
-    return state3.loading;
-  }
-  function view() {
-    const data = state3.data;
-    if (!data || !data.enabled) return null;
-    const where = place();
-    const tab = where === "armoury" ? openArmouryTab() : null;
-    const staff = data.staff;
-    const live = where === "armoury" ? readArmoury(Object.keys(TAB_LABELS)) : {};
-    const missing = staff ? stillMissing(staff.missing, state3.loanedNow) : [];
-    const mine = (data.mine || []).filter((entry) => !state3.loanedNow.has(`${entry.player_id}:${entry.item_id}`));
-    const unused = staff && where === "armoury" ? unusedLoans(currentLoans(staff.loans, live), staff.needs, staff.oc_item_ids) : [];
-    return { where, tab, staff, live, missing, mine, unused };
-  }
-  function tabLink(tab, label = `${tabLabel(tab)} \u203A`, className = "nfh-cw-btn") {
-    return `<a class="${className}" href="${escapeHtml(armouryHash(tab))}" data-act="go-tab" data-tab="${escapeHtml(tab)}">${escapeHtml(label)}</a>`;
-  }
-  function openArmouryTab() {
-    const active = document.querySelector('#faction-armoury-tabs li.ui-tabs-active[aria-controls^="tab=armoury&sub="]');
-    return active ? active.getAttribute("aria-controls").split("sub=")[1] : tabInHash(location.hash);
-  }
-  var tornTabAnchor = (tab) => document.querySelector(`#faction-armoury-tabs a.ui-tabs-anchor[href="#tab=armoury&sub=${tab}"]`);
-  function wantedTab() {
-    try {
-      return sessionStorage.getItem(WANTED_TAB_KEY);
-    } catch (error) {
-      return null;
-    }
-  }
-  function setWantedTab(tab) {
-    try {
-      if (tab) sessionStorage.setItem(WANTED_TAB_KEY, tab);
-      else sessionStorage.removeItem(WANTED_TAB_KEY);
-    } catch (error) {
-    }
-  }
-  function wantedTabHint(v) {
-    const tab = wantedTab();
-    document.querySelectorAll(".nfh-oci-tab-hint").forEach((element) => {
-      if (element !== tornTabAnchor(tab)) element.classList.remove("nfh-oci-tab-hint");
-    });
-    if (!tab || v?.where !== "armoury") return "";
-    if (v.tab === tab) {
-      setWantedTab(null);
-      tornTabAnchor(tab)?.classList.remove("nfh-oci-tab-hint");
-      return "";
-    }
-    const anchor = tornTabAnchor(tab);
-    if (!anchor) return "";
-    anchor.classList.add("nfh-oci-tab-hint");
-    return `<div class="nfh-oci-message nfh-oci-message--ok">The ${escapeHtml(tabLabel(tab))} tab is highlighted below. ${tabLink(tab, `Open ${tabLabel(tab)}`)}</div>`;
-  }
-  function renderMine(mine, where) {
-    return mine.map((entry) => {
-      const how = entry.reusable ? "It isn't used up, so it can be loaned." : "The crime uses it up.";
-      const go = where === "armoury" && entry.tab ? "" : ` ${tabLink(entry.tab, `${tabLabel(entry.tab)} armoury \u203A`, "")}`;
-      return `<div class="nfh-oci-mine"><strong>Your slot needs ${escapeHtml(entry.item_name || `item ${entry.item_id}`)}</strong>, which you don't have
-        <span class="nfh-cw-muted">(${escapeHtml(entry.position)} in ${escapeHtml(entry.crime)}). ${how}</span>${go}</div>`;
-    }).join("");
-  }
-  function missingAction(entry, v) {
-    const tab = entry.tab;
-    if (v.where !== "armoury" || v.tab !== tab) {
-      return `${tabLink(tab)}`;
-    }
-    if (!entry.reusable) return `<span class="nfh-cw-muted">Used up by the crime: give one (row marked Need)</span>`;
-    const copy = availableCopy(v.live[tab], entry.item_id);
-    if (!copy) return `<span class="nfh-cw-muted">None free in the armoury</span>`;
-    const key = `${entry.player_id}:${entry.item_id}`;
-    const name = entry.player_name || `#${entry.player_id}`;
-    return `<button type="button" class="nfh-cw-btn nfh-cw-btn--primary" data-act="loan" data-key="${escapeHtml(key)}"${state3.busy.has(key) ? " disabled" : ""}
-    title="Sends Torn one loan request now, as if you used the Loan box">${state3.busy.has(key) ? "Loaning\u2026" : `Loan to ${escapeHtml(name)}`}</button>`;
-  }
-  function renderStaff(v) {
-    const parts = [];
-    parts.push(`<div class="nfh-oci-heading">Missing items${v.missing.length ? ` (${v.missing.length})` : ""}</div>`);
-    if (!v.missing.length) parts.push(`<div class="nfh-cw-muted">Everyone in a crime has their item.</div>`);
-    for (const entry of v.missing) {
-      parts.push(`<div class="nfh-oci-row">
-      <span class="nfh-oci-who"><a href="/profiles.php?XID=${entry.player_id}">${escapeHtml(entry.player_name || `#${entry.player_id}`)}</a></span>
-      <span class="nfh-oci-what"><strong>${escapeHtml(entry.item_name || `Item ${entry.item_id}`)}</strong>
-        <span class="nfh-cw-muted">${escapeHtml(entry.position)} \xB7 ${escapeHtml(entry.crime)}</span></span>
-      <span class="nfh-cw-actions">${missingAction(entry, v)}</span></div>`);
-    }
-    if (v.where === "armoury") {
-      parts.push(`<div class="nfh-oci-heading">Loaned, not needed${v.unused.length ? ` (${v.unused.length})` : ""}</div>`);
-      if (!v.unused.length) parts.push(`<div class="nfh-cw-muted">No OC items are out with members who don't need them.</div>`);
-      for (const loan2 of v.unused) {
-        const action = v.tab === loan2.tab ? `<span class="nfh-cw-muted">Retrieve it on the marked row</span>` : `${tabLink(loan2.tab)}`;
-        parts.push(`<div class="nfh-oci-row">
-        <span class="nfh-oci-who"><a href="/profiles.php?XID=${loan2.player_id}">${escapeHtml(loan2.player_name || `#${loan2.player_id}`)}</a></span>
-        <span class="nfh-oci-what"><strong>${escapeHtml(loan2.item_name)}</strong> <span class="nfh-cw-muted">${escapeHtml(loan2.reason)}</span></span>
-        <span class="nfh-cw-actions">${action}</span></div>`);
-      }
-      const staff = v.staff;
-      const when = staff.loans_at ? new Date(staff.loans_at * 1e3).toISOString().slice(11, 16) : null;
-      parts.push(
-        `<div class="nfh-cw-muted nfh-oci-foot">${staff.loans_error ? escapeHtml(staff.loans_error) + " Open each armoury tab to check it here." : `Loans from Torn's armoury list${when ? ` at ${when} TCT` : ""} (Torn updates it up to hourly). Tabs you open here are read live.`}</div>`
-      );
-    }
-    return parts.join("");
-  }
-  function render5(v) {
-    const panel = document.getElementById(PANEL_ID);
-    if (!panel) return;
-    const show = v && (v.mine.length || v.staff);
-    panel.hidden = !show && !state3.error;
-    if (!show) {
-      panel.innerHTML = state3.error ? `<div class="nfh-cw-bar"><span class="nfh-cw-error">${escapeHtml(state3.error)}</span></div>` : "";
-      return;
-    }
-    const counts = [];
-    if (v.mine.length) counts.push("your slot needs an item");
-    if (v.staff) counts.push(`${v.missing.length} missing`);
-    if (v.staff && v.where === "armoury") counts.push(`${v.unused.length} to retrieve`);
-    const attention = v.mine.length || v.missing.length || v.unused.length;
-    panel.classList.toggle("nfh-cw--attn", !!attention);
-    const isCollapsed = collapsed();
-    const message = state3.message ? `<div class="nfh-oci-message nfh-oci-message--${state3.message.tone}" role="status">${escapeHtml(state3.message.text)}</div>` : "";
-    const hint = wantedTabHint(v);
-    const html = `<div class="nfh-cw-bar">
-      <button type="button" class="nfh-cw-toggle" data-act="toggle" aria-expanded="${!isCollapsed}"><span class="nfh-cw-caret">${isCollapsed ? "\u25B8" : "\u25BE"}</span> OC items</button>
-      <span class="nfh-cw-status">${escapeHtml(counts.join(" \xB7 "))}</span>
-    </div>${isCollapsed ? "" : `<div class="nfh-oci-body">${hint}${message}${renderMine(v.mine, v.where)}${v.staff ? renderStaff(v) : ""}</div>`}`;
-    if (panel.innerHTML !== html) panel.innerHTML = html;
-  }
-  function decorate(v) {
-    if (!v || !v.staff || v.where !== "armoury" || !v.tab) return;
-    const rows2 = v.live[v.tab] || [];
-    const needers = needersByItem(v.missing.filter((entry) => entry.tab === v.tab));
-    const retrieve = new Map(v.unused.filter((loan2) => loan2.tab === v.tab).map((loan2) => [`${loan2.player_id}:${loan2.item_id}`, loan2]));
-    for (const row2 of rows2) {
-      let badge = null;
-      if (!row2.loanedTo && needers.has(row2.itemId)) {
-        const who = needers.get(row2.itemId);
-        badge = { kind: "need", text: `Need \xD7${who.length}`, title: `Needed by ${who.map((entry) => `${entry.player_name || entry.player_id} (${entry.position}, ${entry.crime})`).join(", ")}` };
-      } else if (row2.loanedTo && retrieve.has(`${row2.loanedTo}:${row2.itemId}`)) {
-        const loan2 = retrieve.get(`${row2.loanedTo}:${row2.itemId}`);
-        badge = { kind: "retrieve", text: "Retrieve", title: `${loan2.player_name || loan2.player_id}: ${loan2.reason}` };
-      }
-      setBadge(row2.li, badge);
-    }
-    const box = openActionBox(v.tab);
-    document.querySelectorAll(`.${FILL_CLASS}`).forEach((fill2) => {
-      if (!box || !box.box.contains(fill2)) fill2.remove();
-    });
-    if (box && needers.has(box.itemId)) {
-      const who = needers.get(box.itemId);
-      const html = `<span class="nfh-cw-muted">Fill in:</span> ${who.map((entry) => `<button type="button" class="nfh-cw-chip" data-fill="${escapeHtml(`${entry.player_name} [${entry.player_id}]`)}">${escapeHtml(entry.player_name || entry.player_id)}</button>`).join(" ")}`;
-      let fill2 = box.box.querySelector(`.${FILL_CLASS}`);
-      if (!fill2) {
-        fill2 = document.createElement("div");
-        fill2.className = `nfh-cw ${FILL_CLASS}`;
-        fill2.addEventListener("click", (event) => {
-          const chip = event.target.closest("[data-fill]");
-          if (!chip) return;
-          event.preventDefault();
-          setInputValue(box.input, chip.dataset.fill);
-          box.input.focus();
-        });
-        box.box.appendChild(fill2);
-      }
-      if (fill2.innerHTML !== html) fill2.innerHTML = html;
-    }
-  }
-  function setBadge(li, badge) {
-    const name = li.querySelector(".name") || li;
-    const existing = name.querySelector(`.${BADGE_CLASS}`);
-    li.classList.toggle("nfh-oci-row--need", badge?.kind === "need");
-    li.classList.toggle("nfh-oci-row--retrieve", badge?.kind === "retrieve");
-    if (!badge) {
-      existing?.remove();
-      return;
-    }
-    if (existing && existing.textContent === badge.text && existing.title === badge.title) return;
-    const element = existing || document.createElement("span");
-    element.className = `${BADGE_CLASS} ${BADGE_CLASS}--${badge.kind}`;
-    element.textContent = badge.text;
-    element.title = badge.title;
-    if (!existing) name.prepend(element);
-  }
-  function redraw() {
-    const v = view();
-    render5(v);
-    decorate(v);
-  }
-  function scheduleRedraw() {
-    clearTimeout(redrawTimer);
-    redrawTimer = setTimeout(redraw, 250);
-  }
-  var ourNode = (node) => node.nodeType !== 1 || node.id === PANEL_ID || node.classList.contains(BADGE_CLASS) || node.classList.contains(FILL_CLASS) || !!node.closest?.(`#${PANEL_ID}`);
-  function isOurs(record) {
-    if (record.type === "attributes") {
-      const before = new Set(String(record.oldValue || "").split(/\s+/).filter((name) => name && !name.startsWith("nfh-")));
-      const after = new Set([...record.target.classList].filter((name) => !name.startsWith("nfh-")));
-      return before.size === after.size && [...before].every((name) => after.has(name));
-    }
-    if (ourNode(record.target)) return true;
-    return [...record.addedNodes, ...record.removedNodes].every(ourNode);
-  }
-  function watch2(container) {
-    if (observed === container) return;
-    observer2?.disconnect();
-    observed = container;
-    observer2 = new MutationObserver((records) => {
-      if (!records.every(isOurs)) scheduleRedraw();
-    });
-    observer2.observe(container, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"], attributeOldValue: true });
-  }
-  async function loan(key) {
-    const v = view();
-    const entry = v?.missing.find((candidate) => `${candidate.player_id}:${candidate.item_id}` === key);
-    if (!entry || state3.busy.has(key)) return;
-    const copy = availableCopy(v.live[entry.tab], entry.item_id);
-    if (!copy) return;
-    state3.busy.add(key);
-    state3.message = null;
-    redraw();
-    try {
-      const answer = await postTornAction("factions.php", {
-        ajax: "true",
-        step: "armouryActionItem",
-        role: "loan",
-        item: copy.armoryId,
-        itemID: String(entry.item_id),
-        type: copy.type,
-        user: `${entry.player_name} [${entry.player_id}]`,
-        quantity: "1"
-      });
-      const result = readLoanAnswer(answer.text);
-      if (answer.ok && result.ok) {
-        state3.loanedNow.add(key);
-        state3.message = { tone: "ok", text: result.message || `Loaned ${entry.item_name} to ${entry.player_name}. The armoury list updates when Torn redraws it.` };
-      } else {
-        state3.message = { tone: "error", text: `Torn did not loan it${result.message ? `: ${result.message}` : ` (status ${answer.status})`}. Use the Loan box on the row instead.` };
-      }
-    } catch (error) {
-      state3.message = { tone: "error", text: error.message };
-    } finally {
-      state3.busy.delete(key);
-      redraw();
-    }
-  }
-  function onPanelClick(event) {
-    const target = event.target.closest("[data-act]");
-    if (!target || target.disabled) return;
-    if (target.dataset.act === "toggle") {
-      try {
-        localStorage.setItem(COLLAPSED_KEY, collapsed() ? "0" : "1");
-      } catch (error) {
-      }
-      redraw();
-    } else if (target.dataset.act === "loan") {
-      loan(target.dataset.key);
-    } else if (target.dataset.act === "go-tab") {
-      const tab = target.dataset.tab;
-      const anchor = tornTabAnchor(tab);
-      if (anchor) {
-        event.preventDefault();
-        setWantedTab(null);
-        anchor.click();
-      } else {
-        setWantedTab(tab);
-      }
-    }
-  }
-  var oc_items_default = {
-    name: "OC items",
-    pages: [PageType.FactionCrimes, PageType.FactionArmoury],
-    init() {
-      const where = place();
-      if (!where) {
-        document.getElementById(PANEL_ID)?.remove();
-        observer2?.disconnect();
-        observed = null;
-        return;
-      }
-      const settle = (container2) => {
-        if (!document.getElementById(PANEL_ID)) PLACES[where].insert(container2);
-        watch2(where === "armoury" ? document.getElementById("faction-armoury") || container2 : container2.parentElement || container2);
-        redraw();
-        load3();
-      };
-      const container = document.querySelector(PLACES[where].container);
-      if (container) settle(container);
-      let tries = 10;
-      const again = () => {
-        const now = document.querySelector(PLACES[where].container);
-        if (now && (!document.getElementById(PANEL_ID) || document.getElementById(PANEL_ID).nextElementSibling !== now)) {
-          document.getElementById(PANEL_ID)?.remove();
-          settle(now);
-        }
-        if (--tries > 0 && place() === where) setTimeout(again, 400);
-      };
-      setTimeout(again, 400);
     }
   };
 
@@ -9587,10 +9689,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   </div>`;
   }
   function renderList(retals, now, ui = {}) {
-    const shown = visibleRetals(retals, now);
+    const shown2 = visibleRetals(retals, now);
     const error = ui.error ? `<div class="nfh-rt-error">${escapeHtml(ui.error)}</div>` : "";
-    if (!shown.length) return error;
-    return `<ul class="nfh-rt-list">${shown.map((retal) => row(retal, now, ui)).join("")}</ul>${error}`;
+    if (!shown2.length) return error;
+    return `<ul class="nfh-rt-list">${shown2.map((retal) => row(retal, now, ui)).join("")}</ul>${error}`;
   }
   var MIN_CHOICES = [0, 15, 30, 60, 90, 120, MAX_MIN_SECONDS];
   function check(pref, on, label, title = "", disabled = false) {
