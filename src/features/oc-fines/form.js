@@ -1,6 +1,7 @@
 import { api, ApiError } from "../../core/api.js";
 import { escapeHtml } from "../../core/dom.js";
 import { LogInfo } from "../../core/log.js";
+import { forgetCaches } from "../mail-templates/data.js";
 import { crimeChoices, defaultCrimeFor, quoteLine } from "./logic.js";
 
 // The OC fine form, shared by the profile box and the crimes page's staff
@@ -112,6 +113,8 @@ export async function openFineForm(container, opts) {
       if (force) payload.force = true;
       const result = await api("/oc-fines", { method: "POST", data: payload });
       state.issued = result.data;
+      // The mail bar lists unmailed fines: drop its copy so this one is there.
+      forgetCaches();
       LogInfo(`[oc-fines] issued fine ${result.data.id} to ${opts.playerId}`);
       if (opts.onIssued) opts.onIssued(result.data);
     } catch (error) {

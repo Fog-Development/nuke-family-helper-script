@@ -30,7 +30,7 @@ function writeStore(key, value) {
   }
 }
 
-const fresh = (entry) => entry && Date.now() - entry.at < TTL_MS;
+const fresh = (entry, maxAgeMs = TTL_MS) => entry && Date.now() - entry.at < maxAgeMs;
 
 export function forgetCaches() {
   memory.list = {};
@@ -44,10 +44,10 @@ export function forgetCaches() {
 }
 
 // { personal: [...], faction: [...]|null, messages: [...]|null, links }
-export async function listTemplates(page, { force = false } = {}) {
+export async function listTemplates(page, { force = false, maxAgeMs = TTL_MS } = {}) {
   if (!force) {
     const cached = memory.list[page] || readStore(LIST_KEY)[page];
-    if (fresh(cached)) {
+    if (fresh(cached, maxAgeMs)) {
       memory.list[page] = cached;
       return cached.data;
     }

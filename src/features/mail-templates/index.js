@@ -121,7 +121,22 @@ async function load(force = false) {
     state.loading = false;
     render();
   }
+  // A kept list shows at once; one over half a minute old is then fetched
+  // again, so fines given in Discord or on the site since show up quickly.
+  if (!force && state.list) {
+    try {
+      const latest = await listTemplates(state.page, { maxAgeMs: RECHECK_MS });
+      if (latest !== state.list) {
+        state.list = latest;
+        render();
+      }
+    } catch (error) {
+      // the kept list stays
+    }
+  }
 }
+
+const RECHECK_MS = 30 * 1000;
 
 // What placeholders become on this page now.
 function placeholderValues() {

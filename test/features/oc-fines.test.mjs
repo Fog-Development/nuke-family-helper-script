@@ -22,16 +22,20 @@ after(async () => {
 });
 
 // The capture's profile shows no faction where Torn usually does; give it one,
-// as a faction member's profile has.
-async function inFaction(page) {
-  await page.evaluate(() => {
-    const info = document.createElement("div");
-    info.className = "basic-information";
-    info.innerHTML = '<ul class="info-table"><li><a href="/factions.php?step=profile&ID=1">Test Faction</a></li></ul>';
-    info.hidden = true;
-    document.body.appendChild(info);
-  });
-}
+// as a faction member's profile has. Torn draws the profile's info after the
+// page loads, so the link arrives a moment later. 5678 is the viewer's own
+// faction in the default OC config.
+const inFaction = (factionId = 5678) => async (page) => {
+  await page.evaluate((id) => {
+    setTimeout(() => {
+      const info = document.createElement("div");
+      info.className = "basic-information";
+      info.innerHTML = `<ul class="info-table"><li><a href="/factions.php?step=profile&ID=${id}">Test Faction</a></li></ul>`;
+      info.hidden = true;
+      document.body.appendChild(info);
+    }, 600);
+  }, factionId);
+};
 
 function context() {
   return {
@@ -57,7 +61,7 @@ describe("OC fines on a profile", () => {
       const { page, errors, close } = await openTornPage(browser, {
         page: "profiles",
         theme,
-        before: inFaction,
+        before: inFaction(),
         api: {
           "GET /user/get-own-permissions": { permissions: ["oc_fine.issue"] },
           [`GET /oc-fines/context?player_id=${profileId}`]: context(),
@@ -96,10 +100,26 @@ describe("OC fines on a profile", () => {
     });
   }
 
+  it("shows nothing on the profile of someone in another faction", async () => {
+    const { page, apiCalls, close } = await openTornPage(browser, {
+      page: "profiles",
+      before: inFaction(9999),
+      api: { "GET /user/get-own-permissions": { permissions: ["oc_fine.issue"] } },
+    });
+    try {
+      await page.waitForSelector(".basic-information a", { state: "attached" });
+      await page.waitForTimeout(800);
+      assert.equal(await page.locator(BOX).count(), 0);
+      assert.equal(apiCalls.some((call) => call.path.startsWith("/oc-fines")), false);
+    } finally {
+      await close();
+    }
+  });
+
   it("shows nothing to members who can't give fines", async () => {
     const { page, apiCalls, close } = await openTornPage(browser, {
       page: "profiles",
-      before: inFaction,
+      before: inFaction(),
       api: { "GET /user/get-own-permissions": { permissions: [] } },
     });
     try {
@@ -151,6 +171,25 @@ describe("recent fines in the mail bar", () => {
       await page.waitForFunction(() => document.querySelector("#nfh-mail-templates").innerText.includes("marked as mailed"));
       assert.equal(marked.length, 1);
       await screenshot(page.locator(BAR), "oc-fines-mail-bar");
+    } finally {
+      await close();
+    }
+  });
+
+  it("shows a fine given elsewhere without waiting for the kept list to run out", async () => {
+    const list = (fines) => ({ page: "messages", personal: [], faction: null, messages: null, fines, links: {} });
+    const { page, close } = await openTornPage(browser, {
+      page: "messages-compose",
+      step: 4,
+      // A list kept a minute ago, before the fine was given in Discord.
+      localStorage: { nfhMailTemplateList: { messages: { at: Date.now() - 60 * 1000, data: list([]) } } },
+      api: {
+        "GET /mail-templates?page=messages": list([{ id: 13, player_id: 42, player_name: "Bob", reason: "Other", penalty: "Warning", issued_at: 1794500000 }]),
+      },
+    });
+    try {
+      await page.waitForSelector(`${BAR} .nfh-mt-chip--fine`);
+      assert.match(await page.locator(`${BAR} .nfh-mt-fines`).innerText(), /Bob · Warning · Other/);
     } finally {
       await close();
     }

@@ -6501,6 +6501,90 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
   };
 
+  // src/features/mail-templates/data.js
+  var TTL_MS = 5 * 60 * 1e3;
+  var LIST_KEY2 = "nfhMailTemplateList";
+  var BODY_KEY = "nfhMailTemplateBodies";
+  var memory = { list: {}, bodies: {} };
+  function readStore(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || "{}") || {};
+    } catch (error) {
+      return {};
+    }
+  }
+  function writeStore(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+    }
+  }
+  var fresh = (entry, maxAgeMs = TTL_MS) => entry && Date.now() - entry.at < maxAgeMs;
+  function forgetCaches() {
+    memory.list = {};
+    memory.bodies = {};
+    try {
+      localStorage.removeItem(LIST_KEY2);
+      localStorage.removeItem(BODY_KEY);
+    } catch (error) {
+    }
+  }
+  async function listTemplates(page, { force = false, maxAgeMs = TTL_MS } = {}) {
+    if (!force) {
+      const cached = memory.list[page] || readStore(LIST_KEY2)[page];
+      if (fresh(cached, maxAgeMs)) {
+        memory.list[page] = cached;
+        return cached.data;
+      }
+    }
+    const data = await api(`/mail-templates?page=${encodeURIComponent(page)}`);
+    const entry = { at: Date.now(), data };
+    memory.list[page] = entry;
+    const stored = readStore(LIST_KEY2);
+    stored[page] = entry;
+    writeStore(LIST_KEY2, stored);
+    return data;
+  }
+  async function personalBody(id) {
+    const cached = memory.bodies[id] || readStore(BODY_KEY)[id];
+    if (fresh(cached)) return cached.data;
+    const data = await api(`/mail-templates/personal/${id}`);
+    const entry = { at: Date.now(), data };
+    memory.bodies[id] = entry;
+    const stored = Object.fromEntries(Object.entries(readStore(BODY_KEY)).filter(([, value]) => fresh(value)));
+    stored[id] = entry;
+    writeStore(BODY_KEY, stored);
+    return data;
+  }
+  async function savePersonal(fields) {
+    const result = await api("/mail-templates/personal", { method: "POST", data: fields });
+    forgetCaches();
+    return result;
+  }
+  async function updatePersonal(id, fields) {
+    const result = await api(`/mail-templates/personal/${id}`, { method: "POST", data: fields });
+    forgetCaches();
+    return result;
+  }
+  async function deletePersonal(id) {
+    const result = await api(`/mail-templates/personal/${id}/delete`, { method: "POST" });
+    forgetCaches();
+    return result;
+  }
+  var renderFaction = (id) => api(`/mail-templates/faction/${id}`);
+  var factionMessage = (uuid) => api(`/mail-templates/messages/${encodeURIComponent(uuid)}`);
+  async function pinFaction(id, pinned) {
+    const result = await api(`/mail-templates/faction/${id}/pin`, { method: "POST", data: { pinned } });
+    forgetCaches();
+    return result;
+  }
+  var fineMail = (id) => api(`/oc-fines/${id}/mail`);
+  async function markFineMailed(id) {
+    const result = await api(`/oc-fines/${id}/mailed`, { method: "POST", data: { mailed: true, via: "script" } });
+    forgetCaches();
+    return result;
+  }
+
   // src/features/oc-fines/logic.js
   var REASON_FOR_FLAG = {
     unqualified: "cpr_too_low",
@@ -6650,6 +6734,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
         if (force) payload.force = true;
         const result = await api("/oc-fines", { method: "POST", data: payload });
         state8.issued = result.data;
+        forgetCaches();
         LogInfo(`[oc-fines] issued fine ${result.data.id} to ${opts.playerId}`);
         if (opts.onIssued) opts.onIssued(result.data);
       } catch (error) {
@@ -6702,13 +6787,26 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var MINE_CACHE_KEY = "nfhOcFinesMine";
   var MINE_TTL_MS = 30 * 60 * 1e3;
   var BANNER_HIDDEN_KEY = "nfhOcFinesBannerHidden";
+  var PROFILE_FACTION_LINK = ".basic-information .info-table a[href^='/factions.php?step=profile&ID=']";
+  var PROFILE_INFO = ".basic-information .info-table li";
+  var PROFILE_WAIT_MS = 15 * 1e3;
+  function waitBriefly(selector, ms = PROFILE_WAIT_MS) {
+    return Promise.race([waitForElm(selector), new Promise((resolve) => setTimeout(() => resolve(null), ms))]);
+  }
+  async function profileFaction() {
+    if (!await waitBriefly(PROFILE_INFO)) return null;
+    const link = await waitBriefly(PROFILE_FACTION_LINK, 2e3);
+    return link ? getFactionId() : null;
+  }
+  async function ownFaction() {
+    if (!(ocConfigStore.data && ocConfigStore.data.faction_id)) await ocConfigStore.refresh();
+    return ocConfigStore.data && ocConfigStore.data.faction_id || null;
+  }
   async function canFineProfile() {
     const permissions = await getOwnPermissions();
     if (!permissions.includes(FINE_PERMISSION)) return false;
-    const profileFaction = getFactionId();
-    if (!profileFaction) return false;
-    const own = ocConfigStore.data && ocConfigStore.data.faction_id;
-    return !own || String(own) === String(profileFaction);
+    const [theirs, own] = await Promise.all([profileFaction(), ownFaction()]);
+    return Boolean(theirs && own) && String(own) === String(theirs);
   }
   async function insertProfileBox() {
     if (!IsPage(PageType.Profile) || !getApiToken()) return;
@@ -7519,90 +7617,6 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     init: init5
   };
 
-  // src/features/mail-templates/data.js
-  var TTL_MS = 5 * 60 * 1e3;
-  var LIST_KEY2 = "nfhMailTemplateList";
-  var BODY_KEY = "nfhMailTemplateBodies";
-  var memory = { list: {}, bodies: {} };
-  function readStore(key) {
-    try {
-      return JSON.parse(localStorage.getItem(key) || "{}") || {};
-    } catch (error) {
-      return {};
-    }
-  }
-  function writeStore(key, value) {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-    }
-  }
-  var fresh = (entry) => entry && Date.now() - entry.at < TTL_MS;
-  function forgetCaches() {
-    memory.list = {};
-    memory.bodies = {};
-    try {
-      localStorage.removeItem(LIST_KEY2);
-      localStorage.removeItem(BODY_KEY);
-    } catch (error) {
-    }
-  }
-  async function listTemplates(page, { force = false } = {}) {
-    if (!force) {
-      const cached = memory.list[page] || readStore(LIST_KEY2)[page];
-      if (fresh(cached)) {
-        memory.list[page] = cached;
-        return cached.data;
-      }
-    }
-    const data = await api(`/mail-templates?page=${encodeURIComponent(page)}`);
-    const entry = { at: Date.now(), data };
-    memory.list[page] = entry;
-    const stored = readStore(LIST_KEY2);
-    stored[page] = entry;
-    writeStore(LIST_KEY2, stored);
-    return data;
-  }
-  async function personalBody(id) {
-    const cached = memory.bodies[id] || readStore(BODY_KEY)[id];
-    if (fresh(cached)) return cached.data;
-    const data = await api(`/mail-templates/personal/${id}`);
-    const entry = { at: Date.now(), data };
-    memory.bodies[id] = entry;
-    const stored = Object.fromEntries(Object.entries(readStore(BODY_KEY)).filter(([, value]) => fresh(value)));
-    stored[id] = entry;
-    writeStore(BODY_KEY, stored);
-    return data;
-  }
-  async function savePersonal(fields) {
-    const result = await api("/mail-templates/personal", { method: "POST", data: fields });
-    forgetCaches();
-    return result;
-  }
-  async function updatePersonal(id, fields) {
-    const result = await api(`/mail-templates/personal/${id}`, { method: "POST", data: fields });
-    forgetCaches();
-    return result;
-  }
-  async function deletePersonal(id) {
-    const result = await api(`/mail-templates/personal/${id}/delete`, { method: "POST" });
-    forgetCaches();
-    return result;
-  }
-  var renderFaction = (id) => api(`/mail-templates/faction/${id}`);
-  var factionMessage = (uuid) => api(`/mail-templates/messages/${encodeURIComponent(uuid)}`);
-  async function pinFaction(id, pinned) {
-    const result = await api(`/mail-templates/faction/${id}/pin`, { method: "POST", data: { pinned } });
-    forgetCaches();
-    return result;
-  }
-  var fineMail = (id) => api(`/oc-fines/${id}/mail`);
-  async function markFineMailed(id) {
-    const result = await api(`/oc-fines/${id}/mailed`, { method: "POST", data: { mailed: true, via: "script" } });
-    forgetCaches();
-    return result;
-  }
-
   // src/features/mail-templates/placeholders.js
   var PLACEHOLDERS = [
     { key: "name", label: "the recipient's name", where: "messages" },
@@ -7860,7 +7874,18 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       state3.loading = false;
       render5();
     }
+    if (!force && state3.list) {
+      try {
+        const latest = await listTemplates(state3.page, { maxAgeMs: RECHECK_MS });
+        if (latest !== state3.list) {
+          state3.list = latest;
+          render5();
+        }
+      } catch (error) {
+      }
+    }
   }
+  var RECHECK_MS = 30 * 1e3;
   function placeholderValues() {
     const page = PAGES[state3.page];
     const recipient = parseRecipient(page.recipient(page.root())?.value);

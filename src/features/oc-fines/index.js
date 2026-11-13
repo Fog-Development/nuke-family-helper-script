@@ -23,16 +23,38 @@ const MINE_CACHE_KEY = "nfhOcFinesMine";
 const MINE_TTL_MS = 30 * 60 * 1000;
 const BANNER_HIDDEN_KEY = "nfhOcFinesBannerHidden";
 
+const PROFILE_FACTION_LINK = ".basic-information .info-table a[href^='/factions.php?step=profile&ID=']";
+const PROFILE_INFO = ".basic-information .info-table li";
+const PROFILE_WAIT_MS = 15 * 1000;
+
+// Resolves with the element, or null when it has not appeared in time.
+function waitBriefly(selector, ms = PROFILE_WAIT_MS) {
+  return Promise.race([waitForElm(selector), new Promise((resolve) => setTimeout(() => resolve(null), ms))]);
+}
+
+// The faction the viewed profile shows, once Torn has drawn the profile's
+// info (it arrives after the page loads); null for a factionless player.
+async function profileFaction() {
+  if (!(await waitBriefly(PROFILE_INFO))) return null;
+  // The info rows come together; give the faction link a moment to follow.
+  const link = await waitBriefly(PROFILE_FACTION_LINK, 2000);
+  return link ? getFactionId() : null;
+}
+
+// The viewer's own faction, from the OC config nuke.family sends.
+async function ownFaction() {
+  if (!(ocConfigStore.data && ocConfigStore.data.faction_id)) await ocConfigStore.refresh();
+  return (ocConfigStore.data && ocConfigStore.data.faction_id) || null;
+}
+
 // Whether the viewer may fine the profile being viewed: they hold the
-// permission and the profile is in their own faction (as far as the script
-// knows; the site has the last word when the form loads).
+// permission and the profile is in their own faction. Without both factions
+// known there is no box (the site still has the last word on issuing).
 async function canFineProfile() {
   const permissions = await getOwnPermissions();
   if (!permissions.includes(FINE_PERMISSION)) return false;
-  const profileFaction = getFactionId();
-  if (!profileFaction) return false;
-  const own = ocConfigStore.data && ocConfigStore.data.faction_id;
-  return !own || String(own) === String(profileFaction);
+  const [theirs, own] = await Promise.all([profileFaction(), ownFaction()]);
+  return Boolean(theirs && own) && String(own) === String(theirs);
 }
 
 async function insertProfileBox() {
