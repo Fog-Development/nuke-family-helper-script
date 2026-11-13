@@ -1,6 +1,6 @@
 import { escapeHtml } from "../../core/dom.js";
 import { formatLeft, retalState, visibleRetals } from "./logic.js";
-import { MAX_MIN_SECONDS } from "./prefs.js";
+import { MAX_MIN_SECONDS, POSITIONS } from "./prefs.js";
 
 // Pure HTML for the retal section under Torn's recent attacks: a one-line
 // header (always there, so the settings can be reached), the settings, and
@@ -122,5 +122,8 @@ export function renderSettings(prefs, desktop) {
       <input type="range" min="0.05" max="1" step="0.05" value="${prefs.volume}" data-pref="volume" aria-label="Volume"${quiet || !prefs.sound ? " disabled" : ""}>
       <button type="button" class="nfh-cw-btn" data-action="test-sound"${quiet || !prefs.sound ? " disabled" : ""}>Test</button></div>
     ${desktopRow}
+    <div class="nfh-cw-settings-row"><label>Notice position <select data-pref="position"${quiet ? " disabled" : ""}>${Object.entries(POSITIONS)
+      .map(([key, label]) => `<option value="${key}"${key === prefs.position ? " selected" : ""}>${label}</option>`)
+      .join("")}</select></label></div>
   </div>`;
 }

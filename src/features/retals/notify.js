@@ -95,7 +95,7 @@ function showToast(retals, nowSeconds, onAttack) {
   hideToast();
   const toast = document.createElement("div");
   toast.id = TOAST_ID;
-  toast.className = "nfh-cw nfh-rt-toast";
+  toast.className = `nfh-cw nfh-rt-toast nfh-rt-toast--${getPrefs().position}`;
   toast.setAttribute("role", "status");
 
   if (retals.length === 1) {
@@ -156,6 +156,22 @@ export function announce(retals, nowSeconds, onAttack) {
 }
 
 // Take back a toast for a retal that has since been done or claimed.
+// A sample notice where the new position is, so the member sees the choice.
+export function previewPosition() {
+  hideToast();
+  const toast = document.createElement("div");
+  toast.id = TOAST_ID;
+  toast.className = `nfh-cw nfh-rt-toast nfh-rt-toast--${getPrefs().position}`;
+  toast.setAttribute("role", "status");
+  toast.innerHTML = `<div class="nfh-rt-toast-text"><strong>Retal notices</strong><span class="nfh-rt-muted">will show here</span></div>
+    <span class="nfh-rt-actions"><button type="button" class="nfh-cw-btn" data-toast="close" aria-label="Dismiss">✕</button></span>`;
+  toast.addEventListener("click", (event) => {
+    if (event.target.closest("[data-toast]")) hideToast();
+  });
+  document.body.appendChild(toast);
+  toastTimer = setTimeout(hideToast, 3000);
+}
+
 export function dropToast() {
   hideToast();
 }

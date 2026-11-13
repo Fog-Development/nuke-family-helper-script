@@ -11,6 +11,19 @@ const DEFAULTS = {
   volume: 0.5,
   desktop: false, // a desktop notification as well (where the browser allows it)
   minSeconds: 30, // a retal with less time left than this is not announced
+  position: "bottom-left", // where the notice sits on the screen (bottom right covers Torn's chat)
+};
+
+// Where the notice can sit, in the order the setting lists them.
+export const POSITIONS = {
+  "bottom-left": "Bottom left",
+  "bottom-center": "Bottom middle",
+  "bottom-right": "Bottom right",
+  "middle-left": "Middle left",
+  "middle-right": "Middle right",
+  "top-left": "Top left",
+  "top-center": "Top middle",
+  "top-right": "Top right",
 };
 
 export const MAX_MIN_SECONDS = 240;
@@ -30,6 +43,7 @@ function sanitize(raw) {
     volume: clamp(source.volume, 0.05, 1, DEFAULTS.volume),
     desktop: source.desktop === true,
     minSeconds: Math.round(clamp(source.minSeconds, 0, MAX_MIN_SECONDS, DEFAULTS.minSeconds)),
+    position: Object.hasOwn(POSITIONS, source.position) ? source.position : DEFAULTS.position,
   };
 }
 

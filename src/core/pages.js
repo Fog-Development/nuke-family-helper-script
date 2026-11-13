@@ -29,6 +29,11 @@ export const PageType = {
   ChainReport: "ChainReport",
   RWReport: "RWReport",
   NukeFamily3rdParty: "NukeFamily3rdParty",
+  Messages: "Messages",
+  Stocks: "Stocks",
+  FactionNewsletter: "Faction Newsletter",
+  FactionControlMembers: "Faction Control Members",
+  FactionArmoury: "Faction Armoury",
 };
 
 // Pages identified by a URL prefix.
@@ -56,6 +61,8 @@ const mapPageTypeAddress = {
   [PageType.ChainReport]: "https://www.torn.com/war.php?step=chainreport",
   [PageType.RWReport]: "https://www.torn.com/war.php?step=rankreport",
   [PageType.NukeFamily3rdParty]: TOKEN_GENERATION_URL,
+  [PageType.Messages]: "https://www.torn.com/messages.php",
+  [PageType.Stocks]: "https://www.torn.com/page.php?sid=stocks",
 };
 
 // Pages identified by a URL fragment (checked with String.includes). These
@@ -67,6 +74,9 @@ const mapPageAddressFragment = {
   [PageType.FactionControlPayday]: "tab=controls&option=pay-day",
   [PageType.FactionControlApplications]: "tab=controls&option=application",
   [PageType.FactionCrimes]: "tab=crimes",
+  [PageType.FactionNewsletter]: "option=newsletter",
+  [PageType.FactionControlMembers]: "option=members",
+  [PageType.FactionArmoury]: "tab=armoury",
 };
 
 export function IsPage(pageType) {

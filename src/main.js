@@ -20,6 +20,9 @@ import contracts, { contractsStore } from "./features/contracts.js";
 import factionButtons from "./features/faction-buttons.js";
 import hospital from "./features/hospital.js";
 import organizedCrimes from "./features/organized-crimes/index.js";
+import mailTemplates from "./features/mail-templates/index.js";
+import ocItems from "./features/oc-items/index.js";
+import kickRisk from "./features/kick-risk/index.js";
 import { ocConfigStore } from "./features/organized-crimes/data.js";
 import rankedWar from "./features/ranked-war/index.js";
 import reputation from "./features/reputation.js";
@@ -43,6 +46,9 @@ const features = [
   retals,
   rankedWar,
   organizedCrimes,
+  mailTemplates,
+  ocItems,
+  kickRisk,
 ];
 
 function dispatchFeatures() {
