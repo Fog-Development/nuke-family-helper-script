@@ -1,5 +1,6 @@
 import { escapeHtml } from "../../core/dom.js";
 import { PLACEHOLDERS } from "./placeholders.js";
+import { fineChipLabel } from "../oc-fines/logic.js";
 
 // Markup for the mail template bar. Pure string building from the
 // controller's state; every name from the site goes through escapeHtml.
@@ -148,6 +149,24 @@ function allHtml(state) {
   </div>`;
 }
 
+// Staff's OC fines from the last two weeks that nobody has mailed yet. The
+// one for the member being written to (the recipient box) comes first.
+function finesHtml(state) {
+  const fines = (state.list && state.list.fines) || [];
+  if (state.page !== "messages" || fines.length === 0) return "";
+  const to = state.recipientId ? String(state.recipientId) : null;
+  const sorted = [...fines].sort((a, b) => (String(b.player_id) === to) - (String(a.player_id) === to));
+  return `<div class="nfh-mt-fines"><span class="nfh-mt-heading">Recent fines</span>${sorted
+    .slice(0, 8)
+    .map(
+      (fine) =>
+        `<button type="button" class="nfh-cw-chip nfh-mt-chip nfh-mt-chip--fine${String(fine.player_id) === to ? " nfh-mt-chip--match" : ""}" data-act="use" data-kind="fine" data-id="${escapeHtml(
+          fine.id,
+        )}" title="Put this fine's mail in the editor, addressed to them">${escapeHtml(fineChipLabel(fine))}</button>`,
+    )
+    .join("")}</div>`;
+}
+
 export function renderBar(state) {
   const list = state.list;
   const total = list ? (list.personal || []).length + (list.faction || []).length : 0;
@@ -159,7 +178,11 @@ export function renderBar(state) {
       : pins || `<span class="nfh-cw-muted">${total ? "Pin templates (☆ in All) to show them here." : "Save a message to use it again later."}</span>`;
 
   const message = state.message
-    ? `<div class="nfh-mt-message nfh-mt-message--${state.message.tone}" role="status">${escapeHtml(state.message.text)}</div>`
+    ? `<div class="nfh-mt-message nfh-mt-message--${state.message.tone}" role="status">${escapeHtml(state.message.text)}${
+        state.sentFine
+          ? ` ${button("fine-mailed", "I sent it: mark mailed", { primary: true, id: state.sentFine.id, disabled: state.busy })}${button("fine-dismiss", "Not yet")}`
+          : ""
+      }</div>`
     : "";
 
   return `<div class="nfh-cw-bar nfh-mt-bar">
@@ -171,5 +194,5 @@ export function renderBar(state) {
         ${button("help", "?", { title: "Placeholders you can use", extra: ' aria-label="Placeholders"' })}
       </span>
     </div>
-    ${message}${confirmHtml(state)}${formHtml(state)}${helpHtml(state)}${allHtml(state)}`;
+    ${finesHtml(state)}${message}${confirmHtml(state)}${formHtml(state)}${helpHtml(state)}${allHtml(state)}`;
 }

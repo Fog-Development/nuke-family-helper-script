@@ -3,9 +3,12 @@ import { LogInfo } from "../../core/log.js";
 import { IsPage, PageType } from "../../core/pages.js";
 import { getUserscriptUsersPlayerId } from "../../core/torn-page.js";
 import { ocConfigStore } from "./data.js";
-import { crimeHoursLeft, limitsFor, probablyRun, slotFlags } from "./flags.js";
+import { crimeHoursLeft, hoursUntilTurn, limitsFor, probablyRun, slotFlags } from "./flags.js";
 import { getStaffPrefs, getWeightsPref, parseOverride, setStaffPrefs, setWeightsPref } from "./prefs.js";
 import { itemSettings, itemSettingsChanged, onItemSettingsChange } from "../oc-items/index.js";
+import { FINE_PERMISSION, openFineModal } from "../oc-fines/index.js";
+import { REASON_FOR_FLAG } from "../oc-fines/logic.js";
+import { cachedPermissions } from "../../core/user.js";
 import { resetItemChoices, setItemChoice } from "../oc-items/prefs.js";
 import { activeSubTab, CRIMES_ROOT_SELECTOR, joinState, JoinState, readCrimes, SubTab } from "./page.js";
 import { cachedBoard, learnCprs, offPageCrimes, refreshBoard, requestSpawn, spawnAskedUntil } from "./remote.js";
@@ -208,6 +211,7 @@ function render() {
   const prefs = members ? getStaffPrefs() : null;
   const limits = limitsFor(config, prefs);
   const counts = {};
+  const canFine = Boolean(members) && (cachedPermissions() || []).includes(FINE_PERMISSION);
 
   for (const crime of result.crimes) {
     if (crime.crime.offPage) continue;
@@ -221,7 +225,7 @@ function render() {
         );
         for (const flag of flags) counts[flag.flag] = (counts[flag.flag] || 0) + 1;
       }
-      renderFlags(rated.slot, flags);
+      renderFlags(rated.slot, flags, canFine && flags.length ? fineOffer(crime.crime, index, rated, flags) : null);
     });
   }
 
@@ -339,6 +343,23 @@ function render() {
   }
 }
 
+// What the "Fine" button on a flagged slot fills into the fine form: the
+// flag's reason, this crime, and the figures the page shows right now (the
+// site's copy can be minutes old, or gone once the member is removed).
+function fineOffer(crime, index, rated, flags) {
+  const slot = rated.slot;
+  const details = { role: slot.name };
+  if (slot.cpr !== null && slot.cpr !== undefined) details.cpr = Math.round(slot.cpr);
+  if (rated.minCpr !== null && rated.minCpr !== undefined) details.required_cpr = Math.round(rated.minCpr);
+  details.hours_until_role = Math.round(hoursUntilTurn(crime, index) * 10) / 10;
+  return {
+    playerId: slot.playerId,
+    reason: REASON_FOR_FLAG[flags[0].flag] || "",
+    crime: { id: crime.id, label: `${crime.name} L${crime.level || "?"} · ${slot.name}` },
+    details,
+  };
+}
+
 function scheduleRender() {
   if (renderTimer) clearTimeout(renderTimer);
   renderTimer = setTimeout(() => {
@@ -363,6 +384,20 @@ function watch(root) {
   if (observer) observer.disconnect();
 
   observedRoot = root;
+  if (!root.dataset.nfhOcfBound) {
+    root.dataset.nfhOcfBound = "1";
+    root.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-nfh-ocf]");
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      try {
+        openFineModal(JSON.parse(button.getAttribute("data-nfh-ocf")));
+      } catch (error) {
+        console.error("[NFH] Could not open the OC fine form:", error);
+      }
+    });
+  }
   observer = new MutationObserver((mutations) => {
     if (!isOwnFactionCrimesTab()) return;
     if (mutations.every(isOwnMutation)) return;

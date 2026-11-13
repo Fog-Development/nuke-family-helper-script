@@ -5,7 +5,19 @@ import { LogInfo } from "../../core/log.js";
 import { PageType } from "../../core/pages.js";
 import { getUserscriptUsersPlayerId, getUserscriptUsersPlayerName } from "../../core/torn-page.js";
 import { editorHasContent, findEditor, getEditorHtml, setEditorHtml, setInputValue } from "../../core/torn-editor.js";
-import { deletePersonal, factionMessage, listTemplates, personalBody, pinFaction, renderFaction, savePersonal, updatePersonal } from "./data.js";
+import {
+  deletePersonal,
+  factionMessage,
+  fineMail,
+  listTemplates,
+  markFineMailed,
+  personalBody,
+  pinFaction,
+  renderFaction,
+  savePersonal,
+  updatePersonal,
+} from "./data.js";
+import { recipientFor } from "../oc-fines/logic.js";
 import { fill, parseRecipient, tornDate } from "./placeholders.js";
 import { renderBar } from "./view.js";
 
@@ -41,7 +53,7 @@ const PAGES = {
 const state = freshState(null);
 
 function freshState(page) {
-  return { page, list: null, loading: false, error: null, open: false, query: "", form: null, confirm: null, help: false, message: null, busy: false, hasSubject: false };
+  return { page, list: null, loading: false, error: null, open: false, query: "", form: null, confirm: null, help: false, message: null, busy: false, hasSubject: false, sentFine: null };
 }
 
 function currentPage() {
@@ -63,6 +75,9 @@ function render() {
   const page = PAGES[state.page];
   const subject = page && page.subject(page.root());
   state.hasSubject = !!(subject && subject.value.trim());
+  // Who the mail is to: the recipient box, or the compose link's XID (a profile's "Send message").
+  const recipient = page && page.recipient(page.root());
+  state.recipientId = parseRecipient(recipient?.value).id || (/[?&]XID=(\d+)/.exec(window.location.hash) || [])[1] || null;
   element.innerHTML = renderBar(state);
   if (focused) {
     const input = element.querySelector(`[data-field="${focused}"]`);
@@ -132,6 +147,10 @@ async function fetchContent(kind, id) {
     const template = await renderFaction(id);
     return { name: template.name, subject: template.subject, html: template.html };
   }
+  if (kind === "fine") {
+    const mail = (await fineMail(id)).data;
+    return { name: `the mail for fine #${id}`, subject: mail.subject, html: mail.html, fine: mail.fine };
+  }
   const message = await factionMessage(id);
   return { name: message.subject || "the mail", subject: message.subject, html: message.html };
 }
@@ -142,6 +161,11 @@ async function insert(content) {
   const editor = findEditor(root);
   if (!editor) throw new Error("Torn's editor was not found on the page.");
 
+  // An OC fine's mail is addressed to the fined member: fill the recipient in.
+  if (content.fine && page.recipient(root)) {
+    setInputValue(page.recipient(root), recipientFor(content.fine));
+  }
+
   const values = placeholderValues();
   const body = fill(content.html, values, { html: true });
   await setEditorHtml(editor, body.text);
@@ -151,6 +175,12 @@ async function insert(content) {
     const subject = fill(content.subject, values);
     subject.missing.forEach((key) => missing.add(key));
     setInputValue(page.subject(root), subject.text);
+  }
+
+  if (content.fine) {
+    state.sentFine = content.fine;
+    say("ok", `Put the mail for fine #${content.fine.id} in the editor, addressed to ${content.fine.player_name || content.fine.player_id}. Send it, then mark it as mailed.`);
+    return;
   }
 
   if (missing.size) {
@@ -288,6 +318,18 @@ async function onClick(event) {
       });
     case "use":
       return use(kind, id);
+    case "fine-mailed":
+      return busy(async () => {
+        await markFineMailed(id);
+        state.sentFine = null;
+        await load(true);
+        say("ok", `Fine #${id} marked as mailed.`);
+      });
+    case "fine-dismiss":
+      state.sentFine = null;
+      state.message = null;
+      render();
+      return;
     default:
   }
 }
