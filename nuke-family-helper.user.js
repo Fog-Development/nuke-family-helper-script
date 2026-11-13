@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Nuke Assistant
 // @namespace    https://nuke.family/
-// @version      2.21.0
+// @version      2.22.0
 // @description  Making things easier for the Nuke Family. This application will only function properly if you are a Nuke Member who has a site API key generated from https://nuke.family/user
 // @author       Fogest <nuke@jhvisser.com>
 // @match        https://www.torn.com/factions.php*
@@ -2118,6 +2118,146 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
         outline-color: transparent;
     }
 }
+
+/* OC fines (features/oc-fines): profile box, shared form, crimes-page modal,
+   unpaid banner, and the mail bar's recent fines. */
+.nfh-ocf-open {
+    cursor: pointer;
+    width: 100%;
+    padding: 5px 8px;
+    border-radius: 5px;
+    border: 1px solid var(--nfh-border, #444);
+    background: var(--nfh-btn-bg, #333);
+    color: inherit;
+}
+
+.nfh-ocf-open:hover {
+    background: var(--nfh-btn-hover, #444);
+}
+
+.nfh-ocf-form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--nfh-text);
+}
+
+.nfh-ocf-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.nfh-ocf-field > span {
+    color: var(--nfh-list-key);
+}
+
+.nfh-ocf-field select,
+.nfh-ocf-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.nfh-ocf-quote {
+    padding: 4px 6px;
+    border-left: 3px solid #3b82f6;
+    background: var(--nfh-section-bg);
+}
+
+.nfh-ocf-error {
+    color: #e5484d;
+}
+
+.nfh-ocf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.nfh-ocf-record ul {
+    margin: 4px 0 0;
+    padding-left: 16px;
+    list-style: disc;
+}
+
+.nfh-ocf-flag-btn {
+    cursor: pointer;
+    border: 1px solid var(--nfh-border, #444);
+    background: var(--nfh-btn-bg, #333);
+    color: var(--nfh-text);
+}
+
+.nfh-ocf-modal {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 100000;
+    width: min(360px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    padding: 8px 10px 10px;
+    border: 1px solid var(--nfh-border, #444);
+    border-radius: 6px;
+    background: var(--nfh-container-bg, #222);
+    color: var(--nfh-text);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+.nfh-ocf-modal__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nfh-ocf-modal__head button,
+.nfh-ocf-banner button {
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 14px;
+}
+
+.nfh-ocf-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    padding: 6px 10px;
+    border-radius: 5px;
+    border: 1px solid #e5484d;
+    background: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font-size: 12px;
+}
+
+.nfh-ocf-banner__how {
+    color: var(--nfh-list-key);
+    white-space: pre-line;
+}
+
+.nfh-ocf-banner button {
+    margin-left: auto;
+}
+
+.nfh-mt-fines {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.nfh-mt-chip--fine {
+    border-color: #e5484d;
+}
+
+.nfh-mt-chip--match {
+    font-weight: bold;
+}
 `;
 
   // src/core/storage.js
@@ -2361,7 +2501,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   // src/core/config.js
   var DEBUG = false;
   var DEBUG_SITE = false;
-  var DEFAULT_VERSION = "2.21.0";
+  var DEFAULT_VERSION = "2.22.0";
   var CURRENT_VERSION = typeof GM_info !== "undefined" && GM_info.script && GM_info.script.version ? GM_info.script.version : DEFAULT_VERSION;
   var API_URL = DEBUG_SITE ? "http://nuke.test/api" : "https://nuke.family/api";
   var TOKEN_GENERATION_URL = DEBUG_SITE ? "http://nuke.test/auth/token-generation" : "https://nuke.family/auth/token-generation";
@@ -6349,6 +6489,293 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
   };
 
+  // src/features/oc-fines/logic.js
+  var REASON_FOR_FLAG = {
+    unqualified: "cpr_too_low",
+    unproductive: "unproductive",
+    underlevel: "cpr_too_high"
+  };
+  function defaultCrimeFor(context, reasonKey, presetCrimeId = null) {
+    const reason = (context.reasons || []).find((r) => r.key === reasonKey);
+    if (!reason || reason.crime === "never") return null;
+    const crimes = context.crimes || [];
+    if (presetCrimeId !== null && presetCrimeId !== void 0) {
+      return String(presetCrimeId);
+    }
+    if (reason.default_crime_id !== null && reason.default_crime_id !== void 0) {
+      const known = crimes.some((c) => String(c.crime_id) === String(reason.default_crime_id));
+      if (known) return String(reason.default_crime_id);
+    }
+    return null;
+  }
+  function crimeChoices(context, preset = null) {
+    const choices = (context.crimes || []).map((c) => ({ id: String(c.crime_id), label: c.label }));
+    if (preset && preset.id && !choices.some((c) => c.id === String(preset.id))) {
+      choices.unshift({ id: String(preset.id), label: `On this page \xB7 ${preset.label || "crime " + preset.id}` });
+    }
+    return choices;
+  }
+  function quoteLine(context, reasonKey) {
+    const reason = (context.reasons || []).find((r) => r.key === reasonKey);
+    return reason && reason.quote ? reason.quote.summary : "";
+  }
+  function bannerText(mine) {
+    const unpaid = mine && mine.unpaid || [];
+    if (unpaid.length === 0) return null;
+    const totals = {};
+    for (const fine of unpaid) {
+      totals[fine.currency] = (totals[fine.currency] || 0) + (fine.amount || 0);
+    }
+    const parts = Object.entries(totals).map(
+      ([currency, amount]) => currency === "cash" ? `$${amount.toLocaleString("en-US")}` : `${amount.toLocaleString("en-US")} points`
+    );
+    return `You owe ${parts.join(" and ")} in OC fines (${unpaid.length} unpaid).`;
+  }
+  function fineChipLabel(fine) {
+    return [fine.player_name || `[${fine.player_id}]`, fine.penalty, fine.reason].filter(Boolean).join(" \xB7 ");
+  }
+  function recipientFor(fine) {
+    return fine.player_name ? `${fine.player_name} [${fine.player_id}]` : String(fine.player_id);
+  }
+
+  // src/features/oc-fines/form.js
+  function describeError(error, fallback) {
+    if (error instanceof ApiError) {
+      if (error.body && error.body.message) return error.body.message;
+      if (error.status === 403) return "You can't give OC fines to this member.";
+    }
+    return fallback;
+  }
+  async function openFineForm(container, opts) {
+    container.innerHTML = `<div class="nfh-ocf-form nfh-cw-muted">Loading\u2026</div>`;
+    let context;
+    try {
+      const params = new URLSearchParams({ player_id: String(opts.playerId) });
+      if (opts.crime && opts.crime.id) params.set("crime_id", String(opts.crime.id));
+      context = (await api(`/oc-fines/context?${params}`)).data;
+    } catch (error) {
+      container.innerHTML = `<div class="nfh-ocf-form nfh-ocf-error">${escapeHtml(describeError(error, "Couldn't reach nuke.family."))}</div>`;
+      return;
+    }
+    const state8 = {
+      reason: opts.reason && context.reasons.some((r) => r.key === opts.reason) ? opts.reason : "",
+      crime: null,
+      note: "",
+      busy: false,
+      error: null,
+      issued: null
+    };
+    state8.crime = state8.reason ? defaultCrimeFor(context, state8.reason, opts.crime ? opts.crime.id : null) : null;
+    const render7 = () => {
+      if (state8.issued) {
+        const fine = state8.issued;
+        container.innerHTML = `<div class="nfh-ocf-form nfh-ocf-done">
+        \u2705 ${fine.kind === "warning" ? "Warning" : "Fine"} #${escapeHtml(fine.id)}: ${escapeHtml(fine.reason_label)}, <strong>${escapeHtml(fine.penalty)}</strong>${fine.strike ? ` (strike ${escapeHtml(fine.strike)})` : ""}.
+        <div class="nfh-ocf-actions">
+          <a class="nfh-cw-btn nfh-cw-btn--primary" href="https://www.torn.com/messages.php#/p=compose&XID=${encodeURIComponent(fine.player_id)}">Write the mail</a>
+          <a class="nfh-cw-btn" href="${escapeHtml(fine.url)}" target="_blank" rel="noopener">Open on nuke.family</a>
+        </div>
+        <div class="nfh-cw-muted">The mail is under &ldquo;Recent fines&rdquo; in the template bar on Torn's compose page.</div>
+      </div>`;
+        return;
+      }
+      const reason = context.reasons.find((r) => r.key === state8.reason);
+      const choices = crimeChoices(context, opts.crime);
+      const crimeField = !reason || reason.crime === "never" ? reason ? `<div class="nfh-cw-muted">This reason is about not being in a crime, so it names none.</div>` : "" : `<label class="nfh-ocf-field"><span>Crime</span><select class="nfh-cw-input" data-ocf="crime">
+            <option value="">None</option>
+            ${choices.map((c) => `<option value="${escapeHtml(c.id)}"${c.id === state8.crime ? " selected" : ""}>${escapeHtml(c.label)}</option>`).join("")}
+          </select></label>`;
+      const quote = state8.reason ? quoteLine(context, state8.reason) : "";
+      container.innerHTML = `<div class="nfh-ocf-form">
+      <div class="nfh-cw-muted">Fining <strong>${escapeHtml(context.player.name || opts.playerId)}</strong> in ${escapeHtml(context.faction.name)}</div>
+      <label class="nfh-ocf-field"><span>Reason</span><select class="nfh-cw-input" data-ocf="reason">
+        <option value="">Choose a reason\u2026</option>
+        ${context.reasons.map((r) => `<option value="${escapeHtml(r.key)}"${r.key === state8.reason ? " selected" : ""} title="${escapeHtml(r.description)}">${escapeHtml(r.label)}</option>`).join("")}
+      </select></label>
+      ${crimeField}
+      <label class="nfh-ocf-field"><span>Note${reason && reason.note_required ? " (required)" : ""}</span>
+        <textarea class="nfh-cw-input" data-ocf="note" rows="2" maxlength="1000">${escapeHtml(state8.note)}</textarea></label>
+      ${quote ? `<div class="nfh-ocf-quote">${escapeHtml(quote)}</div>` : ""}
+      ${state8.error ? `<div class="nfh-ocf-error">${escapeHtml(state8.error)}</div>` : ""}
+      <div class="nfh-ocf-actions">
+        <button type="button" class="nfh-cw-btn nfh-cw-btn--primary" data-ocf-act="issue"${state8.busy || !state8.reason ? " disabled" : ""}>${state8.busy ? "Issuing\u2026" : "Issue"}</button>
+        <button type="button" class="nfh-cw-btn" data-ocf-act="close">Cancel</button>
+      </div>
+      ${(context.record || []).length ? recordHtml(context.record) : ""}
+    </div>`;
+    };
+    const issue = async (force = false) => {
+      state8.busy = true;
+      state8.error = null;
+      render7();
+      try {
+        const payload = {
+          player_id: Number(opts.playerId),
+          faction_id: context.faction.id,
+          reason: state8.reason,
+          via: "script",
+          details: opts.details || {}
+        };
+        if (state8.crime) payload.crime_id = Number(state8.crime);
+        if (state8.note.trim()) payload.note = state8.note.trim();
+        if (force) payload.force = true;
+        const result = await api("/oc-fines", { method: "POST", data: payload });
+        state8.issued = result.data;
+        LogInfo(`[oc-fines] issued fine ${result.data.id} to ${opts.playerId}`);
+        if (opts.onIssued) opts.onIssued(result.data);
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 409 && !force) {
+          state8.error = `${describeError(error, "Already fined.")} Press Issue again to give another anyway.`;
+          state8.forceNext = true;
+        } else {
+          state8.error = describeError(error, "Couldn't issue the fine. Try again.");
+        }
+      }
+      state8.busy = false;
+      render7();
+    };
+    container.onchange = (event) => {
+      const field = event.target.getAttribute("data-ocf");
+      if (field === "reason") {
+        state8.reason = event.target.value;
+        state8.crime = defaultCrimeFor(context, state8.reason, opts.crime ? opts.crime.id : null);
+        state8.forceNext = false;
+        render7();
+      } else if (field === "crime") {
+        state8.crime = event.target.value || null;
+      }
+    };
+    container.oninput = (event) => {
+      if (event.target.getAttribute("data-ocf") === "note") state8.note = event.target.value;
+    };
+    container.onclick = (event) => {
+      const act2 = event.target.closest("[data-ocf-act]");
+      if (!act2) return;
+      if (act2.getAttribute("data-ocf-act") === "issue" && !state8.busy) {
+        issue(Boolean(state8.forceNext));
+      } else if (act2.getAttribute("data-ocf-act") === "close") {
+        container.innerHTML = "";
+        if (opts.onClose) opts.onClose();
+      }
+    };
+    render7();
+  }
+  function recordHtml(record) {
+    return `<details class="nfh-ocf-record"><summary>Their OC record (${record.length})</summary><ul>${record.map(
+      (fine) => `<li>${escapeHtml(new Date(fine.issued_at * 1e3).toISOString().slice(0, 10))} \xB7 ${escapeHtml(fine.reason_label)} \xB7 ${escapeHtml(fine.penalty)} \xB7 ${escapeHtml(fine.status_label)}</li>`
+    ).join("")}</ul></details>`;
+  }
+
+  // src/features/oc-fines/index.js
+  var FINE_PERMISSION = "oc_fine.issue";
+  var BOX_CLASS = "nfh-ocf-box";
+  var BANNER_ID2 = "nfh-ocf-banner";
+  var MINE_CACHE_KEY = "nfhOcFinesMine";
+  var MINE_TTL_MS = 30 * 60 * 1e3;
+  var BANNER_HIDDEN_KEY = "nfhOcFinesBannerHidden";
+  async function canFineProfile() {
+    const permissions = await getOwnPermissions();
+    if (!permissions.includes(FINE_PERMISSION)) return false;
+    const profileFaction = getFactionId();
+    if (!profileFaction) return false;
+    const own = ocConfigStore.data && ocConfigStore.data.faction_id;
+    return !own || String(own) === String(profileFaction);
+  }
+  async function insertProfileBox() {
+    if (!IsPage(PageType.Profile) || !getApiToken()) return;
+    const playerId = getPlayerId();
+    if (!playerId || String(playerId) === String(getUserscriptUsersPlayerId())) return;
+    if (document.querySelector(`.${BOX_CLASS}`)) return;
+    if (!await canFineProfile()) return;
+    const wrapper = await waitForElm("div.profile-left-wrapper");
+    if (document.querySelector(`.${BOX_CLASS}`)) return;
+    const box = document.createElement("div");
+    box.className = `${BOX_CLASS} nfh-section m-top10`;
+    box.innerHTML = `<div>
+    <p class="nfh-section-title title-black top-round">OC Fines</p>
+    <div class="nfh-section-container">
+      <button type="button" class="nfh-ocf-open">Give OC fine</button>
+      <div class="nfh-ocf-slot"></div>
+    </div>
+  </div>`;
+    const openButton = box.querySelector(".nfh-ocf-open");
+    const slot = box.querySelector(".nfh-ocf-slot");
+    openButton.addEventListener("click", () => {
+      openButton.hidden = true;
+      openFineForm(slot, {
+        playerId,
+        onClose: () => {
+          openButton.hidden = false;
+        }
+      });
+    });
+    const reputation = document.querySelector(".nfh-reputation");
+    if (reputation) {
+      reputation.insertAdjacentElement("afterend", box);
+    } else if (wrapper.firstChild && wrapper.firstChild.nextSibling) {
+      wrapper.insertBefore(box, wrapper.firstChild.nextSibling);
+    } else {
+      wrapper.appendChild(box);
+    }
+  }
+  async function loadMine() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(MINE_CACHE_KEY) || "null");
+      if (cached && Date.now() - cached.at < MINE_TTL_MS) return cached.data;
+    } catch (e) {
+    }
+    try {
+      const data = await api("/oc-fines/mine");
+      localStorage.setItem(MINE_CACHE_KEY, JSON.stringify({ at: Date.now(), data }));
+      return data;
+    } catch (error) {
+      return null;
+    }
+  }
+  async function showBanner() {
+    if (!getApiToken() || document.getElementById(BANNER_ID2)) return;
+    if (sessionStorage.getItem(BANNER_HIDDEN_KEY)) return;
+    if (!IsPage(PageType.Faction) || !window.location.search.includes("step=your")) return;
+    const mine = await loadMine();
+    const text = bannerText(mine);
+    if (!text || document.getElementById(BANNER_ID2)) return;
+    const banner = document.createElement("div");
+    banner.id = BANNER_ID2;
+    banner.className = "nfh-ocf-banner";
+    banner.innerHTML = `<span>\u2696\uFE0F ${escapeHtml(text)}</span>
+    ${mine.deposit_instructions ? `<span class="nfh-ocf-banner__how">${escapeHtml(mine.deposit_instructions)}</span>` : ""}
+    <a href="${escapeHtml(mine.links && mine.links.mine || "https://nuke.family/my-oc-fines")}" target="_blank" rel="noopener">My OC fines</a>
+    <button type="button" aria-label="Hide until next session">\u2715</button>`;
+    banner.querySelector("button").addEventListener("click", () => {
+      sessionStorage.setItem(BANNER_HIDDEN_KEY, "1");
+      banner.remove();
+    });
+    const anchor = document.querySelector(".content-wrapper") || document.querySelector("#mainContainer");
+    if (anchor) anchor.insertAdjacentElement("afterbegin", banner);
+  }
+  function init4() {
+    insertProfileBox();
+    showBanner();
+  }
+  var oc_fines_default = {
+    name: "oc-fines",
+    pages: [PageType.Profile, PageType.Faction],
+    init: init4
+  };
+  var MODAL_ID = "nfh-ocf-modal";
+  function openFineModal(opts) {
+    document.getElementById(MODAL_ID)?.remove();
+    const modal = document.createElement("div");
+    modal.id = MODAL_ID;
+    modal.className = "nfh-ocf-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-label", "Give OC fine");
+    modal.innerHTML = `<div class="nfh-ocf-modal__head"><strong>Give OC fine</strong><button type="button" aria-label="Close">\u2715</button></div><div class="nfh-ocf-modal__body"></div>`;
+    modal.querySelector(".nfh-ocf-modal__head button").addEventListener("click", () => modal.remove());
+    document.body.appendChild(modal);
+    openFineForm(modal.querySelector(".nfh-ocf-modal__body"), { ...opts, onClose: () => modal.remove() });
+  }
+
   // src/features/organized-crimes/page.js
   var CRIMES_ROOT_SELECTOR = "#faction-crimes-root";
   var SubTab = {
@@ -6507,7 +6934,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
     if (!existing) slot.headerEl.insertAdjacentElement("afterend", element);
   }
-  function renderFlags(slot, flags) {
+  function renderFlags(slot, flags, fineOffer2 = null) {
     const existing = slot.el.querySelector(`:scope > .${FLAGS_CLASS}`);
     if (flags.length === 0) {
       if (existing) existing.remove();
@@ -6515,7 +6942,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
     const html = flags.map(
       (flag) => `<span class="nfh-oc-flag nfh-oc-flag--${flag.flag}" title="${escapeHtml(`${FLAG_LABELS[flag.flag]}: ${flag.title}`)}"><span aria-hidden="true">${FLAG_SYMBOLS[flag.flag]}</span> ${escapeHtml(flag.text)}</span>`
-    ).join("");
+    ).join("") + (fineOffer2 ? `<button type="button" class="nfh-oc-flag nfh-ocf-flag-btn" data-nfh-ocf="${escapeHtml(JSON.stringify(fineOffer2))}" title="Give this member an OC fine">\u2696 Fine</button>` : "");
     const element = existing || document.createElement("div");
     if (element.dataset.nfhHtml !== html) {
       element.dataset.nfhHtml = html;
@@ -6808,6 +7235,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const prefs4 = members ? getStaffPrefs() : null;
     const limits = limitsFor(config, prefs4);
     const counts = {};
+    const canFine = Boolean(members) && (cachedPermissions() || []).includes(FINE_PERMISSION);
     for (const crime of result.crimes) {
       if (crime.crime.offPage) continue;
       crime.slots.forEach((rated, index) => {
@@ -6820,7 +7248,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
           );
           for (const flag of flags) counts[flag.flag] = (counts[flag.flag] || 0) + 1;
         }
-        renderFlags(rated.slot, flags);
+        renderFlags(rated.slot, flags, canFine && flags.length ? fineOffer(crime.crime, index, rated, flags) : null);
       });
     }
     const suggestions = suggesting ? result.suggestions : [];
@@ -6921,6 +7349,19 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       });
     }
   }
+  function fineOffer(crime, index, rated, flags) {
+    const slot = rated.slot;
+    const details = { role: slot.name };
+    if (slot.cpr !== null && slot.cpr !== void 0) details.cpr = Math.round(slot.cpr);
+    if (rated.minCpr !== null && rated.minCpr !== void 0) details.required_cpr = Math.round(rated.minCpr);
+    details.hours_until_role = Math.round(hoursUntilTurn(crime, index) * 10) / 10;
+    return {
+      playerId: slot.playerId,
+      reason: REASON_FOR_FLAG[flags[0].flag] || "",
+      crime: { id: crime.id, label: `${crime.name} L${crime.level || "?"} \xB7 ${slot.name}` },
+      details
+    };
+  }
   function scheduleRender() {
     if (renderTimer) clearTimeout(renderTimer);
     renderTimer = setTimeout(() => {
@@ -6940,6 +7381,20 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     if (observedRoot === root3 && root3.isConnected) return;
     if (observer2) observer2.disconnect();
     observedRoot = root3;
+    if (!root3.dataset.nfhOcfBound) {
+      root3.dataset.nfhOcfBound = "1";
+      root3.addEventListener("click", (event) => {
+        const button3 = event.target.closest("[data-nfh-ocf]");
+        if (!button3) return;
+        event.preventDefault();
+        event.stopPropagation();
+        try {
+          openFineModal(JSON.parse(button3.getAttribute("data-nfh-ocf")));
+        } catch (error) {
+          console.error("[NFH] Could not open the OC fine form:", error);
+        }
+      });
+    }
     observer2 = new MutationObserver((mutations) => {
       if (!isOwnFactionCrimesTab()) return;
       if (mutations.every(isOwnMutation)) return;
@@ -6948,7 +7403,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     observer2.observe(root3, { childList: true, subtree: true });
     LogInfo("OC Assistant watching the crimes list");
   }
-  function init4() {
+  function init5() {
     if (!isOwnFactionCrimesTab()) return;
     if (!subscribed) {
       subscribed = true;
@@ -6963,7 +7418,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var organized_crimes_default = {
     name: "organized-crimes",
     pages: [PageType.FactionCrimes],
-    init: init4
+    init: init5
   };
 
   // src/features/mail-templates/data.js
@@ -7040,6 +7495,12 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var factionMessage = (uuid) => api(`/mail-templates/messages/${encodeURIComponent(uuid)}`);
   async function pinFaction(id, pinned) {
     const result = await api(`/mail-templates/faction/${id}/pin`, { method: "POST", data: { pinned } });
+    forgetCaches();
+    return result;
+  }
+  var fineMail = (id) => api(`/oc-fines/${id}/mail`);
+  async function markFineMailed(id) {
+    const result = await api(`/oc-fines/${id}/mailed`, { method: "POST", data: { mailed: true, via: "script" } });
     forgetCaches();
     return result;
   }
@@ -7191,12 +7652,23 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     ${siteLink ? `<div class="nfh-mt-foot">${siteLink}</div>` : ""}
   </div>`;
   }
+  function finesHtml(state8) {
+    const fines = state8.list && state8.list.fines || [];
+    if (state8.page !== "messages" || fines.length === 0) return "";
+    const to = state8.recipientId ? String(state8.recipientId) : null;
+    const sorted = [...fines].sort((a, b) => (String(b.player_id) === to) - (String(a.player_id) === to));
+    return `<div class="nfh-mt-fines"><span class="nfh-mt-heading">Recent fines</span>${sorted.slice(0, 8).map(
+      (fine) => `<button type="button" class="nfh-cw-chip nfh-mt-chip nfh-mt-chip--fine${String(fine.player_id) === to ? " nfh-mt-chip--match" : ""}" data-act="use" data-kind="fine" data-id="${escapeHtml(
+        fine.id
+      )}" title="Put this fine's mail in the editor, addressed to them">${escapeHtml(fineChipLabel(fine))}</button>`
+    ).join("")}</div>`;
+  }
   function renderBar3(state8) {
     const list = state8.list;
     const total = list ? (list.personal || []).length + (list.faction || []).length : 0;
     const pins = list ? pinnedChips(list) : "";
     const status = state8.loading ? `<span class="nfh-cw-muted">Loading\u2026</span>` : state8.error && !list ? `<span class="nfh-cw-error">${escapeHtml(state8.error)}</span>` : pins || `<span class="nfh-cw-muted">${total ? "Pin templates (\u2606 in All) to show them here." : "Save a message to use it again later."}</span>`;
-    const message = state8.message ? `<div class="nfh-mt-message nfh-mt-message--${state8.message.tone}" role="status">${escapeHtml(state8.message.text)}</div>` : "";
+    const message = state8.message ? `<div class="nfh-mt-message nfh-mt-message--${state8.message.tone}" role="status">${escapeHtml(state8.message.text)}${state8.sentFine ? ` ${button2("fine-mailed", "I sent it: mark mailed", { primary: true, id: state8.sentFine.id, disabled: state8.busy })}${button2("fine-dismiss", "Not yet")}` : ""}</div>` : "";
     return `<div class="nfh-cw-bar nfh-mt-bar">
       <span class="nfh-mt-title">Templates</span>
       <span class="nfh-mt-pins">${status}</span>
@@ -7206,7 +7678,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
         ${button2("help", "?", { title: "Placeholders you can use", extra: ' aria-label="Placeholders"' })}
       </span>
     </div>
-    ${message}${confirmHtml(state8)}${formHtml(state8)}${helpHtml(state8)}${allHtml(state8)}`;
+    ${finesHtml(state8)}${message}${confirmHtml(state8)}${formHtml(state8)}${helpHtml(state8)}${allHtml(state8)}`;
   }
 
   // src/features/mail-templates/index.js
@@ -7229,7 +7701,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   };
   var state3 = freshState(null);
   function freshState(page) {
-    return { page, list: null, loading: false, error: null, open: false, query: "", form: null, confirm: null, help: false, message: null, busy: false, hasSubject: false };
+    return { page, list: null, loading: false, error: null, open: false, query: "", form: null, confirm: null, help: false, message: null, busy: false, hasSubject: false, sentFine: null };
   }
   function currentPage() {
     const { pathname, hash } = window.location;
@@ -7248,6 +7720,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const page = PAGES[state3.page];
     const subject = page && page.subject(page.root());
     state3.hasSubject = !!(subject && subject.value.trim());
+    const recipient = page && page.recipient(page.root());
+    state3.recipientId = parseRecipient(recipient?.value).id || (/[?&]XID=(\d+)/.exec(window.location.hash) || [])[1] || null;
     element.innerHTML = renderBar3(state3);
     if (focused) {
       const input = element.querySelector(`[data-field="${focused}"]`);
@@ -7261,7 +7735,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     state3.message = { tone, text };
     render5();
   }
-  function describeError(error) {
+  function describeError2(error) {
     if (error instanceof ApiError) {
       if (error.status === 401) return "nuke.family did not accept your key. Reconnect the script.";
       if (error.status === 403) return "You don't have access to that template.";
@@ -7283,7 +7757,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       state3.list = await listTemplates(state3.page, { force });
       state3.error = null;
     } catch (error) {
-      state3.error = describeError(error);
+      state3.error = describeError2(error);
     } finally {
       state3.loading = false;
       render5();
@@ -7311,6 +7785,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       const template = await renderFaction(id);
       return { name: template.name, subject: template.subject, html: template.html };
     }
+    if (kind === "fine") {
+      const mail = (await fineMail(id)).data;
+      return { name: `the mail for fine #${id}`, subject: mail.subject, html: mail.html, fine: mail.fine };
+    }
     const message = await factionMessage(id);
     return { name: message.subject || "the mail", subject: message.subject, html: message.html };
   }
@@ -7319,6 +7797,9 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const root3 = page.root();
     const editor = findEditor(root3);
     if (!editor) throw new Error("Torn's editor was not found on the page.");
+    if (content.fine && page.recipient(root3)) {
+      setInputValue(page.recipient(root3), recipientFor(content.fine));
+    }
     const values = placeholderValues();
     const body = fill(content.html, values, { html: true });
     await setEditorHtml(editor, body.text);
@@ -7327,6 +7808,11 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       const subject = fill(content.subject, values);
       subject.missing.forEach((key) => missing.add(key));
       setInputValue(page.subject(root3), subject.text);
+    }
+    if (content.fine) {
+      state3.sentFine = content.fine;
+      say("ok", `Put the mail for fine #${content.fine.id} in the editor, addressed to ${content.fine.player_name || content.fine.player_id}. Send it, then mark it as mailed.`);
+      return;
     }
     if (missing.size) {
       const keys = [...missing].map((key) => `{${key}}`).join(", ");
@@ -7357,7 +7843,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       await work();
     } catch (error) {
       LogInfo("[mail-templates]", error);
-      say("error", error instanceof ApiError || !error?.message ? describeError(error) : error.message);
+      say("error", error instanceof ApiError || !error?.message ? describeError2(error) : error.message);
       if (error instanceof ApiError && error.status === 404) load3(true);
     } finally {
       state3.busy = false;
@@ -7456,6 +7942,18 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
         });
       case "use":
         return use(kind, id);
+      case "fine-mailed":
+        return busy(async () => {
+          await markFineMailed(id);
+          state3.sentFine = null;
+          await load3(true);
+          say("ok", `Fine #${id} marked as mailed.`);
+        });
+      case "fine-dismiss":
+        state3.sentFine = null;
+        state3.message = null;
+        render5();
+        return;
       default:
     }
   }
@@ -8811,7 +9309,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     for (const source of SOURCES) pending3[source].clear();
     LogInfo("War board stopped");
   }
-  function init5() {
+  function init6() {
     if (viewedWar() === null) {
       if (ticker2) stop2();
       return;
@@ -8824,7 +9322,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var ranked_war_default = {
     name: "ranked-war",
     pages: [PageType.Faction],
-    init: init5
+    init: init6
   };
 
   // src/features/recruiting.js
@@ -10472,7 +10970,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
         <path d="M21 12a1 1 0 0 1-.74.97l-1.54.47a7.986 7.986 0 0 1-.85 2.05l.64 1.47a1 1 0 0 1-.18 1.11l-1.41 1.41a1 1 0 0 1-1.11.18l-1.47-.64a7.986 7.986 0 0 1-2.05.85l-.47 1.54A1 1 0 0 1 12 21h-2a1 1 0 0 1-.97-.74l-.47-1.54a7.986 7.986 0 0 1-2.05-.85l-1.47.64a1 1 0 0 1-1.11-.18L2.52 16.92a1 1 0 0 1-.18-1.11l.64-1.47a7.986 7.986 0 0 1-.85-2.05L.59 11.82A1 1 0 0 1 0 11V9a1 1 0 0 1 .74-.97l1.54-.47a7.986 7.986 0 0 1 .85-2.05l-.64-1.47a1 1 0 0 1 .18-1.11L4.08 1.52a1 1 0 0 1 1.11-.18l1.47.64a7.986 7.986 0 0 1 2.05-.85L9.18.59A1 1 0 0 1 10 0h2a1 1 0 0 1 .97.74l.47 1.54c.71.2 1.39.51 2.05.85l1.47-.64a1 1 0 0 1 1.11.18l1.41 1.41a1 1 0 0 1 .18 1.11l-.64 1.47c.34.66.65 1.34.85 2.05l1.54.47A1 1 0 0 1 21 9v3zm-2.32-1.5l-1.42-.44a1 1 0 0 1-.68-.82 5.977 5.977 0 0 0-1.19-2.88 1 1 0 0 1-.07-1.06l.59-1.35-1-1-.35.59a1 1 0 0 1-1.06.07 5.977 5.977 0 0 0-2.88-1.19 1 1 0 0 1-.82-.68L10.5 1.32h-1l-.44 1.42a1 1 0 0 1-.82.68 5.977 5.977 0 0 0-2.88 1.19 1 1 0 0 1-1.06-.07L3.25 4.19l-1 1 .59 1.35a1 1 0 0 1-.07 1.06 5.977 5.977 0 0 0-1.19 2.88 1 1 0 0 1-.68.82L1.32 11.5v1l1.42.44a1 1 0 0 1 .68.82 5.977 5.977 0 0 0 1.19 2.88 1 1 0 0 1 .07 1.06l-.59 1.35 1 1 1.35-.59a1 1 0 0 1 1.06.07 5.977 5.977 0 0 0 2.88 1.19 1 1 0 0 1 .82.68l.44 1.42h1l.44-1.42a1 1 0 0 1 .82-.68 5.977 5.977 0 0 0 2.88-1.19 1 1 0 0 1 1.06.07l1.35.59 1-1-.59-1.35a1 1 0 0 1 .07-1.06 5.977 5.977 0 0 0 1.19-2.88 1 1 0 0 1 .68-.82l1.42-.44v-1z"/>
       </svg>
       `;
-  function init6() {
+  function init7() {
     if (document.querySelector(".nfh-shitlist-profile")) return;
     LogInfo("Profile page detected");
     waitForElm(".profile-status.m-top10").then((injectPoint) => {
@@ -10569,7 +11067,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var profile_default = {
     name: "shitlist-profile",
     pages: [PageType.Profile],
-    init: init6
+    init: init7
   };
 
   // src/features/token-capture.js
@@ -10604,6 +11102,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     profile_default,
     contracts_default,
     reputation_default,
+    oc_fines_default,
     hospital_default,
     faction_buttons_default,
     chain_watch_default,
