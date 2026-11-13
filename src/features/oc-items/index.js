@@ -118,7 +118,15 @@ function view() {
   const missing = staff ? stillMissing(staff.missing, state.loanedNow) : [];
   const mine = (data.mine || []).filter((entry) => !state.loanedNow.has(`${entry.player_id}:${entry.item_id}`));
   const unused = staff && where === "armoury" ? unusedLoans(currentLoans(staff.loans, live), staff.needs, staff.oc_item_ids) : [];
-  return { where, tab, staff, live, missing, mine, unused };
+  return { where, tab, staff, live, missing, mine, unused, show: shown(staff) };
+}
+
+// What the faction's staff chose to see (OC Assistant settings on nuke.family):
+// each kind in the panel and as armoury tags. A site that doesn't say shows all.
+function shown(staff) {
+  const show = staff?.show || {};
+  const on = (key) => show[key] !== false;
+  return { missingPanel: on("missing_panel"), missingTags: on("missing_tags"), retrievePanel: on("retrieve_panel"), retrieveTags: on("retrieve_tags") };
 }
 
 // A link to an armoury sub-tab. Torn switches sub-tabs with its own tab links
@@ -201,9 +209,8 @@ function missingAction(entry, v) {
     title="Sends Torn one loan request now, as if you used the Loan box">${state.busy.has(key) ? "Loaning…" : `Loan to ${escapeHtml(name)}`}</button>`;
 }
 
-function renderStaff(v) {
-  const parts = [];
-  parts.push(`<div class="nfh-oci-heading">Missing items${v.missing.length ? ` (${v.missing.length})` : ""}</div>`);
+function renderMissing(v) {
+  const parts = [`<div class="nfh-oci-heading">Missing items${v.missing.length ? ` (${v.missing.length})` : ""}</div>`];
   if (!v.missing.length) parts.push(`<div class="nfh-cw-muted">Everyone in a crime has their item.</div>`);
   for (const entry of v.missing) {
     parts.push(`<div class="nfh-oci-row">
@@ -212,14 +219,20 @@ function renderStaff(v) {
         <span class="nfh-cw-muted">${escapeHtml(entry.position)} · ${escapeHtml(entry.crime)}</span></span>
       <span class="nfh-cw-actions">${missingAction(entry, v)}</span></div>`);
   }
+  return parts;
+}
 
-  if (v.where === "armoury") {
+function renderStaff(v) {
+  const parts = [];
+  if (v.show.missingPanel) parts.push(...renderMissing(v));
+
+  if (v.where === "armoury" && v.show.retrievePanel) {
     parts.push(`<div class="nfh-oci-heading">Loaned, not needed${v.unused.length ? ` (${v.unused.length})` : ""}</div>`);
     if (!v.unused.length) parts.push(`<div class="nfh-cw-muted">No OC items are out with members who don't need them.</div>`);
     for (const loan of v.unused) {
       const action =
         v.tab === loan.tab
-          ? `<span class="nfh-cw-muted">Retrieve it on the marked row</span>`
+          ? `<span class="nfh-cw-muted">${v.show.retrieveTags ? "Retrieve it on the marked row" : "Retrieve it on this tab"}</span>`
           : `${tabLink(loan.tab)}`;
       parts.push(`<div class="nfh-oci-row">
         <span class="nfh-oci-who"><a href="/profiles.php?XID=${loan.player_id}">${escapeHtml(loan.player_name || `#${loan.player_id}`)}</a></span>
@@ -242,7 +255,8 @@ function renderStaff(v) {
 function render(v) {
   const panel = document.getElementById(PANEL_ID);
   if (!panel) return;
-  const show = v && (v.mine.length || v.staff);
+  const staffPanel = v?.staff && (v.show.missingPanel || (v.where === "armoury" && v.show.retrievePanel));
+  const show = v && (v.mine.length || staffPanel);
   panel.hidden = !show && !state.error;
   if (!show) {
     panel.innerHTML = state.error ? `<div class="nfh-cw-bar"><span class="nfh-cw-error">${escapeHtml(state.error)}</span></div>` : "";
@@ -250,9 +264,11 @@ function render(v) {
   }
   const counts = [];
   if (v.mine.length) counts.push("your slot needs an item");
-  if (v.staff) counts.push(`${v.missing.length} missing`);
-  if (v.staff && v.where === "armoury") counts.push(`${v.unused.length} to retrieve`);
-  const attention = v.mine.length || v.missing.length || v.unused.length;
+  const missingShown = v.staff && v.show.missingPanel;
+  const retrieveShown = v.staff && v.where === "armoury" && v.show.retrievePanel;
+  if (missingShown) counts.push(`${v.missing.length} missing`);
+  if (retrieveShown) counts.push(`${v.unused.length} to retrieve`);
+  const attention = v.mine.length || (missingShown && v.missing.length) || (retrieveShown && v.unused.length);
   panel.classList.toggle("nfh-cw--attn", !!attention);
   const isCollapsed = collapsed();
   const message = state.message ? `<div class="nfh-oci-message nfh-oci-message--${state.message.tone}" role="status">${escapeHtml(state.message.text)}</div>` : "";
@@ -260,7 +276,7 @@ function render(v) {
   const html = `<div class="nfh-cw-bar">
       <button type="button" class="nfh-cw-toggle" data-act="toggle" aria-expanded="${!isCollapsed}"><span class="nfh-cw-caret">${isCollapsed ? "▸" : "▾"}</span> OC items</button>
       <span class="nfh-cw-status">${escapeHtml(counts.join(" · "))}</span>
-    </div>${isCollapsed ? "" : `<div class="nfh-oci-body">${hint}${message}${renderMine(v.mine, v.where)}${v.staff ? renderStaff(v) : ""}</div>`}`;
+    </div>${isCollapsed ? "" : `<div class="nfh-oci-body">${hint}${message}${renderMine(v.mine, v.where)}${staffPanel ? renderStaff(v) : ""}</div>`}`;
   if (panel.innerHTML !== html) panel.innerHTML = html;
 }
 
@@ -273,10 +289,10 @@ function decorate(v) {
 
   for (const row of rows) {
     let badge = null;
-    if (!row.loanedTo && needers.has(row.itemId)) {
+    if (!row.loanedTo && v.show.missingTags && needers.has(row.itemId)) {
       const who = needers.get(row.itemId);
       badge = { kind: "need", text: `Need ×${who.length}`, title: `Needed by ${who.map((entry) => `${entry.player_name || entry.player_id} (${entry.position}, ${entry.crime})`).join(", ")}` };
-    } else if (row.loanedTo && retrieve.has(`${row.loanedTo}:${row.itemId}`)) {
+    } else if (row.loanedTo && v.show.retrieveTags && retrieve.has(`${row.loanedTo}:${row.itemId}`)) {
       const loan = retrieve.get(`${row.loanedTo}:${row.itemId}`);
       badge = { kind: "retrieve", text: "Retrieve", title: `${loan.player_name || loan.player_id}: ${loan.reason}` };
     }

@@ -175,6 +175,32 @@ describe("OC items on the armoury", () => {
     }
   });
 
+  it("follows the faction's choice of panel lists and armoury tags", async () => {
+    const api = items();
+    api["GET /oc/items"].data.staff.show = { missing_panel: true, missing_tags: true, retrieve_panel: false, retrieve_tags: true };
+    const { page, close } = await openTornPage(browser, { page: "armoury-tabs", step: 11, api });
+    try {
+      await page.waitForSelector(`${PANEL} .nfh-oci-row`);
+      const text = await page.locator(PANEL).innerText();
+      assert.match(text, /3 missing/);
+      assert.doesNotMatch(text, /to retrieve|Loaned, not needed/, "loans not needed stay out of the panel by default");
+      assert.ok((await page.locator(`[id="tab=armoury&sub=utilities"] li.nfh-oci-row--retrieve`).count()) >= 1, "but their rows are still tagged");
+      assert.ok((await page.locator(`[id="tab=armoury&sub=utilities"] li.nfh-oci-row--need`).count()) >= 1);
+    } finally {
+      await close();
+    }
+
+    api["GET /oc/items"].data.staff.show = { missing_panel: false, missing_tags: false, retrieve_panel: false, retrieve_tags: false };
+    const second = await openTornPage(browser, { page: "armoury-tabs", step: 11, api });
+    try {
+      await second.page.waitForTimeout(800);
+      assert.equal(await second.page.locator(`${PANEL}:visible`).count(), 0, "nothing to list, no panel");
+      assert.equal(await second.page.locator(".nfh-oci-badge").count(), 0, "and no tags");
+    } finally {
+      await second.close();
+    }
+  });
+
   it("draws nothing when the faction switched it off", async () => {
     const { page, close } = await openTornPage(browser, { page: "armoury-tabs", step: 11, api: items({ enabled: false }) });
     try {
