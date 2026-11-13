@@ -427,6 +427,10 @@ body:not(.dark-mode) .nfh-cw {
     font-weight: 700;
 }
 
+.nfh-cw a.nfh-cw-btn--primary {
+    color: #fff;
+}
+
 .nfh-cw-btn--primary:hover {
     background-color: var(--nfh-cw-accent);
     filter: brightness(1.1);
@@ -1799,8 +1803,15 @@ body.dark-mode .nfh-kr-badge--elevated {
 }
 
 .nfh-kr-slot {
-    outline: 2px solid #f5a623;
+    outline: 3px solid #f5a623;
     outline-offset: 2px;
+    box-shadow: 0 0 12px rgba(245, 166, 35, 0.8);
+}
+
+.nfh-kr-find-note {
+    flex-basis: 100%;
+    color: var(--nfh-cw-warn);
+    font-weight: 700;
 }
 
 /* Stock signals on Torn's stock market */
@@ -1879,4 +1890,17 @@ body.dark-mode .nfh-st-sell strong {
 ul.nfh-st-row--sell,
 ul.nfh-st-row--sell + .nfh-st-lotline {
     box-shadow: inset 3px 0 0 #c0392b;
+}
+
+/* Torn's armoury sub-tab the OC items panel sent the member to */
+a.ui-tabs-anchor.nfh-oci-tab-hint {
+    outline: 2px solid #4caf50;
+    outline-offset: -2px;
+    animation: nfh-oci-pulse 1.2s ease-in-out 3;
+}
+
+@keyframes nfh-oci-pulse {
+    50% {
+        outline-color: transparent;
+    }
 }

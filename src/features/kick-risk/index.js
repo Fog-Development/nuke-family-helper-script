@@ -3,6 +3,8 @@ import { escapeHtml } from "../../core/dom.js";
 import { LogInfo } from "../../core/log.js";
 import { PageType } from "../../core/pages.js";
 import { setInputValue } from "../../core/torn-editor.js";
+import { activeSubTab, CRIMES_ROOT_SELECTOR } from "../organized-crimes/page.js";
+import { cachedBoard, refreshBoard } from "../organized-crimes/remote.js";
 import { changeText, formatStat, kickReason, riskTier } from "./logic.js";
 
 // Kick risk on your faction's Controls → Members list, for whoever sees the
@@ -326,6 +328,19 @@ function redrawMembers() {
 
 // ---- the way back from the crimes page ----------------------------------------
 
+// The member's crime from the OC board (nuke.family, synced every five
+// minutes): its name, stage and their role.
+function crimeOf(playerId) {
+  const board = cachedBoard()?.board;
+  for (const crime of board?.crimes || []) {
+    const slot = (crime.slots || []).find((candidate) => Number(candidate.player_id) === Number(playerId));
+    if (slot) return { name: crime.name, status: crime.status, role: slot.role };
+  }
+  return null;
+}
+
+let findMessage = "";
+
 function renderReturn() {
   const target = readJson(sessionStorage, RETURN_KEY);
   let chip = document.getElementById("nfh-kr-return");
@@ -341,27 +356,51 @@ function renderReturn() {
       const action = event.target.closest("[data-kr]")?.dataset.kr;
       if (action === "find") {
         const slot = findSlot(target.id);
-        slot?.scrollIntoView({ block: "center" });
+        if (slot) {
+          findMessage = "";
+          slot.scrollIntoView({ block: "center", behavior: "smooth" });
+          slot.classList.add("nfh-kr-slot");
+        } else {
+          const crime = crimeOf(target.id);
+          findMessage = crime && crime.status && activeSubTab(document.querySelector(CRIMES_ROOT_SELECTOR) || document) !== crime.status.toLowerCase()
+            ? `Open the ${crime.status} tab: their crime is there.`
+            : "Not on the page yet: scroll down so Torn loads more crimes, then press Find again.";
+        }
+        renderReturn();
       } else if (action === "back" || action === "dismiss") {
         writeJson(sessionStorage, RETURN_KEY, null);
+        findMessage = "";
         chip.remove();
       }
     });
     document.body.appendChild(chip);
+    refreshBoard().then(() => renderReturn());
   }
-  const html = `<span>Kicking <strong>${escapeHtml(target.name || `#${target.id}`)}</strong>: remove them from their crime first.</span>
+  const crime = crimeOf(target.id);
+  const where = crime
+    ? ` They're in <strong>${escapeHtml(crime.name)}</strong> (${escapeHtml(crime.status)}) as ${escapeHtml(crime.role)}.`
+    : "";
+  const html = `<span>Kicking <strong>${escapeHtml(target.name || `#${target.id}`)}</strong>: remove them from their crime first.${where}</span>
     <button type="button" class="nfh-cw-btn" data-kr="find">Find them</button>
     <a class="nfh-cw-btn nfh-cw-btn--primary" href="#/tab=controls&option=members" data-kr="back">Back to Members</a>
-    <button type="button" class="nfh-cw-btn" data-kr="dismiss" aria-label="Dismiss">✕</button>`;
+    <button type="button" class="nfh-cw-btn" data-kr="dismiss" aria-label="Dismiss">✕</button>
+    ${findMessage ? `<span class="nfh-kr-find-note">${escapeHtml(findMessage)}</span>` : ""}`;
   if (chip.innerHTML !== html) chip.innerHTML = html;
   const slot = findSlot(target.id);
   document.querySelectorAll(".nfh-kr-slot").forEach((element) => element !== slot && element.classList.remove("nfh-kr-slot"));
   slot?.classList.add("nfh-kr-slot");
 }
 
+// The member's slot on the page: the slot wrapper around their profile link.
 function findSlot(id) {
-  const link = document.querySelector(`#faction-crimes-root a[href*="XID=${id}"]`);
-  return link ? link.closest('[class*="wrapper___"], [class*="slot"], li') || link : null;
+  const link = document.querySelector(`${CRIMES_ROOT_SELECTOR} a[href*="profiles.php?XID=${id}"]`);
+  if (!link) return null;
+  let element = link.parentElement;
+  while (element && element.id !== "faction-crimes-root") {
+    if (/(^|\s)wrapper___/.test(element.className) && element.querySelector('[class^="slotHeader___"]')) return element;
+    element = element.parentElement;
+  }
+  return link;
 }
 
 // ---- wiring -----------------------------------------------------------------

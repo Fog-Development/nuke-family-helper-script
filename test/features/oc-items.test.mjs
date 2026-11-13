@@ -125,6 +125,28 @@ describe("OC items on the armoury", () => {
     }
   });
 
+  it("switches the armoury with Torn's own sub-tab, not the URL", async () => {
+    const { page, close } = await openTornPage(browser, { page: "armoury-tabs", step: 1, api: items() });
+    try {
+      await page.waitForSelector(`${PANEL} [data-act="go-tab"][data-tab="utilities"]`);
+      await page.evaluate(() => {
+        window.__tabClicks = [];
+        for (const anchor of document.querySelectorAll("#faction-armoury-tabs a.ui-tabs-anchor")) {
+          anchor.addEventListener("click", (event) => {
+            event.preventDefault();
+            window.__tabClicks.push(anchor.getAttribute("href"));
+          });
+        }
+      });
+      const before = await page.evaluate(() => location.hash);
+      await page.locator(`${PANEL} [data-act="go-tab"][data-tab="utilities"]`).first().click();
+      assert.deepEqual(await page.evaluate(() => window.__tabClicks), ["#tab=armoury&sub=utilities"]);
+      assert.equal(await page.evaluate(() => location.hash), before, "the URL is left to Torn");
+    } finally {
+      await close();
+    }
+  });
+
   it("says what Torn answered when a loan fails", async () => {
     const { page, close } = await openTornPage(browser, { page: "armoury-tabs", step: 11, api: items(), before: withToken });
     try {

@@ -16,6 +16,7 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_info
+// @grant        unsafeWindow
 // @connect      nuke.family
 // @connect      nuke.test
 // @connect      github.com

@@ -222,6 +222,8 @@ async function onClick(event) {
       render();
       return;
     case "save":
+      // With the form open, this is its Save (it used to open a fresh, empty form).
+      if (state.form?.mode === "save") return bar()?.querySelector('[data-act="save-confirm"]')?.click();
       state.form = { mode: "save", name: "", scope: state.page };
       state.confirm = null;
       render();

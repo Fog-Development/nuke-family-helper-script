@@ -1,3 +1,4 @@
+import { runInPage } from "../../core/page-script.js";
 import { LogInfo } from "../../core/log.js";
 
 // Hears Torn's own chain feed (the recent attacks under the chain box) on the
@@ -249,10 +250,7 @@ export function startCapture(onFeed) {
   });
 
   try {
-    const tag = document.createElement("script");
-    tag.textContent = `(${pageTap.toString()})(${JSON.stringify(EVENT)});`;
-    (document.head || document.documentElement).appendChild(tag);
-    tag.remove();
+    runInPage(`(${pageTap.toString()})(${JSON.stringify(EVENT)});`);
   } catch (e) {
     LogInfo("[retals] could not add the page script", e);
   }

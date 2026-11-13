@@ -16,6 +16,7 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_info
+// @grant        unsafeWindow
 // @connect      nuke.family
 // @connect      nuke.test
 // @connect      github.com
@@ -638,6 +639,10 @@ body:not(.dark-mode) .nfh-cw {
     background-color: var(--nfh-cw-accent);
     color: #fff;
     font-weight: 700;
+}
+
+.nfh-cw a.nfh-cw-btn--primary {
+    color: #fff;
 }
 
 .nfh-cw-btn--primary:hover {
@@ -2012,8 +2017,15 @@ body.dark-mode .nfh-kr-badge--elevated {
 }
 
 .nfh-kr-slot {
-    outline: 2px solid #f5a623;
+    outline: 3px solid #f5a623;
     outline-offset: 2px;
+    box-shadow: 0 0 12px rgba(245, 166, 35, 0.8);
+}
+
+.nfh-kr-find-note {
+    flex-basis: 100%;
+    color: var(--nfh-cw-warn);
+    font-weight: 700;
 }
 
 /* Stock signals on Torn's stock market */
@@ -2092,6 +2104,19 @@ body.dark-mode .nfh-st-sell strong {
 ul.nfh-st-row--sell,
 ul.nfh-st-row--sell + .nfh-st-lotline {
     box-shadow: inset 3px 0 0 #c0392b;
+}
+
+/* Torn's armoury sub-tab the OC items panel sent the member to */
+a.ui-tabs-anchor.nfh-oci-tab-hint {
+    outline: 2px solid #4caf50;
+    outline-offset: -2px;
+    animation: nfh-oci-pulse 1.2s ease-in-out 3;
+}
+
+@keyframes nfh-oci-pulse {
+    50% {
+        outline-color: transparent;
+    }
 }
 `;
 
@@ -6111,6 +6136,39 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
     init: init4
   };
 
+  // src/core/page-script.js
+  var nonce;
+  function pageNonce() {
+    if (nonce !== void 0) return nonce;
+    nonce = null;
+    for (const script of document.querySelectorAll("script")) {
+      const value = script.nonce || script.getAttribute("nonce");
+      if (value) {
+        nonce = value;
+        break;
+      }
+    }
+    return nonce;
+  }
+  function runInPage(source) {
+    const tag = document.createElement("script");
+    const value = pageNonce();
+    if (value) {
+      tag.nonce = value;
+      tag.setAttribute("nonce", value);
+    }
+    tag.textContent = source;
+    (document.head || document.documentElement).appendChild(tag);
+    tag.remove();
+  }
+  function pageWindow() {
+    try {
+      if (typeof unsafeWindow !== "undefined" && unsafeWindow) return unsafeWindow;
+    } catch (error) {
+    }
+    return window;
+  }
+
   // src/core/torn-editor.js
   var REQUEST = "nfh:editor-request";
   var RESPONSE = "nfh:editor-response";
@@ -6120,6 +6178,7 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
   function pageBridge(requestEvent, responseEvent) {
     if (window.__nfhEditorBridge) return;
     window.__nfhEditorBridge = true;
+    document.documentElement.setAttribute("data-nfh-editor-bridge", "1");
     document.addEventListener(requestEvent, (event) => {
       let request2;
       try {
@@ -6163,13 +6222,30 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
   function installBridge() {
     if (bridgeInstalled) return;
     bridgeInstalled = true;
-    const tag = document.createElement("script");
-    tag.textContent = `(${pageBridge.toString()})(${JSON.stringify(REQUEST)}, ${JSON.stringify(RESPONSE)});`;
-    (document.head || document.documentElement).appendChild(tag);
-    tag.remove();
+    try {
+      runInPage(`(${pageBridge.toString()})(${JSON.stringify(REQUEST)}, ${JSON.stringify(RESPONSE)});`);
+    } catch (error) {
+    }
+  }
+  function directEditor(element) {
+    try {
+      const mce = pageWindow().tinymce;
+      if (!mce || !element.id) return null;
+      const editor = mce.get(element.id);
+      if (editor) return editor;
+      const active = mce.activeEditor;
+      return active && active.getElement && active.getElement() === element ? active : null;
+    } catch (error) {
+      return null;
+    }
+  }
+  function setElement(element, html) {
+    element.innerHTML = html;
+    element.dispatchEvent(new Event("input", { bubbles: true }));
   }
   function ask(elementId, op, html) {
     installBridge();
+    if (!document.documentElement.hasAttribute("data-nfh-editor-bridge")) return Promise.reject(new Error("The page script did not run."));
     const id = nextId++;
     return new Promise((resolve, reject) => {
       const timer3 = setTimeout(() => {
@@ -6198,17 +6274,45 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
   }
   async function getEditorHtml(element) {
     if (!element) throw new Error("The editor was not found.");
-    if (!element.id) return element.innerHTML;
-    return (await ask(element.id, "get")).html ?? "";
+    const editor = directEditor(element);
+    if (editor) {
+      try {
+        return String(editor.getContent());
+      } catch (error) {
+      }
+    }
+    if (element.id) {
+      try {
+        return (await ask(element.id, "get")).html ?? element.innerHTML;
+      } catch (error) {
+      }
+    }
+    return element.innerHTML;
   }
   async function setEditorHtml(element, html) {
     if (!element) throw new Error("The editor was not found.");
-    if (!element.id) {
-      element.innerHTML = html;
-      element.dispatchEvent(new Event("input", { bubbles: true }));
-      return;
+    const editor = directEditor(element);
+    if (editor) {
+      try {
+        editor.focus();
+        if (editor.undoManager) editor.undoManager.add();
+        editor.setContent(html);
+        if (editor.undoManager) editor.undoManager.add();
+        editor.fire("change");
+        editor.fire("input");
+        if (editor.nodeChanged) editor.nodeChanged();
+        return;
+      } catch (error) {
+      }
     }
-    await ask(element.id, "set", html);
+    if (element.id) {
+      try {
+        await ask(element.id, "set", html);
+        return;
+      } catch (error) {
+      }
+    }
+    setElement(element, html);
   }
   function editorHasContent(element) {
     if (!element) return false;
@@ -6368,7 +6472,7 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
       return `<div class="nfh-mt-form">
       <input type="text" class="nfh-cw-input" data-field="name" maxlength="80" placeholder="Template name" value="${escapeHtml(form.name)}">
       <label class="nfh-cw-muted">Show in ${scopeSelect("scope", form.scope)}</label>
-      ${button2("save-confirm", "Save", { primary: true, disabled: state8.busy })}${button2("form-cancel", "Cancel")}
+      ${button2("save-confirm", state8.busy ? "Saving\u2026" : "Save template", { primary: true, disabled: state8.busy })}${button2("form-cancel", "Cancel")}
       <div class="nfh-cw-muted nfh-mt-note">Saves the message as it is in the editor${state8.hasSubject ? ", and the subject" : ""}. Only you can see your templates.</div>
     </div>`;
     }
@@ -6458,7 +6562,7 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
       <span class="nfh-mt-pins">${status}</span>
       <span class="nfh-cw-actions nfh-mt-buttons">
         ${button2("toggle-all", `All${total ? ` (${total})` : ""} ${state8.open ? "\u25B4" : "\u25BE"}`, { disabled: !list })}
-        ${button2("save", "Save", { disabled: state8.busy || !list })}
+        ${button2("save", state8.form?.mode === "save" ? "Save template" : "Save", { disabled: state8.busy || !list, primary: state8.form?.mode === "save" })}
         ${button2("help", "?", { title: "Placeholders you can use", extra: ' aria-label="Placeholders"' })}
       </span>
     </div>
@@ -6647,6 +6751,7 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
         render4();
         return;
       case "save":
+        if (state2.form?.mode === "save") return bar()?.querySelector('[data-act="save-confirm"]')?.click();
         state2.form = { mode: "save", name: "", scope: state2.page };
         state2.confirm = null;
         render4();
@@ -6794,6 +6899,7 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
   function pageBridge2(requestEvent, responseEvent) {
     if (window.__nfhTornAction) return;
     window.__nfhTornAction = true;
+    document.documentElement.setAttribute("data-nfh-torn-action", "1");
     document.addEventListener(requestEvent, (event) => {
       let request2;
       try {
@@ -6813,22 +6919,22 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
   function install() {
     if (installed) return;
     installed = true;
-    const tag = document.createElement("script");
-    tag.textContent = `(${pageBridge2.toString()})(${JSON.stringify(REQUEST2)}, ${JSON.stringify(RESPONSE2)});`;
-    (document.head || document.documentElement).appendChild(tag);
-    tag.remove();
+    runInPage(`(${pageBridge2.toString()})(${JSON.stringify(REQUEST2)}, ${JSON.stringify(RESPONSE2)});`);
   }
   function postTornAction(page, fields) {
     const rfcv = getCookie("rfc_v");
     if (!rfcv) return Promise.reject(new Error("Torn's page token was not found. Reload the page and try again."));
     install();
+    if (!document.documentElement.hasAttribute("data-nfh-torn-action")) {
+      return Promise.reject(new Error("Torn's page blocked the script that sends it. Use the Loan box on the row instead."));
+    }
     const id = nextId2++;
     const url = `/${page}?rfcv=${encodeURIComponent(rfcv)}`;
     const body = new URLSearchParams(fields).toString();
     return new Promise((resolve, reject) => {
       const timer3 = setTimeout(() => {
         document.removeEventListener(RESPONSE2, listener);
-        reject(new Error("Torn did not answer in time. Check the armoury before trying again."));
+        reject(new Error("Torn did not answer in time (or the page blocked the request). Check the armoury before trying again."));
       }, TIMEOUT_MS2);
       function listener(event) {
         let answer;
@@ -6967,6 +7073,7 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
 
   // src/features/oc-items/index.js
   var PANEL_ID = "nfh-oc-items";
+  var WANTED_TAB_KEY = "nfhOcItemsTab";
   var FILL_CLASS = "nfh-oci-fill";
   var BADGE_CLASS = "nfh-oci-badge";
   var COLLAPSED_KEY = "nfhOcItemsCollapsed";
@@ -7029,7 +7136,7 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
     const data = state3.data;
     if (!data || !data.enabled) return null;
     const where = place();
-    const tab = where === "armoury" ? tabInHash(location.hash) : null;
+    const tab = where === "armoury" ? openArmouryTab() : null;
     const staff = data.staff;
     const live = where === "armoury" ? readArmoury(Object.keys(TAB_LABELS)) : {};
     const missing = staff ? stillMissing(staff.missing, state3.loanedNow) : [];
@@ -7037,10 +7144,48 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
     const unused = staff && where === "armoury" ? unusedLoans(currentLoans(staff.loans, live), staff.needs, staff.oc_item_ids) : [];
     return { where, tab, staff, live, missing, mine, unused };
   }
+  function tabLink(tab, label = `${tabLabel(tab)} \u203A`, className = "nfh-cw-btn") {
+    return `<a class="${className}" href="${escapeHtml(armouryHash(tab))}" data-act="go-tab" data-tab="${escapeHtml(tab)}">${escapeHtml(label)}</a>`;
+  }
+  function openArmouryTab() {
+    const active = document.querySelector('#faction-armoury-tabs li.ui-tabs-active[aria-controls^="tab=armoury&sub="]');
+    return active ? active.getAttribute("aria-controls").split("sub=")[1] : tabInHash(location.hash);
+  }
+  var tornTabAnchor = (tab) => document.querySelector(`#faction-armoury-tabs a.ui-tabs-anchor[href="#tab=armoury&sub=${tab}"]`);
+  function wantedTab() {
+    try {
+      return sessionStorage.getItem(WANTED_TAB_KEY);
+    } catch (error) {
+      return null;
+    }
+  }
+  function setWantedTab(tab) {
+    try {
+      if (tab) sessionStorage.setItem(WANTED_TAB_KEY, tab);
+      else sessionStorage.removeItem(WANTED_TAB_KEY);
+    } catch (error) {
+    }
+  }
+  function wantedTabHint(v) {
+    const tab = wantedTab();
+    document.querySelectorAll(".nfh-oci-tab-hint").forEach((element) => {
+      if (element !== tornTabAnchor(tab)) element.classList.remove("nfh-oci-tab-hint");
+    });
+    if (!tab || v?.where !== "armoury") return "";
+    if (v.tab === tab) {
+      setWantedTab(null);
+      tornTabAnchor(tab)?.classList.remove("nfh-oci-tab-hint");
+      return "";
+    }
+    const anchor = tornTabAnchor(tab);
+    if (!anchor) return "";
+    anchor.classList.add("nfh-oci-tab-hint");
+    return `<div class="nfh-oci-message nfh-oci-message--ok">The ${escapeHtml(tabLabel(tab))} tab is highlighted below. ${tabLink(tab, `Open ${tabLabel(tab)}`)}</div>`;
+  }
   function renderMine(mine, where) {
     return mine.map((entry) => {
       const how = entry.reusable ? "It isn't used up, so it can be loaned." : "The crime uses it up.";
-      const go = where === "armoury" && entry.tab ? "" : ` <a href="${escapeHtml(armouryHash(entry.tab))}">${escapeHtml(tabLabel(entry.tab))} armoury \u203A</a>`;
+      const go = where === "armoury" && entry.tab ? "" : ` ${tabLink(entry.tab, `${tabLabel(entry.tab)} armoury \u203A`, "")}`;
       return `<div class="nfh-oci-mine"><strong>Your slot needs ${escapeHtml(entry.item_name || `item ${entry.item_id}`)}</strong>, which you don't have
         <span class="nfh-cw-muted">(${escapeHtml(entry.position)} in ${escapeHtml(entry.crime)}). ${how}</span>${go}</div>`;
     }).join("");
@@ -7048,7 +7193,7 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
   function missingAction(entry, v) {
     const tab = entry.tab;
     if (v.where !== "armoury" || v.tab !== tab) {
-      return `<a class="nfh-cw-btn" href="${escapeHtml(armouryHash(tab))}">${escapeHtml(tabLabel(tab))} \u203A</a>`;
+      return `${tabLink(tab)}`;
     }
     if (!entry.reusable) return `<span class="nfh-cw-muted">Used up by the crime: give one (row marked Need)</span>`;
     const copy = availableCopy(v.live[tab], entry.item_id);
@@ -7073,7 +7218,7 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
       parts.push(`<div class="nfh-oci-heading">Loaned, not needed${v.unused.length ? ` (${v.unused.length})` : ""}</div>`);
       if (!v.unused.length) parts.push(`<div class="nfh-cw-muted">No OC items are out with members who don't need them.</div>`);
       for (const loan2 of v.unused) {
-        const action = v.tab === loan2.tab ? `<span class="nfh-cw-muted">Retrieve it on the marked row</span>` : `<a class="nfh-cw-btn" href="${escapeHtml(armouryHash(loan2.tab))}">${escapeHtml(tabLabel(loan2.tab))} \u203A</a>`;
+        const action = v.tab === loan2.tab ? `<span class="nfh-cw-muted">Retrieve it on the marked row</span>` : `${tabLink(loan2.tab)}`;
         parts.push(`<div class="nfh-oci-row">
         <span class="nfh-oci-who"><a href="/profiles.php?XID=${loan2.player_id}">${escapeHtml(loan2.player_name || `#${loan2.player_id}`)}</a></span>
         <span class="nfh-oci-what"><strong>${escapeHtml(loan2.item_name)}</strong> <span class="nfh-cw-muted">${escapeHtml(loan2.reason)}</span></span>
@@ -7104,10 +7249,11 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
     panel.classList.toggle("nfh-cw--attn", !!attention);
     const isCollapsed = collapsed();
     const message = state3.message ? `<div class="nfh-oci-message nfh-oci-message--${state3.message.tone}" role="status">${escapeHtml(state3.message.text)}</div>` : "";
+    const hint = wantedTabHint(v);
     const html = `<div class="nfh-cw-bar">
       <button type="button" class="nfh-cw-toggle" data-act="toggle" aria-expanded="${!isCollapsed}"><span class="nfh-cw-caret">${isCollapsed ? "\u25B8" : "\u25BE"}</span> OC items</button>
       <span class="nfh-cw-status">${escapeHtml(counts.join(" \xB7 "))}</span>
-    </div>${isCollapsed ? "" : `<div class="nfh-oci-body">${message}${renderMine(v.mine, v.where)}${v.staff ? renderStaff(v) : ""}</div>`}`;
+    </div>${isCollapsed ? "" : `<div class="nfh-oci-body">${hint}${message}${renderMine(v.mine, v.where)}${v.staff ? renderStaff(v) : ""}</div>`}`;
     if (panel.innerHTML !== html) panel.innerHTML = html;
   }
   function decorate(v) {
@@ -7238,6 +7384,16 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
       redraw();
     } else if (target.dataset.act === "loan") {
       loan(target.dataset.key);
+    } else if (target.dataset.act === "go-tab") {
+      const tab = target.dataset.tab;
+      const anchor = tornTabAnchor(tab);
+      if (anchor) {
+        event.preventDefault();
+        setWantedTab(null);
+        anchor.click();
+      } else {
+        setWantedTab(tab);
+      }
     }
   }
   var oc_items_default = {
@@ -7589,6 +7745,15 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
     if (state4.data) for (const row2 of rows(root3)) decorateRow(row2);
     renderOffer(root3);
   }
+  function crimeOf(playerId) {
+    const board = cachedBoard2()?.board;
+    for (const crime of board?.crimes || []) {
+      const slot = (crime.slots || []).find((candidate) => Number(candidate.player_id) === Number(playerId));
+      if (slot) return { name: crime.name, status: crime.status, role: slot.role };
+    }
+    return null;
+  }
+  var findMessage = "";
   function renderReturn() {
     const target = readJson3(sessionStorage, RETURN_KEY);
     let chip = document.getElementById("nfh-kr-return");
@@ -7604,26 +7769,45 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
         const action = event.target.closest("[data-kr]")?.dataset.kr;
         if (action === "find") {
           const slot2 = findSlot(target.id);
-          slot2?.scrollIntoView({ block: "center" });
+          if (slot2) {
+            findMessage = "";
+            slot2.scrollIntoView({ block: "center", behavior: "smooth" });
+            slot2.classList.add("nfh-kr-slot");
+          } else {
+            const crime2 = crimeOf(target.id);
+            findMessage = crime2 && crime2.status && activeSubTab(document.querySelector(CRIMES_ROOT_SELECTOR) || document) !== crime2.status.toLowerCase() ? `Open the ${crime2.status} tab: their crime is there.` : "Not on the page yet: scroll down so Torn loads more crimes, then press Find again.";
+          }
+          renderReturn();
         } else if (action === "back" || action === "dismiss") {
           writeJson(sessionStorage, RETURN_KEY, null);
+          findMessage = "";
           chip.remove();
         }
       });
       document.body.appendChild(chip);
+      refreshBoard2().then(() => renderReturn());
     }
-    const html = `<span>Kicking <strong>${escapeHtml(target.name || `#${target.id}`)}</strong>: remove them from their crime first.</span>
+    const crime = crimeOf(target.id);
+    const where = crime ? ` They're in <strong>${escapeHtml(crime.name)}</strong> (${escapeHtml(crime.status)}) as ${escapeHtml(crime.role)}.` : "";
+    const html = `<span>Kicking <strong>${escapeHtml(target.name || `#${target.id}`)}</strong>: remove them from their crime first.${where}</span>
     <button type="button" class="nfh-cw-btn" data-kr="find">Find them</button>
     <a class="nfh-cw-btn nfh-cw-btn--primary" href="#/tab=controls&option=members" data-kr="back">Back to Members</a>
-    <button type="button" class="nfh-cw-btn" data-kr="dismiss" aria-label="Dismiss">\u2715</button>`;
+    <button type="button" class="nfh-cw-btn" data-kr="dismiss" aria-label="Dismiss">\u2715</button>
+    ${findMessage ? `<span class="nfh-kr-find-note">${escapeHtml(findMessage)}</span>` : ""}`;
     if (chip.innerHTML !== html) chip.innerHTML = html;
     const slot = findSlot(target.id);
     document.querySelectorAll(".nfh-kr-slot").forEach((element) => element !== slot && element.classList.remove("nfh-kr-slot"));
     slot?.classList.add("nfh-kr-slot");
   }
   function findSlot(id) {
-    const link = document.querySelector(`#faction-crimes-root a[href*="XID=${id}"]`);
-    return link ? link.closest('[class*="wrapper___"], [class*="slot"], li') || link : null;
+    const link = document.querySelector(`${CRIMES_ROOT_SELECTOR} a[href*="profiles.php?XID=${id}"]`);
+    if (!link) return null;
+    let element = link.parentElement;
+    while (element && element.id !== "faction-crimes-root") {
+      if (/(^|\s)wrapper___/.test(element.className) && element.querySelector('[class^="slotHeader___"]')) return element;
+      element = element.parentElement;
+    }
+    return link;
   }
   function schedule(delay = 200) {
     clearTimeout(timer);
@@ -8933,10 +9117,7 @@ ul.nfh-st-row--sell + .nfh-st-lotline {
       onFeed2(detail.feed, detail.source, detail.keys);
     });
     try {
-      const tag = document.createElement("script");
-      tag.textContent = `(${pageTap.toString()})(${JSON.stringify(EVENT)});`;
-      (document.head || document.documentElement).appendChild(tag);
-      tag.remove();
+      runInPage(`(${pageTap.toString()})(${JSON.stringify(EVENT)});`);
     } catch (e) {
       LogInfo("[retals] could not add the page script", e);
     }

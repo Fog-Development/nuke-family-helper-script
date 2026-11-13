@@ -36,6 +36,7 @@ import {
 // minute; the page is re-read (debounced) when Torn redraws the armoury.
 
 const PANEL_ID = "nfh-oc-items";
+const WANTED_TAB_KEY = "nfhOcItemsTab";
 const FILL_CLASS = "nfh-oci-fill";
 const BADGE_CLASS = "nfh-oci-badge";
 const COLLAPSED_KEY = "nfhOcItemsCollapsed";
@@ -111,13 +112,65 @@ function view() {
   const data = state.data;
   if (!data || !data.enabled) return null;
   const where = place();
-  const tab = where === "armoury" ? tabInHash(location.hash) : null;
+  const tab = where === "armoury" ? openArmouryTab() : null;
   const staff = data.staff;
   const live = where === "armoury" ? readArmoury(Object.keys(TAB_LABELS)) : {};
   const missing = staff ? stillMissing(staff.missing, state.loanedNow) : [];
   const mine = (data.mine || []).filter((entry) => !state.loanedNow.has(`${entry.player_id}:${entry.item_id}`));
   const unused = staff && where === "armoury" ? unusedLoans(currentLoans(staff.loans, live), staff.needs, staff.oc_item_ids) : [];
   return { where, tab, staff, live, missing, mine, unused };
+}
+
+// A link to an armoury sub-tab. Torn switches sub-tabs with its own tab links
+// (jQuery UI tabs), not the URL hash, so on the armoury this clicks Torn's tab
+// for the member; from elsewhere it opens the armoury and the tab is shown
+// there to click (see wantedTabHint).
+function tabLink(tab, label = `${tabLabel(tab)} ›`, className = "nfh-cw-btn") {
+  return `<a class="${className}" href="${escapeHtml(armouryHash(tab))}" data-act="go-tab" data-tab="${escapeHtml(tab)}">${escapeHtml(label)}</a>`;
+}
+
+// The armoury sub-tab Torn is showing: its active tab, which the URL hash
+// doesn't always match (arriving with sub=utilities still shows Deposit).
+function openArmouryTab() {
+  const active = document.querySelector('#faction-armoury-tabs li.ui-tabs-active[aria-controls^="tab=armoury&sub="]');
+  return active ? active.getAttribute("aria-controls").split("sub=")[1] : tabInHash(location.hash);
+}
+
+const tornTabAnchor = (tab) => document.querySelector(`#faction-armoury-tabs a.ui-tabs-anchor[href="#tab=armoury&sub=${tab}"]`);
+
+function wantedTab() {
+  try {
+    return sessionStorage.getItem(WANTED_TAB_KEY);
+  } catch (error) {
+    return null;
+  }
+}
+
+function setWantedTab(tab) {
+  try {
+    if (tab) sessionStorage.setItem(WANTED_TAB_KEY, tab);
+    else sessionStorage.removeItem(WANTED_TAB_KEY);
+  } catch (error) {
+    // the hint is only lost
+  }
+}
+
+// After arriving from another page: point at Torn's own sub-tab until it's open.
+function wantedTabHint(v) {
+  const tab = wantedTab();
+  document.querySelectorAll(".nfh-oci-tab-hint").forEach((element) => {
+    if (element !== tornTabAnchor(tab)) element.classList.remove("nfh-oci-tab-hint");
+  });
+  if (!tab || v?.where !== "armoury") return "";
+  if (v.tab === tab) {
+    setWantedTab(null);
+    tornTabAnchor(tab)?.classList.remove("nfh-oci-tab-hint");
+    return "";
+  }
+  const anchor = tornTabAnchor(tab);
+  if (!anchor) return "";
+  anchor.classList.add("nfh-oci-tab-hint");
+  return `<div class="nfh-oci-message nfh-oci-message--ok">The ${escapeHtml(tabLabel(tab))} tab is highlighted below. ${tabLink(tab, `Open ${tabLabel(tab)}`)}</div>`;
 }
 
 function renderMine(mine, where) {
@@ -127,7 +180,7 @@ function renderMine(mine, where) {
       const go =
         where === "armoury" && entry.tab
           ? ""
-          : ` <a href="${escapeHtml(armouryHash(entry.tab))}">${escapeHtml(tabLabel(entry.tab))} armoury ›</a>`;
+          : ` ${tabLink(entry.tab, `${tabLabel(entry.tab)} armoury ›`, "")}`;
       return `<div class="nfh-oci-mine"><strong>Your slot needs ${escapeHtml(entry.item_name || `item ${entry.item_id}`)}</strong>, which you don't have
         <span class="nfh-cw-muted">(${escapeHtml(entry.position)} in ${escapeHtml(entry.crime)}). ${how}</span>${go}</div>`;
     })
@@ -137,7 +190,7 @@ function renderMine(mine, where) {
 function missingAction(entry, v) {
   const tab = entry.tab;
   if (v.where !== "armoury" || v.tab !== tab) {
-    return `<a class="nfh-cw-btn" href="${escapeHtml(armouryHash(tab))}">${escapeHtml(tabLabel(tab))} ›</a>`;
+    return `${tabLink(tab)}`;
   }
   if (!entry.reusable) return `<span class="nfh-cw-muted">Used up by the crime: give one (row marked Need)</span>`;
   const copy = availableCopy(v.live[tab], entry.item_id);
@@ -167,7 +220,7 @@ function renderStaff(v) {
       const action =
         v.tab === loan.tab
           ? `<span class="nfh-cw-muted">Retrieve it on the marked row</span>`
-          : `<a class="nfh-cw-btn" href="${escapeHtml(armouryHash(loan.tab))}">${escapeHtml(tabLabel(loan.tab))} ›</a>`;
+          : `${tabLink(loan.tab)}`;
       parts.push(`<div class="nfh-oci-row">
         <span class="nfh-oci-who"><a href="/profiles.php?XID=${loan.player_id}">${escapeHtml(loan.player_name || `#${loan.player_id}`)}</a></span>
         <span class="nfh-oci-what"><strong>${escapeHtml(loan.item_name)}</strong> <span class="nfh-cw-muted">${escapeHtml(loan.reason)}</span></span>
@@ -203,10 +256,11 @@ function render(v) {
   panel.classList.toggle("nfh-cw--attn", !!attention);
   const isCollapsed = collapsed();
   const message = state.message ? `<div class="nfh-oci-message nfh-oci-message--${state.message.tone}" role="status">${escapeHtml(state.message.text)}</div>` : "";
+  const hint = wantedTabHint(v);
   const html = `<div class="nfh-cw-bar">
       <button type="button" class="nfh-cw-toggle" data-act="toggle" aria-expanded="${!isCollapsed}"><span class="nfh-cw-caret">${isCollapsed ? "▸" : "▾"}</span> OC items</button>
       <span class="nfh-cw-status">${escapeHtml(counts.join(" · "))}</span>
-    </div>${isCollapsed ? "" : `<div class="nfh-oci-body">${message}${renderMine(v.mine, v.where)}${v.staff ? renderStaff(v) : ""}</div>`}`;
+    </div>${isCollapsed ? "" : `<div class="nfh-oci-body">${hint}${message}${renderMine(v.mine, v.where)}${v.staff ? renderStaff(v) : ""}</div>`}`;
   if (panel.innerHTML !== html) panel.innerHTML = html;
 }
 
@@ -355,6 +409,18 @@ function onPanelClick(event) {
     redraw();
   } else if (target.dataset.act === "loan") {
     loan(target.dataset.key);
+  } else if (target.dataset.act === "go-tab") {
+    const tab = target.dataset.tab;
+    const anchor = tornTabAnchor(tab);
+    if (anchor) {
+      // On the armoury: Torn's own tab, clicked for the member's click.
+      event.preventDefault();
+      setWantedTab(null);
+      anchor.click();
+    } else {
+      // Elsewhere the link opens the armoury; its tab is pointed out there.
+      setWantedTab(tab);
+    }
   }
 }
 

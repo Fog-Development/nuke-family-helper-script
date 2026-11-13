@@ -1,3 +1,4 @@
+import { runInPage } from "./page-script.js";
 import { getCookie } from "./torn-page.js";
 
 // One request to Torn, made because the member clicked a button that says
@@ -21,6 +22,7 @@ let nextId = 1;
 function pageBridge(requestEvent, responseEvent) {
   if (window.__nfhTornAction) return;
   window.__nfhTornAction = true;
+  document.documentElement.setAttribute("data-nfh-torn-action", "1");
   document.addEventListener(requestEvent, (event) => {
     let request;
     try {
@@ -43,10 +45,7 @@ function pageBridge(requestEvent, responseEvent) {
 function install() {
   if (installed) return;
   installed = true;
-  const tag = document.createElement("script");
-  tag.textContent = `(${pageBridge.toString()})(${JSON.stringify(REQUEST)}, ${JSON.stringify(RESPONSE)});`;
-  (document.head || document.documentElement).appendChild(tag);
-  tag.remove();
+  runInPage(`(${pageBridge.toString()})(${JSON.stringify(REQUEST)}, ${JSON.stringify(RESPONSE)});`);
 }
 
 // POST `fields` to a torn.com page (`factions.php`), as the page would.
@@ -55,13 +54,16 @@ export function postTornAction(page, fields) {
   const rfcv = getCookie("rfc_v");
   if (!rfcv) return Promise.reject(new Error("Torn's page token was not found. Reload the page and try again."));
   install();
+  if (!document.documentElement.hasAttribute("data-nfh-torn-action")) {
+    return Promise.reject(new Error("Torn's page blocked the script that sends it. Use the Loan box on the row instead."));
+  }
   const id = nextId++;
   const url = `/${page}?rfcv=${encodeURIComponent(rfcv)}`;
   const body = new URLSearchParams(fields).toString();
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
       document.removeEventListener(RESPONSE, listener);
-      reject(new Error("Torn did not answer in time. Check the armoury before trying again."));
+      reject(new Error("Torn did not answer in time (or the page blocked the request). Check the armoury before trying again."));
     }, TIMEOUT_MS);
     function listener(event) {
       let answer;

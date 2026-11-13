@@ -136,6 +136,27 @@ describe("kick risk on the Members list", () => {
     }
   });
 
+  it("on the crimes page, names the member's crime and finds their slot", async () => {
+    const html = loadPageFixture("factions-crimes-planning", 0);
+    const id = Number(html.slice(html.indexOf('id="faction-crimes-root"')).match(/profiles\.php\?XID=(\d+)/)[1]);
+    const api = { "GET /oc/board": { data: { synced_at: 0, crimes: [{ id: 9, name: "Break the Bank", status: "Planning", slots: [{ role: "Muscle #2", player_id: id }] }] } } };
+    const before = (page) => page.evaluate((target) => sessionStorage.setItem("nfhKickReturn", JSON.stringify(target)), { id, name: "Someone" });
+    const { page, errors, close } = await openTornPage(browser, { page: "factions-crimes-planning", api, before });
+    try {
+      await page.waitForFunction(() => /Break the Bank/.test(document.getElementById("nfh-kr-return")?.innerText || ""));
+      assert.match(await page.locator("#nfh-kr-return").innerText(), /They're in Break the Bank \(Planning\) as Muscle #2\./);
+      await page.click('#nfh-kr-return [data-kr="find"]');
+      const slot = page.locator(".nfh-kr-slot");
+      assert.equal(await slot.count(), 1);
+      assert.equal(await slot.locator(`a[href*="XID=${id}"]`).count() >= 1, true, "the highlighted slot is theirs");
+      assert.equal(await slot.locator('[class^="slotHeader___"]').count(), 1, "one slot, not the whole crime");
+      assert.deepEqual(errors, []);
+      await screenshot(page.locator("#nfh-kr-return"), "kick-risk-return");
+    } finally {
+      await close();
+    }
+  });
+
   it("asks nothing more of a member without access for half a day", async () => {
     const { page, apiCalls, close } = await openTornPage(browser, {
       page: "controls-members",

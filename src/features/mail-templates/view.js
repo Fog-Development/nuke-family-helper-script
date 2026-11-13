@@ -42,7 +42,7 @@ function formHtml(state) {
     return `<div class="nfh-mt-form">
       <input type="text" class="nfh-cw-input" data-field="name" maxlength="80" placeholder="Template name" value="${escapeHtml(form.name)}">
       <label class="nfh-cw-muted">Show in ${scopeSelect("scope", form.scope)}</label>
-      ${button("save-confirm", "Save", { primary: true, disabled: state.busy })}${button("form-cancel", "Cancel")}
+      ${button("save-confirm", state.busy ? "Saving…" : "Save template", { primary: true, disabled: state.busy })}${button("form-cancel", "Cancel")}
       <div class="nfh-cw-muted nfh-mt-note">Saves the message as it is in the editor${state.hasSubject ? ", and the subject" : ""}. Only you can see your templates.</div>
     </div>`;
   }
@@ -167,7 +167,7 @@ export function renderBar(state) {
       <span class="nfh-mt-pins">${status}</span>
       <span class="nfh-cw-actions nfh-mt-buttons">
         ${button("toggle-all", `All${total ? ` (${total})` : ""} ${state.open ? "▴" : "▾"}`, { disabled: !list })}
-        ${button("save", "Save", { disabled: state.busy || !list })}
+        ${button("save", state.form?.mode === "save" ? "Save template" : "Save", { disabled: state.busy || !list, primary: state.form?.mode === "save" })}
         ${button("help", "?", { title: "Placeholders you can use", extra: ' aria-label="Placeholders"' })}
       </span>
     </div>

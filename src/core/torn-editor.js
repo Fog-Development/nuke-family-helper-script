@@ -1,14 +1,18 @@
+import { pageWindow, runInPage } from "./page-script.js";
+
 // Torn's rich text editor (mail compose, faction newsletter) is TinyMCE in
 // inline mode: a `contenteditable` element with class `mce-content-body`,
 // wrapped in a React component that also keeps a hidden HTML source textarea.
 //
-// Writing the element's HTML directly would leave TinyMCE (and React) holding
+// Writing the element's HTML directly could leave TinyMCE (and React) holding
 // the old content, so reading and writing go through TinyMCE's own
-// getContent()/setContent() in the page: a userscript's window may be a
-// sandbox that can't see the page's `tinymce`. A small script tag runs in the
-// page and answers requests made with DOM events (strings only, so they cross
-// any sandbox). Where TinyMCE can't be found (a page without it, or the test
-// harness, where Torn's scripts don't run) the element itself is used.
+// getContent()/setContent(), tried in this order:
+//   1. the page's `tinymce` through pageWindow() (unsafeWindow), directly;
+//   2. a small script in the page (added with Torn's CSP nonce) answering
+//      requests made with DOM events, strings only, for a manager that
+//      doesn't hand us the page's window;
+//   3. the element itself, where neither answers (a page without TinyMCE,
+//      or the test harness, where Torn's scripts don't run).
 //
 // Nothing here talks to Torn: it only changes what is in the editor, on the
 // member's click.
@@ -24,6 +28,7 @@ let nextId = 1;
 function pageBridge(requestEvent, responseEvent) {
   if (window.__nfhEditorBridge) return;
   window.__nfhEditorBridge = true;
+  document.documentElement.setAttribute("data-nfh-editor-bridge", "1");
 
   document.addEventListener(requestEvent, (event) => {
     let request;
@@ -69,14 +74,35 @@ function pageBridge(requestEvent, responseEvent) {
 function installBridge() {
   if (bridgeInstalled) return;
   bridgeInstalled = true;
-  const tag = document.createElement("script");
-  tag.textContent = `(${pageBridge.toString()})(${JSON.stringify(REQUEST)}, ${JSON.stringify(RESPONSE)});`;
-  (document.head || document.documentElement).appendChild(tag);
-  tag.remove();
+  try {
+    runInPage(`(${pageBridge.toString()})(${JSON.stringify(REQUEST)}, ${JSON.stringify(RESPONSE)});`);
+  } catch (error) {
+    // blocked: the element fallback still works
+  }
+}
+
+// TinyMCE's editor for the element, straight from the page's window.
+function directEditor(element) {
+  try {
+    const mce = pageWindow().tinymce;
+    if (!mce || !element.id) return null;
+    const editor = mce.get(element.id);
+    if (editor) return editor;
+    const active = mce.activeEditor;
+    return active && active.getElement && active.getElement() === element ? active : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function setElement(element, html) {
+  element.innerHTML = html;
+  element.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 function ask(elementId, op, html) {
   installBridge();
+  if (!document.documentElement.hasAttribute("data-nfh-editor-bridge")) return Promise.reject(new Error("The page script did not run."));
   const id = nextId++;
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
@@ -108,18 +134,50 @@ export function findEditor(root) {
 
 export async function getEditorHtml(element) {
   if (!element) throw new Error("The editor was not found.");
-  if (!element.id) return element.innerHTML;
-  return (await ask(element.id, "get")).html ?? "";
+  const editor = directEditor(element);
+  if (editor) {
+    try {
+      return String(editor.getContent());
+    } catch (error) {
+      // fall through
+    }
+  }
+  if (element.id) {
+    try {
+      return (await ask(element.id, "get")).html ?? element.innerHTML;
+    } catch (error) {
+      // the page script didn't run: read the element
+    }
+  }
+  return element.innerHTML;
 }
 
 export async function setEditorHtml(element, html) {
   if (!element) throw new Error("The editor was not found.");
-  if (!element.id) {
-    element.innerHTML = html;
-    element.dispatchEvent(new Event("input", { bubbles: true }));
-    return;
+  const editor = directEditor(element);
+  if (editor) {
+    try {
+      editor.focus();
+      if (editor.undoManager) editor.undoManager.add();
+      editor.setContent(html);
+      if (editor.undoManager) editor.undoManager.add();
+      editor.fire("change");
+      editor.fire("input");
+      if (editor.nodeChanged) editor.nodeChanged();
+      return;
+    } catch (error) {
+      // fall through
+    }
   }
-  await ask(element.id, "set", html);
+  if (element.id) {
+    try {
+      await ask(element.id, "set", html);
+      return;
+    } catch (error) {
+      // the page script didn't run: write the element
+    }
+  }
+  setElement(element, html);
 }
 
 // Whether the editor holds anything worth keeping (text or a picture).
