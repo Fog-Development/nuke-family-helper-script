@@ -4,7 +4,7 @@ import { LogInfo } from "../core/log.js";
 import { IsPage, PageType } from "../core/pages.js";
 import { SettingsManager } from "../core/settings.js";
 import { createSyncedStore } from "../core/synced-store.js";
-import { parseApiUtcDate } from "../core/time.js";
+import { formatDateTime, parseApiUtcDate } from "../core/time.js";
 import { getFactionId, getPlayerId } from "../core/torn-page.js";
 import { onUserRoleRefreshed } from "../core/user.js";
 
@@ -188,7 +188,7 @@ function buildContractInfoContainer(contract) {
     ["Premium Contract", contract.is_premium ? "Yes" : "No"],
     [
       "Start Date",
-      parseApiUtcDate(contract.contract_start_date).toLocaleString(),
+      `${formatDateTime(parseApiUtcDate(contract.contract_start_date))} TCT`,
     ],
   );
 

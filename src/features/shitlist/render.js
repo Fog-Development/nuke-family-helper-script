@@ -17,7 +17,7 @@ export function buildShitListEntry(entry) {
   let lastUpdatedHTML = "";
   if (entry.updatedAt) {
     const updatedAtDate = new Date(entry.updatedAt);
-    const tooltipDate = formatDateTime(updatedAtDate); // "yyyy-mm-dd HH:mm"
+    const tooltipDate = `${formatDateTime(updatedAtDate)} TCT`; // "yyyy-mm-dd HH:mm TCT"
     const relativeDate = timeSince(updatedAtDate); // "2 days ago", etc.
     lastUpdatedHTML = `
       <div>
