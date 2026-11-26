@@ -44,4 +44,20 @@ describe("OC spawn plan", () => {
     assert.match(html, /&lt;b&gt;4&lt;\/b&gt;/, "reasons are escaped");
     assert.equal(spawnPanelHtml({ enabled: false }), "");
   });
+
+  it("says members wait when the plan leaves them waiting on purpose", () => {
+    const waiting = {
+      enabled: true,
+      tiers: [{ tier: "psi", label: "Psi", levels: [7, 8], scope_cost: 4, spawn: 0, seeking: 3, waiting: 2, lifted: 3, below_minimum: false, reasons: ["2 of them wait for a slot to open"] }],
+    };
+    const badges = spawnBadges(waiting);
+    assert.deepEqual([badges.psi.text, badges.psi.tone], ["wait", "quiet"]);
+    assert.match(badges.psi.title, /^2 waiting: 2 of them wait/);
+    const html = spawnPanelHtml(waiting);
+    assert.match(html, /nfh-oc-plan__verdict--wait">2 wait</);
+    assert.doesNotMatch(html, /Enough open/);
+
+    const below = spawnPanelHtml({ enabled: true, tiers: [{ ...waiting.tiers[0], tier: "phi", waiting: 0, below_minimum: true }] });
+    assert.match(below, /nfh-oc-plan__row nfh-oc-plan__row--quiet/);
+  });
 });

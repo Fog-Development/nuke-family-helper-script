@@ -22,6 +22,9 @@ export function spawnBadges(plan) {
         tone: tier.below_productive ? "quiet" : "spawn",
         title: `Spawn ${tier.spawn}: ${(tier.reasons || []).join("; ")}`,
       };
+    } else if (tier.waiting > 0) {
+      // Left waiting on purpose: too few to fill a crime, or below the faction's lowest spawn level.
+      badges[tier.tier] = { text: "wait", tone: "quiet", title: `${tier.waiting} waiting: ${(tier.reasons || []).join("; ")}` };
     } else if (tier.seeking > 0 || tier.back_later > 0) {
       badges[tier.tier] = { text: "✓", tone: "ok", title: `Enough open: ${(tier.reasons || []).join("; ")}` };
     }
@@ -42,11 +45,14 @@ function tierHtml(tier) {
     tier.spawn > 0
       ? `<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--spawn">Spawn ${tier.spawn}${forLevels(tier)}</span>` +
         `<span class="nfh-oc-plan__muted">${tier.spawn * tier.scope_cost} scope</span>`
-      : '<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--ok">Enough open</span>';
+      : tier.waiting > 0
+        ? `<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--wait">${escapeHtml(tier.waiting)} wait</span>`
+        : '<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--ok">Enough open</span>';
+  const quiet = tier.below_productive || tier.below_minimum;
   const summary = [plural(free, "member free soon", "members free soon"), plural(tier.open_slots_taken || 0, "open slot fits", "open slots fit")];
   const why = (tier.reasons || []).map((reason) => `<li>${escapeHtml(reason)}</li>`).join("");
   return (
-    `<details class="nfh-oc-plan__row${tier.below_productive ? " nfh-oc-plan__row--quiet" : ""}" data-nfh-key="tier-${escapeHtml(tier.tier)}">` +
+    `<details class="nfh-oc-plan__row${quiet ? " nfh-oc-plan__row--quiet" : ""}" data-nfh-key="tier-${escapeHtml(tier.tier)}">` +
     "<summary>" +
     `<span class="nfh-oc-plan__symbol" aria-hidden="true">${SYMBOLS[tier.tier] || ""}</span>` +
     `<span class="nfh-oc-plan__name">${escapeHtml(tier.label)} <span class="nfh-oc-plan__muted">${escapeHtml((tier.levels || []).join("–"))}</span></span>` +

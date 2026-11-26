@@ -2648,6 +2648,10 @@ body.dark-mode .nfh-oc-plan__verdict--ok {
     color: #7bd17f;
 }
 
+.nfh-oc-plan__verdict--wait {
+    color: var(--nfh-list-key);
+}
+
 .nfh-oc-plan__row--quiet .nfh-oc-plan__verdict {
     color: var(--nfh-list-key);
 }
@@ -6266,6 +6270,8 @@ body.dark-mode .nfh-oc-plan__verdict--ok {
           tone: tier.below_productive ? "quiet" : "spawn",
           title: `Spawn ${tier.spawn}: ${(tier.reasons || []).join("; ")}`
         };
+      } else if (tier.waiting > 0) {
+        badges[tier.tier] = { text: "wait", tone: "quiet", title: `${tier.waiting} waiting: ${(tier.reasons || []).join("; ")}` };
       } else if (tier.seeking > 0 || tier.back_later > 0) {
         badges[tier.tier] = { text: "\u2713", tone: "ok", title: `Enough open: ${(tier.reasons || []).join("; ")}` };
       }
@@ -6278,10 +6284,11 @@ body.dark-mode .nfh-oc-plan__verdict--ok {
   }
   function tierHtml(tier) {
     const free = (tier.seeking || 0) + (tier.back_later || 0);
-    const verdict = tier.spawn > 0 ? `<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--spawn">Spawn ${tier.spawn}${forLevels(tier)}</span><span class="nfh-oc-plan__muted">${tier.spawn * tier.scope_cost} scope</span>` : '<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--ok">Enough open</span>';
+    const verdict = tier.spawn > 0 ? `<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--spawn">Spawn ${tier.spawn}${forLevels(tier)}</span><span class="nfh-oc-plan__muted">${tier.spawn * tier.scope_cost} scope</span>` : tier.waiting > 0 ? `<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--wait">${escapeHtml(tier.waiting)} wait</span>` : '<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--ok">Enough open</span>';
+    const quiet = tier.below_productive || tier.below_minimum;
     const summary = [plural(free, "member free soon", "members free soon"), plural(tier.open_slots_taken || 0, "open slot fits", "open slots fit")];
     const why = (tier.reasons || []).map((reason) => `<li>${escapeHtml(reason)}</li>`).join("");
-    return `<details class="nfh-oc-plan__row${tier.below_productive ? " nfh-oc-plan__row--quiet" : ""}" data-nfh-key="tier-${escapeHtml(tier.tier)}"><summary><span class="nfh-oc-plan__symbol" aria-hidden="true">${SYMBOLS[tier.tier] || ""}</span><span class="nfh-oc-plan__name">${escapeHtml(tier.label)} <span class="nfh-oc-plan__muted">${escapeHtml((tier.levels || []).join("\u2013"))}</span></span>` + verdict + `<span class="nfh-oc-plan__summary">${summary.join(" \xB7 ")}</span></summary><ul class="nfh-oc-plan__why">${why}</ul></details>`;
+    return `<details class="nfh-oc-plan__row${quiet ? " nfh-oc-plan__row--quiet" : ""}" data-nfh-key="tier-${escapeHtml(tier.tier)}"><summary><span class="nfh-oc-plan__symbol" aria-hidden="true">${SYMBOLS[tier.tier] || ""}</span><span class="nfh-oc-plan__name">${escapeHtml(tier.label)} <span class="nfh-oc-plan__muted">${escapeHtml((tier.levels || []).join("\u2013"))}</span></span>` + verdict + `<span class="nfh-oc-plan__summary">${summary.join(" \xB7 ")}</span></summary><ul class="nfh-oc-plan__why">${why}</ul></details>`;
   }
   function risksHtml(risks) {
     if (!risks.length) return "";
