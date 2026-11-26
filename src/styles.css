@@ -1715,6 +1715,31 @@ body.dark-mode .nfh-kr-badge--elevated {
     color: #fff;
 }
 
+.nfh-kr-away {
+    margin-left: 4px;
+    padding: 0 5px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 9px;
+    background: none;
+    color: var(--nfh-list-key);
+    font: 700 10px/14px Arial, Helvetica, sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.nfh-kr-away--gone {
+    border-color: #b26a00;
+    color: #8a5300;
+}
+
+body.dark-mode .nfh-kr-away--gone {
+    color: #f0b44c;
+}
+
+.nfh-kr-why {
+    margin-top: 3px;
+}
+
 .nfh-kr-detail,
 .nfh-kr-kick {
     margin: 4px 8px 8px;
@@ -2091,4 +2116,115 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
 
 .nfh-oc-idle-time--alert {
     background-color: #b71c1c;
+}
+
+/* Recruiting scores: Applications page and "Score this page" */
+.nfh-rs-slot {
+    --nfh-rs-good: #256b29;
+    --nfh-rs-mid: #8a5300;
+    --nfh-rs-low: #b3261e;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    vertical-align: middle;
+    font: 11px/16px Arial, Helvetica, sans-serif;
+    white-space: nowrap;
+}
+
+body.dark-mode .nfh-rs-slot,
+body.dark-mode .nfh-rs-detail {
+    --nfh-rs-good: #7bd17f;
+    --nfh-rs-mid: #f0b44c;
+    --nfh-rs-low: #ff8a80;
+}
+
+.nfh-rs-badge,
+.nfh-rs-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 6px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 9px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font: inherit;
+    cursor: pointer;
+}
+
+.nfh-rs-badge:hover,
+.nfh-rs-action:hover {
+    background-color: var(--nfh-btn-hover);
+}
+
+.nfh-rs-c {
+    font-size: 12px;
+}
+
+.nfh-rs-sub {
+    color: var(--nfh-list-key);
+}
+
+.nfh-rs-sub--ks {
+    padding: 0 4px;
+    border-radius: 6px;
+    background-color: var(--nfh-container-bg);
+    font-weight: 700;
+}
+
+.nfh-rs--good {
+    color: var(--nfh-rs-good);
+}
+
+.nfh-rs--mid {
+    color: var(--nfh-rs-mid);
+}
+
+.nfh-rs--low {
+    color: var(--nfh-rs-low);
+}
+
+.nfh-rs-sub.nfh-rs--good,
+.nfh-rs-sub.nfh-rs--mid,
+.nfh-rs-sub.nfh-rs--low {
+    font-weight: 700;
+}
+
+.nfh-rs-note {
+    color: var(--nfh-list-key);
+}
+
+.nfh-rs-detail {
+    position: relative;
+    margin: 4px 8px 8px;
+    padding: 6px 30px 6px 8px;
+    white-space: normal;
+    text-align: left;
+}
+
+.nfh-rs-detail .nfh-rs-close {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    padding: 0 6px;
+}
+
+.nfh-rs-detail-body > div:first-child {
+    margin-top: 2px !important;
+}
+
+.nfh-rs-bar .nfh-cw-bar {
+    flex-wrap: wrap;
+    padding: 3px 8px;
+}
+
+.nfh-rs-bar-status {
+    min-width: 0;
+}
+
+/* Phone layout: the composite and kick safety only. */
+@media (max-width: 784px) {
+    .nfh-rs-sub:not(.nfh-rs-sub--ks) {
+        display: none;
+    }
 }

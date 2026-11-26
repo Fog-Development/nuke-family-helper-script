@@ -33,3 +33,39 @@ describe("kick risk logic", () => {
     assert.deepEqual([changeText(-23), changeText(8), changeText(0), changeText(null)], ["↓ 23%", "↑ 8%", "± 0%", ""]);
   });
 });
+
+describe("leave risk and last online", async () => {
+  const { awayTier, daysSince, deltaText, lastOnlineText, reasonsText } = await import("../../src/features/kick-risk/logic.js");
+  const now = Date.parse("2026-11-26T12:00:00Z");
+
+  it("counts whole days since Torn's last action (UTC)", () => {
+    assert.equal(daysSince("2026-11-26T03:00:00Z", now), 0);
+    assert.equal(daysSince("2026-11-25T11:59:00Z", now), 1);
+    assert.equal(daysSince("2026-11-16T12:00:00Z", now), 10);
+    assert.equal(daysSince(null, now), null);
+    assert.equal(daysSince("nonsense", now), null);
+    assert.equal(daysSince("2026-11-27T00:00:00Z", now), 0, "a clock a little ahead is not negative");
+    assert.deepEqual([0, 1, 6, null].map(lastOnlineText), ["today", "1 day ago", "6 days ago", "unknown"]);
+  });
+
+  it("chips members away three days or more, louder from a week", () => {
+    assert.deepEqual([null, 0, 2, 3, 6, 7, 30].map(awayTier), [null, null, null, "away", "away", "gone", "gone"]);
+  });
+
+  it("names the model's reasons with the member's value", () => {
+    assert.equal(
+      reasonsText([
+        { label: "Time Online / day (7d)", value: 12.5 },
+        { label: "Xanax Taken / day (30d)", value: 0.24 },
+        { label: "Tenure (days)", value: null },
+      ]),
+      "Time Online / day (7d) 13 · Xanax Taken / day (30d) 0.2 · Tenure (days)",
+    );
+    assert.equal(reasonsText([]), "");
+    assert.equal(reasonsText(undefined), "");
+  });
+
+  it("says which way the risk moved since last week", () => {
+    assert.deepEqual([12.5, -3, 0, null, undefined, "x"].map(deltaText), ["↑ 12.5 since last week", "↓ 3 since last week", "no change since last week", "", "", ""]);
+  });
+});

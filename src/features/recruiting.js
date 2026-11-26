@@ -6,7 +6,7 @@ import { getOwnPermissions, RECRUITING_PERMISSION } from "../core/user.js";
 // Fetch a player's ML recruiting score. Deliberately NOT cached client-side:
 // every click is an intentional check that the server logs for audit, and the
 // server already caches the underlying computation so re-checks stay cheap.
-async function getRecruitingScoreForPlayer(playerId) {
+export async function getRecruitingScoreForPlayer(playerId) {
   try {
     return await api("/candidate-score/" + playerId);
   } catch (error) {
@@ -28,7 +28,7 @@ async function getRecruitingScoreForPlayer(playerId) {
 }
 
 // Traffic-light colour for a 0–100 sub-score (high = good).
-function recruitingScoreColor(score) {
+export function recruitingScoreColor(score) {
   if (score === null || score === undefined || isNaN(score)) return "#999";
   if (score >= 67) return "#3a3";
   if (score >= 34) return "#c90";
@@ -36,7 +36,7 @@ function recruitingScoreColor(score) {
 }
 
 // Render the recruiting score + per-sub-score drivers into a container.
-function renderRecruitingScore(container, data) {
+export function renderRecruitingScore(container, data) {
   const subs = [
     ["Activity", data.activity, "activity"],
     ["Kick Safety", data.kick_safety, "kick_safety"],

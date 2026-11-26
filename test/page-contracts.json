@@ -315,6 +315,37 @@
       "fixtures": [
         "stocks-expanded@1"
       ]
+    },
+    {
+      "id": "applications-list",
+      "feature": "recruiting scores",
+      "description": "Applications under Controls: profile links of the applicants in the content column (badges go after each name). Fixture still to capture (wanted: controls-applications).",
+      "url": "factions\\.php\\?step=your.*option=application",
+      "when": "#option-application-root, .content-wrapper a[href*=\"profiles.php?XID=\"]",
+      "expect": [
+        {
+          "selector": ".content-wrapper a[href*=\"profiles.php?XID=\"]",
+          "note": "applicant name links"
+        }
+      ],
+      "fixtures": []
+    },
+    {
+      "id": "bulk-player-lists",
+      "feature": "recruiting scores",
+      "description": "Lists offered \"Score this page\": player profile links in Torn's content column, the bar goes under .content-title. Fixtures still to capture (wanted: recruit-citizens, halloffame, search-results, faction-profile-other).",
+      "url": "(bringafriend\\.php|halloffame\\.php|page\\.php\\?sid=UserList|factions\\.php\\?step=profile|index\\.php\\?page=people)",
+      "when": ".content-wrapper a[href*=\"profiles.php?XID=\"]",
+      "expect": [
+        {
+          "selector": "#mainContainer .content-wrapper"
+        },
+        {
+          "selector": ".content-wrapper > .content-title",
+          "note": "the bar goes after it"
+        }
+      ],
+      "fixtures": []
     }
   ]
 }

@@ -24,6 +24,8 @@ import ocFines from "./features/oc-fines/index.js";
 import mailTemplates from "./features/mail-templates/index.js";
 import ocItems from "./features/oc-items/index.js";
 import kickRisk from "./features/kick-risk/index.js";
+import recruitingApplications from "./features/recruiting-scores/applications.js";
+import recruitingBulk from "./features/recruiting-scores/bulk.js";
 import stocks from "./features/stocks/index.js";
 import { ocConfigStore } from "./features/organized-crimes/data.js";
 import rankedWar from "./features/ranked-war/index.js";
@@ -52,6 +54,8 @@ const features = [
   mailTemplates,
   ocItems,
   kickRisk,
+  recruitingApplications,
+  recruitingBulk,
   stocks,
 ];
 
