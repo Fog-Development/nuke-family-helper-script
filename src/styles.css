@@ -2431,6 +2431,10 @@ body.dark-mode .nfh-oc-plan__verdict--ok {
     color: #7bd17f;
 }
 
+.nfh-oc-plan__verdict--wait {
+    color: var(--nfh-list-key);
+}
+
 .nfh-oc-plan__row--quiet .nfh-oc-plan__verdict {
     color: var(--nfh-list-key);
 }
