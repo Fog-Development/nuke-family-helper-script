@@ -319,30 +319,62 @@
     {
       "id": "applications-list",
       "feature": "recruiting scores",
-      "description": "Applications under Controls: profile links of the applicants in the content column (badges go after each name). Fixture still to capture (wanted: controls-applications).",
+      "description": "Applications under Controls: applicant rows and the name link in each Person cell (badge after the honor bar; at phone width a line after the table row)",
       "url": "factions\\.php\\?step=your.*option=application",
-      "when": "#option-application-root, .content-wrapper a[href*=\"profiles.php?XID=\"]",
+      "when": "#faction-applications-root [class*=\"rowWrapper___\"]",
       "expect": [
         {
-          "selector": ".content-wrapper a[href*=\"profiles.php?XID=\"]",
+          "selector": "#faction-applications-root [class*=\"rowWrapper___\"] [class*=\"tableRow___\"]"
+        },
+        {
+          "selector": "#faction-applications-root [class*=\"person___\"] [class*=\"honorWrap___\"] a[href*=\"profiles.php?XID=\"]",
           "note": "applicant name links"
         }
       ],
-      "fixtures": []
+      "fixtures": [
+        "controls-applications",
+        "controls-applications-mobile"
+      ]
     },
     {
-      "id": "bulk-player-lists",
+      "id": "search-list",
       "feature": "recruiting scores",
-      "description": "Lists offered \"Score this page\": player profile links in Torn's content column, the bar goes under .content-title. Fixtures still to capture (wanted: recruit-citizens, halloffame, search-results, faction-profile-other).",
-      "url": "(bringafriend\\.php|halloffame\\.php|page\\.php\\?sid=UserList|factions\\.php\\?step=profile|index\\.php\\?page=people)",
+      "description": "Player search results: one name link per row; the Score this page bar goes before .userlist-wrapper",
+      "url": "page\\.php\\?sid=UserList",
+      "when": ".user-info-list-wrap li",
+      "expect": [
+        {
+          "selector": ".userlist-wrapper .user-info-list-wrap li a.user.name[href*=\"profiles.php?XID=\"]"
+        }
+      ],
+      "fixtures": [
+        "search-results"
+      ]
+    },
+    {
+      "id": "faction-profile-members",
+      "feature": "recruiting scores",
+      "description": "Another faction's member table: honor-bar name links; the bar goes before .members-list",
+      "url": "factions\\.php\\?step=profile",
+      "when": ".faction-info-wrap .members-list",
+      "expect": [
+        {
+          "selector": ".faction-info-wrap .members-list .table-body li [class*=\"honorWrap___\"] a[href*=\"profiles.php?XID=\"]"
+        }
+      ],
+      "fixtures": [
+        "faction-profile-other"
+      ]
+    },
+    {
+      "id": "hof-player-lists",
+      "feature": "recruiting scores",
+      "description": "Hall of Fame player lists: profile links in the content column (generic until captured: wanted halloffame)",
+      "url": "page\\.php\\?sid=hof",
       "when": ".content-wrapper a[href*=\"profiles.php?XID=\"]",
       "expect": [
         {
           "selector": "#mainContainer .content-wrapper"
-        },
-        {
-          "selector": ".content-wrapper > .content-title",
-          "note": "the bar goes after it"
         }
       ],
       "fixtures": []

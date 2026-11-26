@@ -3,7 +3,7 @@ import { LogInfo } from "../../core/log.js";
 import { IsPage, PageType } from "../../core/pages.js";
 import { getOwnPermissions, RECRUITING_PERMISSION } from "../../core/user.js";
 import { getRecruitingScoreForPlayer } from "../recruiting.js";
-import { clearAll, contentRoot, playerEntries, setDetail, upsertSlot } from "./view.js";
+import { clearAll, playerEntries, setDetail, upsertSlot } from "./view.js";
 
 // Recruiting scores on your faction's Controls → Applications, for whoever may
 // see recruiting scores (`recruiting.predict`, as on the profile check).
@@ -32,8 +32,12 @@ let observer = null;
 let observed = null;
 let timer = null;
 
+// Torn's applications list; applicants are the name links in its Person cells.
+const ROOT = "#faction-applications-root";
+const PERSON = '[class*="person___"]';
+
 function root() {
-  return document.querySelector("#option-application-root") || document.querySelector('[id^="option-application"][id$="-root"]') || contentRoot();
+  return document.querySelector(ROOT);
 }
 
 function onPage() {
@@ -119,7 +123,13 @@ function redraw() {
   const element = root();
   if (!element || state.allowed !== true) return;
   observe(element);
-  const entries = playerEntries(element);
+  // At phone width the Person cell is too narrow and Torn's rows have a fixed
+  // height, so the slot goes on its own line under the row instead.
+  const narrow = window.matchMedia("(max-width: 784px)").matches;
+  const entries = playerEntries(element, { within: PERSON }).map((entry) => {
+    const tableRow = narrow ? entry.link.closest('[class*="tableRow___"]') : null;
+    return tableRow ? { ...entry, host: tableRow, line: true } : entry;
+  });
   const missing = entries.map((entry) => entry.id).filter((id) => !state.scores.has(id) && !state.asked.has(id));
   if (missing.length && !state.loadError) fetchScores(missing.slice(0, 100));
   for (const entry of entries) {

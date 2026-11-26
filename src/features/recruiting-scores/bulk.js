@@ -3,11 +3,11 @@ import { escapeHtml } from "../../core/dom.js";
 import { LogInfo } from "../../core/log.js";
 import { PageType } from "../../core/pages.js";
 import { getOwnPermissions, RECRUITING_PERMISSION } from "../../core/user.js";
-import { applyProgress, bulkPageKind, isFinished, progressText, unscoredIds } from "./logic.js";
+import { applyProgress, bulkPageKind, isFinished, PAGE_LISTS, progressText, unscoredIds } from "./logic.js";
 import { clearAll, contentRoot, playerEntries, setDetail, upsertSlot } from "./view.js";
 
 // "Score this page": recruiting score badges for a list of players a recruiter
-// is looking at (Recruit Citizens, Hall of Fame, the player search, another
+// is looking at (the Hall of Fame's player lists, the player search, another
 // faction's members, people abroad), for whoever may see recruiting scores.
 //
 // Never automatic: nothing is asked for until the member presses the button.
@@ -41,6 +41,14 @@ let observer = null;
 let observed = null;
 
 const kind = () => bulkPageKind(location.href);
+
+// The page's list of players (the whole content column on pages not captured yet).
+function listRoot() {
+  const selector = PAGE_LISTS[kind()]?.list;
+  return selector ? document.querySelector(selector) : contentRoot();
+}
+
+const entriesOnPage = () => playerEntries(listRoot());
 
 // ---- the button bar -----------------------------------------------------------
 
@@ -79,9 +87,13 @@ function renderBar(container, entries) {
       }
     });
   }
-  // Under the page's title when it has one, else at the top of the content.
+  // Right above the list where the page is known, else under the page's
+  // title, else at the top of the content.
+  const before = PAGE_LISTS[kind()]?.bar ? document.querySelector(PAGE_LISTS[kind()].bar) : null;
   const title = container.querySelector(":scope > .content-title");
-  if (title) {
+  if (before) {
+    if (before.previousElementSibling !== bar) before.insertAdjacentElement("beforebegin", bar);
+  } else if (title) {
     if (title.nextElementSibling !== bar) title.insertAdjacentElement("afterend", bar);
   } else if (container.firstElementChild !== bar) {
     container.prepend(bar);
@@ -95,7 +107,7 @@ function renderBar(container, entries) {
 async function start() {
   if (state.starting || (state.lookup && !isFinished(state.lookup.status))) return;
   const ids = unscoredIds(
-    playerEntries(contentRoot()).map((entry) => entry.id),
+    entriesOnPage().map((entry) => entry.id),
     state.results,
   ).slice(0, MAX_PLAYERS);
   if (!ids.length) return;
@@ -187,10 +199,10 @@ function redraw() {
   const container = contentRoot();
   if (!kind() || !container || state.allowed !== true) return;
   observe(container);
-  const entries = playerEntries(container);
+  const entries = entriesOnPage();
   renderBar(container, entries);
   for (const entry of entries) {
-    upsertSlot(entry, slotState(entry.id), onAction);
+    upsertSlot(entry, slotState(entry.id), onAction, { compact: true });
     const result = state.results.get(entry.id);
     setDetail(entry, state.open.has(entry.id) && result?.state === "scored" ? result : null, (id) => {
       state.open.delete(id);
@@ -223,7 +235,7 @@ function observe(container) {
 
 export default {
   name: "Recruiting scores: score this page",
-  pages: [PageType.RecruitCitizens, PageType.HallOfFame, PageType.Search, PageType.Faction, PageType.Abroad],
+  pages: [PageType.Search, PageType.Faction, PageType.Abroad],
   async init() {
     if (!kind()) {
       observer?.disconnect();

@@ -18,12 +18,15 @@ function shown(element) {
 }
 
 // One entry per player listed in `root`, at their name link (the avatar link,
-// when a row has one, has no text). Links inside our own panels don't count.
-export function playerEntries(root) {
+// when a row has one, has no text). Links inside our own panels don't count,
+// nor (given `within`) links outside the rows' name cells, such as a profile
+// link in an applicant's message.
+export function playerEntries(root, { within = null } = {}) {
   const seen = new Map();
   if (!root) return [];
   for (const link of root.querySelectorAll('a[href*="profiles.php?XID="]')) {
     if (link.closest(".nfh-rs-detail, .nfh-cw, .nfh-rs-slot") || !shown(link)) continue;
+    if (within && !link.closest(within)) continue;
     const id = playerIdFromHref(link.getAttribute("href"));
     if (!id) continue;
     const named = link.textContent.trim() !== "";
@@ -67,12 +70,16 @@ function slotContent(state) {
 }
 
 // Put `state` in the player's slot, creating it after their name.
-// `onAction(id, action)` is called for the slot's buttons.
-export function upsertSlot(entry, state, onAction) {
+// `onAction(id, action)` is called for the slot's buttons. A compact slot
+// (narrow name cells in long lists) shows the composite and kick safety only;
+// the rest is in its tooltip and reasons panel.
+export function upsertSlot(entry, state, onAction, { compact = false } = {}) {
   let slot = entry.host.nextElementSibling;
+  // A slot left elsewhere in the row (the layout changed where it goes) goes.
+  entry.row?.querySelectorAll(`.nfh-rs-slot[data-player="${entry.id}"]`).forEach((old) => old !== slot && old.remove());
   if (!slot || !slot.classList.contains("nfh-rs-slot") || Number(slot.dataset.player) !== entry.id) {
     slot = document.createElement("span");
-    slot.className = "nfh-rs-slot";
+    slot.className = `nfh-rs-slot${compact ? " nfh-rs-slot--compact" : ""}${entry.line ? " nfh-rs-slot--line" : ""}`;
     slot.dataset.player = String(entry.id);
     slot.addEventListener("click", (event) => {
       const button = event.target.closest("[data-rs-action]");

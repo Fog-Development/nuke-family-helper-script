@@ -10,8 +10,7 @@
 // @match        https://www.torn.com/messages.php*
 // @match        https://www.torn.com/page.php?sid=stocks*
 // @match        https://www.torn.com/page.php?sid=UserList*
-// @match        https://www.torn.com/bringafriend.php*
-// @match        https://www.torn.com/halloffame.php*
+// @match        https://www.torn.com/page.php?sid=hof*
 // @match        https://www.torn.com/index.php?page=people*
 // @match        https://nuke.family/auth/token-generation*
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAsVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAADAgEIBwIJCAILCQMODAQUEQUYFQcaFgcfGgggGwklIAotJgwyKg46MhA8MxBKPxRQRBZgUhthUhthUxt1ZCB9aiOEcCSIdCaQeyihiSyiiS21mjLBpDXFpzbGqDfHqTfIqjjTszrXtzzZuTzlw0DmxEDnxEDpxkHuy0LxzUNZTIHlAAAAD3RSTlMAAh4tMVtig4WRlqvq8v4ZRfBIAAABcElEQVQ4y4VT2ZKCMBBEReTSVhEX8T5BFMVb8/8ftokhJB5b2w9U9VFkMpnRNImSbpiWZRp6SfuGiu0ih2tXPuyy04CChlN+9at1vKFeVf0aVX5Um5Hai+8np470O6fEVxJVIDgQspKBFSGHAMhPKdfhU5/ce8Lv3Sk9+KjzSh0gIQwbEdg8aQI4z/s3MCEcY+6PczpBg/XDRjPLlV2L+a1dTrMmbNpfFyMisGCBRUFHcEuaDsSFsmeBfUFjQNcMIBXCOehHUT84C54ChmYCNyHM+xdCLv254DfA1Cx4xS/DiH2jsBA8WDSggAdUxWJHSPAjVMVkRaoJWuSLYLBrSnRnYTjrqorOGiWxZjWsFYE2ira6wODBAo+BVGz+WAJbfrmtHM1K/twcU3H9qVAcMTBPtI8icGzng1suRo5hWTSQLLlSVYcawVUGrgE+xhrDTAay4avPF6c5ilP6sLc0HjXfF0eunud9X73/l/fP9f8FWPxZz4MGj9YAAAAASUVORK5CYII=
@@ -2440,11 +2439,22 @@ body.dark-mode .nfh-rs-detail {
     min-width: 0;
 }
 
-/* Phone layout: the composite and kick safety only. */
+/* Long lists, and the phone layout: the composite and kick safety only. */
+.nfh-rs-slot--compact .nfh-rs-sub:not(.nfh-rs-sub--ks) {
+    display: none;
+}
+
 @media (max-width: 784px) {
     .nfh-rs-sub:not(.nfh-rs-sub--ks) {
         display: none;
     }
+}
+
+/* A slot on its own line under a row (Applications at phone width). */
+.nfh-rs-slot--line {
+    display: flex;
+    margin: 0;
+    padding: 2px 8px 5px 30px;
 }
 `;
 
@@ -3103,7 +3113,7 @@ body.dark-mode .nfh-rs-detail {
   var mapPageTypeAddress = {
     [PageType.Profile]: "https://www.torn.com/profiles.php",
     [PageType.RecruitCitizens]: "https://www.torn.com/bringafriend.php",
-    [PageType.HallOfFame]: "https://www.torn.com/halloffame.php",
+    [PageType.HallOfFame]: "https://www.torn.com/page.php?sid=hof",
     [PageType.Faction]: "https://www.torn.com/factions.php",
     [PageType.Company]: "https://www.torn.com/joblist.php",
     [PageType.Competition]: "https://www.torn.com/competition.php",
@@ -9038,13 +9048,18 @@ body.dark-mode .nfh-rs-detail {
     if (url.hostname !== "www.torn.com") return null;
     const path = url.pathname;
     const sid = url.searchParams.get("sid");
-    if (path === "/bringafriend.php") return "recruit-citizens";
-    if (path === "/halloffame.php") return "halloffame";
+    if (path === "/page.php" && sid === "hof") return "halloffame";
     if (path === "/page.php" && sid === "UserList") return "search";
     if (path === "/factions.php" && url.searchParams.get("step") === "profile") return "faction-profile";
     if (path === "/index.php" && url.searchParams.get("page") === "people") return "abroad";
     return null;
   }
+  var PAGE_LISTS = {
+    search: { list: ".user-info-list-wrap", bar: ".userlist-wrapper" },
+    "faction-profile": { list: ".faction-info-wrap .members-list .table-body", bar: ".faction-info-wrap .members-list" },
+    halloffame: { list: null, bar: null },
+    abroad: { list: null, bar: null }
+  };
   function playerIdFromHref(href) {
     if (!href) return null;
     const match = /profiles\.php\?(?:[^#]*&)?XID=(\d+)/i.exec(href);
@@ -9082,11 +9097,12 @@ body.dark-mode .nfh-rs-detail {
   function shown2(element) {
     return element.getClientRects().length > 0;
   }
-  function playerEntries(root4) {
+  function playerEntries(root4, { within = null } = {}) {
     const seen = /* @__PURE__ */ new Map();
     if (!root4) return [];
     for (const link of root4.querySelectorAll('a[href*="profiles.php?XID="]')) {
       if (link.closest(".nfh-rs-detail, .nfh-cw, .nfh-rs-slot") || !shown2(link)) continue;
+      if (within && !link.closest(within)) continue;
       const id = playerIdFromHref(link.getAttribute("href"));
       if (!id) continue;
       const named = link.textContent.trim() !== "";
@@ -9118,11 +9134,12 @@ body.dark-mode .nfh-rs-detail {
     }
     return { html: `<span class="nfh-rs-note">${escapeHtml(state10.text)}</span>`, title: state10.title || "" };
   }
-  function upsertSlot(entry, state10, onAction3) {
+  function upsertSlot(entry, state10, onAction3, { compact = false } = {}) {
     let slot = entry.host.nextElementSibling;
+    entry.row?.querySelectorAll(`.nfh-rs-slot[data-player="${entry.id}"]`).forEach((old) => old !== slot && old.remove());
     if (!slot || !slot.classList.contains("nfh-rs-slot") || Number(slot.dataset.player) !== entry.id) {
       slot = document.createElement("span");
-      slot.className = "nfh-rs-slot";
+      slot.className = `nfh-rs-slot${compact ? " nfh-rs-slot--compact" : ""}${entry.line ? " nfh-rs-slot--line" : ""}`;
       slot.dataset.player = String(entry.id);
       slot.addEventListener("click", (event) => {
         const button3 = event.target.closest("[data-rs-action]");
@@ -9195,8 +9212,10 @@ body.dark-mode .nfh-rs-detail {
   var observer4 = null;
   var observed2 = null;
   var timer2 = null;
+  var ROOT2 = "#faction-applications-root";
+  var PERSON = '[class*="person___"]';
   function root2() {
-    return document.querySelector("#option-application-root") || document.querySelector('[id^="option-application"][id$="-root"]') || contentRoot();
+    return document.querySelector(ROOT2);
   }
   function onPage() {
     return IsPage(PageType.FactionControlApplications) && location.search.includes("step=your");
@@ -9273,7 +9292,11 @@ body.dark-mode .nfh-rs-detail {
     const element = root2();
     if (!element || state5.allowed !== true) return;
     observe2(element);
-    const entries = playerEntries(element);
+    const narrow = window.matchMedia("(max-width: 784px)").matches;
+    const entries = playerEntries(element, { within: PERSON }).map((entry) => {
+      const tableRow = narrow ? entry.link.closest('[class*="tableRow___"]') : null;
+      return tableRow ? { ...entry, host: tableRow, line: true } : entry;
+    });
     const missing = entries.map((entry) => entry.id).filter((id) => !state5.scores.has(id) && !state5.asked.has(id));
     if (missing.length && !state5.loadError) fetchScores(missing.slice(0, 100));
     for (const entry of entries) {
@@ -9349,6 +9372,11 @@ body.dark-mode .nfh-rs-detail {
   var observer5 = null;
   var observed3 = null;
   var kind = () => bulkPageKind(location.href);
+  function listRoot() {
+    const selector = PAGE_LISTS[kind()]?.list;
+    return selector ? document.querySelector(selector) : contentRoot();
+  }
+  var entriesOnPage = () => playerEntries(listRoot());
   function barHtml2(entries) {
     const ids = entries.map((entry) => entry.id);
     const todo = unscoredIds(ids, state6.results).filter((id) => !state6.pending.has(id));
@@ -9378,8 +9406,11 @@ body.dark-mode .nfh-rs-detail {
         }
       });
     }
+    const before = PAGE_LISTS[kind()]?.bar ? document.querySelector(PAGE_LISTS[kind()].bar) : null;
     const title = container.querySelector(":scope > .content-title");
-    if (title) {
+    if (before) {
+      if (before.previousElementSibling !== bar2) before.insertAdjacentElement("beforebegin", bar2);
+    } else if (title) {
       if (title.nextElementSibling !== bar2) title.insertAdjacentElement("afterend", bar2);
     } else if (container.firstElementChild !== bar2) {
       container.prepend(bar2);
@@ -9390,7 +9421,7 @@ body.dark-mode .nfh-rs-detail {
   async function start() {
     if (state6.starting || state6.lookup && !isFinished(state6.lookup.status)) return;
     const ids = unscoredIds(
-      playerEntries(contentRoot()).map((entry) => entry.id),
+      entriesOnPage().map((entry) => entry.id),
       state6.results
     ).slice(0, MAX_PLAYERS);
     if (!ids.length) return;
@@ -9472,10 +9503,10 @@ body.dark-mode .nfh-rs-detail {
     const container = contentRoot();
     if (!kind() || !container || state6.allowed !== true) return;
     observe3(container);
-    const entries = playerEntries(container);
+    const entries = entriesOnPage();
     renderBar4(container, entries);
     for (const entry of entries) {
-      upsertSlot(entry, slotState2(entry.id), onAction2);
+      upsertSlot(entry, slotState2(entry.id), onAction2, { compact: true });
       const result = state6.results.get(entry.id);
       setDetail(entry, state6.open.has(entry.id) && result?.state === "scored" ? result : null, (id) => {
         state6.open.delete(id);
@@ -9503,7 +9534,7 @@ body.dark-mode .nfh-rs-detail {
   }
   var bulk_default = {
     name: "Recruiting scores: score this page",
-    pages: [PageType.RecruitCitizens, PageType.HallOfFame, PageType.Search, PageType.Faction, PageType.Abroad],
+    pages: [PageType.Search, PageType.Faction, PageType.Abroad],
     async init() {
       if (!kind()) {
         observer5?.disconnect();
@@ -9571,7 +9602,7 @@ body.dark-mode .nfh-rs-detail {
   }
 
   // src/features/stocks/index.js
-  var ROOT2 = "#stockmarketroot";
+  var ROOT3 = "#stockmarketroot";
   var BAR_ID3 = "nfh-stock-bar";
   var CACHE_KEY2 = "nfhStockSignals";
   var DENIED_KEY2 = "nfhStockSignalsDenied";
@@ -9719,7 +9750,7 @@ body.dark-mode .nfh-rs-detail {
     });
   }
   function redraw4() {
-    const root4 = document.querySelector(ROOT2);
+    const root4 = document.querySelector(ROOT3);
     if (!root4 || !state7.data) return;
     renderBar5(root4);
     tagRows(root4);
@@ -9748,7 +9779,7 @@ body.dark-mode .nfh-rs-detail {
       if (!/[?&]sid=stocks\b/.test(location.search)) return;
       let tries = 20;
       const attach = () => {
-        const root4 = document.querySelector(ROOT2);
+        const root4 = document.querySelector(ROOT3);
         if (root4 && root4.querySelector('[class*="stockMarket___"]')) {
           watch3(root4);
           load5().then(() => schedule4(0));

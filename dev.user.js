@@ -8,8 +8,7 @@
 // @match        https://www.torn.com/factions.php*
 // @match        https://www.torn.com/hospitalview.php*
 // @match        https://www.torn.com/page.php?sid=UserList*
-// @match        https://www.torn.com/bringafriend.php*
-// @match        https://www.torn.com/halloffame.php*
+// @match        https://www.torn.com/page.php?sid=hof*
 // @match        https://www.torn.com/index.php?page=people*
 // @match				 https://nuke.family/auth/token-generation*
 // @match				 http://nuke.test/auth/token-generation*

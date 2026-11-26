@@ -2222,9 +2222,20 @@ body.dark-mode .nfh-rs-detail {
     min-width: 0;
 }
 
-/* Phone layout: the composite and kick safety only. */
+/* Long lists, and the phone layout: the composite and kick safety only. */
+.nfh-rs-slot--compact .nfh-rs-sub:not(.nfh-rs-sub--ks) {
+    display: none;
+}
+
 @media (max-width: 784px) {
     .nfh-rs-sub:not(.nfh-rs-sub--ks) {
         display: none;
     }
+}
+
+/* A slot on its own line under a row (Applications at phone width). */
+.nfh-rs-slot--line {
+    display: flex;
+    margin: 0;
+    padding: 2px 8px 5px 30px;
 }

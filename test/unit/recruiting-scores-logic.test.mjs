@@ -41,18 +41,18 @@ describe("recruiting score badges", () => {
 describe("Score this page", () => {
   it("is offered on the lists recruiters browse, and nowhere else", () => {
     const kinds = [
+      "https://www.torn.com/page.php?sid=hof",
       "https://www.torn.com/bringafriend.php",
-      "https://www.torn.com/halloffame.php#/type=level",
       "https://www.torn.com/page.php?sid=UserList&levelFrom=10",
       "https://www.torn.com/factions.php?step=profile&ID=123#/",
       "https://www.torn.com/index.php?page=people&cityID=12",
       "https://www.torn.com/factions.php?step=your#/tab=controls&option=members",
       "https://www.torn.com/page.php?sid=stocks",
       "https://www.torn.com/profiles.php?XID=1",
-      "https://example.com/bringafriend.php",
+      "https://example.com/page.php?sid=hof",
       "not a url",
     ].map(bulkPageKind);
-    assert.deepEqual(kinds, ["recruit-citizens", "halloffame", "search", "faction-profile", "abroad", null, null, null, null, null]);
+    assert.deepEqual(kinds, ["halloffame", null, "search", "faction-profile", "abroad", null, null, null, null, null], "not Recruit Citizens");
   });
 
   it("reads player ids from profile links", () => {

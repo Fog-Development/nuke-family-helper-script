@@ -278,20 +278,24 @@ two would keep undoing each other.
 - [ ] An application nuke.family hasn't scored shows "Score"; one it hasn't
       picked up yet (just applied) shows "Check score". Each click logs one
       check (Admin → Recruiting checks) and turns into a badge.
-- [ ] Recruit Citizens, the Hall of Fame (a player list), the player search
+- [ ] The Hall of Fame (`page.php?sid=hof`, a player list), the player search
       results, another faction's profile and people abroad show a "Recruiting
-      scores" bar with "Score this page (N)". **Nothing is requested before you
-      press it.** Badges then appear a few at a time; the bar counts "Scoring
-      N of M…" and ends "Scored M players".
+      scores" bar above the list with "Score this page (N)". **Nothing is
+      requested before you press it.** Badges (composite and kick safety) then
+      appear a few at a time; the bar counts "Scoring N of M…" and ends
+      "Scored M players". Recruit Citizens has no bar.
 - [ ] Turn to the next page of the list: the bar offers "Score N more"; players
       already scored keep their badge.
 - [ ] Switch to another tab while it scores: polling stops (no
       `/candidate-score/bulk/…` requests) and picks up again when you come back.
-- [ ] Hall of Fame factions categories should show no bar (they list no
-      player links); note it if one appears.
+- [ ] Hall of Fame faction lists (Faction rank/respect/chains) should show no
+      bar (they list no players); note it if one appears.
+- [ ] Another faction's profile: only the member table gets badges (not the
+      leaders or links in its description).
 - [ ] Bulk lookups never show in Admin → Recruiting checks (they're kept apart
       so the weekly snapshots don't sample them).
-- [ ] TornPDA / phone width: badges show only the composite and kick safety.
+- [ ] TornPDA / phone width: badges show only the composite and kick safety;
+      on Applications the badge is a line under each applicant's row.
 
 ## General
 
