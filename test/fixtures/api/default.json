@@ -95,6 +95,7 @@
   "GET /oc/items": { "data": { "enabled": false } },
   "GET /oc/me": { "data": { "enabled": true, "state": "in_oc", "idle_since": null, "checked_at": null } },
   "POST /oc/spawn-request": { "status": "sent", "level": 9, "tier": "7-8", "cooldown_minutes": 30 },
+  "GET /oc/spawn-plan": { "data": { "enabled": false } },
   "POST /script/debug-report": { "reference": "K7QM2X" },
   "GET /user/get-own-roles": { "role": "leader", "in_reviving_faction": true },
   "GET /user/get-own-permissions": { "permissions": [] },
