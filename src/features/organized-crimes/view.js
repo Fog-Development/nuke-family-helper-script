@@ -1,5 +1,5 @@
 import { escapeHtml } from "../../core/dom.js";
-import { Flag, FLAG_LABELS } from "./flags.js";
+import { Flag, FLAG_LABELS, idleBadge } from "./flags.js";
 import { describeWait, Rank, SlotStatus } from "./scoring.js";
 
 // Everything the feature draws on the crimes page: a minimum-CPR line under
@@ -14,6 +14,7 @@ const CHIP_CLASS = "nfh-oc-min";
 const TAG_CLASS = "nfh-oc-tag";
 const PICK_CLASS = "nfh-oc-pick";
 const FLAGS_CLASS = "nfh-oc-flags";
+const IDLE_CLASS = "nfh-oc-idle";
 
 // Each kind of flag gets its own symbol as well as its own colour, so they
 // can be told apart without relying on colour.
@@ -434,7 +435,46 @@ export function removeBar() {
 export function clearAll(root) {
   removeBar();
   renderSuggestions(root, []);
-  for (const ours of root.querySelectorAll(`.${CHIP_CLASS}, .${FLAGS_CLASS}`)) ours.remove();
+  for (const ours of root.querySelectorAll(`.${CHIP_CLASS}, .${FLAGS_CLASS}, .${IDLE_CLASS}`)) ours.remove();
+}
+
+// Torn's "There are N faction members who are not currently participating in
+// any scenarios" box at the foot of the list.
+export const IDLE_LIST_SELECTOR = '[class^="notInvolvedMembers___"]';
+
+function idleHtml(badge) {
+  let html = `<span class="${IDLE_CLASS}-level" title="${escapeHtml(badge.levelTitle)}">${escapeHtml(badge.level)}</span>`;
+  if (badge.idle) {
+    html += `<span class="${IDLE_CLASS}-time ${IDLE_CLASS}-time--${badge.tone}" title="${escapeHtml(badge.idleTitle)}">${escapeHtml(badge.idle)}</span>`;
+  }
+  return html;
+}
+
+// A small "L6 · 2d" line under each name in that box: the member's OC level
+// and how long since their last crime, from the site's board (staff only).
+// `members` null takes them all away. Rewritten only when the text changed.
+export function renderIdleMembers(root, members, nowMs = Date.now()) {
+  const list = root.querySelector(IDLE_LIST_SELECTOR);
+  if (!list) return;
+  for (const link of list.querySelectorAll('a[href*="XID="]')) {
+    const match = /XID=(\d+)/.exec(link.getAttribute("href") || "");
+    const badge = members && match ? idleBadge(members[match[1]], nowMs) : null;
+    let el = link.nextElementSibling && link.nextElementSibling.classList.contains(IDLE_CLASS) ? link.nextElementSibling : null;
+    if (!badge) {
+      if (el) el.remove();
+      continue;
+    }
+    const html = idleHtml(badge);
+    if (!el) {
+      el = document.createElement("span");
+      el.className = IDLE_CLASS;
+      link.after(el);
+    }
+    if (el.dataset.nfhHtml !== html) {
+      el.dataset.nfhHtml = html;
+      el.innerHTML = html;
+    }
+  }
 }
 
 // True for an element this feature injected.
@@ -444,6 +484,7 @@ export function isOwnElement(node) {
     (node.classList.contains(CHIP_CLASS) ||
       node.classList.contains(TAG_CLASS) ||
       node.classList.contains(FLAGS_CLASS) ||
+      node.classList.contains(IDLE_CLASS) ||
       node.id === BAR_ID)
   );
 }

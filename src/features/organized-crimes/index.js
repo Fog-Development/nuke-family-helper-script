@@ -20,6 +20,8 @@ import {
   removeBar,
   renderBar,
   renderFlags,
+  IDLE_LIST_SELECTOR,
+  renderIdleMembers,
   renderMinimum,
   renderSuggestions,
   settingsHtml,
@@ -164,15 +166,19 @@ function render() {
   const joining = joinState(crimes);
 
   if (recruiting) learnCprs(crimes);
+  // Torn's list of members in no crime, at the foot of Recruiting: staff get
+  // each one's OC level and time since their last crime from the board.
+  const idleList = recruiting && root.querySelector(IDLE_LIST_SELECTOR) !== null;
   // The board serves the crimes Torn has not loaded, the viewer's own slot
   // and (for staff) every member's level. Cached a minute.
-  const cachedNow = active ? cachedBoard() : null;
-  if (active) {
+  const wantsBoard = active || idleList;
+  const cachedNow = wantsBoard ? cachedBoard() : null;
+  if (wantsBoard) {
     refreshBoard(boardIsBehind(cachedNow)).then((fresh) => {
       if (fresh) scheduleRender();
     });
   }
-  const cached = active ? cachedBoard() : null;
+  const cached = wantsBoard ? cachedBoard() : null;
   const board = cached ? cached.board : null;
   watchReadyTime(board);
 
@@ -240,6 +246,7 @@ function render() {
 
   const suggestions = suggesting ? result.suggestions : [];
   renderSuggestions(root, suggestions);
+  renderIdleMembers(root, idleList ? members : null);
 
   const staff = members && active ? { counts, prefs, factionLimits: limitsFor(config) } : null;
   const settings = settingsHtml({ open: settingsOpen, weights, staff, items: itemSettings() });

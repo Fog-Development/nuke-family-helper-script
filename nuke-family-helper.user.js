@@ -2269,6 +2269,43 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
 .nfh-mt-chip--match {
     font-weight: bold;
 }
+
+/* Under each name in Torn's "not currently participating" box (staff): the
+   member's OC level and how long since their last crime */
+.nfh-oc-idle {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    margin-top: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
+    white-space: nowrap;
+}
+
+.nfh-oc-idle-level,
+.nfh-oc-idle-time {
+    padding: 0 4px;
+    border-radius: 3px;
+    color: #ffffff;
+    cursor: help;
+}
+
+.nfh-oc-idle-level {
+    background-color: #6a3d9a;
+}
+
+.nfh-oc-idle-time--ok {
+    background-color: #5f6368;
+}
+
+.nfh-oc-idle-time--warn {
+    background-color: #8a5300;
+}
+
+.nfh-oc-idle-time--alert {
+    background-color: #b71c1c;
+}
 `;
 
   // src/core/storage.js
@@ -5660,6 +5697,28 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       productiveFromLevel: productiveFromLevel(config)
     };
   }
+  var IDLE_WARN_HOURS = 24;
+  var IDLE_ALERT_HOURS = 72;
+  function describeIdle(seconds) {
+    const hours = Math.floor(Math.max(0, seconds) / 3600);
+    if (hours < 1) return "<1h";
+    if (hours < 48) return `${hours}h`;
+    return `${Math.floor(hours / 24)}d`;
+  }
+  function idleBadge(member, nowMs = Date.now()) {
+    if (!member) return null;
+    const level = typeof member.level === "number" ? member.level : null;
+    const since = typeof member.not_in_oc_since === "number" ? member.not_in_oc_since : null;
+    const seconds = since === null ? null : Math.max(0, nowMs / 1e3 - since);
+    const hours = seconds === null ? 0 : seconds / 3600;
+    return {
+      level: level === null ? "L?" : `L${level}`,
+      levelTitle: level === null ? "OC level not known yet: nuke.family has too few of their CPRs." : `OC level ${level} on nuke.family: the highest crime level where enough of their known CPRs meet your faction's minimums.`,
+      idle: seconds === null ? null : describeIdle(seconds),
+      idleTitle: seconds === null ? null : `About ${describeIdle(seconds)} since their last OC.`,
+      tone: hours >= IDLE_ALERT_HOURS ? "alert" : hours >= IDLE_WARN_HOURS ? "warn" : "ok"
+    };
+  }
 
   // src/features/organized-crimes/prefs.js
   var KEY = "nfhOcStaffPrefs";
@@ -7065,6 +7124,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var TAG_CLASS = "nfh-oc-tag";
   var PICK_CLASS = "nfh-oc-pick";
   var FLAGS_CLASS = "nfh-oc-flags";
+  var IDLE_CLASS = "nfh-oc-idle";
   var FLAG_SYMBOLS = { [Flag.Unqualified]: "\u2716", [Flag.Unproductive]: "\u23F3", [Flag.UnderLevel]: "\u2B07" };
   var CHIP_STATES = ["ok", "below", "filled", "weight"];
   function chipFor(rated) {
@@ -7315,10 +7375,41 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   function clearAll(root3) {
     removeBar();
     renderSuggestions(root3, []);
-    for (const ours of root3.querySelectorAll(`.${CHIP_CLASS}, .${FLAGS_CLASS}`)) ours.remove();
+    for (const ours of root3.querySelectorAll(`.${CHIP_CLASS}, .${FLAGS_CLASS}, .${IDLE_CLASS}`)) ours.remove();
+  }
+  var IDLE_LIST_SELECTOR = '[class^="notInvolvedMembers___"]';
+  function idleHtml(badge) {
+    let html = `<span class="${IDLE_CLASS}-level" title="${escapeHtml(badge.levelTitle)}">${escapeHtml(badge.level)}</span>`;
+    if (badge.idle) {
+      html += `<span class="${IDLE_CLASS}-time ${IDLE_CLASS}-time--${badge.tone}" title="${escapeHtml(badge.idleTitle)}">${escapeHtml(badge.idle)}</span>`;
+    }
+    return html;
+  }
+  function renderIdleMembers(root3, members, nowMs = Date.now()) {
+    const list = root3.querySelector(IDLE_LIST_SELECTOR);
+    if (!list) return;
+    for (const link of list.querySelectorAll('a[href*="XID="]')) {
+      const match = /XID=(\d+)/.exec(link.getAttribute("href") || "");
+      const badge = members && match ? idleBadge(members[match[1]], nowMs) : null;
+      let el = link.nextElementSibling && link.nextElementSibling.classList.contains(IDLE_CLASS) ? link.nextElementSibling : null;
+      if (!badge) {
+        if (el) el.remove();
+        continue;
+      }
+      const html = idleHtml(badge);
+      if (!el) {
+        el = document.createElement("span");
+        el.className = IDLE_CLASS;
+        link.after(el);
+      }
+      if (el.dataset.nfhHtml !== html) {
+        el.dataset.nfhHtml = html;
+        el.innerHTML = html;
+      }
+    }
   }
   function isOwnElement(node) {
-    return node.nodeType === Node.ELEMENT_NODE && (node.classList.contains(CHIP_CLASS) || node.classList.contains(TAG_CLASS) || node.classList.contains(FLAGS_CLASS) || node.id === BAR_ID);
+    return node.nodeType === Node.ELEMENT_NODE && (node.classList.contains(CHIP_CLASS) || node.classList.contains(TAG_CLASS) || node.classList.contains(FLAGS_CLASS) || node.classList.contains(IDLE_CLASS) || node.id === BAR_ID);
   }
 
   // src/features/organized-crimes/index.js
@@ -7397,13 +7488,15 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const active = (recruiting || tab === SubTab.Planning) && crimes.length > 0;
     const joining = joinState(crimes);
     if (recruiting) learnCprs(crimes);
-    const cachedNow = active ? cachedBoard2() : null;
-    if (active) {
+    const idleList = recruiting && root3.querySelector(IDLE_LIST_SELECTOR) !== null;
+    const wantsBoard = active || idleList;
+    const cachedNow = wantsBoard ? cachedBoard2() : null;
+    if (wantsBoard) {
       refreshBoard2(boardIsBehind(cachedNow)).then((fresh2) => {
         if (fresh2) scheduleRender();
       });
     }
-    const cached = active ? cachedBoard2() : null;
+    const cached = wantsBoard ? cachedBoard2() : null;
     const board = cached ? cached.board : null;
     watchReadyTime(board);
     const features2 = memberFeatures(config);
@@ -7449,6 +7542,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
     const suggestions = suggesting ? result.suggestions : [];
     renderSuggestions(root3, suggestions);
+    renderIdleMembers(root3, idleList ? members : null);
     const staff = members && active ? { counts, prefs: prefs4, factionLimits: limitsFor(config) } : null;
     const settings = settingsHtml({ open: settingsOpen, weights, staff, items: itemSettings() });
     const staffPart = staff ? staffHtml(staff, settings.button) : "";

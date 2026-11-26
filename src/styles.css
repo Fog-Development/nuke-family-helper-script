@@ -2055,3 +2055,40 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
 .nfh-mt-chip--match {
     font-weight: bold;
 }
+
+/* Under each name in Torn's "not currently participating" box (staff): the
+   member's OC level and how long since their last crime */
+.nfh-oc-idle {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    margin-top: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 14px;
+    white-space: nowrap;
+}
+
+.nfh-oc-idle-level,
+.nfh-oc-idle-time {
+    padding: 0 4px;
+    border-radius: 3px;
+    color: #ffffff;
+    cursor: help;
+}
+
+.nfh-oc-idle-level {
+    background-color: #6a3d9a;
+}
+
+.nfh-oc-idle-time--ok {
+    background-color: #5f6368;
+}
+
+.nfh-oc-idle-time--warn {
+    background-color: #8a5300;
+}
+
+.nfh-oc-idle-time--alert {
+    background-color: #b71c1c;
+}

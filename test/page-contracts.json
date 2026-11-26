@@ -136,6 +136,22 @@
       ]
     },
     {
+      "id": "oc-idle-members",
+      "feature": "organized-crimes",
+      "description": "The box of members in no crime at the foot of Recruiting, where staff get each one's OC level and time since their last OC",
+      "url": "factions\\.php\\?step=your.*#/tab=crimes",
+      "when": "#faction-crimes-root [class^=\"notInvolvedMembers___\"]",
+      "expect": [
+        {
+          "selector": "#faction-crimes-root [class^=\"notInvolvedMembers___\"] a[href*=\"profiles.php?XID=\"]",
+          "note": "one link per member, read for the player id"
+        }
+      ],
+      "fixtures": [
+        "factions-crimes-recruiting"
+      ]
+    },
+    {
       "id": "mail-compose",
       "feature": "mail templates",
       "description": "Compose form: recipient, subject and Torn's TinyMCE editor",

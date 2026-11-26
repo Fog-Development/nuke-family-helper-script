@@ -696,6 +696,74 @@ describe("OC Assistant staff flags", () => {
     }
   });
 
+  for (const theme of THEMES) {
+    it(`shows each idle member's OC level and time since their last OC (${theme})`, async () => {
+      const now = Date.now() / 1000;
+      const { page, errors, close } = await openRecruiting({
+        theme,
+        api: {
+          "GET /oc/board": staffBoard({
+            members: {
+              100016: { name: "Member100016", level: 7, not_in_oc_since: now - 5 * 3600 },
+              100040: { name: "Member100040", level: null, not_in_oc_since: now - 30 * 3600 },
+              100030: { name: "Member100030", level: 8, not_in_oc_since: now - 5 * 86400 },
+              // An older site sends no time.
+              100080: { name: "Member100080", level: 5 },
+            },
+          }),
+        },
+      });
+      try {
+        await page.waitForSelector(".nfh-oc-idle");
+        const badges = await page.evaluate(() =>
+          [...document.querySelectorAll('[class^="notInvolvedMembers___"] a[href*="XID="]')].map((link) => {
+            const badge = link.nextElementSibling;
+            if (!badge || !badge.classList.contains("nfh-oc-idle")) return [link.getAttribute("href"), null];
+            const time = badge.querySelector(".nfh-oc-idle-time");
+            return [
+              link.getAttribute("href").replace(/.*XID=/, ""),
+              badge.querySelector(".nfh-oc-idle-level").textContent,
+              time ? time.textContent : null,
+              time ? [...time.classList].find((name) => name.startsWith("nfh-oc-idle-time--")).replace("nfh-oc-idle-time--", "") : null,
+            ];
+          }),
+        );
+        assert.deepEqual(badges, [
+          ["100016", "L7", "5h", "ok"],
+          ["100040", "L?", "30h", "warn"],
+          ["100030", "L8", "5d", "alert"],
+          ["100080", "L5", null, null],
+        ]);
+
+        for (const selector of [".nfh-oc-idle-level", ".nfh-oc-idle-time--ok", ".nfh-oc-idle-time--warn", ".nfh-oc-idle-time--alert"]) {
+          const { ratio } = await measureContrast(page, selector);
+          assert.ok(ratio >= 4.5, `${selector} contrast ${ratio.toFixed(2)} in ${theme}`);
+        }
+        // Drawn once: a later render with nothing new leaves them alone.
+        await page.evaluate(() => {
+          document.querySelector(".nfh-oc-idle").setAttribute("data-probe", "1");
+          document.querySelector("#faction-crimes-root").append(document.createElement("div"));
+        });
+        await page.waitForTimeout(400);
+        assert.equal(await page.locator(".nfh-oc-idle[data-probe]").count(), 1);
+        assert.deepEqual(errors, []);
+        await screenshot(page.locator('[class^="notInvolvedMembers___"]'), `oc-idle-members-${theme}`);
+      } finally {
+        await close();
+      }
+    });
+  }
+
+  it("shows no idle member details to a member who is not staff", async () => {
+    const { page, close } = await openRecruiting();
+    try {
+      await page.waitForTimeout(500);
+      assert.equal(await page.locator(".nfh-oc-idle").count(), 0);
+    } finally {
+      await close();
+    }
+  });
+
   it("shows nothing of the kind to a member who is not staff", async () => {
     const { page, close } = await openTornPage(browser, { page: "factions-crimes-planning" });
     try {

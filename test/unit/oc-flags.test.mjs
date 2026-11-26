@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { crimeHoursLeft, Flag, hoursUntilTurn, limitsFor, probablyRun, slotFlags } from "../../src/features/organized-crimes/flags.js";
+import { crimeHoursLeft, describeIdle, Flag, hoursUntilTurn, idleBadge, limitsFor, probablyRun, slotFlags } from "../../src/features/organized-crimes/flags.js";
 
 const filled = (name, progress, cpr) => ({ name, cpr, occupied: true, progress });
 const open = (name) => ({ name, cpr: 80, occupied: false, progress: 0 });
@@ -104,5 +104,34 @@ describe("probablyRun", () => {
 
   it("trusts the board again once the crime is long overdue", () => {
     assert.equal(probablyRun(ready, at(61)), false);
+  });
+});
+
+describe("idle member badges", () => {
+  const now = 2_000_000_000 * 1000;
+  const hoursAgo = (hours) => now / 1000 - hours * 3600;
+
+  it("says roughly how long since the last OC", () => {
+    assert.equal(describeIdle(0), "<1h");
+    assert.equal(describeIdle(59 * 60), "<1h");
+    assert.equal(describeIdle(5.5 * 3600), "5h");
+    assert.equal(describeIdle(47.9 * 3600), "47h");
+    assert.equal(describeIdle(49 * 3600), "2d");
+    assert.equal(describeIdle(-10), "<1h");
+  });
+
+  it("shows the level and colours the wait by how long it has been", () => {
+    assert.deepEqual(
+      [5, 30, 80].map((hours) => idleBadge({ level: 7, not_in_oc_since: hoursAgo(hours) }, now)).map((b) => [b.level, b.idle, b.tone]),
+      [["L7", "5h", "ok"], ["L7", "30h", "warn"], ["L7", "3d", "alert"]],
+    );
+  });
+
+  it("copes with an unknown level, an unknown time and an unknown member", () => {
+    const badge = idleBadge({ level: null, not_in_oc_since: null }, now);
+    assert.equal(badge.level, "L?");
+    assert.equal(badge.idle, null);
+    assert.equal(idleBadge({ level: 6 }, now).idle, null, "an older site sends no time");
+    assert.equal(idleBadge(undefined, now), null);
   });
 });

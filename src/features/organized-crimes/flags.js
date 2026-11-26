@@ -101,3 +101,39 @@ export function limitsFor(config, prefs = null) {
     productiveFromLevel: productiveFromLevel(config),
   };
 }
+
+// Off an OC this long, the time beside a member in Torn's "not currently
+// participating" list turns amber, and red at the second.
+export const IDLE_WARN_HOURS = 24;
+export const IDLE_ALERT_HOURS = 72;
+
+// "<1h", "5h", "47h", "3d": how long ago, rounded down.
+export function describeIdle(seconds) {
+  const hours = Math.floor(Math.max(0, seconds) / 3600);
+  if (hours < 1) return "<1h";
+  if (hours < 48) return `${hours}h`;
+  return `${Math.floor(hours / 24)}d`;
+}
+
+// The badge beside a member in Torn's list of members in no crime, from the
+// site's board entry for them (staff only): their OC level as the site works
+// it out, and how long since their last crime as of the site's last sync
+// (a few minutes behind, which is fine for hours and days). Null for a member
+// the board does not know.
+export function idleBadge(member, nowMs = Date.now()) {
+  if (!member) return null;
+  const level = typeof member.level === "number" ? member.level : null;
+  const since = typeof member.not_in_oc_since === "number" ? member.not_in_oc_since : null;
+  const seconds = since === null ? null : Math.max(0, nowMs / 1000 - since);
+  const hours = seconds === null ? 0 : seconds / 3600;
+  return {
+    level: level === null ? "L?" : `L${level}`,
+    levelTitle:
+      level === null
+        ? "OC level not known yet: nuke.family has too few of their CPRs."
+        : `OC level ${level} on nuke.family: the highest crime level where enough of their known CPRs meet your faction's minimums.`,
+    idle: seconds === null ? null : describeIdle(seconds),
+    idleTitle: seconds === null ? null : `About ${describeIdle(seconds)} since their last OC.`,
+    tone: hours >= IDLE_ALERT_HOURS ? "alert" : hours >= IDLE_WARN_HOURS ? "warn" : "ok",
+  };
+}
