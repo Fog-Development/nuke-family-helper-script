@@ -5,6 +5,11 @@ import { escapeHtml } from "../../core/dom.js";
 // Torn's button for each tier carries the tier's name as a (build-hashed) class.
 export const TIERS = ["lambda", "sigma", "phi", "psi", "omega"];
 
+// The letter on each of Torn's buttons, so a row of the plan reads like the button it's about.
+const SYMBOLS = { lambda: "Λ", sigma: "Σ", phi: "Φ", psi: "Ψ", omega: "Ω" };
+
+const plural = (count, one, many) => `${count} ${count === 1 ? one : many}`;
+
 // The badge for each tier's button (pure): `{ text, tone, title }`, or nothing
 // for a tier nobody is looking at.
 export function spawnBadges(plan) {
@@ -24,60 +29,75 @@ export function spawnBadges(plan) {
   return badges;
 }
 
-const levels = (tier) => (tier.levels || []).join("–");
-
 function tierHtml(tier) {
-  const action =
+  const free = (tier.seeking || 0) + (tier.back_later || 0);
+  const verdict =
     tier.spawn > 0
-      ? `<span class="nfh-oc-spawn__count">Spawn ${tier.spawn}</span><span class="nfh-oc-spawn__muted">${tier.spawn * tier.scope_cost} scope</span>`
-      : '<span class="nfh-oc-spawn__count nfh-oc-spawn__count--ok">Enough open</span>';
-  const why = (tier.reasons || []).map((reason) => escapeHtml(reason)).join(" · ");
+      ? `<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--spawn">Spawn ${tier.spawn}</span>` +
+        `<span class="nfh-oc-plan__muted">${tier.spawn * tier.scope_cost} scope</span>`
+      : '<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--ok">Enough open</span>';
+  const summary = [plural(free, "member free soon", "members free soon"), plural(tier.open_slots_taken || 0, "open slot fits", "open slots fit")];
+  const why = (tier.reasons || []).map((reason) => `<li>${escapeHtml(reason)}</li>`).join("");
   return (
-    `<li class="nfh-oc-spawn__tier${tier.spawn > 0 ? " nfh-oc-spawn__tier--spawn" : ""}${tier.below_productive ? " nfh-oc-spawn__tier--quiet" : ""}" data-nfh-tier="${escapeHtml(tier.tier)}">` +
-    `<span class="nfh-oc-spawn__name">${escapeHtml(tier.label)} <span class="nfh-oc-spawn__muted">L${escapeHtml(levels(tier))}</span></span>` +
-    action +
-    `<span class="nfh-oc-spawn__why">${why}</span>` +
-    "</li>"
+    `<details class="nfh-oc-plan__row${tier.below_productive ? " nfh-oc-plan__row--quiet" : ""}" data-nfh-key="tier-${escapeHtml(tier.tier)}">` +
+    "<summary>" +
+    `<span class="nfh-oc-plan__symbol" aria-hidden="true">${SYMBOLS[tier.tier] || ""}</span>` +
+    `<span class="nfh-oc-plan__name">${escapeHtml(tier.label)} <span class="nfh-oc-plan__muted">${escapeHtml((tier.levels || []).join("–"))}</span></span>` +
+    verdict +
+    `<span class="nfh-oc-plan__summary">${summary.join(" · ")}</span>` +
+    "</summary>" +
+    `<ul class="nfh-oc-plan__why">${why}</ul>` +
+    "</details>"
+  );
+}
+
+function risksHtml(risks) {
+  if (!risks.length) return "";
+  const items = risks
+    .map(
+      (risk) =>
+        `<li>${escapeHtml(risk.crime_name)} <span class="nfh-oc-plan__muted">L${escapeHtml(risk.level)}</span>: ` +
+        `${plural(risk.open_slots, "open role", "open roles")}${risk.stalled ? ", stalled" : ""}</li>`,
+    )
+    .join("");
+  return (
+    '<details class="nfh-oc-plan__row nfh-oc-plan__risks" data-nfh-key="risks"><summary>' +
+    '<span class="nfh-oc-plan__symbol" aria-hidden="true">!</span>' +
+    `<span>${plural(risks.length, "started crime has", "started crimes have")} open roles nobody is due to take in the next two days</span>` +
+    `</summary><ul class="nfh-oc-plan__why">${items}</ul></details>`
   );
 }
 
 function gradingHtml(grading) {
   if (!grading || !grading.suggestions) return "";
-  const percent = (value) => `${Math.round(value * 100)}%`;
   const waiting = (value) => (value === null || value === undefined ? "–" : String(value));
   return (
-    '<div class="nfh-oc-spawn__grading">' +
-    `Last 14 days: ${grading.suggestions} suggestion${grading.suggestions === 1 ? "" : "s"}, ` +
-    `${grading.followed === null ? "–" : percent(grading.followed)} followed. ` +
-    `Members still waiting 6h later: ${waiting(grading.waiting_when_followed)} when followed, ${waiting(grading.waiting_when_not)} when not.` +
+    '<div class="nfh-oc-plan__grading">' +
+    `Last 14 days: ${plural(grading.suggestions, "suggestion", "suggestions")}, ` +
+    `${grading.followed === null ? "–" : `${Math.round(grading.followed * 100)}%`} followed; ` +
+    `members still waiting 6h later: ${waiting(grading.waiting_when_followed)} when followed, ${waiting(grading.waiting_when_not)} when not.` +
     "</div>"
   );
 }
 
 // The panel under the spawner (pure HTML), or "" when there is nothing to say.
+// One line per tier, highest first; the reasons and the crimes to fill first
+// fold open on a click.
 export function spawnPanelHtml(plan) {
   if (!plan || !plan.enabled || !Array.isArray(plan.tiers)) return "";
   const tiers = [...plan.tiers].sort((a, b) => TIERS.indexOf(b.tier) - TIERS.indexOf(a.tier));
-  const risks = (plan.stall_risks || [])
-    .map(
-      (risk) =>
-        `<li>${escapeHtml(risk.crime_name)} <span class="nfh-oc-spawn__muted">L${escapeHtml(risk.level)}</span>: ` +
-        `${risk.open_slots} open ${risk.open_slots === 1 ? "role" : "roles"}${risk.stalled ? ", stalled" : ""} and nobody due to take ${risk.open_slots === 1 ? "it" : "them"} today</li>`,
-    )
-    .join("");
   const idle = plan.idle_without_slot
-    ? `<div class="nfh-oc-spawn__alert">${plan.idle_without_slot} member${plan.idle_without_slot === 1 ? " is" : "s are"} in no crime with nothing open for them right now.</div>`
+    ? `<span class="nfh-oc-plan__alert">${plural(plan.idle_without_slot, "member", "members")} in no crime with nothing open</span>`
     : "";
   const body = tiers.length
-    ? `<ul class="nfh-oc-spawn__tiers">${tiers.map(tierHtml).join("")}</ul>`
-    : '<div class="nfh-oc-spawn__muted">Nobody is due to look for a crime in the next day.</div>';
+    ? tiers.map(tierHtml).join("")
+    : '<div class="nfh-oc-plan__muted">Nobody is due to look for a crime in the next day.</div>';
 
   return (
-    '<div class="nfh-oc-spawn__head"><strong>Spawn plan</strong>' +
-    `<span class="nfh-oc-spawn__muted">next ${plan.horizon_hours || 24}h, from nuke.family</span></div>` +
-    idle +
+    '<div class="nfh-oc-plan__head"><strong>Spawn plan</strong>' +
+    `<span class="nfh-oc-plan__muted">next ${plan.horizon_hours || 24}h · click a line for why</span>${idle}</div>` +
     body +
-    (risks ? `<div class="nfh-oc-spawn__risks">Fill first:<ul>${risks}</ul></div>` : "") +
+    risksHtml(plan.stall_risks || []) +
     gradingHtml(plan.grading)
   );
 }

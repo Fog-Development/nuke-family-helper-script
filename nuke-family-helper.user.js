@@ -2519,135 +2519,157 @@ body.dark-mode .nfh-oc-hint--warn {
 
 [class*="area-mobile"] .nfh-oc-hint__age {
     display: none;
+}
 
 /* OC spawn plan for staff, on Torn's spawn buttons and under the spawner (organized-crimes/spawn-plan.js) */
-[class*="spawnDifficulty___"]:has(> .nfh-oc-spawn-badge) {
+[class*="spawnDifficulty___"]:has(> .nfh-oc-plan-badge) {
     position: relative;
 }
 
-.nfh-oc-spawn-badge {
+.nfh-oc-plan-badge {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: -6px;
+    right: -6px;
     min-width: 16px;
     height: 16px;
     padding: 0 4px;
     border-radius: 8px;
-    font-size: 10px;
-    font-weight: 700;
-    line-height: 16px;
+    font: 700 10px/16px Arial, Helvetica, sans-serif;
     text-align: center;
     color: #fff;
     pointer-events: none;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
 }
 
-.nfh-oc-spawn-badge--spawn {
+.nfh-oc-plan-badge--spawn {
     background-color: #d9822b;
 }
 
-.nfh-oc-spawn-badge--quiet {
+.nfh-oc-plan-badge--quiet {
     background-color: #8a8a8a;
 }
 
-.nfh-oc-spawn-badge--ok {
+.nfh-oc-plan-badge--ok {
     background-color: #3c8d40;
 }
 
-.nfh-oc-spawn {
-    margin: 8px 0 4px;
-    padding: 8px 10px;
+.nfh-oc-plan {
+    margin: 8px 0 6px;
+    padding: 6px 10px 8px;
     border: 1px solid var(--nfh-border);
     border-left: 3px solid #d9822b;
     border-radius: 5px;
     background-color: var(--nfh-section-bg);
     color: var(--nfh-text);
-    font-size: 12px;
-    line-height: 1.45;
+    font: 12px/1.4 Arial, Helvetica, sans-serif;
 }
 
-.nfh-oc-spawn__head {
+.nfh-oc-plan__head {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px 8px;
+    gap: 2px 10px;
     align-items: baseline;
-    margin-bottom: 6px;
+    padding-bottom: 4px;
 }
 
-.nfh-oc-spawn__muted {
+.nfh-oc-plan__muted {
     color: var(--nfh-list-key);
     font-weight: normal;
 }
 
-.nfh-oc-spawn__alert {
-    margin-bottom: 6px;
+.nfh-oc-plan__alert {
+    margin-left: auto;
     color: #c62828;
+    font-weight: 700;
 }
 
-body.dark-mode .nfh-oc-spawn__alert {
+body.dark-mode .nfh-oc-plan__alert {
     color: #ff8a80;
 }
 
-.nfh-oc-spawn__tiers,
-.nfh-oc-spawn__risks ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.nfh-oc-spawn__tier {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px 8px;
-    align-items: baseline;
-    padding: 4px 0;
+.nfh-oc-plan__row {
     border-top: 1px solid var(--nfh-border);
 }
 
-.nfh-oc-spawn__tier:first-child {
-    border-top: none;
+.nfh-oc-plan__row > summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    align-items: baseline;
+    padding: 4px 0;
+    cursor: pointer;
+    list-style: none;
 }
 
-.nfh-oc-spawn__name {
-    min-width: 72px;
+.nfh-oc-plan__row > summary::-webkit-details-marker {
+    display: none;
+}
+
+.nfh-oc-plan__row > summary::after {
+    content: "\u25B8";
+    margin-left: auto;
+    color: var(--nfh-list-key);
+}
+
+.nfh-oc-plan__row[open] > summary::after {
+    content: "\u25BE";
+}
+
+.nfh-oc-plan__symbol {
+    width: 14px;
+    text-align: center;
+    font-weight: 700;
+    color: var(--nfh-list-key);
+}
+
+.nfh-oc-plan__name {
+    min-width: 78px;
     font-weight: 700;
 }
 
-.nfh-oc-spawn__count {
+.nfh-oc-plan__verdict {
+    min-width: 58px;
     font-weight: 700;
+}
+
+.nfh-oc-plan__verdict--spawn {
     color: #b8651a;
 }
 
-body.dark-mode .nfh-oc-spawn__count {
+body.dark-mode .nfh-oc-plan__verdict--spawn {
     color: #f0a050;
 }
 
-.nfh-oc-spawn__count--ok,
-body.dark-mode .nfh-oc-spawn__count--ok {
-    color: #3c8d40;
+.nfh-oc-plan__verdict--ok {
+    color: #2e7d32;
 }
 
-.nfh-oc-spawn__tier--quiet .nfh-oc-spawn__count {
+body.dark-mode .nfh-oc-plan__verdict--ok {
+    color: #7bd17f;
+}
+
+.nfh-oc-plan__row--quiet .nfh-oc-plan__verdict {
     color: var(--nfh-list-key);
 }
 
-.nfh-oc-spawn__why {
-    flex: 1 1 100%;
+.nfh-oc-plan__summary {
     color: var(--nfh-list-key);
 }
 
-.nfh-oc-spawn__risks {
-    margin-top: 6px;
-    padding-top: 6px;
-    border-top: 1px dashed var(--nfh-border);
+.nfh-oc-plan__why {
+    margin: 0 0 6px 24px;
+    padding: 0;
+    color: var(--nfh-list-key);
+    list-style: disc;
 }
 
-.nfh-oc-spawn__risks li::before {
-    content: "\u2022 ";
+.nfh-oc-plan__risks > summary {
+    color: var(--nfh-text);
 }
 
-.nfh-oc-spawn__grading {
-    margin-top: 6px;
+.nfh-oc-plan__grading {
+    padding-top: 4px;
+    border-top: 1px solid var(--nfh-border);
     color: var(--nfh-list-key);
     font-size: 11px;
 }
@@ -6227,6 +6249,8 @@ body.dark-mode .nfh-oc-spawn__count--ok {
 
   // src/features/organized-crimes/spawn-plan-logic.js
   var TIERS = ["lambda", "sigma", "phi", "psi", "omega"];
+  var SYMBOLS = { lambda: "\u039B", sigma: "\u03A3", phi: "\u03A6", psi: "\u03A8", omega: "\u03A9" };
+  var plural = (count, one, many) => `${count} ${count === 1 ? one : many}`;
   function spawnBadges(plan) {
     const badges = {};
     if (!plan || !plan.enabled || !Array.isArray(plan.tiers)) return badges;
@@ -6243,27 +6267,31 @@ body.dark-mode .nfh-oc-spawn__count--ok {
     }
     return badges;
   }
-  var levels = (tier) => (tier.levels || []).join("\u2013");
   function tierHtml(tier) {
-    const action = tier.spawn > 0 ? `<span class="nfh-oc-spawn__count">Spawn ${tier.spawn}</span><span class="nfh-oc-spawn__muted">${tier.spawn * tier.scope_cost} scope</span>` : '<span class="nfh-oc-spawn__count nfh-oc-spawn__count--ok">Enough open</span>';
-    const why = (tier.reasons || []).map((reason) => escapeHtml(reason)).join(" \xB7 ");
-    return `<li class="nfh-oc-spawn__tier${tier.spawn > 0 ? " nfh-oc-spawn__tier--spawn" : ""}${tier.below_productive ? " nfh-oc-spawn__tier--quiet" : ""}" data-nfh-tier="${escapeHtml(tier.tier)}"><span class="nfh-oc-spawn__name">${escapeHtml(tier.label)} <span class="nfh-oc-spawn__muted">L${escapeHtml(levels(tier))}</span></span>` + action + `<span class="nfh-oc-spawn__why">${why}</span></li>`;
+    const free = (tier.seeking || 0) + (tier.back_later || 0);
+    const verdict = tier.spawn > 0 ? `<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--spawn">Spawn ${tier.spawn}</span><span class="nfh-oc-plan__muted">${tier.spawn * tier.scope_cost} scope</span>` : '<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--ok">Enough open</span>';
+    const summary = [plural(free, "member free soon", "members free soon"), plural(tier.open_slots_taken || 0, "open slot fits", "open slots fit")];
+    const why = (tier.reasons || []).map((reason) => `<li>${escapeHtml(reason)}</li>`).join("");
+    return `<details class="nfh-oc-plan__row${tier.below_productive ? " nfh-oc-plan__row--quiet" : ""}" data-nfh-key="tier-${escapeHtml(tier.tier)}"><summary><span class="nfh-oc-plan__symbol" aria-hidden="true">${SYMBOLS[tier.tier] || ""}</span><span class="nfh-oc-plan__name">${escapeHtml(tier.label)} <span class="nfh-oc-plan__muted">${escapeHtml((tier.levels || []).join("\u2013"))}</span></span>` + verdict + `<span class="nfh-oc-plan__summary">${summary.join(" \xB7 ")}</span></summary><ul class="nfh-oc-plan__why">${why}</ul></details>`;
+  }
+  function risksHtml(risks) {
+    if (!risks.length) return "";
+    const items = risks.map(
+      (risk) => `<li>${escapeHtml(risk.crime_name)} <span class="nfh-oc-plan__muted">L${escapeHtml(risk.level)}</span>: ${plural(risk.open_slots, "open role", "open roles")}${risk.stalled ? ", stalled" : ""}</li>`
+    ).join("");
+    return `<details class="nfh-oc-plan__row nfh-oc-plan__risks" data-nfh-key="risks"><summary><span class="nfh-oc-plan__symbol" aria-hidden="true">!</span><span>${plural(risks.length, "started crime has", "started crimes have")} open roles nobody is due to take in the next two days</span></summary><ul class="nfh-oc-plan__why">${items}</ul></details>`;
   }
   function gradingHtml(grading) {
     if (!grading || !grading.suggestions) return "";
-    const percent = (value) => `${Math.round(value * 100)}%`;
     const waiting = (value) => value === null || value === void 0 ? "\u2013" : String(value);
-    return `<div class="nfh-oc-spawn__grading">Last 14 days: ${grading.suggestions} suggestion${grading.suggestions === 1 ? "" : "s"}, ${grading.followed === null ? "\u2013" : percent(grading.followed)} followed. Members still waiting 6h later: ${waiting(grading.waiting_when_followed)} when followed, ${waiting(grading.waiting_when_not)} when not.</div>`;
+    return `<div class="nfh-oc-plan__grading">Last 14 days: ${plural(grading.suggestions, "suggestion", "suggestions")}, ${grading.followed === null ? "\u2013" : `${Math.round(grading.followed * 100)}%`} followed; members still waiting 6h later: ${waiting(grading.waiting_when_followed)} when followed, ${waiting(grading.waiting_when_not)} when not.</div>`;
   }
   function spawnPanelHtml(plan) {
     if (!plan || !plan.enabled || !Array.isArray(plan.tiers)) return "";
     const tiers = [...plan.tiers].sort((a, b) => TIERS.indexOf(b.tier) - TIERS.indexOf(a.tier));
-    const risks = (plan.stall_risks || []).map(
-      (risk) => `<li>${escapeHtml(risk.crime_name)} <span class="nfh-oc-spawn__muted">L${escapeHtml(risk.level)}</span>: ${risk.open_slots} open ${risk.open_slots === 1 ? "role" : "roles"}${risk.stalled ? ", stalled" : ""} and nobody due to take ${risk.open_slots === 1 ? "it" : "them"} today</li>`
-    ).join("");
-    const idle = plan.idle_without_slot ? `<div class="nfh-oc-spawn__alert">${plan.idle_without_slot} member${plan.idle_without_slot === 1 ? " is" : "s are"} in no crime with nothing open for them right now.</div>` : "";
-    const body = tiers.length ? `<ul class="nfh-oc-spawn__tiers">${tiers.map(tierHtml).join("")}</ul>` : '<div class="nfh-oc-spawn__muted">Nobody is due to look for a crime in the next day.</div>';
-    return `<div class="nfh-oc-spawn__head"><strong>Spawn plan</strong><span class="nfh-oc-spawn__muted">next ${plan.horizon_hours || 24}h, from nuke.family</span></div>` + idle + body + (risks ? `<div class="nfh-oc-spawn__risks">Fill first:<ul>${risks}</ul></div>` : "") + gradingHtml(plan.grading);
+    const idle = plan.idle_without_slot ? `<span class="nfh-oc-plan__alert">${plural(plan.idle_without_slot, "member", "members")} in no crime with nothing open</span>` : "";
+    const body = tiers.length ? tiers.map(tierHtml).join("") : '<div class="nfh-oc-plan__muted">Nobody is due to look for a crime in the next day.</div>';
+    return `<div class="nfh-oc-plan__head"><strong>Spawn plan</strong><span class="nfh-oc-plan__muted">next ${plan.horizon_hours || 24}h \xB7 click a line for why</span>${idle}</div>` + body + risksHtml(plan.stall_risks || []) + gradingHtml(plan.grading);
   }
 
   // src/features/organized-crimes/spawn-plan.js
@@ -6271,8 +6299,8 @@ body.dark-mode .nfh-oc-spawn__count--ok {
   var FRESH_MS = 5 * 60 * 1e3;
   var REFUSED_MS = 12 * 60 * 60 * 1e3;
   var SPAWNER_SELECTOR = '[class*="manualSpawnerContainer"]';
-  var PANEL_ID = "nfh-oc-spawn";
-  var BADGE_CLASS = "nfh-oc-spawn-badge";
+  var PANEL_ID = "nfh-oc-plan";
+  var BADGE_CLASS = "nfh-oc-plan-badge";
   function readCache2() {
     try {
       return JSON.parse(localStorage.getItem(PLAN_KEY) || "null");
@@ -6341,12 +6369,16 @@ body.dark-mode .nfh-oc-spawn__count--ok {
     if (!panel) {
       panel = document.createElement("div");
       panel.id = PANEL_ID;
-      panel.className = "nfh-oc-spawn";
+      panel.className = "nfh-oc-plan";
     }
     if (panel.previousElementSibling !== spawner) spawner.after(panel);
     if (panel.dataset.nfhHtml !== html) {
+      const open = new Set([...panel.querySelectorAll("details[open]")].map((el) => el.dataset.nfhKey));
       panel.dataset.nfhHtml = html;
       panel.innerHTML = html;
+      for (const el of panel.querySelectorAll("details[data-nfh-key]")) {
+        if (open.has(el.dataset.nfhKey)) el.open = true;
+      }
     }
   }
 

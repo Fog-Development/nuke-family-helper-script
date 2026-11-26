@@ -16,8 +16,8 @@ const FRESH_MS = 5 * 60 * 1000;
 const REFUSED_MS = 12 * 60 * 60 * 1000;
 
 export const SPAWNER_SELECTOR = '[class*="manualSpawnerContainer"]';
-export const PANEL_ID = "nfh-oc-spawn";
-export const BADGE_CLASS = "nfh-oc-spawn-badge";
+export const PANEL_ID = "nfh-oc-plan";
+export const BADGE_CLASS = "nfh-oc-plan-badge";
 
 
 function readCache() {
@@ -104,11 +104,16 @@ export function renderSpawnPlan(root, plan) {
   if (!panel) {
     panel = document.createElement("div");
     panel.id = PANEL_ID;
-    panel.className = "nfh-oc-spawn";
+    panel.className = "nfh-oc-plan";
   }
   if (panel.previousElementSibling !== spawner) spawner.after(panel);
   if (panel.dataset.nfhHtml !== html) {
+    // Keep whatever the member had folded open across a refresh of the plan.
+    const open = new Set([...panel.querySelectorAll("details[open]")].map((el) => el.dataset.nfhKey));
     panel.dataset.nfhHtml = html;
     panel.innerHTML = html;
+    for (const el of panel.querySelectorAll("details[data-nfh-key]")) {
+      if (open.has(el.dataset.nfhKey)) el.open = true;
+    }
   }
 }

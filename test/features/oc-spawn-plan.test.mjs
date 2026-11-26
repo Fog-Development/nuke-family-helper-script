@@ -6,7 +6,7 @@ import { THEMES } from "../harness/theme.js";
 // The spawn plan for OC staff beside Torn's spawn buttons on the Recruiting
 // sub-tab. The site is stubbed; the plan is made up here.
 
-const PANEL = "#nfh-oc-spawn";
+const PANEL = "#nfh-oc-plan";
 
 const staffBoard = {
   data: {
@@ -57,7 +57,7 @@ const badges = (page) =>
     Object.fromEntries(
       [...document.querySelectorAll('button[class*="spawnDifficulty___"]')].map((button) => [
         button.getAttribute("aria-label").split(",")[0],
-        button.querySelector(".nfh-oc-spawn-badge")?.textContent ?? null,
+        button.querySelector(".nfh-oc-plan-badge")?.textContent ?? null,
       ]),
     ),
   );
@@ -82,7 +82,16 @@ describe("OC spawn plan", () => {
         assert.match(text, /4 scope/);
         assert.match(text, /crimes ending 20:00 TCT/);
         assert.match(text, /Bidding War/);
-        assert.match(text, /1 member is in no crime with nothing open/);
+        assert.match(text, /1 member in no crime with nothing open/);
+        // The stylesheet must reach both: a broken rule earlier in styles.css once left them bare text.
+        const styles = await page.evaluate(() => ({
+          badge: getComputedStyle(document.querySelector(".nfh-oc-plan-badge")).position,
+          panel: getComputedStyle(document.querySelector("#nfh-oc-plan")).borderLeftWidth,
+          why: document.querySelector("#nfh-oc-plan .nfh-oc-plan__why").checkVisibility(),
+        }));
+        assert.deepEqual(styles, { badge: "absolute", panel: "3px", why: false }, "reasons stay folded until a line is clicked");
+        await page.click('#nfh-oc-plan [data-nfh-key="tier-psi"] > summary');
+        assert.match(await page.$eval('#nfh-oc-plan [data-nfh-key="tier-psi"] .nfh-oc-plan__why', (el) => el.textContent), /counted as half|count as half/);
         await screenshot(await page.$(PANEL), `oc-spawn-plan-${theme}`);
         await screenshot(await page.$('[class*="manualSpawnerContainer"]'), `oc-spawn-buttons-${theme}`);
         assert.deepEqual(errors, []);
