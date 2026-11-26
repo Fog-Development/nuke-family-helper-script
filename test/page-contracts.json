@@ -378,6 +378,37 @@
         }
       ],
       "fixtures": []
+    },
+    {
+      "id": "sidebar-faction",
+      "feature": "oc hint",
+      "description": "The \"No OC\" chip goes in the sidebar's My Faction row",
+      "url": "torn\\.com/(factions|profiles|hospitalview|messages)\\.php|page\\.php\\?sid=stocks",
+      "expect": [
+        {
+          "selector": "#nav-faction [class*=\"areaRow\"]",
+          "note": "oc-hint/index.js anchor"
+        }
+      ],
+      "fixtures": [
+        "factions-faction",
+        "controls-applications-mobile"
+      ]
+    },
+    {
+      "id": "sidebar-menu-button",
+      "feature": "oc hint",
+      "description": "Phone layout: the button that opens the fly-out sidebar gets the \"No OC\" dot",
+      "url": "torn\\.com/(factions|profiles|hospitalview|messages)\\.php|page\\.php\\?sid=stocks",
+      "when": "[class*=\"areasMobile\"]",
+      "expect": [
+        {
+          "selector": "#fly-out-menu-button"
+        }
+      ],
+      "fixtures": [
+        "controls-applications-mobile"
+      ]
     }
   ]
 }

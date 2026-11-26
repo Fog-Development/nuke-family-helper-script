@@ -2456,6 +2456,70 @@ body.dark-mode .nfh-rs-detail {
     margin: 0;
     padding: 2px 8px 5px 30px;
 }
+
+/* "No OC" chip beside My Faction in Torn's sidebar (oc-hint/) */
+#nav-faction [class*="areaRow"]:has(> .nfh-oc-hint) {
+    position: relative;
+}
+
+.nfh-oc-hint {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    padding: 1px 6px;
+    border: 1px solid currentColor;
+    border-radius: 9px;
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+    pointer-events: auto;
+}
+
+.nfh-oc-hint:hover {
+    text-decoration: none;
+    filter: brightness(1.1);
+}
+
+.nfh-oc-hint--quiet {
+    color: var(--nfh-list-key);
+    border-color: var(--nfh-border);
+}
+
+.nfh-oc-hint--warn {
+    color: #8a5200;
+    background-color: #fff3d6;
+    border-color: #e0a030;
+}
+
+body.dark-mode .nfh-oc-hint--warn {
+    color: #ffc966;
+    background-color: rgba(224, 160, 48, 0.15);
+    border-color: #b07a1c;
+}
+
+/* Phone layout: a dot on the menu button that opens the sidebar. */
+#fly-out-menu-button:has(> .nfh-oc-hint-dot) {
+    position: relative;
+}
+
+.nfh-oc-hint-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #e0a030;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+}
+
+[class*="area-mobile"] .nfh-oc-hint__age {
+    display: none;
+}
 `;
 
   // src/core/storage.js
@@ -2469,6 +2533,7 @@ body.dark-mode .nfh-rs-detail {
     "nfhRankedWar",
     "nfhOcStaffPrefs",
     "nfhOcWeights",
+    "nfhOcHint",
     "nfhOcItemShow",
     "nfhOcFinePanel"
   ];
@@ -4665,6 +4730,123 @@ body.dark-mode .nfh-rs-detail {
     renderSoon();
   }
 
+  // src/features/oc-hint/logic.js
+  var QUIET_SECONDS = 60 * 60;
+  function idleLabel(seconds) {
+    const minutes = Math.max(0, Math.floor(seconds / 60));
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 48) return `${hours}h`;
+    return `${Math.floor(hours / 24)}d`;
+  }
+  function hintFor(status, nowSeconds) {
+    if (!status || status.enabled === false || status.state !== "idle" || !status.idle_since) return null;
+    const idle = Math.max(0, nowSeconds - status.idle_since);
+    const label = idleLabel(idle);
+    return {
+      tone: idle < QUIET_SECONDS ? "quiet" : "warn",
+      text: `No OC \xB7 ${label}`,
+      age: label,
+      title: `You haven't been in an organized crime for ${label}. Open your faction's crimes to join one.`
+    };
+  }
+
+  // src/features/oc-hint/index.js
+  var CHIP_ID = "nfh-oc-hint";
+  var DOT_ID = "nfh-oc-hint-dot";
+  var SIDEBAR = "#nav-faction";
+  var MENU_BUTTON = "#fly-out-menu-button";
+  var CRIMES_URL = "/factions.php?step=your#/tab=crimes";
+  var CACHE_KEY = "nfhOcMe";
+  var TTL_MS = 5 * 60 * 1e3;
+  var REFUSED_TTL_MS = 12 * 60 * 60 * 1e3;
+  var PREF_KEY = "nfhOcHint";
+  function hintShown() {
+    return getItem(PREF_KEY) !== "off";
+  }
+  function setHintShown(shown3) {
+    setItem(PREF_KEY, shown3 ? "on" : "off");
+    if (shown3) initOcHint();
+    else removeChip();
+  }
+  function readCache() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+      if (cached && Date.now() - cached.at < (cached.refused ? REFUSED_TTL_MS : TTL_MS)) return cached;
+    } catch (e) {
+    }
+    return null;
+  }
+  function writeCache(entry) {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), ...entry }));
+    } catch (e) {
+    }
+  }
+  async function loadStatus() {
+    const cached = readCache();
+    if (cached) return cached.refused ? null : cached.data;
+    try {
+      const answer = await api("/oc/me");
+      writeCache({ data: answer.data });
+      return answer.data;
+    } catch (error) {
+      if (error instanceof ApiError && (error.status === 403 || error.status === 404)) {
+        writeCache({ refused: true });
+      }
+      LogInfo("[oc-hint] no status", error);
+      return null;
+    }
+  }
+  function removeChip() {
+    for (const id of [CHIP_ID, DOT_ID]) {
+      const element = document.getElementById(id);
+      if (element) element.remove();
+    }
+  }
+  function markInOc() {
+    const cached = readCache();
+    if (cached && cached.data && cached.data.state === "in_oc") return;
+    writeCache({ data: { enabled: true, state: "in_oc", idle_since: null } });
+    removeChip();
+  }
+  async function initOcHint() {
+    if (!getApiToken() || !hintShown()) return;
+    const hint = hintFor(await loadStatus(), Math.floor(Date.now() / 1e3));
+    if (!hint) {
+      removeChip();
+      return;
+    }
+    ensureInjected({
+      containerSelector: SIDEBAR,
+      isPresent: () => document.getElementById(CHIP_ID) !== null,
+      inject: (area) => {
+        const row2 = area.querySelector('[class*="areaRow"]') || area;
+        const chip = document.createElement("a");
+        chip.id = CHIP_ID;
+        chip.href = CRIMES_URL;
+        chip.className = `nfh-oc-hint nfh-oc-hint--${hint.tone}`;
+        chip.title = hint.title;
+        chip.setAttribute("aria-label", hint.title);
+        chip.innerHTML = `No OC<span class="nfh-oc-hint__age"> \xB7 ${escapeHtml(hint.age)}</span>`;
+        row2.appendChild(chip);
+      }
+    });
+    if (hint.tone === "warn" && document.querySelector(MENU_BUTTON)) {
+      ensureInjected({
+        containerSelector: MENU_BUTTON,
+        isPresent: () => document.getElementById(DOT_ID) !== null,
+        inject: (button3) => {
+          const dot = document.createElement("span");
+          dot.id = DOT_ID;
+          dot.className = "nfh-oc-hint-dot";
+          dot.title = hint.title;
+          button3.appendChild(dot);
+        }
+      });
+    }
+  }
+
   // src/core/settings.js
   var SettingsManager = {
     getHiddenCategories: () => {
@@ -6711,7 +6893,7 @@ body.dark-mode .nfh-rs-detail {
   };
 
   // src/features/mail-templates/data.js
-  var TTL_MS = 5 * 60 * 1e3;
+  var TTL_MS2 = 5 * 60 * 1e3;
   var LIST_KEY2 = "nfhMailTemplateList";
   var BODY_KEY = "nfhMailTemplateBodies";
   var memory = { list: {}, bodies: {} };
@@ -6728,7 +6910,7 @@ body.dark-mode .nfh-rs-detail {
     } catch (error) {
     }
   }
-  var fresh = (entry, maxAgeMs = TTL_MS) => entry && Date.now() - entry.at < maxAgeMs;
+  var fresh = (entry, maxAgeMs = TTL_MS2) => entry && Date.now() - entry.at < maxAgeMs;
   function forgetCaches() {
     memory.list = {};
     memory.bodies = {};
@@ -6738,7 +6920,7 @@ body.dark-mode .nfh-rs-detail {
     } catch (error) {
     }
   }
-  async function listTemplates(page, { force = false, maxAgeMs = TTL_MS } = {}) {
+  async function listTemplates(page, { force = false, maxAgeMs = TTL_MS2 } = {}) {
     if (!force) {
       const cached = memory.list[page] || readStore(LIST_KEY2)[page];
       if (fresh(cached, maxAgeMs)) {
@@ -7382,15 +7564,16 @@ body.dark-mode .nfh-rs-detail {
     const note = items.changed ? `You changed these; your faction's defaults are shown on hover. <button type="button" class="nfh-oc-link-button" data-nfh-oc-items-reset>Use your faction's choices</button>` : "Your faction's defaults. Changes are yours alone, in this browser.";
     return `<div class="nfh-oc-settings-group"><span class="nfh-oc-settings-heading">OC items</span>${groups}<span class="nfh-oc-bar-muted">${note}</span></div>`;
   }
-  function settingsHtml({ open, weights, staff, items = null }) {
+  function settingsHtml({ open, weights, staff, items = null, hint = null }) {
     const button3 = `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-settings-toggle aria-expanded="${open ? "true" : "false"}">Settings</button>`;
     if (!open) return { button: button3, panel: "" };
     const faction = `Your faction ${weights.factionShows ? "shows" : "hides"} them by default.`;
     const note = weights.own ? `You changed this. ${faction} <button type="button" class="nfh-oc-link-button" data-nfh-oc-weights-reset>Use your faction's choice</button>` : faction;
     const weightsGroup = `<div class="nfh-oc-settings-group"><label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-weights${weights.show ? " checked" : ""}> Show role weights</label><span class="nfh-oc-bar-muted">${note}</span></div>`;
+    const hintGroup = hint === null ? "" : `<div class="nfh-oc-settings-group"><label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-hint${hint ? " checked" : ""}> Show "No OC" in the sidebar</label><span class="nfh-oc-bar-muted">A small reminder beside My Faction while you're not in a crime. In this browser only.</span></div>`;
     return {
       button: button3,
-      panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${staff ? staffSettingsHtml(staff) : ""}${items ? itemSettingsHtml(items) : ""}</div>`
+      panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${hintGroup}${staff ? staffSettingsHtml(staff) : ""}${items ? itemSettingsHtml(items) : ""}</div>`
     };
   }
   var TAG_TEXT = { [Rank.Best]: "Best for you", [Rank.Good]: "Good for you" };
@@ -7656,6 +7839,7 @@ body.dark-mode .nfh-rs-detail {
     }
     const own = recruiting ? findOwnSlot(crimes, board) : null;
     const inCrime = own !== null || joining === JoinState.Blocked;
+    if (inCrime) markInOc();
     const warning = features2.warn && recruiting ? ownSlotWarning(own, board, config, rateCrimes) : null;
     const ranking = features2.enabled && recruiting && crimes.length > 0 && (warning !== null || !inCrime && (joining === JoinState.Open || joining === JoinState.Full));
     const suggesting = ranking && features2.suggest;
@@ -7694,7 +7878,7 @@ body.dark-mode .nfh-rs-detail {
     renderSuggestions(root4, suggestions);
     renderIdleMembers(root4, idleList ? members : null);
     const staff = members && active ? { counts, prefs: prefs4, factionLimits: limitsFor(config) } : null;
-    const settings = settingsHtml({ open: settingsOpen, weights, staff, items: itemSettings() });
+    const settings = settingsHtml({ open: settingsOpen, weights, staff, items: itemSettings(), hint: hintShown() });
     const staffPart = staff ? staffHtml(staff, settings.button) : "";
     const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
     let memberPart = "";
@@ -7736,6 +7920,8 @@ body.dark-mode .nfh-rs-detail {
           if (!items) return;
           setItemChoice(items.factionId, item, event.target.checked);
           itemSettingsChanged();
+        } else if (event.target.hasAttribute("data-nfh-oc-hint")) {
+          setHintShown(event.target.checked);
         } else if (event.target.hasAttribute("data-nfh-oc-weights")) {
           const current = ocConfigStore.data;
           if (!current || !current.faction_id) return;
@@ -8474,7 +8660,7 @@ body.dark-mode .nfh-rs-detail {
 
   // src/features/kick-risk/index.js
   var ROOT = "#option-members-root";
-  var CACHE_KEY = "nfhKickRisk";
+  var CACHE_KEY2 = "nfhKickRisk";
   var DENIED_KEY = "nfhKickRiskDenied";
   var RETURN_KEY = "nfhKickReturn";
   var CACHE_MS = 10 * 60 * 1e3;
@@ -8510,14 +8696,14 @@ body.dark-mode .nfh-rs-detail {
     if (state4.loading) return state4.loading;
     const denied = readJson3(localStorage, DENIED_KEY);
     if (denied && Date.now() - denied < DENIED_MS) return null;
-    const cached = readJson3(localStorage, CACHE_KEY);
+    const cached = readJson3(localStorage, CACHE_KEY2);
     if (cached && Date.now() - cached.at < CACHE_MS) {
       state4.data = cached.data;
       return state4.data;
     }
     state4.loading = api("/faction-monitor/members").then((data) => {
       state4.data = data;
-      writeJson(localStorage, CACHE_KEY, { at: Date.now(), data });
+      writeJson(localStorage, CACHE_KEY2, { at: Date.now(), data });
       return data;
     }).catch((error) => {
       if (error instanceof ApiError && (error.status === 403 || error.status === 404)) writeJson(localStorage, DENIED_KEY, Date.now());
@@ -9604,7 +9790,7 @@ body.dark-mode .nfh-rs-detail {
   // src/features/stocks/index.js
   var ROOT3 = "#stockmarketroot";
   var BAR_ID3 = "nfh-stock-bar";
-  var CACHE_KEY2 = "nfhStockSignals";
+  var CACHE_KEY3 = "nfhStockSignals";
   var DENIED_KEY2 = "nfhStockSignalsDenied";
   var CACHE_MS2 = 2 * 60 * 1e3;
   var DENIED_MS2 = 12 * 60 * 60 * 1e3;
@@ -9630,14 +9816,14 @@ body.dark-mode .nfh-rs-detail {
     if (state7.loading) return state7.loading;
     const denied = readJson4(DENIED_KEY2);
     if (denied && Date.now() - denied < DENIED_MS2) return null;
-    const cached = readJson4(CACHE_KEY2);
+    const cached = readJson4(CACHE_KEY3);
     if (cached && Date.now() - cached.at < CACHE_MS2) {
       state7.data = cached.data;
       return state7.data;
     }
     state7.loading = api("/stocks/signals").then((data) => {
       state7.data = data;
-      writeJson2(CACHE_KEY2, { at: Date.now(), data });
+      writeJson2(CACHE_KEY3, { at: Date.now(), data });
       return data;
     }).catch((error) => {
       if (error instanceof ApiError && error.status === 403) writeJson2(DENIED_KEY2, Date.now());
@@ -12143,6 +12329,8 @@ body.dark-mode .nfh-rs-detail {
     }
     initAuth();
     initConnect();
+    initOcHint();
+    onNavigate(initOcHint);
     dispatchFeatures();
     onNavigate(dispatchFeatures);
     checkCacheUpdates();

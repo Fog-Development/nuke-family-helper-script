@@ -188,9 +188,10 @@ function itemSettingsHtml(items) {
 
 // The Settings button, and its panel when open: the role weights choice
 // (`weights` is weightsChoice()'s answer) and, for staff, the flag settings
-// and where OC items show (`items`, or null).
+// and where OC items show (`items`, or null). `hint` is whether the sidebar's
+// "No OC" chip is on (null leaves the choice out).
 // Returns { button, panel }.
-export function settingsHtml({ open, weights, staff, items = null }) {
+export function settingsHtml({ open, weights, staff, items = null, hint = null }) {
   const button =
     `<button type="button" class="nfh-oc-bar-button" data-nfh-oc-settings-toggle ` +
     `aria-expanded="${open ? "true" : "false"}">Settings</button>`;
@@ -204,10 +205,16 @@ export function settingsHtml({ open, weights, staff, items = null }) {
     '<div class="nfh-oc-settings-group">' +
     `<label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-weights${weights.show ? " checked" : ""}> Show role weights</label>` +
     `<span class="nfh-oc-bar-muted">${note}</span></div>`;
+  const hintGroup =
+    hint === null
+      ? ""
+      : '<div class="nfh-oc-settings-group">' +
+        `<label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-hint${hint ? " checked" : ""}> Show "No OC" in the sidebar</label>` +
+        `<span class="nfh-oc-bar-muted">A small reminder beside My Faction while you're not in a crime. In this browser only.</span></div>`;
 
   return {
     button,
-    panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${staff ? staffSettingsHtml(staff) : ""}${items ? itemSettingsHtml(items) : ""}</div>`,
+    panel: `<div class="nfh-oc-staff-panel">${weightsGroup}${hintGroup}${staff ? staffSettingsHtml(staff) : ""}${items ? itemSettingsHtml(items) : ""}</div>`,
   };
 }
 

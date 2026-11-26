@@ -5,6 +5,7 @@ import { getUserscriptUsersPlayerId } from "../../core/torn-page.js";
 import { ocConfigStore } from "./data.js";
 import { crimeHoursLeft, hoursUntilTurn, limitsFor, probablyRun, slotFlags } from "./flags.js";
 import { getStaffPrefs, getWeightsPref, parseOverride, setStaffPrefs, setWeightsPref } from "./prefs.js";
+import { hintShown, markInOc, setHintShown } from "../oc-hint/index.js";
 import { itemSettings, itemSettingsChanged, onItemSettingsChange } from "../oc-items/index.js";
 import { FINE_PERMISSION, openFineModal } from "../oc-fines/index.js";
 import { REASON_FOR_FLAG } from "../oc-fines/logic.js";
@@ -193,6 +194,7 @@ function render() {
   }
   const own = recruiting ? findOwnSlot(crimes, board) : null;
   const inCrime = own !== null || joining === JoinState.Blocked;
+  if (inCrime) markInOc();
   const warning = features.warn && recruiting ? ownSlotWarning(own, board, config, rateCrimes) : null;
   // Slots are ranked whenever the member could act on it: free to join (with
   // an open slot loaded, or none loaded yet but perhaps some further down), or
@@ -249,7 +251,7 @@ function render() {
   renderIdleMembers(root, idleList ? members : null);
 
   const staff = members && active ? { counts, prefs, factionLimits: limitsFor(config) } : null;
-  const settings = settingsHtml({ open: settingsOpen, weights, staff, items: itemSettings() });
+  const settings = settingsHtml({ open: settingsOpen, weights, staff, items: itemSettings(), hint: hintShown() });
   const staffPart = staff ? staffHtml(staff, settings.button) : "";
 
   const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
@@ -303,6 +305,8 @@ function render() {
         if (!items) return;
         setItemChoice(items.factionId, item, event.target.checked);
         itemSettingsChanged();
+      } else if (event.target.hasAttribute("data-nfh-oc-hint")) {
+        setHintShown(event.target.checked);
       } else if (event.target.hasAttribute("data-nfh-oc-weights")) {
         const current = ocConfigStore.data;
         if (!current || !current.faction_id) return;
