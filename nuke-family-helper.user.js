@@ -2673,6 +2673,11 @@ body.dark-mode .nfh-oc-plan__verdict--ok {
     color: var(--nfh-list-key);
     font-size: 11px;
 }
+
+.nfh-oc-plan__for {
+    font-weight: normal;
+    font-size: 11px;
+}
 `;
 
   // src/core/storage.js
@@ -6267,9 +6272,13 @@ body.dark-mode .nfh-oc-plan__verdict--ok {
     }
     return badges;
   }
+  function forLevels(tier) {
+    if (!Array.isArray(tier.for_levels) || !tier.for_levels.length || !(tier.suits < 0.95)) return "";
+    return ` <span class="nfh-oc-plan__for">for L${tier.for_levels.map((level) => escapeHtml(level)).join("/")}</span>`;
+  }
   function tierHtml(tier) {
     const free = (tier.seeking || 0) + (tier.back_later || 0);
-    const verdict = tier.spawn > 0 ? `<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--spawn">Spawn ${tier.spawn}</span><span class="nfh-oc-plan__muted">${tier.spawn * tier.scope_cost} scope</span>` : '<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--ok">Enough open</span>';
+    const verdict = tier.spawn > 0 ? `<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--spawn">Spawn ${tier.spawn}${forLevels(tier)}</span><span class="nfh-oc-plan__muted">${tier.spawn * tier.scope_cost} scope</span>` : '<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--ok">Enough open</span>';
     const summary = [plural(free, "member free soon", "members free soon"), plural(tier.open_slots_taken || 0, "open slot fits", "open slots fit")];
     const why = (tier.reasons || []).map((reason) => `<li>${escapeHtml(reason)}</li>`).join("");
     return `<details class="nfh-oc-plan__row${tier.below_productive ? " nfh-oc-plan__row--quiet" : ""}" data-nfh-key="tier-${escapeHtml(tier.tier)}"><summary><span class="nfh-oc-plan__symbol" aria-hidden="true">${SYMBOLS[tier.tier] || ""}</span><span class="nfh-oc-plan__name">${escapeHtml(tier.label)} <span class="nfh-oc-plan__muted">${escapeHtml((tier.levels || []).join("\u2013"))}</span></span>` + verdict + `<span class="nfh-oc-plan__summary">${summary.join(" \xB7 ")}</span></summary><ul class="nfh-oc-plan__why">${why}</ul></details>`;

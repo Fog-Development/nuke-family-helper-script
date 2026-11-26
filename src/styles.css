@@ -2456,3 +2456,8 @@ body.dark-mode .nfh-oc-plan__verdict--ok {
     color: var(--nfh-list-key);
     font-size: 11px;
 }
+
+.nfh-oc-plan__for {
+    font-weight: normal;
+    font-size: 11px;
+}

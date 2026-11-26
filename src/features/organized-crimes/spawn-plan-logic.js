@@ -29,11 +29,18 @@ export function spawnBadges(plan) {
   return badges;
 }
 
+// "for L8" when the button can give a level the members waiting won't join
+// (a level 8 won't drop to a 7), so the count allows for spawns that miss.
+function forLevels(tier) {
+  if (!Array.isArray(tier.for_levels) || !tier.for_levels.length || !(tier.suits < 0.95)) return "";
+  return ` <span class="nfh-oc-plan__for">for L${tier.for_levels.map((level) => escapeHtml(level)).join("/")}</span>`;
+}
+
 function tierHtml(tier) {
   const free = (tier.seeking || 0) + (tier.back_later || 0);
   const verdict =
     tier.spawn > 0
-      ? `<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--spawn">Spawn ${tier.spawn}</span>` +
+      ? `<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--spawn">Spawn ${tier.spawn}${forLevels(tier)}</span>` +
         `<span class="nfh-oc-plan__muted">${tier.spawn * tier.scope_cost} scope</span>`
       : '<span class="nfh-oc-plan__verdict nfh-oc-plan__verdict--ok">Enough open</span>';
   const summary = [plural(free, "member free soon", "members free soon"), plural(tier.open_slots_taken || 0, "open slot fits", "open slots fit")];
