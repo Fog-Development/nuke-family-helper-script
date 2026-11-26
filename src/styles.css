@@ -2092,3 +2092,135 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
 .nfh-oc-idle-time--alert {
     background-color: #b71c1c;
 }
+
+/* OC spawn plan for staff, on Torn's spawn buttons and under the spawner (organized-crimes/spawn-plan.js) */
+[class*="spawnDifficulty___"]:has(> .nfh-oc-spawn-badge) {
+    position: relative;
+}
+
+.nfh-oc-spawn-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    color: #fff;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.nfh-oc-spawn-badge--spawn {
+    background-color: #d9822b;
+}
+
+.nfh-oc-spawn-badge--quiet {
+    background-color: #8a8a8a;
+}
+
+.nfh-oc-spawn-badge--ok {
+    background-color: #3c8d40;
+}
+
+.nfh-oc-spawn {
+    margin: 8px 0 4px;
+    padding: 8px 10px;
+    border: 1px solid var(--nfh-border);
+    border-left: 3px solid #d9822b;
+    border-radius: 5px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.nfh-oc-spawn__head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    align-items: baseline;
+    margin-bottom: 6px;
+}
+
+.nfh-oc-spawn__muted {
+    color: var(--nfh-list-key);
+    font-weight: normal;
+}
+
+.nfh-oc-spawn__alert {
+    margin-bottom: 6px;
+    color: #c62828;
+}
+
+body.dark-mode .nfh-oc-spawn__alert {
+    color: #ff8a80;
+}
+
+.nfh-oc-spawn__tiers,
+.nfh-oc-spawn__risks ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nfh-oc-spawn__tier {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+    align-items: baseline;
+    padding: 4px 0;
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-oc-spawn__tier:first-child {
+    border-top: none;
+}
+
+.nfh-oc-spawn__name {
+    min-width: 72px;
+    font-weight: 700;
+}
+
+.nfh-oc-spawn__count {
+    font-weight: 700;
+    color: #b8651a;
+}
+
+body.dark-mode .nfh-oc-spawn__count {
+    color: #f0a050;
+}
+
+.nfh-oc-spawn__count--ok,
+body.dark-mode .nfh-oc-spawn__count--ok {
+    color: #3c8d40;
+}
+
+.nfh-oc-spawn__tier--quiet .nfh-oc-spawn__count {
+    color: var(--nfh-list-key);
+}
+
+.nfh-oc-spawn__why {
+    flex: 1 1 100%;
+    color: var(--nfh-list-key);
+}
+
+.nfh-oc-spawn__risks {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--nfh-border);
+}
+
+.nfh-oc-spawn__risks li::before {
+    content: "• ";
+}
+
+.nfh-oc-spawn__grading {
+    margin-top: 6px;
+    color: var(--nfh-list-key);
+    font-size: 11px;
+}

@@ -94,6 +94,7 @@
   "POST /oc/cpr": { "stored": 0 },
   "GET /oc/items": { "data": { "enabled": false } },
   "POST /oc/spawn-request": { "status": "sent", "level": 9, "tier": "7-8", "cooldown_minutes": 30 },
+  "GET /oc/spawn-plan": { "data": { "enabled": false } },
   "POST /script/debug-report": { "reference": "K7QM2X" },
   "GET /user/get-own-roles": { "role": "leader", "in_reviving_faction": true },
   "GET /user/get-own-permissions": { "permissions": [] },

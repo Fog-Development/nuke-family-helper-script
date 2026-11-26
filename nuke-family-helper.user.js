@@ -2306,6 +2306,138 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
 .nfh-oc-idle-time--alert {
     background-color: #b71c1c;
 }
+
+/* OC spawn plan for staff, on Torn's spawn buttons and under the spawner (organized-crimes/spawn-plan.js) */
+[class*="spawnDifficulty___"]:has(> .nfh-oc-spawn-badge) {
+    position: relative;
+}
+
+.nfh-oc-spawn-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    color: #fff;
+    pointer-events: none;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.nfh-oc-spawn-badge--spawn {
+    background-color: #d9822b;
+}
+
+.nfh-oc-spawn-badge--quiet {
+    background-color: #8a8a8a;
+}
+
+.nfh-oc-spawn-badge--ok {
+    background-color: #3c8d40;
+}
+
+.nfh-oc-spawn {
+    margin: 8px 0 4px;
+    padding: 8px 10px;
+    border: 1px solid var(--nfh-border);
+    border-left: 3px solid #d9822b;
+    border-radius: 5px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.nfh-oc-spawn__head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    align-items: baseline;
+    margin-bottom: 6px;
+}
+
+.nfh-oc-spawn__muted {
+    color: var(--nfh-list-key);
+    font-weight: normal;
+}
+
+.nfh-oc-spawn__alert {
+    margin-bottom: 6px;
+    color: #c62828;
+}
+
+body.dark-mode .nfh-oc-spawn__alert {
+    color: #ff8a80;
+}
+
+.nfh-oc-spawn__tiers,
+.nfh-oc-spawn__risks ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nfh-oc-spawn__tier {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 8px;
+    align-items: baseline;
+    padding: 4px 0;
+    border-top: 1px solid var(--nfh-border);
+}
+
+.nfh-oc-spawn__tier:first-child {
+    border-top: none;
+}
+
+.nfh-oc-spawn__name {
+    min-width: 72px;
+    font-weight: 700;
+}
+
+.nfh-oc-spawn__count {
+    font-weight: 700;
+    color: #b8651a;
+}
+
+body.dark-mode .nfh-oc-spawn__count {
+    color: #f0a050;
+}
+
+.nfh-oc-spawn__count--ok,
+body.dark-mode .nfh-oc-spawn__count--ok {
+    color: #3c8d40;
+}
+
+.nfh-oc-spawn__tier--quiet .nfh-oc-spawn__count {
+    color: var(--nfh-list-key);
+}
+
+.nfh-oc-spawn__why {
+    flex: 1 1 100%;
+    color: var(--nfh-list-key);
+}
+
+.nfh-oc-spawn__risks {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--nfh-border);
+}
+
+.nfh-oc-spawn__risks li::before {
+    content: "\u2022 ";
+}
+
+.nfh-oc-spawn__grading {
+    margin-top: 6px;
+    color: var(--nfh-list-key);
+    font-size: 11px;
+}
 `;
 
   // src/core/storage.js
@@ -5762,6 +5894,131 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     return Math.min(max, Math.max(min, number2));
   }
 
+  // src/features/organized-crimes/spawn-plan-logic.js
+  var TIERS = ["lambda", "sigma", "phi", "psi", "omega"];
+  function spawnBadges(plan) {
+    const badges = {};
+    if (!plan || !plan.enabled || !Array.isArray(plan.tiers)) return badges;
+    for (const tier of plan.tiers) {
+      if (tier.spawn > 0) {
+        badges[tier.tier] = {
+          text: `+${tier.spawn}`,
+          tone: tier.below_productive ? "quiet" : "spawn",
+          title: `Spawn ${tier.spawn}: ${(tier.reasons || []).join("; ")}`
+        };
+      } else if (tier.seeking > 0 || tier.back_later > 0) {
+        badges[tier.tier] = { text: "\u2713", tone: "ok", title: `Enough open: ${(tier.reasons || []).join("; ")}` };
+      }
+    }
+    return badges;
+  }
+  var levels = (tier) => (tier.levels || []).join("\u2013");
+  function tierHtml(tier) {
+    const action = tier.spawn > 0 ? `<span class="nfh-oc-spawn__count">Spawn ${tier.spawn}</span><span class="nfh-oc-spawn__muted">${tier.spawn * tier.scope_cost} scope</span>` : '<span class="nfh-oc-spawn__count nfh-oc-spawn__count--ok">Enough open</span>';
+    const why = (tier.reasons || []).map((reason) => escapeHtml(reason)).join(" \xB7 ");
+    return `<li class="nfh-oc-spawn__tier${tier.spawn > 0 ? " nfh-oc-spawn__tier--spawn" : ""}${tier.below_productive ? " nfh-oc-spawn__tier--quiet" : ""}" data-nfh-tier="${escapeHtml(tier.tier)}"><span class="nfh-oc-spawn__name">${escapeHtml(tier.label)} <span class="nfh-oc-spawn__muted">L${escapeHtml(levels(tier))}</span></span>` + action + `<span class="nfh-oc-spawn__why">${why}</span></li>`;
+  }
+  function gradingHtml(grading) {
+    if (!grading || !grading.suggestions) return "";
+    const percent = (value) => `${Math.round(value * 100)}%`;
+    const waiting = (value) => value === null || value === void 0 ? "\u2013" : String(value);
+    return `<div class="nfh-oc-spawn__grading">Last 14 days: ${grading.suggestions} suggestion${grading.suggestions === 1 ? "" : "s"}, ${grading.followed === null ? "\u2013" : percent(grading.followed)} followed. Members still waiting 6h later: ${waiting(grading.waiting_when_followed)} when followed, ${waiting(grading.waiting_when_not)} when not.</div>`;
+  }
+  function spawnPanelHtml(plan) {
+    if (!plan || !plan.enabled || !Array.isArray(plan.tiers)) return "";
+    const tiers = [...plan.tiers].sort((a, b) => TIERS.indexOf(b.tier) - TIERS.indexOf(a.tier));
+    const risks = (plan.stall_risks || []).map(
+      (risk) => `<li>${escapeHtml(risk.crime_name)} <span class="nfh-oc-spawn__muted">L${escapeHtml(risk.level)}</span>: ${risk.open_slots} open ${risk.open_slots === 1 ? "role" : "roles"}${risk.stalled ? ", stalled" : ""} and nobody due to take ${risk.open_slots === 1 ? "it" : "them"} today</li>`
+    ).join("");
+    const idle = plan.idle_without_slot ? `<div class="nfh-oc-spawn__alert">${plan.idle_without_slot} member${plan.idle_without_slot === 1 ? " is" : "s are"} in no crime with nothing open for them right now.</div>` : "";
+    const body = tiers.length ? `<ul class="nfh-oc-spawn__tiers">${tiers.map(tierHtml).join("")}</ul>` : '<div class="nfh-oc-spawn__muted">Nobody is due to look for a crime in the next day.</div>';
+    return `<div class="nfh-oc-spawn__head"><strong>Spawn plan</strong><span class="nfh-oc-spawn__muted">next ${plan.horizon_hours || 24}h, from nuke.family</span></div>` + idle + body + (risks ? `<div class="nfh-oc-spawn__risks">Fill first:<ul>${risks}</ul></div>` : "") + gradingHtml(plan.grading);
+  }
+
+  // src/features/organized-crimes/spawn-plan.js
+  var PLAN_KEY = "nfhOcSpawnPlan";
+  var FRESH_MS = 5 * 60 * 1e3;
+  var REFUSED_MS = 12 * 60 * 60 * 1e3;
+  var SPAWNER_SELECTOR = '[class*="manualSpawnerContainer"]';
+  var PANEL_ID = "nfh-oc-spawn";
+  var BADGE_CLASS = "nfh-oc-spawn-badge";
+  function readCache() {
+    try {
+      return JSON.parse(localStorage.getItem(PLAN_KEY) || "null");
+    } catch (e) {
+      return null;
+    }
+  }
+  function cachedSpawnPlan() {
+    const cached = readCache();
+    if (!cached) return null;
+    const age = Date.now() - cached.fetchedAt;
+    if (cached.refused) return age < REFUSED_MS ? cached : null;
+    return cached;
+  }
+  var request2 = null;
+  function refreshSpawnPlan() {
+    const cached = cachedSpawnPlan();
+    if (cached && Date.now() - cached.fetchedAt < (cached.refused ? REFUSED_MS : FRESH_MS)) return Promise.resolve(false);
+    if (request2) return request2;
+    request2 = api("/oc/spawn-plan").then((response) => {
+      localStorage.setItem(PLAN_KEY, JSON.stringify({ plan: response.data, fetchedAt: Date.now() }));
+      return true;
+    }).catch((error) => {
+      if (error instanceof ApiError && (error.status === 403 || error.status === 404)) {
+        localStorage.setItem(PLAN_KEY, JSON.stringify({ refused: true, fetchedAt: Date.now() }));
+      }
+      return false;
+    }).finally(() => {
+      request2 = null;
+    });
+    return request2;
+  }
+  function isSpawnPlanElement(node) {
+    const element = node && node.nodeType === Node.ELEMENT_NODE ? node : node && node.parentElement;
+    return Boolean(element && element.closest && element.closest(`#${PANEL_ID}, .${BADGE_CLASS}`));
+  }
+  function renderSpawnPlan(root3, plan) {
+    const spawner = root3.querySelector(SPAWNER_SELECTOR);
+    const badges = spawner && plan ? spawnBadges(plan) : {};
+    if (spawner) {
+      for (const button3 of spawner.querySelectorAll('button[class*="spawnDifficulty___"]')) {
+        const tier = TIERS.find((name) => [...button3.classList].some((cls2) => cls2.startsWith(`${name}___`)));
+        const badge = tier ? badges[tier] : null;
+        let el = button3.querySelector(`.${BADGE_CLASS}`);
+        if (!badge) {
+          if (el) el.remove();
+          continue;
+        }
+        if (!el) {
+          el = document.createElement("span");
+          el.className = BADGE_CLASS;
+          button3.appendChild(el);
+        }
+        const cls = `${BADGE_CLASS} ${BADGE_CLASS}--${badge.tone}`;
+        if (el.className !== cls) el.className = cls;
+        if (el.textContent !== badge.text) el.textContent = badge.text;
+        if (el.title !== badge.title) el.title = badge.title;
+      }
+    }
+    let panel = document.getElementById(PANEL_ID);
+    const html = spawner && plan ? spawnPanelHtml(plan) : "";
+    if (!html) {
+      if (panel) panel.remove();
+      return;
+    }
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.id = PANEL_ID;
+      panel.className = "nfh-oc-spawn";
+    }
+    if (panel.previousElementSibling !== spawner) spawner.after(panel);
+    if (panel.dataset.nfhHtml !== html) {
+      panel.dataset.nfhHtml = html;
+      panel.innerHTML = html;
+    }
+  }
+
   // src/core/page-script.js
   var nonce;
   function pageNonce() {
@@ -5806,41 +6063,41 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     window.__nfhEditorBridge = true;
     document.documentElement.setAttribute("data-nfh-editor-bridge", "1");
     document.addEventListener(requestEvent, (event) => {
-      let request2;
+      let request3;
       try {
-        request2 = JSON.parse(event.detail);
+        request3 = JSON.parse(event.detail);
       } catch (error) {
         return;
       }
-      const element = document.getElementById(request2.elementId);
+      const element = document.getElementById(request3.elementId);
       const mce = window.tinymce;
       let editor = null;
       try {
-        editor = mce ? mce.get(request2.elementId) || (mce.activeEditor && mce.activeEditor.getElement() === element ? mce.activeEditor : null) : null;
+        editor = mce ? mce.get(request3.elementId) || (mce.activeEditor && mce.activeEditor.getElement() === element ? mce.activeEditor : null) : null;
       } catch (error) {
         editor = null;
       }
-      let answer = { id: request2.id, ok: true, via: editor ? "tinymce" : "element" };
+      let answer = { id: request3.id, ok: true, via: editor ? "tinymce" : "element" };
       try {
-        if (request2.op === "get") {
+        if (request3.op === "get") {
           answer.html = editor ? editor.getContent() : element ? element.innerHTML : "";
-        } else if (request2.op === "set") {
+        } else if (request3.op === "set") {
           if (editor) {
             editor.focus();
-            if (editor.undoManager) editor.undoManager.transact(() => editor.setContent(request2.html));
-            else editor.setContent(request2.html);
+            if (editor.undoManager) editor.undoManager.transact(() => editor.setContent(request3.html));
+            else editor.setContent(request3.html);
             editor.fire("change");
             editor.fire("input");
             if (editor.nodeChanged) editor.nodeChanged();
           } else if (element) {
-            element.innerHTML = request2.html;
+            element.innerHTML = request3.html;
             element.dispatchEvent(new Event("input", { bubbles: true }));
           } else {
-            answer = { id: request2.id, ok: false, error: "The editor was not found." };
+            answer = { id: request3.id, ok: false, error: "The editor was not found." };
           }
         }
       } catch (error) {
-        answer = { id: request2.id, ok: false, error: String(error && error.message || error) };
+        answer = { id: request3.id, ok: false, error: String(error && error.message || error) };
       }
       document.dispatchEvent(new CustomEvent(responseEvent, { detail: JSON.stringify(answer) }));
     });
@@ -5963,18 +6220,18 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     window.__nfhTornAction = true;
     document.documentElement.setAttribute("data-nfh-torn-action", "1");
     document.addEventListener(requestEvent, (event) => {
-      let request2;
+      let request3;
       try {
-        request2 = JSON.parse(event.detail);
+        request3 = JSON.parse(event.detail);
       } catch (error) {
         return;
       }
-      const answer = (payload) => document.dispatchEvent(new CustomEvent(responseEvent, { detail: JSON.stringify({ id: request2.id, ...payload }) }));
-      fetch(request2.url, {
+      const answer = (payload) => document.dispatchEvent(new CustomEvent(responseEvent, { detail: JSON.stringify({ id: request3.id, ...payload }) }));
+      fetch(request3.url, {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "X-Requested-With": "XMLHttpRequest" },
-        body: request2.body
+        body: request3.body
       }).then((response) => response.text().then((text) => answer({ ok: response.ok, status: response.status, text }))).catch((error) => answer({ ok: false, status: 0, text: String(error && error.message || error) }));
     });
   }
@@ -6172,12 +6429,12 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
 
   // src/features/oc-items/index.js
-  var PANEL_ID = "nfh-oc-items";
+  var PANEL_ID2 = "nfh-oc-items";
   var WANTED_TAB_KEY = "nfhOcItemsTab";
   var FILL_CLASS = "nfh-oci-fill";
-  var BADGE_CLASS = "nfh-oci-badge";
+  var BADGE_CLASS2 = "nfh-oci-badge";
   var COLLAPSED_KEY = "nfhOcItemsCollapsed";
-  var FRESH_MS = 60 * 1e3;
+  var FRESH_MS2 = 60 * 1e3;
   var PLACES = {
     crimes: { container: "#faction-crimes-root", insert: (container) => container.parentElement.insertBefore(panelElement(), container) },
     armoury: { container: "#faction-armoury-tabs", insert: (container) => container.parentElement.insertBefore(panelElement(), container) }
@@ -6209,14 +6466,14 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   function panelElement() {
     const panel = document.createElement("div");
-    panel.id = PANEL_ID;
+    panel.id = PANEL_ID2;
     panel.className = "nfh-cw nfh-oci";
     panel.addEventListener("click", onPanelClick);
     return panel;
   }
   async function load2() {
     if (state2.loading) return state2.loading;
-    if (state2.data && Date.now() - state2.fetchedAt < FRESH_MS) return state2.data;
+    if (state2.data && Date.now() - state2.fetchedAt < FRESH_MS2) return state2.data;
     state2.loading = api("/oc/items").then((answer) => {
       state2.data = answer.data || answer;
       state2.fetchedAt = Date.now();
@@ -6362,7 +6619,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     return parts.join("");
   }
   function render3(v) {
-    const panel = document.getElementById(PANEL_ID);
+    const panel = document.getElementById(PANEL_ID2);
     if (!panel) return;
     const staffPanel = v?.staff && (v.show.missingPanel || v.where === "armoury" && v.show.retrievePanel);
     const show = v && (v.mine.length || staffPanel);
@@ -6429,7 +6686,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   function setBadge(li, badge) {
     const name = li.querySelector(".name") || li;
-    const existing = name.querySelector(`.${BADGE_CLASS}`);
+    const existing = name.querySelector(`.${BADGE_CLASS2}`);
     li.classList.toggle("nfh-oci-row--need", badge?.kind === "need");
     li.classList.toggle("nfh-oci-row--retrieve", badge?.kind === "retrieve");
     if (!badge) {
@@ -6438,7 +6695,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
     if (existing && existing.textContent === badge.text && existing.title === badge.title) return;
     const element = existing || document.createElement("span");
-    element.className = `${BADGE_CLASS} ${BADGE_CLASS}--${badge.kind}`;
+    element.className = `${BADGE_CLASS2} ${BADGE_CLASS2}--${badge.kind}`;
     element.textContent = badge.text;
     element.title = badge.title;
     if (!existing) name.prepend(element);
@@ -6452,7 +6709,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     clearTimeout(redrawTimer);
     redrawTimer = setTimeout(redraw, 250);
   }
-  var ourNode = (node) => node.nodeType !== 1 || node.id === PANEL_ID || node.classList.contains(BADGE_CLASS) || node.classList.contains(FILL_CLASS) || !!node.closest?.(`#${PANEL_ID}`);
+  var ourNode = (node) => node.nodeType !== 1 || node.id === PANEL_ID2 || node.classList.contains(BADGE_CLASS2) || node.classList.contains(FILL_CLASS) || !!node.closest?.(`#${PANEL_ID2}`);
   function isOurs(record) {
     if (record.type === "attributes") {
       const before = new Set(String(record.oldValue || "").split(/\s+/).filter((name) => name && !name.startsWith("nfh-")));
@@ -6534,13 +6791,13 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     init() {
       const where = place();
       if (!where) {
-        document.getElementById(PANEL_ID)?.remove();
+        document.getElementById(PANEL_ID2)?.remove();
         observer?.disconnect();
         observed = null;
         return;
       }
       const settle = (container2) => {
-        if (!document.getElementById(PANEL_ID)) PLACES[where].insert(container2);
+        if (!document.getElementById(PANEL_ID2)) PLACES[where].insert(container2);
         watch(where === "armoury" ? document.getElementById("faction-armoury") || container2 : container2.parentElement || container2);
         redraw();
         load2();
@@ -6550,8 +6807,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       let tries = 10;
       const again = () => {
         const now = document.querySelector(PLACES[where].container);
-        if (now && (!document.getElementById(PANEL_ID) || document.getElementById(PANEL_ID).nextElementSibling !== now)) {
-          document.getElementById(PANEL_ID)?.remove();
+        if (now && (!document.getElementById(PANEL_ID2) || document.getElementById(PANEL_ID2).nextElementSibling !== now)) {
+          document.getElementById(PANEL_ID2)?.remove();
           settle(now);
         }
         if (--tries > 0 && place() === where) setTimeout(again, 400);
@@ -7543,6 +7800,14 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const suggestions = suggesting ? result.suggestions : [];
     renderSuggestions(root3, suggestions);
     renderIdleMembers(root3, idleList ? members : null);
+    const planning = recruiting && members !== null && root3.querySelector(SPAWNER_SELECTOR) !== null;
+    if (planning) {
+      refreshSpawnPlan().then((fresh2) => {
+        if (fresh2) scheduleRender();
+      });
+    }
+    const spawnPlan = planning ? cachedSpawnPlan() : null;
+    renderSpawnPlan(root3, spawnPlan && !spawnPlan.refused ? spawnPlan.plan : null);
     const staff = members && active ? { counts, prefs: prefs4, factionLimits: limitsFor(config) } : null;
     const settings = settingsHtml({ open: settingsOpen, weights, staff, items: itemSettings() });
     const staffPart = staff ? staffHtml(staff, settings.button) : "";
@@ -7664,8 +7929,9 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }, RENDER_DEBOUNCE_MS);
   }
   function isOwnMutation(mutation) {
+    if (isSpawnPlanElement(mutation.target)) return true;
     const nodes = [...mutation.addedNodes, ...mutation.removedNodes];
-    return nodes.length > 0 && nodes.every(isOwnElement);
+    return nodes.length > 0 && nodes.every((node) => isOwnElement(node) || isSpawnPlanElement(node));
   }
   function watch2(root3) {
     if (observedRoot === root3 && root3.isConnected) return;

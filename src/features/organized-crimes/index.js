@@ -5,6 +5,7 @@ import { getUserscriptUsersPlayerId } from "../../core/torn-page.js";
 import { ocConfigStore } from "./data.js";
 import { crimeHoursLeft, hoursUntilTurn, limitsFor, probablyRun, slotFlags } from "./flags.js";
 import { getStaffPrefs, getWeightsPref, parseOverride, setStaffPrefs, setWeightsPref } from "./prefs.js";
+import { cachedSpawnPlan, isSpawnPlanElement, refreshSpawnPlan, renderSpawnPlan, SPAWNER_SELECTOR } from "./spawn-plan.js";
 import { itemSettings, itemSettingsChanged, onItemSettingsChange } from "../oc-items/index.js";
 import { FINE_PERMISSION, openFineModal } from "../oc-fines/index.js";
 import { REASON_FOR_FLAG } from "../oc-fines/logic.js";
@@ -248,6 +249,17 @@ function render() {
   renderSuggestions(root, suggestions);
   renderIdleMembers(root, idleList ? members : null);
 
+  // Staff on the Recruiting sub-tab get the spawn plan beside Torn's spawn
+  // buttons (only shown to whoever Torn gives the buttons to).
+  const planning = recruiting && members !== null && root.querySelector(SPAWNER_SELECTOR) !== null;
+  if (planning) {
+    refreshSpawnPlan().then((fresh) => {
+      if (fresh) scheduleRender();
+    });
+  }
+  const spawnPlan = planning ? cachedSpawnPlan() : null;
+  renderSpawnPlan(root, spawnPlan && !spawnPlan.refused ? spawnPlan.plan : null);
+
   const staff = members && active ? { counts, prefs, factionLimits: limitsFor(config) } : null;
   const settings = settingsHtml({ open: settingsOpen, weights, staff, items: itemSettings() });
   const staffPart = staff ? staffHtml(staff, settings.button) : "";
@@ -391,8 +403,9 @@ function scheduleRender() {
 // Our own chips and tags land inside the list being watched; a mutation made
 // only of those must not trigger another render.
 function isOwnMutation(mutation) {
+  if (isSpawnPlanElement(mutation.target)) return true;
   const nodes = [...mutation.addedNodes, ...mutation.removedNodes];
-  return nodes.length > 0 && nodes.every(isOwnElement);
+  return nodes.length > 0 && nodes.every((node) => isOwnElement(node) || isSpawnPlanElement(node));
 }
 
 function watch(root) {
