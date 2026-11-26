@@ -16,6 +16,7 @@ import { checkForUpdates } from "./core/update-checker.js";
 
 import chainWatch from "./features/chain-watch/index.js";
 import { initConnect } from "./features/connect.js";
+import { initOcHint } from "./features/oc-hint/index.js";
 import contracts, { contractsStore } from "./features/contracts.js";
 import factionButtons from "./features/faction-buttons.js";
 import hospital from "./features/hospital.js";
@@ -106,6 +107,10 @@ function start() {
   // when there is none or it is not working.
   initAuth();
   initConnect();
+
+  // The quiet "No OC" chip in Torn's sidebar, on every page the script runs on.
+  initOcHint();
+  onNavigate(initOcHint);
 
   // Run features for the current page, and re-dispatch on SPA navigation
   // (Torn's faction page switches tabs via the location hash).

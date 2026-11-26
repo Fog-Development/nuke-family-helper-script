@@ -38,6 +38,7 @@ const LOCAL_KEYS = [
   "nfhRankedWar",
   "nfhOcStaffPrefs",
   "nfhOcWeights",
+  "nfhOcHint",
   "nfhOcItemShow",
   "nfhOcFinePanel",
 ];

@@ -2092,3 +2092,67 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
 .nfh-oc-idle-time--alert {
     background-color: #b71c1c;
 }
+
+/* "No OC" chip beside My Faction in Torn's sidebar (oc-hint/) */
+#nav-faction [class*="areaRow"]:has(> .nfh-oc-hint) {
+    position: relative;
+}
+
+.nfh-oc-hint {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    padding: 1px 6px;
+    border: 1px solid currentColor;
+    border-radius: 9px;
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+    pointer-events: auto;
+}
+
+.nfh-oc-hint:hover {
+    text-decoration: none;
+    filter: brightness(1.1);
+}
+
+.nfh-oc-hint--quiet {
+    color: var(--nfh-list-key);
+    border-color: var(--nfh-border);
+}
+
+.nfh-oc-hint--warn {
+    color: #8a5200;
+    background-color: #fff3d6;
+    border-color: #e0a030;
+}
+
+body.dark-mode .nfh-oc-hint--warn {
+    color: #ffc966;
+    background-color: rgba(224, 160, 48, 0.15);
+    border-color: #b07a1c;
+}
+
+/* Phone layout: a dot on the menu button that opens the sidebar. */
+#fly-out-menu-button:has(> .nfh-oc-hint-dot) {
+    position: relative;
+}
+
+.nfh-oc-hint-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #e0a030;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+}
+
+[class*="area-mobile"] .nfh-oc-hint__age {
+    display: none;
+}
