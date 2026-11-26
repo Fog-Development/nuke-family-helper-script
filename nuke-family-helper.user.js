@@ -9,6 +9,9 @@
 // @match        https://www.torn.com/hospitalview.php*
 // @match        https://www.torn.com/messages.php*
 // @match        https://www.torn.com/page.php?sid=stocks*
+// @match        https://www.torn.com/page.php?sid=UserList*
+// @match        https://www.torn.com/page.php?sid=hof*
+// @match        https://www.torn.com/index.php?page=people*
 // @match        https://nuke.family/auth/token-generation*
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAsVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAADAgEIBwIJCAILCQMODAQUEQUYFQcaFgcfGgggGwklIAotJgwyKg46MhA8MxBKPxRQRBZgUhthUhthUxt1ZCB9aiOEcCSIdCaQeyihiSyiiS21mjLBpDXFpzbGqDfHqTfIqjjTszrXtzzZuTzlw0DmxEDnxEDpxkHuy0LxzUNZTIHlAAAAD3RSTlMAAh4tMVtig4WRlqvq8v4ZRfBIAAABcElEQVQ4y4VT2ZKCMBBEReTSVhEX8T5BFMVb8/8ftokhJB5b2w9U9VFkMpnRNImSbpiWZRp6SfuGiu0ih2tXPuyy04CChlN+9at1vKFeVf0aVX5Um5Hai+8np470O6fEVxJVIDgQspKBFSGHAMhPKdfhU5/ce8Lv3Sk9+KjzSh0gIQwbEdg8aQI4z/s3MCEcY+6PczpBg/XDRjPLlV2L+a1dTrMmbNpfFyMisGCBRUFHcEuaDsSFsmeBfUFjQNcMIBXCOehHUT84C54ChmYCNyHM+xdCLv254DfA1Cx4xS/DiH2jsBA8WDSggAdUxWJHSPAjVMVkRaoJWuSLYLBrSnRnYTjrqorOGiWxZjWsFYE2ira6wODBAo+BVGz+WAJbfrmtHM1K/twcU3H9qVAcMTBPtI8icGzng1suRo5hWTSQLLlSVYcawVUGrgE+xhrDTAay4avPF6c5ilP6sLc0HjXfF0eunud9X73/l/fP9f8FWPxZz4MGj9YAAAAASUVORK5CYII=
 // @run-at       document-end
@@ -1929,6 +1932,31 @@ body.dark-mode .nfh-kr-badge--elevated {
     color: #fff;
 }
 
+.nfh-kr-away {
+    margin-left: 4px;
+    padding: 0 5px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 9px;
+    background: none;
+    color: var(--nfh-list-key);
+    font: 700 10px/14px Arial, Helvetica, sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.nfh-kr-away--gone {
+    border-color: #b26a00;
+    color: #8a5300;
+}
+
+body.dark-mode .nfh-kr-away--gone {
+    color: #f0b44c;
+}
+
+.nfh-kr-why {
+    margin-top: 3px;
+}
+
 .nfh-kr-detail,
 .nfh-kr-kick {
     margin: 4px 8px 8px;
@@ -2306,6 +2334,128 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
 .nfh-oc-idle-time--alert {
     background-color: #b71c1c;
 }
+
+/* Recruiting scores: Applications page and "Score this page" */
+.nfh-rs-slot {
+    --nfh-rs-good: #256b29;
+    --nfh-rs-mid: #8a5300;
+    --nfh-rs-low: #b3261e;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    vertical-align: middle;
+    font: 11px/16px Arial, Helvetica, sans-serif;
+    white-space: nowrap;
+}
+
+body.dark-mode .nfh-rs-slot,
+body.dark-mode .nfh-rs-detail {
+    --nfh-rs-good: #7bd17f;
+    --nfh-rs-mid: #f0b44c;
+    --nfh-rs-low: #ff8a80;
+}
+
+.nfh-rs-badge,
+.nfh-rs-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 6px;
+    border: 1px solid var(--nfh-border);
+    border-radius: 9px;
+    background-color: var(--nfh-section-bg);
+    color: var(--nfh-text);
+    font: inherit;
+    cursor: pointer;
+}
+
+.nfh-rs-badge:hover,
+.nfh-rs-action:hover {
+    background-color: var(--nfh-btn-hover);
+}
+
+.nfh-rs-c {
+    font-size: 12px;
+}
+
+.nfh-rs-sub {
+    color: var(--nfh-list-key);
+}
+
+.nfh-rs-sub--ks {
+    padding: 0 4px;
+    border-radius: 6px;
+    background-color: var(--nfh-container-bg);
+    font-weight: 700;
+}
+
+.nfh-rs--good {
+    color: var(--nfh-rs-good);
+}
+
+.nfh-rs--mid {
+    color: var(--nfh-rs-mid);
+}
+
+.nfh-rs--low {
+    color: var(--nfh-rs-low);
+}
+
+.nfh-rs-sub.nfh-rs--good,
+.nfh-rs-sub.nfh-rs--mid,
+.nfh-rs-sub.nfh-rs--low {
+    font-weight: 700;
+}
+
+.nfh-rs-note {
+    color: var(--nfh-list-key);
+}
+
+.nfh-rs-detail {
+    position: relative;
+    margin: 4px 8px 8px;
+    padding: 6px 30px 6px 8px;
+    white-space: normal;
+    text-align: left;
+}
+
+.nfh-rs-detail .nfh-rs-close {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    padding: 0 6px;
+}
+
+.nfh-rs-detail-body > div:first-child {
+    margin-top: 2px !important;
+}
+
+.nfh-rs-bar .nfh-cw-bar {
+    flex-wrap: wrap;
+    padding: 3px 8px;
+}
+
+.nfh-rs-bar-status {
+    min-width: 0;
+}
+
+/* Long lists, and the phone layout: the composite and kick safety only. */
+.nfh-rs-slot--compact .nfh-rs-sub:not(.nfh-rs-sub--ks) {
+    display: none;
+}
+
+@media (max-width: 784px) {
+    .nfh-rs-sub:not(.nfh-rs-sub--ks) {
+        display: none;
+    }
+}
+
+/* A slot on its own line under a row (Applications at phone width). */
+.nfh-rs-slot--line {
+    display: flex;
+    margin: 0;
+    padding: 2px 8px 5px 30px;
+}
 `;
 
   // src/core/storage.js
@@ -2385,14 +2535,14 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   function withTimeout(promise, ms) {
     return new Promise((resolve, reject) => {
-      const timer3 = setTimeout(() => reject(new Error("timed out")), ms);
+      const timer4 = setTimeout(() => reject(new Error("timed out")), ms);
       Promise.resolve(promise).then(
         (value) => {
-          clearTimeout(timer3);
+          clearTimeout(timer4);
           resolve(value);
         },
         (error) => {
-          clearTimeout(timer3);
+          clearTimeout(timer4);
           reject(error);
         }
       );
@@ -2517,12 +2667,12 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   var lastState = null;
   function notify() {
-    const state8 = connectionState();
-    if (state8 === lastState) return;
-    lastState = state8;
+    const state10 = connectionState();
+    if (state10 === lastState) return;
+    lastState = state10;
     for (const listener of listeners) {
       try {
-        listener(state8);
+        listener(state10);
       } catch (error) {
         console.error("[NFH] Connection listener failed:", error);
       }
@@ -2562,10 +2712,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     return typeof text === "string" ? text.trim().slice(0, SNIPPET_LENGTH) : null;
   }
   var NoAnswerError = class extends Error {
-    constructor(kind, detail = null, status = null) {
-      super(`Request got no usable answer (${kind})`);
+    constructor(kind2, detail = null, status = null) {
+      super(`Request got no usable answer (${kind2})`);
       this.name = "NoAnswerError";
-      this.kind = kind;
+      this.kind = kind2;
       this.detail = detail;
       this.status = status;
     }
@@ -2885,14 +3035,14 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       if (document.querySelector(selector)) {
         return resolve(document.querySelector(selector));
       }
-      const observer5 = new MutationObserver(() => {
+      const observer7 = new MutationObserver(() => {
         const elm = document.querySelector(selector);
         if (elm) {
           resolve(elm);
-          observer5.disconnect();
+          observer7.disconnect();
         }
       });
-      observer5.observe(document.body, {
+      observer7.observe(document.body, {
         childList: true,
         subtree: true
       });
@@ -2963,7 +3113,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var mapPageTypeAddress = {
     [PageType.Profile]: "https://www.torn.com/profiles.php",
     [PageType.RecruitCitizens]: "https://www.torn.com/bringafriend.php",
-    [PageType.HallOfFame]: "https://www.torn.com/halloffame.php",
+    [PageType.HallOfFame]: "https://www.torn.com/page.php?sid=hof",
     [PageType.Faction]: "https://www.torn.com/factions.php",
     [PageType.Company]: "https://www.torn.com/joblist.php",
     [PageType.Competition]: "https://www.torn.com/competition.php",
@@ -3319,10 +3469,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     } catch (e) {
     }
   }
-  function updateAlert({ timer: timer3, armed, test = false }) {
+  function updateAlert({ timer: timer4, armed, test = false }) {
     const prefs4 = getPrefs();
-    const low = armed && !!timer3 && timer3.active && // An unreadable hit count must not silence the alert.
-    (timer3.hits === null || timer3.hits >= MIN_CHAIN_HITS) && timer3.seconds !== null && timer3.seconds > 0 && timer3.seconds < prefs4.alertSeconds;
+    const low = armed && !!timer4 && timer4.active && // An unreadable hit count must not silence the alert.
+    (timer4.hits === null || timer4.hits >= MIN_CHAIN_HITS) && timer4.seconds !== null && timer4.seconds > 0 && timer4.seconds < prefs4.alertSeconds;
     const alerting = low || test;
     setFlashing(alerting);
     if (alerting && prefs4.beep) {
@@ -3624,10 +3774,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       };
     }
     if (!summary.started) {
-      const start3 = Date.parse(board.start_time);
+      const start4 = Date.parse(board.start_time);
       return {
         tone: "",
-        text: `Starts ${slotLabel(start3)} TCT \xB7 in ${duration(start3 - now)}`,
+        text: `Starts ${slotLabel(start4)} TCT \xB7 in ${duration(start4 - now)}`,
         actions: ""
       };
     }
@@ -3652,21 +3802,21 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   function renderBar({ board, watches, prefs: prefs4, armed, chainActive, flash, busy: busy2, now }) {
     const summary = board ? summarize(board, now) : null;
-    const state8 = summary ? barState(board, summary, now) : { tone: "", text: '<span class="nfh-cw-muted">No chain watch scheduled</span>', actions: "" };
-    if (summary && summary.started && !summary.myCheckin && chainActive && armed && state8.tone !== "attn") {
-      state8.text = '<span class="nfh-cw-need" title="Check in so your time watching is recorded on the chain watch sheet">Not checked in</span> \xB7 ' + state8.text;
-      state8.actions = button("checkin", "Check in");
+    const state10 = summary ? barState(board, summary, now) : { tone: "", text: '<span class="nfh-cw-muted">No chain watch scheduled</span>', actions: "" };
+    if (summary && summary.started && !summary.myCheckin && chainActive && armed && state10.tone !== "attn") {
+      state10.text = '<span class="nfh-cw-need" title="Check in so your time watching is recorded on the chain watch sheet">Not checked in</span> \xB7 ' + state10.text;
+      state10.actions = button("checkin", "Check in");
     }
     const title = board && board.title ? `<span class="nfh-cw-title">${escapeHtml(board.title)}</span>` : "";
-    const status = flash ? `<span class="${flash.error ? "nfh-cw-error" : "nfh-cw-ok"}">${escapeHtml(flash.text)}</span>` : state8.text;
+    const status = flash ? `<span class="${flash.error ? "nfh-cw-error" : "nfh-cw-ok"}">${escapeHtml(flash.text)}</span>` : state10.text;
     const expandable = !!board;
     const expanded = expandable && prefs4.expanded;
     const picker = watches.length > 1 ? `<select class="nfh-cw-picker" data-role="watch-picker" title="Chain watch">${watches.map(
       (watch5) => `<option value="${escapeHtml(watch5.id)}"${board && board.id === watch5.id ? " selected" : ""}>${escapeHtml(watch5.title || `Chain watch #${watch5.id}`)}</option>`
     ).join("")}</select>` : title;
     return {
-      tone: state8.tone,
-      html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy2 ? " is-busy" : ""}">${state8.actions}</span>` + alertChip(prefs4, armed)
+      tone: state10.tone,
+      html: `<button type="button" class="nfh-cw-toggle" data-action="toggle"${expandable ? "" : " disabled"} aria-expanded="${expanded}"><span class="nfh-cw-caret">${expandable ? expanded ? "\u25BE" : "\u25B8" : "\xB7"}</span>Chain Watch</button>` + picker + `<span class="nfh-cw-status"${expandable ? ' data-action="toggle"' : ""}>${status}</span><span class="nfh-cw-actions${busy2 ? " is-busy" : ""}">${state10.actions}</span>` + alertChip(prefs4, armed)
     };
   }
   function overCapNote(slot) {
@@ -3727,7 +3877,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     return slot.paid_count < slot.cap ? "short" : "full";
   }
   function slotDetail(slot, busy2) {
-    const start3 = slotStart(slot);
+    const start4 = slotStart(slot);
     const isMine = slot.signups.some((signup) => signup.is_me);
     const waitlist = slot.total_count - slot.paid_count;
     const names = slot.signups.map(
@@ -3735,7 +3885,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     ).join("");
     const paid = slot.rate > 0;
     const unpaidWarning = !isMine && slot.paid_count >= slot.cap ? paid ? '<span class="nfh-cw-need">Paid spots are full: you would be unpaid unless staff approve it.</span>' : '<span class="nfh-cw-muted">This hour is covered: extra watchers are welcome.</span>' : "";
-    return `<div class="nfh-cw-detail"><div><strong>${slotLabel(start3)}\u2013${hourLabel(start3 + HOUR_MS)} TCT</strong> <span class="nfh-cw-muted">(${escapeHtml(localTime(start3))} your time)</span>` + (paid ? ` \xB7 ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " \u2605" : ""}` : "") + (slot.range_label ? ` \xB7 ${escapeHtml(slot.range_label)}` : "") + ` \xB7 ${escapeHtml(fillText(slot))}` + (waitlist > 0 ? ` (+${waitlist} ${paid ? "unpaid" : "extra"})` : "") + `</div><div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div><div class="nfh-cw-detail-actions${busy2 ? " is-busy" : ""}">` + (isMine ? button("leave", "Leave this slot", { data: { slot: slot.slot_start_iso } }) : button("signup", "Sign up", { primary: true, data: { slot: slot.slot_start_iso } })) + unpaidWarning + "</div></div>";
+    return `<div class="nfh-cw-detail"><div><strong>${slotLabel(start4)}\u2013${hourLabel(start4 + HOUR_MS)} TCT</strong> <span class="nfh-cw-muted">(${escapeHtml(localTime(start4))} your time)</span>` + (paid ? ` \xB7 ${escapeHtml(slot.rate)} xanax/hr${slot.is_premium ? " \u2605" : ""}` : "") + (slot.range_label ? ` \xB7 ${escapeHtml(slot.range_label)}` : "") + ` \xB7 ${escapeHtml(fillText(slot))}` + (waitlist > 0 ? ` (+${waitlist} ${paid ? "unpaid" : "extra"})` : "") + `</div><div class="nfh-cw-people">${names || '<span class="nfh-cw-muted">Nobody signed up yet.</span>'}</div><div class="nfh-cw-detail-actions${busy2 ? " is-busy" : ""}">` + (isMine ? button("leave", "Leave this slot", { data: { slot: slot.slot_start_iso } }) : button("signup", "Sign up", { primary: true, data: { slot: slot.slot_start_iso } })) + unpaidWarning + "</div></div>";
   }
   function slotsSection(summary, ui, busy2) {
     const { slots } = summary;
@@ -3973,9 +4123,9 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       return;
     }
     const now = Date.now();
-    const timer3 = readChainTimer();
-    updateAlert({ timer: timer3, armed: isArmed(), test: now < state.testUntil });
-    const chainActive = !!timer3 && timer3.active;
+    const timer4 = readChainTimer();
+    updateAlert({ timer: timer4, armed: isArmed(), test: now < state.testUntil });
+    const chainActive = !!timer4 && timer4.active;
     if (chainActive !== state.chainActive) {
       state.chainActive = chainActive;
       render();
@@ -4275,21 +4425,21 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     [Connection.Rejected]: "Nuke Family Helper has been disconnected from nuke.family, so this may be missing or out of date.",
     [Connection.Unreachable]: "Nuke Family Helper cannot reach nuke.family right now: this may be missing or out of date."
   };
-  var canConnect = (state8) => state8 === Connection.Missing || state8 === Connection.Rejected;
+  var canConnect = (state10) => state10 === Connection.Missing || state10 === Connection.Rejected;
   function pending() {
     const saved2 = getValue(PENDING_KEY, null);
     if (!saved2 || typeof saved2 !== "object" || !saved2.secret || !saved2.url) return null;
     return saved2.expires > Date.now() ? saved2 : null;
   }
-  function isHidden(state8) {
+  function isHidden(state10) {
     try {
       const hidden = JSON.parse(localStorage.getItem(HIDDEN_KEY) || "null");
-      return Boolean(hidden) && hidden.state === state8 && Date.now() - hidden.at < HIDE_FOR_MS;
+      return Boolean(hidden) && hidden.state === state10 && Date.now() - hidden.at < HIDE_FOR_MS;
     } catch (e) {
       return false;
     }
   }
-  function bannerHtml(state8) {
+  function bannerHtml(state10) {
     const button3 = (attribute, label) => `<button type="button" class="torn-btn" ${attribute}>${label}</button>`;
     const dismiss = '<button type="button" class="nfh-connect-dismiss" data-nfh-connect-dismiss aria-label="Hide" title="Hide for a day">&times;</button>';
     if (phase && phase.kind === "connected") {
@@ -4303,13 +4453,13 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       return `<span class="nfh-connect-text"><strong>Finish connecting on nuke.family.</strong> Approve there, then come back: this page picks it up by itself.</span><a class="torn-btn nfh-connect-link" href="${escapeHtml(phase.url)}" target="_blank" rel="noopener" data-nfh-connect-open>Open nuke.family</a>` + button3("data-nfh-connect-cancel", "Cancel");
     }
     const failed = phase && phase.kind === "failed" ? ` <span class="nfh-connect-error">${escapeHtml(phase.message)}</span>` : "";
-    const actions = canConnect(state8) ? button3("data-nfh-connect", state8 === Connection.Rejected ? "Reconnect" : "Connect") + '<button type="button" class="nfh-connect-manual" data-nfh-connect-manual>Enter a key instead</button>' : "";
-    return `<span class="nfh-connect-text">${STATE_TEXT[state8]}${failed}</span>${actions}${dismiss}`;
+    const actions = canConnect(state10) ? button3("data-nfh-connect", state10 === Connection.Rejected ? "Reconnect" : "Connect") + '<button type="button" class="nfh-connect-manual" data-nfh-connect-manual>Enter a key instead</button>' : "";
+    return `<span class="nfh-connect-text">${STATE_TEXT[state10]}${failed}</span>${actions}${dismiss}`;
   }
   function renderBanner() {
-    const state8 = connectionState();
+    const state10 = connectionState();
     const busy2 = phase !== null && phase.kind !== "failed";
-    const show = busy2 || state8 !== Connection.Connected && !isHidden(state8);
+    const show = busy2 || state10 !== Connection.Connected && !isHidden(state10);
     let banner = document.getElementById(BANNER_ID);
     if (!show) {
       if (banner) banner.remove();
@@ -4322,7 +4472,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       banner.setAttribute("role", "status");
       document.body.prepend(banner);
     }
-    const html = bannerHtml(state8);
+    const html = bannerHtml(state10);
     if (banner.__nfhHtml !== html) {
       banner.innerHTML = html;
       banner.__nfhHtml = html;
@@ -4330,8 +4480,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     banner.classList.toggle("nfh-connect-banner--ok", Boolean(phase && phase.kind === "connected"));
   }
   function renderNotes() {
-    const state8 = connectionState();
-    const text = NOTE_TEXT[state8];
+    const state10 = connectionState();
+    const text = NOTE_TEXT[state10];
     for (const host of NOTE_HOSTS) {
       const element = document.querySelector(host.selector);
       if (!element) continue;
@@ -4346,7 +4496,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
         note.className = NOTE_CLASS;
         element.insertAdjacentElement(host.place, note);
       }
-      const html = `<span>${text}</span>` + (canConnect(state8) ? ' <button type="button" class="nfh-connect-note-link" data-nfh-connect>Connect</button>' : "");
+      const html = `<span>${text}</span>` + (canConnect(state10) ? ' <button type="button" class="nfh-connect-note-link" data-nfh-connect>Connect</button>' : "");
       if (note.__nfhHtml !== html) {
         note.innerHTML = html;
         note.__nfhHtml = html;
@@ -4856,8 +5006,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
   }
   function cprState() {
-    const state8 = readJson2(CPR_KEY);
-    return state8 && state8.known && state8.sent ? state8 : { known: {}, sent: {} };
+    const state10 = readJson2(CPR_KEY);
+    return state10 && state10.known && state10.sent ? state10 : { known: {}, sent: {} };
   }
   var pending2 = /* @__PURE__ */ new Map();
   var uploadTimer = null;
@@ -4868,31 +5018,31 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     if (batch.length === 0) return;
     try {
       await api("/oc/cpr", { method: "POST", data: { cprs: batch.map(([, entry]) => entry) } });
-      const state8 = cprState();
-      for (const [key, entry] of batch) state8.sent[key] = entry.cpr;
-      localStorage.setItem(CPR_KEY, JSON.stringify(state8));
+      const state10 = cprState();
+      for (const [key, entry] of batch) state10.sent[key] = entry.cpr;
+      localStorage.setItem(CPR_KEY, JSON.stringify(state10));
       LogInfo(`OC Assistant sent ${batch.length} CPRs`);
     } catch (error) {
       console.error("[NFH] Could not send CPRs to nuke.family:", error);
     }
   }
   function learnCprs(crimes) {
-    const state8 = cprState();
+    const state10 = cprState();
     let changed = false;
     for (const crime of crimes) {
       for (const slot of crime.slots) {
         if (slot.occupied || slot.cpr === null) continue;
         const key = `${keyFor(crime.name)}|${keyFor(slot.name)}`;
-        if (state8.known[key] !== slot.cpr) {
-          state8.known[key] = slot.cpr;
+        if (state10.known[key] !== slot.cpr) {
+          state10.known[key] = slot.cpr;
           changed = true;
         }
-        if (state8.sent[key] !== slot.cpr) {
+        if (state10.sent[key] !== slot.cpr) {
           pending2.set(key, { crime: crime.name, role: slot.name, cpr: slot.cpr });
         }
       }
     }
-    if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state8));
+    if (changed) localStorage.setItem(CPR_KEY, JSON.stringify(state10));
     if (pending2.size > 0 && !uploadTimer) uploadTimer = setTimeout(upload, UPLOAD_DELAY_MS);
   }
   function knownCpr(board, crimeName2, roleName) {
@@ -4948,8 +5098,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   function offPageCrimes(board, pageCrimes) {
     if (!board || !Array.isArray(board.crimes)) return [];
-    const onPage = new Set(pageCrimes.map((crime) => String(crime.id)));
-    return board.crimes.filter((crime) => crime.status === "Recruiting" && !onPage.has(String(crime.id))).filter((crime) => crime.slots.some((slot) => slot.player_id === null)).map((crime) => ({
+    const onPage2 = new Set(pageCrimes.map((crime) => String(crime.id)));
+    return board.crimes.filter((crime) => crime.status === "Recruiting" && !onPage2.has(String(crime.id))).filter((crime) => crime.slots.some((slot) => slot.player_id === null)).map((crime) => ({
       id: String(crime.id),
       name: crime.name,
       level: crime.level,
@@ -5614,11 +5764,11 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     waitForElm(".user-info-list-wrap").then((userInfoList) => {
       LogInfo("Hospital list found, processing initial rows...");
       processHospitalRows();
-      const observer5 = new MutationObserver(() => {
+      const observer7 = new MutationObserver(() => {
         LogInfo("Hospital list changed, reprocessing rows...");
         processHospitalRows();
       });
-      observer5.observe(userInfoList, {
+      observer7.observe(userInfoList, {
         childList: true,
         subtree: true
       });
@@ -5874,7 +6024,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     if (!document.documentElement.hasAttribute("data-nfh-editor-bridge")) return Promise.reject(new Error("The page script did not run."));
     const id = nextId++;
     return new Promise((resolve, reject) => {
-      const timer3 = setTimeout(() => {
+      const timer4 = setTimeout(() => {
         document.removeEventListener(RESPONSE, listener);
         reject(new Error("The editor did not answer."));
       }, TIMEOUT_MS);
@@ -5886,7 +6036,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
           return;
         }
         if (answer.id !== id) return;
-        clearTimeout(timer3);
+        clearTimeout(timer4);
         document.removeEventListener(RESPONSE, listener);
         if (answer.ok) resolve(answer);
         else reject(new Error(answer.error || "The editor refused."));
@@ -5895,8 +6045,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       document.dispatchEvent(new CustomEvent(REQUEST, { detail: JSON.stringify({ id, op, elementId, html }) }));
     });
   }
-  function findEditor(root3) {
-    return root3 ? root3.querySelector('.mce-content-body[contenteditable="true"], [contenteditable="true"]') : null;
+  function findEditor(root4) {
+    return root4 ? root4.querySelector('.mce-content-body[contenteditable="true"], [contenteditable="true"]') : null;
   }
   async function getEditorHtml(element) {
     if (!element) throw new Error("The editor was not found.");
@@ -5994,7 +6144,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const url = `/${page}?rfcv=${encodeURIComponent(rfcv)}`;
     const body = new URLSearchParams(fields).toString();
     return new Promise((resolve, reject) => {
-      const timer3 = setTimeout(() => {
+      const timer4 = setTimeout(() => {
         document.removeEventListener(RESPONSE2, listener);
         reject(new Error("Torn did not answer in time (or the page blocked the request). Check the armoury before trying again."));
       }, TIMEOUT_MS2);
@@ -6006,7 +6156,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
           return;
         }
         if (answer.id !== id) return;
-        clearTimeout(timer3);
+        clearTimeout(timer4);
         document.removeEventListener(RESPONSE2, listener);
         resolve(answer);
       }
@@ -6049,11 +6199,11 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     if (!container) return null;
     const li = container.querySelector("li.item-loan-act, li.item-give-act");
     if (!li) return null;
-    const kind = li.classList.contains("item-loan-act") ? "loan" : "give";
-    const box = li.querySelector(`.${kind}-cont.action-cont`);
+    const kind2 = li.classList.contains("item-loan-act") ? "loan" : "give";
+    const box = li.querySelector(`.${kind2}-cont.action-cont`);
     const input = box?.querySelector('input[name="user"]');
     if (!box || !input) return null;
-    return { li, kind, box, input, itemId: Number(box.dataset.itemid || li.querySelector(".img-wrap")?.dataset.itemid) };
+    return { li, kind: kind2, box, input, itemId: Number(box.dataset.itemid || li.querySelector(".img-wrap")?.dataset.itemid) };
   }
 
   // src/features/oc-items/prefs.js
@@ -6077,8 +6227,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const own = ownItemChoices(factionId);
     const result = {};
     for (const key of ITEM_SHOW_KEYS) {
-      const kind = key.split("_")[0];
-      if (kinds[kind] === false) {
+      const kind2 = key.split("_")[0];
+      if (kinds[kind2] === false) {
         result[key] = false;
         continue;
       }
@@ -6729,7 +6879,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       container.innerHTML = `<div class="nfh-ocf-form nfh-ocf-error">${escapeHtml(describeError(error, "Couldn't reach nuke.family."))}</div>`;
       return;
     }
-    const state8 = {
+    const state10 = {
       reason: opts.reason && context.reasons.some((r) => r.key === opts.reason) ? opts.reason : "",
       crime: null,
       note: "",
@@ -6737,10 +6887,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       error: null,
       issued: null
     };
-    state8.crime = state8.reason ? defaultCrimeFor(context, state8.reason, opts.crime ? opts.crime.id : null) : null;
+    state10.crime = state10.reason ? defaultCrimeFor(context, state10.reason, opts.crime ? opts.crime.id : null) : null;
     const render7 = () => {
-      if (state8.issued) {
-        const fine = state8.issued;
+      if (state10.issued) {
+        const fine = state10.issued;
         container.innerHTML = `<div class="nfh-ocf-form nfh-ocf-done">
         \u2705 ${fine.kind === "warning" ? "Warning" : "Fine"} #${escapeHtml(fine.id)}: ${escapeHtml(fine.reason_label)}, <strong>${escapeHtml(fine.penalty)}</strong>${fine.strike ? ` (strike ${escapeHtml(fine.strike)})` : ""}.
         <div class="nfh-ocf-actions">
@@ -6751,81 +6901,81 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       </div>`;
         return;
       }
-      const reason = context.reasons.find((r) => r.key === state8.reason);
+      const reason = context.reasons.find((r) => r.key === state10.reason);
       const choices = crimeChoices(context, opts.crime);
       const crimeField = !reason || reason.crime === "never" ? reason ? `<div class="nfh-cw-muted">This reason is about not being in a crime, so it names none.</div>` : "" : `<label class="nfh-ocf-field"><span>Crime</span><select class="nfh-cw-input" data-ocf="crime">
             <option value="">None</option>
-            ${choices.map((c) => `<option value="${escapeHtml(c.id)}"${c.id === state8.crime ? " selected" : ""}>${escapeHtml(c.label)}</option>`).join("")}
+            ${choices.map((c) => `<option value="${escapeHtml(c.id)}"${c.id === state10.crime ? " selected" : ""}>${escapeHtml(c.label)}</option>`).join("")}
           </select></label>`;
-      const quote = state8.reason ? quoteLine(context, state8.reason) : "";
+      const quote = state10.reason ? quoteLine(context, state10.reason) : "";
       container.innerHTML = `<div class="nfh-ocf-form">
       <div class="nfh-cw-muted">Fining <strong>${escapeHtml(context.player.name || opts.playerId)}</strong> in ${escapeHtml(context.faction.name)}</div>
       <label class="nfh-ocf-field"><span>Reason</span><select class="nfh-cw-input" data-ocf="reason">
         <option value="">Choose a reason\u2026</option>
-        ${context.reasons.map((r) => `<option value="${escapeHtml(r.key)}"${r.key === state8.reason ? " selected" : ""} title="${escapeHtml(r.description)}">${escapeHtml(r.label)}</option>`).join("")}
+        ${context.reasons.map((r) => `<option value="${escapeHtml(r.key)}"${r.key === state10.reason ? " selected" : ""} title="${escapeHtml(r.description)}">${escapeHtml(r.label)}</option>`).join("")}
       </select></label>
       ${crimeField}
       <label class="nfh-ocf-field"><span>Note${reason && reason.note_required ? " (required)" : ""}</span>
-        <textarea class="nfh-cw-input" data-ocf="note" rows="2" maxlength="1000">${escapeHtml(state8.note)}</textarea></label>
+        <textarea class="nfh-cw-input" data-ocf="note" rows="2" maxlength="1000">${escapeHtml(state10.note)}</textarea></label>
       ${quote ? `<div class="nfh-ocf-quote">${escapeHtml(quote)}</div>` : ""}
-      ${state8.error ? `<div class="nfh-ocf-error">${escapeHtml(state8.error)}</div>` : ""}
+      ${state10.error ? `<div class="nfh-ocf-error">${escapeHtml(state10.error)}</div>` : ""}
       <div class="nfh-ocf-actions">
-        <button type="button" class="nfh-cw-btn nfh-cw-btn--primary" data-ocf-act="issue"${state8.busy || !state8.reason ? " disabled" : ""}>${state8.busy ? "Issuing\u2026" : "Issue"}</button>
+        <button type="button" class="nfh-cw-btn nfh-cw-btn--primary" data-ocf-act="issue"${state10.busy || !state10.reason ? " disabled" : ""}>${state10.busy ? "Issuing\u2026" : "Issue"}</button>
         <button type="button" class="nfh-cw-btn" data-ocf-act="close">Cancel</button>
       </div>
       ${(context.record || []).length ? recordHtml(context.record) : ""}
     </div>`;
     };
     const issue = async (force = false) => {
-      state8.busy = true;
-      state8.error = null;
+      state10.busy = true;
+      state10.error = null;
       render7();
       try {
         const payload = {
           player_id: Number(opts.playerId),
           faction_id: context.faction.id,
-          reason: state8.reason,
+          reason: state10.reason,
           via: "script",
           details: opts.details || {}
         };
-        if (state8.crime) payload.crime_id = Number(state8.crime);
-        if (state8.note.trim()) payload.note = state8.note.trim();
+        if (state10.crime) payload.crime_id = Number(state10.crime);
+        if (state10.note.trim()) payload.note = state10.note.trim();
         if (force) payload.force = true;
         const result = await api("/oc-fines", { method: "POST", data: payload });
-        state8.issued = result.data;
+        state10.issued = result.data;
         forgetCaches();
         LogInfo(`[oc-fines] issued fine ${result.data.id} to ${opts.playerId}`);
         if (opts.onIssued) opts.onIssued(result.data);
       } catch (error) {
         if (error instanceof ApiError && error.status === 409 && !force) {
-          state8.error = `${describeError(error, "Already fined.")} Press Issue again to give another anyway.`;
-          state8.forceNext = true;
+          state10.error = `${describeError(error, "Already fined.")} Press Issue again to give another anyway.`;
+          state10.forceNext = true;
         } else {
-          state8.error = describeError(error, "Couldn't issue the fine. Try again.");
+          state10.error = describeError(error, "Couldn't issue the fine. Try again.");
         }
       }
-      state8.busy = false;
+      state10.busy = false;
       render7();
     };
     container.onchange = (event) => {
       const field = event.target.getAttribute("data-ocf");
       if (field === "reason") {
-        state8.reason = event.target.value;
-        state8.crime = defaultCrimeFor(context, state8.reason, opts.crime ? opts.crime.id : null);
-        state8.forceNext = false;
+        state10.reason = event.target.value;
+        state10.crime = defaultCrimeFor(context, state10.reason, opts.crime ? opts.crime.id : null);
+        state10.forceNext = false;
         render7();
       } else if (field === "crime") {
-        state8.crime = event.target.value || null;
+        state10.crime = event.target.value || null;
       }
     };
     container.oninput = (event) => {
-      if (event.target.getAttribute("data-ocf") === "note") state8.note = event.target.value;
+      if (event.target.getAttribute("data-ocf") === "note") state10.note = event.target.value;
     };
     container.onclick = (event) => {
       const act2 = event.target.closest("[data-ocf-act]");
       if (!act2) return;
-      if (act2.getAttribute("data-ocf-act") === "issue" && !state8.busy) {
-        issue(Boolean(state8.forceNext));
+      if (act2.getAttribute("data-ocf-act") === "issue" && !state10.busy) {
+        issue(Boolean(state10.forceNext));
       } else if (act2.getAttribute("data-ocf-act") === "close") {
         container.innerHTML = "";
         if (opts.onClose) opts.onClose();
@@ -7032,8 +7182,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     Planning: "planning",
     Completed: "completed"
   };
-  function activeSubTab(root3) {
-    for (const name of root3.querySelectorAll('[class^="tabName___"]')) {
+  function activeSubTab(root4) {
+    for (const name of root4.querySelectorAll('[class^="tabName___"]')) {
       const button3 = name.closest("button");
       if (button3 && /(^|\s)active___/.test(button3.className)) {
         return name.textContent.trim().toLowerCase();
@@ -7081,9 +7231,9 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
     return name.trim() || null;
   }
-  function readCrimes(root3) {
+  function readCrimes(root4) {
     const crimes = [];
-    for (const el of root3.querySelectorAll("[data-oc-id]")) {
+    for (const el of root4.querySelectorAll("[data-oc-id]")) {
       const name = crimeName(el);
       if (!name) continue;
       const levelEl = el.querySelector('[class^="levelValue___"]');
@@ -7179,8 +7329,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
     if (element.title !== chip.title) element.title = chip.title;
     element.classList.add(CHIP_CLASS);
-    for (const state8 of CHIP_STATES) {
-      element.classList.toggle(`${CHIP_CLASS}--${state8}`, state8 === chip.state);
+    for (const state10 of CHIP_STATES) {
+      element.classList.toggle(`${CHIP_CLASS}--${state10}`, state10 === chip.state);
     }
     if (!existing) slot.headerEl.insertAdjacentElement("afterend", element);
   }
@@ -7206,13 +7356,13 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   var FLAG_KINDS = [Flag.Unqualified, Flag.Unproductive, Flag.UnderLevel];
   function staffHtml(staff, after = "") {
-    const shown2 = FLAG_KINDS.filter((kind) => staff.prefs.show[kind]);
-    const summary = shown2.length === 0 ? "all hidden" : shown2.map((kind) => `${staff.counts[kind] || 0} ${FLAG_LABELS[kind].toLowerCase()}`).join(", ");
+    const shown3 = FLAG_KINDS.filter((kind2) => staff.prefs.show[kind2]);
+    const summary = shown3.length === 0 ? "all hidden" : shown3.map((kind2) => `${staff.counts[kind2] || 0} ${FLAG_LABELS[kind2].toLowerCase()}`).join(", ");
     return `<span class="nfh-oc-staff"><span class="nfh-oc-bar-muted">Staff flags on this page:</span> ${escapeHtml(summary)} ${after}</span>`;
   }
   function staffSettingsHtml(staff) {
     const toggles = FLAG_KINDS.map(
-      (kind) => `<label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-flag="${kind}"${staff.prefs.show[kind] ? " checked" : ""}> <span class="nfh-oc-flag nfh-oc-flag--${kind}"><span aria-hidden="true">${FLAG_SYMBOLS[kind]}</span> ${FLAG_LABELS[kind]}</span></label>`
+      (kind2) => `<label class="nfh-oc-staff-option"><input type="checkbox" data-nfh-oc-flag="${kind2}"${staff.prefs.show[kind2] ? " checked" : ""}> <span class="nfh-oc-flag nfh-oc-flag--${kind2}"><span aria-hidden="true">${FLAG_SYMBOLS[kind2]}</span> ${FLAG_LABELS[kind2]}</span></label>`
     ).join("");
     const override = (name, label, value, fallback) => `<label class="nfh-oc-staff-option">${label} <input type="number" min="1" class="nfh-oc-staff-number" data-nfh-oc-limit="${name}" value="${escapeHtml(value ?? "")}" placeholder="${escapeHtml(fallback)}"></label>`;
     return '<div class="nfh-oc-settings-group"><span class="nfh-oc-settings-heading">Staff flags</span>' + toggles + override("thresholdHours", "Not productive after (hours)", staff.prefs.thresholdHours, staff.factionLimits.thresholdHours) + override("levelGap", "Under-levelled from (levels below)", staff.prefs.levelGap, staff.factionLimits.levelGap) + `<span class="nfh-oc-bar-muted">Leave a number blank to use your faction's. These choices are yours alone.</span></div>`;
@@ -7223,7 +7373,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   ];
   function itemSettingsHtml(items) {
     const on = (value) => value ? "on" : "off";
-    const groups = ITEM_OPTIONS.filter(([kind]) => items.kinds[kind]).map(
+    const groups = ITEM_OPTIONS.filter(([kind2]) => items.kinds[kind2]).map(
       ([, title, options]) => `<span class="nfh-oc-bar-muted">${title}:</span>` + options.map(
         ([key, label]) => `<label class="nfh-oc-staff-option" title="Your faction's default: ${on(items.defaults[key])}"><input type="checkbox" data-nfh-oc-item="${key}"${items.show[key] ? " checked" : ""}> ${label}</label>`
       ).join("")
@@ -7275,11 +7425,11 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     if (suggestion2.stalled) return waitSentence(suggestion2);
     return suggestion2.pooled === false ? "Productive days do not count at this level, so this goes on your CPR and how close the crime is to full." : waitSentence(suggestion2);
   }
-  function renderSuggestions(root3, suggestions) {
+  function renderSuggestions(root4, suggestions) {
     const wanted = new Map(
       suggestions.filter((suggestion2) => suggestion2.rated.slot.el).map((suggestion2) => [suggestion2.rated.slot.el, suggestion2])
     );
-    for (const marked of root3.querySelectorAll(`.${PICK_CLASS}`)) {
+    for (const marked of root4.querySelectorAll(`.${PICK_CLASS}`)) {
       if (wanted.has(marked)) continue;
       marked.classList.remove(PICK_CLASS, `${PICK_CLASS}--best`, `${PICK_CLASS}--good`);
       const tag = marked.querySelector(`:scope > .${TAG_CLASS}`);
@@ -7321,10 +7471,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const crimes = count === 1 ? "1 stalled crime further down the list has" : `${count} stalled crimes further down the list have`;
     return ` <span class="nfh-oc-bar-muted" data-nfh-oc-stalled-hint>${escapeHtml(crimes)} an open slot your CPR is not known for yet. Scroll down to check it.</span>`;
   }
-  function barHtml(state8) {
+  function barHtml(state10) {
     const label = '<span class="nfh-oc-bar-label">OC Assistant</span>';
-    if (state8.kind === "best") {
-      const [best, ...rest] = state8.suggestions;
+    if (state10.kind === "best") {
+      const [best, ...rest] = state10.suggestions;
       const { slot, minCpr } = best.rated;
       const others = rest.filter((suggestion2) => !suggestion2.crime.offPage);
       const flawed = suggestionCaveats(best).length > 0;
@@ -7334,16 +7484,16 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       const late = best.productive ? "" : ` <strong class="nfh-oc-bar-warning">That is later than the ${escapeHtml(best.thresholdHours)} hours that count as productive,</strong> <span class="nfh-oc-bar-muted">but nothing open would start you sooner.</span>`;
       const belowLevel = best.belowLevel ? ` <strong class="nfh-oc-bar-warning">This crime is below your level (${escapeHtml(best.memberLevel)}).</strong>` : "";
       let lead = flawed ? "Best slot available: " : "Best slot for you: ";
-      if (state8.warning) {
-        lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state8.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
+      if (state10.warning) {
+        lead = `<strong class="nfh-oc-bar-warning">${escapeHtml(state10.warning)}</strong> ${flawed ? "The best slot available: " : "A better slot: "}`;
       }
-      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}${stalledHint(state8.hiddenStalled)}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
+      return `${label}<span class="nfh-oc-bar-text">${lead}<strong>${escapeHtml(best.crime.name)}</strong> (level ${escapeHtml(best.crime.level ?? "?")}), <strong>${escapeHtml(slot.name)}</strong>. Your CPR is ${escapeHtml(slot.cpr)} and the minimum is ${escapeHtml(minCpr)}. ${best.pooled === false && !best.stalled ? "" : escapeHtml(waitSentence(best))}${late}${belowLevel}${unweighted}${offPage}${more}${stalledHint(state10.hiddenStalled)}</span><button type="button" class="nfh-oc-bar-button" data-nfh-oc-show>${best.crime.offPage ? "Scroll down" : "Show me"}</button>`;
     }
-    if (state8.kind === "joined") {
-      return `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state8.crime)}</strong> (level ${escapeHtml(state8.level ?? "?")}) as <strong>${escapeHtml(state8.role)}</strong>, so no other slot is suggested.</span>`;
+    if (state10.kind === "joined") {
+      return `${label}<span class="nfh-oc-bar-text">You are in <strong>${escapeHtml(state10.crime)}</strong> (level ${escapeHtml(state10.level ?? "?")}) as <strong>${escapeHtml(state10.role)}</strong>, so no other slot is suggested.</span>`;
     }
-    if (state8.kind === "warning") {
-      return `${label}<span class="nfh-oc-bar-text"><strong class="nfh-oc-bar-warning">${escapeHtml(state8.warning)}</strong></span>`;
+    if (state10.kind === "warning") {
+      return `${label}<span class="nfh-oc-bar-text"><strong class="nfh-oc-bar-warning">${escapeHtml(state10.warning)}</strong></span>`;
     }
     const messages = {
       none: "None of the open slots loaded so far meets your faction's minimum CPR for you. Scroll down to load more crimes.",
@@ -7351,16 +7501,16 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       full: "No open slot is loaded yet. Scroll down to load more crimes.",
       low: "The open slots you qualify for are all in crimes below your level, so none is suggested."
     };
-    const hint = state8.kind === "blocked" ? "" : stalledHint(state8.hiddenStalled);
-    return `${label}<span class="nfh-oc-bar-text">${messages[state8.kind]}${hint}</span>`;
+    const hint = state10.kind === "blocked" ? "" : stalledHint(state10.hiddenStalled);
+    return `${label}<span class="nfh-oc-bar-text">${messages[state10.kind]}${hint}</span>`;
   }
-  function renderBar2(root3, html) {
+  function renderBar2(root4, html) {
     let bar2 = document.getElementById(BAR_ID);
     if (!bar2) {
       bar2 = document.createElement("div");
       bar2.id = BAR_ID;
       bar2.className = "nfh-oc-bar";
-      root3.parentElement.insertBefore(bar2, root3);
+      root4.parentElement.insertBefore(bar2, root4);
     }
     if (bar2.dataset.nfhHtml !== html) {
       bar2.dataset.nfhHtml = html;
@@ -7372,10 +7522,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const bar2 = document.getElementById(BAR_ID);
     if (bar2) bar2.remove();
   }
-  function clearAll(root3) {
+  function clearAll(root4) {
     removeBar();
-    renderSuggestions(root3, []);
-    for (const ours of root3.querySelectorAll(`.${CHIP_CLASS}, .${FLAGS_CLASS}, .${IDLE_CLASS}`)) ours.remove();
+    renderSuggestions(root4, []);
+    for (const ours of root4.querySelectorAll(`.${CHIP_CLASS}, .${FLAGS_CLASS}, .${IDLE_CLASS}`)) ours.remove();
   }
   var IDLE_LIST_SELECTOR = '[class^="notInvolvedMembers___"]';
   function idleHtml(badge) {
@@ -7385,8 +7535,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
     return html;
   }
-  function renderIdleMembers(root3, members, nowMs = Date.now()) {
-    const list = root3.querySelector(IDLE_LIST_SELECTOR);
+  function renderIdleMembers(root4, members, nowMs = Date.now()) {
+    const list = root4.querySelector(IDLE_LIST_SELECTOR);
     if (!list) return;
     for (const link of list.querySelectorAll('a[href*="XID="]')) {
       const match = /XID=(\d+)/.exec(link.getAttribute("href") || "");
@@ -7420,8 +7570,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   function findOwnSlot(pageCrimes, board) {
     const me = String(getUserscriptUsersPlayerId() || "");
     if (!me) return null;
-    const onPage = new Set(pageCrimes.map((crime) => String(crime.id)));
-    const boardCrimes = (board && board.crimes || []).filter((crime) => !onPage.has(String(crime.id))).filter((crime) => !probablyRun(crime.ready_at)).map((crime) => ({
+    const onPage2 = new Set(pageCrimes.map((crime) => String(crime.id)));
+    const boardCrimes = (board && board.crimes || []).filter((crime) => !onPage2.has(String(crime.id))).filter((crime) => !probablyRun(crime.ready_at)).map((crime) => ({
       id: String(crime.id),
       name: crime.name,
       level: crime.level,
@@ -7475,20 +7625,20 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   var permissionsAsked = false;
   function render4() {
-    const root3 = document.querySelector(CRIMES_ROOT_SELECTOR);
-    if (!root3 || !isOwnFactionCrimesTab()) return;
+    const root4 = document.querySelector(CRIMES_ROOT_SELECTOR);
+    if (!root4 || !isOwnFactionCrimesTab()) return;
     const config = ocConfigStore.data;
     if (!config) {
-      clearAll(root3);
+      clearAll(root4);
       return;
     }
-    const crimes = readCrimes(root3);
-    const tab = activeSubTab(root3);
+    const crimes = readCrimes(root4);
+    const tab = activeSubTab(root4);
     const recruiting = tab === SubTab.Recruiting;
     const active = (recruiting || tab === SubTab.Planning) && crimes.length > 0;
     const joining = joinState(crimes);
     if (recruiting) learnCprs(crimes);
-    const idleList = recruiting && root3.querySelector(IDLE_LIST_SELECTOR) !== null;
+    const idleList = recruiting && root4.querySelector(IDLE_LIST_SELECTOR) !== null;
     const wantsBoard = active || idleList;
     const cachedNow = wantsBoard ? cachedBoard2() : null;
     if (wantsBoard) {
@@ -7541,8 +7691,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       });
     }
     const suggestions = suggesting ? result.suggestions : [];
-    renderSuggestions(root3, suggestions);
-    renderIdleMembers(root3, idleList ? members : null);
+    renderSuggestions(root4, suggestions);
+    renderIdleMembers(root4, idleList ? members : null);
     const staff = members && active ? { counts, prefs: prefs4, factionLimits: limitsFor(config) } : null;
     const settings = settingsHtml({ open: settingsOpen, weights, staff, items: itemSettings() });
     const staffPart = staff ? staffHtml(staff, settings.button) : "";
@@ -7550,16 +7700,16 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     let memberPart = "";
     if (features2.enabled && recruiting && crimes.length > 0) {
       if (features2.suggest) {
-        let state8;
+        let state10;
         const hiddenStalled = result.hiddenStalled;
-        if (suggestions.length > 0) state8 = { kind: "best", suggestions, warning, hiddenStalled };
-        else if (warning) state8 = { kind: "warning", warning };
-        else if (own) state8 = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
-        else if (joining === JoinState.Blocked) state8 = { kind: "blocked" };
-        else if (joining === JoinState.Open && result.withheld > 0) state8 = { kind: "low", hiddenStalled };
-        else if (joining === JoinState.Full) state8 = { kind: "full", hiddenStalled };
-        else state8 = { kind: "none", hiddenStalled };
-        memberPart = barHtml(state8);
+        if (suggestions.length > 0) state10 = { kind: "best", suggestions, warning, hiddenStalled };
+        else if (warning) state10 = { kind: "warning", warning };
+        else if (own) state10 = { kind: "joined", crime: own.crime.name, level: own.crime.level, role: own.crime.slots[own.index].name };
+        else if (joining === JoinState.Blocked) state10 = { kind: "blocked" };
+        else if (joining === JoinState.Open && result.withheld > 0) state10 = { kind: "low", hiddenStalled };
+        else if (joining === JoinState.Full) state10 = { kind: "full", hiddenStalled };
+        else state10 = { kind: "none", hiddenStalled };
+        memberPart = barHtml(state10);
       } else if (warning) {
         memberPart = barHtml({ kind: "warning", warning });
       }
@@ -7574,7 +7724,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       removeBar();
       return;
     }
-    const bar2 = renderBar2(root3, memberPart + (staffPart || settings.button) + settings.panel);
+    const bar2 = renderBar2(root4, memberPart + (staffPart || settings.button) + settings.panel);
     if (!bar2.dataset.nfhBound) {
       bar2.dataset.nfhBound = "1";
       bar2.addEventListener("change", (event) => {
@@ -7667,13 +7817,13 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const nodes = [...mutation.addedNodes, ...mutation.removedNodes];
     return nodes.length > 0 && nodes.every(isOwnElement);
   }
-  function watch2(root3) {
-    if (observedRoot === root3 && root3.isConnected) return;
+  function watch2(root4) {
+    if (observedRoot === root4 && root4.isConnected) return;
     if (observer2) observer2.disconnect();
-    observedRoot = root3;
-    if (!root3.dataset.nfhOcfBound) {
-      root3.dataset.nfhOcfBound = "1";
-      root3.addEventListener("click", (event) => {
+    observedRoot = root4;
+    if (!root4.dataset.nfhOcfBound) {
+      root4.dataset.nfhOcfBound = "1";
+      root4.addEventListener("click", (event) => {
         const button3 = event.target.closest("[data-nfh-ocf]");
         if (!button3) return;
         event.preventDefault();
@@ -7690,7 +7840,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       if (mutations.every(isOwnMutation)) return;
       scheduleRender();
     });
-    observer2.observe(root3, { childList: true, subtree: true });
+    observer2.observe(root4, { childList: true, subtree: true });
     LogInfo("OC Assistant watching the crimes list");
   }
   function init5() {
@@ -7700,8 +7850,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       ocConfigStore.subscribe(() => scheduleRender());
       onItemSettingsChange(() => scheduleRender());
     }
-    waitForElm(CRIMES_ROOT_SELECTOR).then((root3) => {
-      watch2(root3);
+    waitForElm(CRIMES_ROOT_SELECTOR).then((root4) => {
+      watch2(root4);
       scheduleRender();
     });
   }
@@ -7754,7 +7904,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
 
   // src/features/mail-templates/view.js
   var SCOPE_LABELS = { messages: "Messages", newsletter: "Newsletter", both: "Both" };
-  var button2 = (act2, label, { primary = false, id = "", kind = "", title = "", disabled = false, extra = "" } = {}) => `<button type="button" class="nfh-cw-btn${primary ? " nfh-cw-btn--primary" : ""}" data-act="${act2}"${id !== "" ? ` data-id="${escapeHtml(id)}"` : ""}${kind ? ` data-kind="${kind}"` : ""}${title ? ` title="${escapeHtml(title)}"` : ""}${disabled ? " disabled" : ""}${extra}>${label}</button>`;
+  var button2 = (act2, label, { primary = false, id = "", kind: kind2 = "", title = "", disabled = false, extra = "" } = {}) => `<button type="button" class="nfh-cw-btn${primary ? " nfh-cw-btn--primary" : ""}" data-act="${act2}"${id !== "" ? ` data-id="${escapeHtml(id)}"` : ""}${kind2 ? ` data-kind="${kind2}"` : ""}${title ? ` title="${escapeHtml(title)}"` : ""}${disabled ? " disabled" : ""}${extra}>${label}</button>`;
   var star = (pinned) => pinned ? "\u2605" : "\u2606";
   function pinnedChips(list) {
     const chips = [];
@@ -7766,39 +7916,39 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
     return chips.join("");
   }
-  var chipFor2 = (kind, id, name, title) => `<button type="button" class="nfh-cw-chip nfh-mt-chip nfh-mt-chip--${kind}" data-act="use" data-kind="${kind}" data-id="${escapeHtml(id)}" title="${escapeHtml(
+  var chipFor2 = (kind2, id, name, title) => `<button type="button" class="nfh-cw-chip nfh-mt-chip nfh-mt-chip--${kind2}" data-act="use" data-kind="${kind2}" data-id="${escapeHtml(id)}" title="${escapeHtml(
     `${title}: put it in the editor`
-  )}">${kind === "faction" ? '<span class="nfh-mt-badge" aria-label="Faction">F</span>' : ""}${escapeHtml(name)}</button>`;
+  )}">${kind2 === "faction" ? '<span class="nfh-mt-badge" aria-label="Faction">F</span>' : ""}${escapeHtml(name)}</button>`;
   function scopeSelect(field, selected) {
     return `<select class="nfh-cw-input" data-field="${field}" aria-label="Where it shows">${Object.entries(SCOPE_LABELS).map(([value, label]) => `<option value="${value}"${value === selected ? " selected" : ""}>${label}</option>`).join("")}</select>`;
   }
-  function formHtml(state8) {
-    const form = state8.form;
+  function formHtml(state10) {
+    const form = state10.form;
     if (!form) return "";
     if (form.mode === "save") {
       return `<div class="nfh-mt-form">
       <input type="text" class="nfh-cw-input" data-field="name" maxlength="80" placeholder="Template name" value="${escapeHtml(form.name)}">
       <label class="nfh-cw-muted">Show in ${scopeSelect("scope", form.scope)}</label>
-      ${button2("save-confirm", state8.busy ? "Saving\u2026" : "Save template", { primary: true, disabled: state8.busy })}${button2("form-cancel", "Cancel")}
-      <div class="nfh-cw-muted nfh-mt-note">Saves the message as it is in the editor${state8.hasSubject ? ", and the subject" : ""}. Only you can see your templates.</div>
+      ${button2("save-confirm", state10.busy ? "Saving\u2026" : "Save template", { primary: true, disabled: state10.busy })}${button2("form-cancel", "Cancel")}
+      <div class="nfh-cw-muted nfh-mt-note">Saves the message as it is in the editor${state10.hasSubject ? ", and the subject" : ""}. Only you can see your templates.</div>
     </div>`;
     }
     return `<div class="nfh-mt-form">
     <input type="text" class="nfh-cw-input" data-field="name" maxlength="80" value="${escapeHtml(form.name)}" aria-label="Template name">
     <label class="nfh-cw-muted">Show in ${scopeSelect("scope", form.scope)}</label>
-    ${button2("rename-confirm", "Save", { primary: true, id: form.id, disabled: state8.busy })}${button2("form-cancel", "Cancel")}
+    ${button2("rename-confirm", "Save", { primary: true, id: form.id, disabled: state10.busy })}${button2("form-cancel", "Cancel")}
   </div>`;
   }
-  function confirmHtml(state8) {
-    const confirm2 = state8.confirm;
+  function confirmHtml(state10) {
+    const confirm2 = state10.confirm;
     if (!confirm2) return "";
     return `<div class="nfh-mt-confirm"><span>${escapeHtml(confirm2.text)}</span>
-    ${button2("confirm-yes", escapeHtml(confirm2.yes), { primary: true, disabled: state8.busy })}${button2("confirm-no", "Cancel")}</div>`;
+    ${button2("confirm-yes", escapeHtml(confirm2.yes), { primary: true, disabled: state10.busy })}${button2("confirm-no", "Cancel")}</div>`;
   }
-  function helpHtml(state8) {
-    if (!state8.help) return "";
-    const rows2 = PLACEHOLDERS.filter((placeholder) => !placeholder.where || placeholder.where === state8.page).map((placeholder) => `<li><code>{${placeholder.key}}</code> ${escapeHtml(placeholder.label)}</li>`).join("");
-    const recipient = state8.page === "messages" ? " Pick the recipient before you use a template with <code>{name}</code> or <code>{id}</code>." : "";
+  function helpHtml(state10) {
+    if (!state10.help) return "";
+    const rows2 = PLACEHOLDERS.filter((placeholder) => !placeholder.where || placeholder.where === state10.page).map((placeholder) => `<li><code>{${placeholder.key}}</code> ${escapeHtml(placeholder.label)}</li>`).join("");
+    const recipient = state10.page === "messages" ? " Pick the recipient before you use a template with <code>{name}</code> or <code>{id}</code>." : "";
     return `<div class="nfh-mt-help">
     <div>Write these in a template (in the message or the subject) and they are filled in when you use it:</div>
     <ul>${rows2}</ul>
@@ -7806,10 +7956,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   </div>`;
   }
   var matches = (query, ...texts) => !query || texts.some((text) => String(text || "").toLowerCase().includes(query));
-  function allHtml(state8) {
-    if (!state8.open || !state8.list) return "";
-    const list = state8.list;
-    const query = state8.query.trim().toLowerCase();
+  function allHtml(state10) {
+    if (!state10.open || !state10.list) return "";
+    const list = state10.list;
+    const query = state10.query.trim().toLowerCase();
     const sections = [];
     const personal = (list.personal || []).filter((template) => matches(query, template.name, template.subject));
     sections.push(`<div class="nfh-mt-section"><div class="nfh-mt-heading">Your templates</div>${personal.length ? personal.map(
@@ -7853,15 +8003,15 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
     const siteLink = list.links && list.links.faction_mail ? `<a href="${escapeHtml(list.links.faction_mail)}" target="_blank" rel="noopener">Faction mail on nuke.family \u2197</a>` : "";
     return `<div class="nfh-mt-all">
-    <input type="search" class="nfh-cw-input nfh-mt-search" data-field="query" placeholder="Search templates" value="${escapeHtml(state8.query)}">
+    <input type="search" class="nfh-cw-input nfh-mt-search" data-field="query" placeholder="Search templates" value="${escapeHtml(state10.query)}">
     ${sections.join("")}
     ${siteLink ? `<div class="nfh-mt-foot">${siteLink}</div>` : ""}
   </div>`;
   }
-  function finesHtml(state8) {
-    const fines = state8.list && state8.list.fines || [];
-    if (state8.page !== "messages" || fines.length === 0) return "";
-    const to = state8.recipientId ? String(state8.recipientId) : null;
+  function finesHtml(state10) {
+    const fines = state10.list && state10.list.fines || [];
+    if (state10.page !== "messages" || fines.length === 0) return "";
+    const to = state10.recipientId ? String(state10.recipientId) : null;
     const sorted = [...fines].sort((a, b) => (String(b.player_id) === to) - (String(a.player_id) === to));
     return `<div class="nfh-mt-fines"><span class="nfh-mt-heading">Recent fines</span>${sorted.slice(0, 8).map(
       (fine) => `<button type="button" class="nfh-cw-chip nfh-mt-chip nfh-mt-chip--fine${String(fine.player_id) === to ? " nfh-mt-chip--match" : ""}" data-act="use" data-kind="fine" data-id="${escapeHtml(
@@ -7869,22 +8019,22 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       )}" title="Put this fine's mail in the editor, addressed to them">${escapeHtml(fineChipLabel(fine))}</button>`
     ).join("")}</div>`;
   }
-  function renderBar3(state8) {
-    const list = state8.list;
+  function renderBar3(state10) {
+    const list = state10.list;
     const total = list ? (list.personal || []).length + (list.faction || []).length : 0;
     const pins = list ? pinnedChips(list) : "";
-    const status = state8.loading ? `<span class="nfh-cw-muted">Loading\u2026</span>` : state8.error && !list ? `<span class="nfh-cw-error">${escapeHtml(state8.error)}</span>` : pins || `<span class="nfh-cw-muted">${total ? "Pin templates (\u2606 in All) to show them here." : "Save a message to use it again later."}</span>`;
-    const message = state8.message ? `<div class="nfh-mt-message nfh-mt-message--${state8.message.tone}" role="status">${escapeHtml(state8.message.text)}${state8.sentFine ? ` ${button2("fine-mailed", "I sent it: mark mailed", { primary: true, id: state8.sentFine.id, disabled: state8.busy })}${button2("fine-dismiss", "Not yet")}` : ""}</div>` : "";
+    const status = state10.loading ? `<span class="nfh-cw-muted">Loading\u2026</span>` : state10.error && !list ? `<span class="nfh-cw-error">${escapeHtml(state10.error)}</span>` : pins || `<span class="nfh-cw-muted">${total ? "Pin templates (\u2606 in All) to show them here." : "Save a message to use it again later."}</span>`;
+    const message = state10.message ? `<div class="nfh-mt-message nfh-mt-message--${state10.message.tone}" role="status">${escapeHtml(state10.message.text)}${state10.sentFine ? ` ${button2("fine-mailed", "I sent it: mark mailed", { primary: true, id: state10.sentFine.id, disabled: state10.busy })}${button2("fine-dismiss", "Not yet")}` : ""}</div>` : "";
     return `<div class="nfh-cw-bar nfh-mt-bar">
       <span class="nfh-mt-title">Templates</span>
       <span class="nfh-mt-pins">${status}</span>
       <span class="nfh-cw-actions nfh-mt-buttons">
-        ${button2("toggle-all", `All${total ? ` (${total})` : ""} ${state8.open ? "\u25B4" : "\u25BE"}`, { disabled: !list })}
-        ${button2("save", state8.form?.mode === "save" ? "Save template" : "Save", { disabled: state8.busy || !list, primary: state8.form?.mode === "save" })}
+        ${button2("toggle-all", `All${total ? ` (${total})` : ""} ${state10.open ? "\u25B4" : "\u25BE"}`, { disabled: !list })}
+        ${button2("save", state10.form?.mode === "save" ? "Save template" : "Save", { disabled: state10.busy || !list, primary: state10.form?.mode === "save" })}
         ${button2("help", "?", { title: "Placeholders you can use", extra: ' aria-label="Placeholders"' })}
       </span>
     </div>
-    ${finesHtml(state8)}${message}${confirmHtml(state8)}${formHtml(state8)}${helpHtml(state8)}${allHtml(state8)}`;
+    ${finesHtml(state10)}${message}${confirmHtml(state10)}${formHtml(state10)}${helpHtml(state10)}${allHtml(state10)}`;
   }
 
   // src/features/mail-templates/index.js
@@ -7894,14 +8044,14 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       container: "#editor-form",
       anchor: (container) => container.closest(".mailbox-container") || container,
       root: () => document.getElementById("editor-form"),
-      subject: (root3) => root3 && root3.querySelector('input[name="subject"]'),
-      recipient: (root3) => root3 && root3.querySelector('input[name="sendto"]')
+      subject: (root4) => root4 && root4.querySelector('input[name="subject"]'),
+      recipient: (root4) => root4 && root4.querySelector('input[name="sendto"]')
     },
     newsletter: {
       container: "#react-root-faction-newsletter",
       anchor: (container) => container,
       root: () => document.getElementById("react-root-faction-newsletter"),
-      subject: (root3) => root3 && root3.querySelector('input[class*="titleField"]'),
+      subject: (root4) => root4 && root4.querySelector('input[class*="titleField"]'),
       recipient: () => null
     }
   };
@@ -7993,16 +8143,16 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       time
     };
   }
-  async function fetchContent(kind, id) {
-    if (kind === "personal") {
+  async function fetchContent(kind2, id) {
+    if (kind2 === "personal") {
       const template = await personalBody(id);
       return { name: template.name, subject: template.subject, html: template.body };
     }
-    if (kind === "faction") {
+    if (kind2 === "faction") {
       const template = await renderFaction(id);
       return { name: template.name, subject: template.subject, html: template.html };
     }
-    if (kind === "fine") {
+    if (kind2 === "fine") {
       const mail = (await fineMail(id)).data;
       return { name: `the mail for fine #${id}`, subject: mail.subject, html: mail.html, fine: mail.fine };
     }
@@ -8011,11 +8161,11 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   async function insert(content) {
     const page = PAGES[state3.page];
-    const root3 = page.root();
-    const editor = findEditor(root3);
+    const root4 = page.root();
+    const editor = findEditor(root4);
     if (!editor) throw new Error("Torn's editor was not found on the page.");
-    if (content.fine && page.recipient(root3)) {
-      setInputValue(page.recipient(root3), recipientFor(content.fine));
+    if (content.fine && page.recipient(root4)) {
+      setInputValue(page.recipient(root4), recipientFor(content.fine));
     }
     const values = placeholderValues();
     const body = fill(content.html, values, { html: true });
@@ -8024,7 +8174,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     if (content.subject) {
       const subject = fill(content.subject, values);
       subject.missing.forEach((key) => missing.add(key));
-      setInputValue(page.subject(root3), subject.text);
+      setInputValue(page.subject(root4), subject.text);
     }
     if (content.fine) {
       state3.sentFine = content.fine;
@@ -8039,15 +8189,15 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       say("ok", `Put "${content.name}" in the editor. Check it, then send it yourself.`);
     }
   }
-  async function use(kind, id, { replace = false } = {}) {
+  async function use(kind2, id, { replace = false } = {}) {
     const editor = findEditor(PAGES[state3.page].root());
     if (!replace && editorHasContent(editor)) {
-      state3.confirm = { action: "use", kind, id, text: "Replace what is in the editor now?", yes: "Replace" };
+      state3.confirm = { action: "use", kind: kind2, id, text: "Replace what is in the editor now?", yes: "Replace" };
       render5();
       return;
     }
     await busy(async () => {
-      const content = await fetchContent(kind, id);
+      const content = await fetchContent(kind2, id);
       await insert(content);
     });
   }
@@ -8069,11 +8219,11 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   async function editorContents() {
     const page = PAGES[state3.page];
-    const root3 = page.root();
-    const editor = findEditor(root3);
+    const root4 = page.root();
+    const editor = findEditor(root4);
     if (!editorHasContent(editor)) throw new Error("The editor is empty: write the message first.");
     const html = await getEditorHtml(editor);
-    const subject = page.subject(root3)?.value.trim() || null;
+    const subject = page.subject(root4)?.value.trim() || null;
     return { body: html, subject };
   }
   function findPersonal(id) {
@@ -8082,7 +8232,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   async function onClick3(event) {
     const target = event.target.closest("[data-act]");
     if (!target || target.disabled) return;
-    const { act: act2, id, kind } = target.dataset;
+    const { act: act2, id, kind: kind2 } = target.dataset;
     switch (act2) {
       case "toggle-all":
         state3.open = !state3.open;
@@ -8149,7 +8299,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
         return confirmed();
       case "pin":
         return busy(async () => {
-          if (kind === "faction") {
+          if (kind2 === "faction") {
             const template = (state3.list?.faction || []).find((entry) => String(entry.id) === String(id));
             await pinFaction(id, !template?.pinned);
           } else {
@@ -8158,7 +8308,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
           await load3(true);
         });
       case "use":
-        return use(kind, id);
+        return use(kind2, id);
       case "fine-mailed":
         return busy(async () => {
           await markFineMailed(id);
@@ -8291,6 +8441,36 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const value = number(stat.value);
     return value === null ? stat.shown || "\u2014" : value;
   }
+  function daysSince(iso2, now = Date.now()) {
+    if (!iso2) return null;
+    const at = Date.parse(iso2);
+    if (Number.isNaN(at)) return null;
+    return Math.max(0, Math.floor((now - at) / 864e5));
+  }
+  function lastOnlineText(days) {
+    if (days === null || days === void 0) return "unknown";
+    if (days === 0) return "today";
+    if (days === 1) return "1 day ago";
+    return `${days} days ago`;
+  }
+  var AWAY_DAYS = 3;
+  var GONE_DAYS = 7;
+  function awayTier(days) {
+    if (days === null || days === void 0 || days < AWAY_DAYS) return null;
+    return days >= GONE_DAYS ? "gone" : "away";
+  }
+  function reasonsText(reasons) {
+    return (reasons || []).filter((reason) => reason && reason.label).map((reason) => {
+      const value = number(reason.value);
+      return value === null ? reason.label : `${reason.label} ${value}`;
+    }).join(" \xB7 ");
+  }
+  function deltaText(delta) {
+    if (delta === null || delta === void 0 || !Number.isFinite(Number(delta))) return "";
+    const n = Math.round(Number(delta) * 10) / 10;
+    if (n === 0) return "no change since last week";
+    return `${n > 0 ? "\u2191" : "\u2193"} ${Math.abs(n)} since last week`;
+  }
 
   // src/features/kick-risk/index.js
   var ROOT = "#option-members-root";
@@ -8350,8 +8530,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     return state4.loading;
   }
   var memberById = (id) => (state4.data?.members || []).find((member) => member.player_id === Number(id)) || null;
-  function rows(root3) {
-    return [...root3.querySelectorAll('[class*="rowWrapper___"]')].map((element) => {
+  function rows(root4) {
+    return [...root4.querySelectorAll('[class*="rowWrapper___"]')].map((element) => {
       const link = element.querySelector('[class*="member___"] a[href*="profiles.php?XID="]');
       const id = link ? Number(new URL(link.getAttribute("href"), location.origin).searchParams.get("XID")) : null;
       return { element, id, name: link ? link.textContent.trim() : null };
@@ -8389,6 +8569,35 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       if (badge.title !== title) badge.title = title;
       badge.setAttribute("aria-label", title);
     }
+    const days = member ? daysSince(member.last_action_at) : null;
+    const away = awayTier(days);
+    let chip = row2.element.querySelector(".nfh-kr-away");
+    if (!away || !host) {
+      chip?.remove();
+    } else {
+      if (!chip) {
+        chip = document.createElement("button");
+        chip.type = "button";
+        chip.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          state4.open.has(row2.id) ? state4.open.delete(row2.id) : state4.open.add(row2.id);
+          schedule(0);
+        });
+      }
+      if (badge?.isConnected && badge.parentElement === host) {
+        if (badge.nextElementSibling !== chip) badge.after(chip);
+      } else if (chip.parentElement !== host) {
+        host.appendChild(chip);
+      }
+      const className = `nfh-kr-away nfh-kr-away--${away}`;
+      const text = `${days}d off`;
+      const title = `Last online ${lastOnlineText(days)}. Click for details.`;
+      if (chip.className !== className) chip.className = className;
+      if (chip.textContent !== text) chip.textContent = text;
+      if (chip.title !== title) chip.title = title;
+      chip.setAttribute("aria-label", title);
+    }
     let detail = row2.element.querySelector(":scope > .nfh-kr-detail");
     if (member && state4.open.has(row2.id)) {
       const html = detailHtml(member);
@@ -8416,13 +8625,34 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       formatStat(stat)
     )}</strong>${extra}${stat.below_target ? target : ""}</span>`;
   }
+  function riskHtml(member) {
+    const days = daysSince(member.last_action_at);
+    const parts = [];
+    if (member.departure_risk !== null && member.departure_risk !== void 0) {
+      const delta = deltaText(member.risk_delta);
+      parts.push(
+        `<span class="nfh-kr-stat"><span class="nfh-cw-muted">Leave risk</span> <strong>${escapeHtml(Math.round(member.departure_risk))}%</strong>${delta ? ` <span class="nfh-cw-muted" title="Change in the member's overall risk since the run before">${escapeHtml(delta)}</span>` : ""}</span>`
+      );
+    }
+    if (member.last_action_at !== void 0) {
+      const at = member.last_action_at ? ` title="${escapeHtml(member.last_action_at.replace("T", " ").replace(/:\d\dZ$/, " TCT"))}"` : "";
+      parts.push(
+        `<span class="nfh-kr-stat${awayTier(days) ? " nfh-kr-stat--below" : ""}"${at}><span class="nfh-cw-muted">Last online</span> <strong>${escapeHtml(lastOnlineText(days))}</strong></span>`
+      );
+    }
+    const why = (label, reasons) => reasons && reasons.length ? `<div class="nfh-kr-why"><span class="nfh-cw-muted">${label}:</span> ${escapeHtml(reasonsText(reasons))}</div>` : "";
+    const line = parts.length ? `<div class="nfh-kr-stats">${parts.join("")}</div>` : "";
+    return line + why("Kick risk raised by", member.kick_reasons) + why("Leave risk raised by", member.departure_reasons);
+  }
   function detailHtml(member) {
     const stats = member.stats.map((stat) => statHtml(stat, stat.key === "avg_daily_energy_spend_7" ? member.energy_change_pct : void 0)).join("");
     const missed = member.missed.length ? `<div class="nfh-kr-missed"><span class="nfh-cw-muted">Below target:</span> ${member.missed.map((stat) => statHtml(stat)).join("")}</div>` : "";
     const monitor = state4.data?.monitor_url ? `<a href="${escapeHtml(state4.data.monitor_url)}" target="_blank" rel="noopener">Full monitor \u2197</a>` : "";
-    return `<div class="nfh-kr-detail-head"><strong>Kick risk ${Math.round(member.kick_risk)}%</strong>
-      ${member.kick_risk_note ? `<span class="nfh-cw-muted">${escapeHtml(member.kick_risk_note)}</span>` : ""}
+    const kick = member.kick_risk === null || member.kick_risk === void 0 ? "No kick risk score" : `Kick risk ${Math.round(member.kick_risk)}%`;
+    return `<div class="nfh-kr-detail-head"><strong>${kick}</strong>
+      ${member.kick_risk_note && member.departure_risk === void 0 ? `<span class="nfh-cw-muted">${escapeHtml(member.kick_risk_note)}</span>` : ""}
       <span class="nfh-kr-detail-links">${monitor} <button type="button" class="nfh-cw-btn" data-kr="close" aria-label="Close">\u2715</button></span></div>
+    ${riskHtml(member)}
     <div class="nfh-kr-stats">${stats}</div>${missed}`;
   }
   function decorateConfirm(row2, member) {
@@ -8462,14 +8692,14 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     area.dataset.reason = reason || "";
     if (area.innerHTML !== html) area.innerHTML = html;
   }
-  function watchKick(root3) {
-    root3.addEventListener(
+  function watchKick(root4) {
+    root4.addEventListener(
       "click",
       (event) => {
         const button3 = event.target.closest('[class*="confirm___"] button');
         if (!event.isTrusted || !button3 || button3.disabled || button3.textContent.trim() !== "Yes") return;
         const element = button3.closest('[class*="rowWrapper___"]');
-        const row2 = rows(root3).find((candidate) => candidate.element === element);
+        const row2 = rows(root4).find((candidate) => candidate.element === element);
         if (!row2?.id) return;
         const input = element.querySelector('input[class*="reasonInput___"]');
         const member = memberById(row2.id);
@@ -8478,18 +8708,18 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       true
     );
   }
-  function checkKick(root3) {
+  function checkKick(root4) {
     const pending4 = state4.pendingKick;
     if (!pending4) return;
     if (Date.now() - pending4.at > KICK_WAIT_MS) {
       state4.pendingKick = null;
       return;
     }
-    if (rows(root3).some((row2) => row2.id === pending4.id)) return;
+    if (rows(root4).some((row2) => row2.id === pending4.id)) return;
     state4.pendingKick = null;
     state4.offer = { id: pending4.id, name: pending4.name, reason: pending4.reason, welcome: false, busy: false, done: false, error: null };
   }
-  function renderOffer(root3) {
+  function renderOffer(root4) {
     let panel = document.getElementById("nfh-kr-blacklist");
     const offer = state4.offer;
     if (!offer) {
@@ -8505,7 +8735,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
         if (event.target.dataset.kr === "reason") offer.reason = event.target.value;
         if (event.target.dataset.kr === "welcome") offer.welcome = event.target.checked;
       });
-      root3.parentElement.insertBefore(panel, root3);
+      root4.parentElement.insertBefore(panel, root4);
     }
     const name = escapeHtml(offer.name || `#${offer.id}`);
     if (offer.done) {
@@ -8556,11 +8786,11 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
   }
   function redrawMembers() {
-    const root3 = document.querySelector(ROOT);
-    if (!root3) return;
-    checkKick(root3);
-    if (state4.data) for (const row2 of rows(root3)) decorateRow(row2);
-    renderOffer(root3);
+    const root4 = document.querySelector(ROOT);
+    if (!root4) return;
+    checkKick(root4);
+    if (state4.data) for (const row2 of rows(root4)) decorateRow(row2);
+    renderOffer(root4);
   }
   function crimeOf(playerId) {
     const board = cachedBoard2()?.board;
@@ -8661,8 +8891,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       if (onCrimes) {
         if (!readJson3(sessionStorage, RETURN_KEY)) return;
         renderReturn();
-        const root3 = document.querySelector("#faction-crimes-root");
-        if (root3) observe(root3);
+        const root4 = document.querySelector("#faction-crimes-root");
+        if (root4) observe(root4);
         return;
       }
       if (!onMembers) {
@@ -8672,18 +8902,658 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       }
       let tries = 15;
       const attach = () => {
-        const root3 = document.querySelector(ROOT);
-        if (root3) {
-          if (!root3.dataset.nfhKr) {
-            root3.dataset.nfhKr = "1";
-            watchKick(root3);
+        const root4 = document.querySelector(ROOT);
+        if (root4) {
+          if (!root4.dataset.nfhKr) {
+            root4.dataset.nfhKr = "1";
+            watchKick(root4);
           }
-          observe(root3.parentElement || root3);
+          observe(root4.parentElement || root4);
           load4().then(() => schedule(0));
           schedule(0);
           return;
         }
         if (--tries > 0) setTimeout(attach, 400);
+      };
+      attach();
+    }
+  };
+
+  // src/features/recruiting.js
+  async function getRecruitingScoreForPlayer(playerId) {
+    try {
+      return await api("/candidate-score/" + playerId);
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw new Error("Bad response from server.");
+      }
+      if (error.name === "ApiError") {
+        if (error.status === 403) {
+          throw new Error("You don't have permission to use recruiting scores.");
+        }
+        if (error.body && error.body.error) {
+          throw new Error(error.body.error);
+        }
+        throw new Error("Failed to fetch recruiting score.");
+      }
+      throw new Error("Network error fetching recruiting score.");
+    }
+  }
+  function recruitingScoreColor(score) {
+    if (score === null || score === void 0 || isNaN(score)) return "#999";
+    if (score >= 67) return "#3a3";
+    if (score >= 34) return "#c90";
+    return "#d33";
+  }
+  function renderRecruitingScore(container, data) {
+    const subs = [
+      ["Activity", data.activity, "activity"],
+      ["Kick Safety", data.kick_safety, "kick_safety"],
+      ["Retention", data.retention, "retention"],
+      ["Combat", data.combat, "combat"]
+    ];
+    const explanation = data.explanation || {};
+    function driverLine(items, marker, color) {
+      if (!items || !items.length) return "";
+      const parts = items.slice(0, 3).map(function(d) {
+        const tip = d.value === null || d.value === void 0 ? d.label : `${d.label} = ${d.value}`;
+        return `<span title="${escapeHtml(tip)}">${escapeHtml(d.label)}</span>`;
+      });
+      return `<div style="color:${color};margin-top:1px;">${marker} ${parts.join(" \xB7 ")}</div>`;
+    }
+    let html = `<div style="margin-top:8px;font-weight:bold;">Recruiting Score: <span style="color:${recruitingScoreColor(data.composite)};">${escapeHtml(data.composite)}</span>/100</div>`;
+    if (data.feature_set === "public") {
+      html += `<div style="font-size:11px;opacity:0.7;">Public model (battle stats not available)</div>`;
+    }
+    html += `<ul class="nfh-section-list" style="margin-top:6px;">`;
+    subs.forEach(function(entry) {
+      const name = entry[0];
+      const val = entry[1];
+      const drivers = explanation[entry[2]] || {};
+      const lines = driverLine(drivers.up, "\u25B2", "#3a3") + driverLine(drivers.down, "\u25BC", "#d33");
+      html += `<li><span class="nfh-list-key">${name}:</span><span class="nfh-list-value"><strong style="color:${recruitingScoreColor(val)};">${escapeHtml(val)}</strong>` + (lines ? `<div style="font-size:11px;line-height:1.5;margin-top:3px;">${lines}</div>` : "") + `</span></li>`;
+    });
+    html += `</ul>`;
+    container.innerHTML = html;
+  }
+  async function maybeAddRecruitingButton(container, playerId) {
+    const permissions = await getOwnPermissions();
+    if (!permissions.includes(RECRUITING_PERMISSION)) return;
+    if (container.querySelector(".nfh-recruiting-wrap")) return;
+    const wrap = document.createElement("div");
+    wrap.classList.add("nfh-recruiting-wrap");
+    wrap.style.marginTop = "8px";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.classList.add("nfh-recruiting-btn");
+    btn.innerText = "Check Recruiting Score";
+    btn.style.cssText = "cursor:pointer;width:100%;padding:5px 8px;border-radius:5px;border:1px solid var(--nfh-border, #444);background:var(--nfh-bg, #2b2b2b);color:inherit;";
+    const result = document.createElement("div");
+    result.classList.add("nfh-recruiting-result");
+    btn.addEventListener("click", async function() {
+      btn.disabled = true;
+      btn.innerText = "Checking\u2026";
+      try {
+        const data = await getRecruitingScoreForPlayer(playerId);
+        wrap.removeChild(btn);
+        renderRecruitingScore(result, data);
+        LogInfo(`Recruiting score for player ${playerId}: ${data.composite}`);
+      } catch (error) {
+        btn.disabled = false;
+        btn.innerText = "Check Recruiting Score";
+        result.innerHTML = `<div style="color:#d33;margin-top:6px;font-size:12px;">${escapeHtml(error.message)}</div>`;
+      }
+    });
+    wrap.appendChild(btn);
+    wrap.appendChild(result);
+    container.appendChild(wrap);
+  }
+
+  // src/features/recruiting-scores/logic.js
+  var SUB_SCORES = [
+    { key: "activity", label: "Activity", short: "A" },
+    { key: "kick_safety", label: "Kick safety", short: "KS", highlight: true },
+    { key: "retention", label: "Retention", short: "R" },
+    { key: "combat", label: "Combat", short: "C" }
+  ];
+  function scoreTier(score) {
+    if (score === null || score === void 0 || score === "" || Number.isNaN(Number(score))) return null;
+    const n = Number(score);
+    if (n >= 67) return "good";
+    if (n >= 34) return "mid";
+    return "low";
+  }
+  function scoreText(score) {
+    if (score === null || score === void 0 || score === "" || Number.isNaN(Number(score))) return "\u2014";
+    return String(Math.round(Number(score)));
+  }
+  function badgeParts(data) {
+    return {
+      composite: { text: scoreText(data.composite), tier: scoreTier(data.composite) },
+      subs: SUB_SCORES.map((sub) => ({ ...sub, text: scoreText(data[sub.key]), tier: scoreTier(data[sub.key]) }))
+    };
+  }
+  function badgeTitle(data) {
+    const subs = SUB_SCORES.map((sub) => `${sub.label} ${scoreText(data[sub.key])}`).join(" \xB7 ");
+    const model = data.feature_set === "full" ? "full model" : "public model";
+    return `Recruiting score ${scoreText(data.composite)}/100 \xB7 ${subs} (${model}). Click for the reasons.`;
+  }
+  function bulkPageKind(href) {
+    let url;
+    try {
+      url = new URL(href);
+    } catch (error) {
+      return null;
+    }
+    if (url.hostname !== "www.torn.com") return null;
+    const path = url.pathname;
+    const sid = url.searchParams.get("sid");
+    if (path === "/page.php" && sid === "hof") return "halloffame";
+    if (path === "/page.php" && sid === "UserList") return "search";
+    if (path === "/factions.php" && url.searchParams.get("step") === "profile") return "faction-profile";
+    if (path === "/index.php" && url.searchParams.get("page") === "people") return "abroad";
+    return null;
+  }
+  var PAGE_LISTS = {
+    search: { list: ".user-info-list-wrap", bar: ".userlist-wrapper" },
+    "faction-profile": { list: ".faction-info-wrap .members-list .table-body", bar: ".faction-info-wrap .members-list" },
+    halloffame: { list: null, bar: null },
+    abroad: { list: null, bar: null }
+  };
+  function playerIdFromHref(href) {
+    if (!href) return null;
+    const match = /profiles\.php\?(?:[^#]*&)?XID=(\d+)/i.exec(href);
+    return match ? Number(match[1]) : null;
+  }
+  function unscoredIds(ids, results) {
+    return [...new Set(ids)].filter((id) => {
+      const result = results.get(id);
+      return !result || result.state === "failed";
+    });
+  }
+  function applyProgress(results, answer, cursor = 0) {
+    let next = cursor;
+    for (const result of answer.results || []) {
+      results.set(result.player_id, result);
+      if (result.seq > next) next = result.seq;
+    }
+    return next;
+  }
+  function isFinished(status) {
+    return status === "completed" || status === "failed";
+  }
+  function progressText(lookup, results) {
+    if (!lookup) return "";
+    const failed = [...results.values()].filter((result) => result.state === "failed").length;
+    if (!isFinished(lookup.status)) return `Scoring ${lookup.done} of ${lookup.total}\u2026`;
+    if (lookup.status === "failed") return `Stopped after ${lookup.done} of ${lookup.total}.`;
+    return failed ? `Scored ${lookup.total - failed} of ${lookup.total} (${failed} couldn't be read).` : `Scored ${lookup.total} ${lookup.total === 1 ? "player" : "players"}.`;
+  }
+
+  // src/features/recruiting-scores/view.js
+  function contentRoot() {
+    return document.querySelector("#mainContainer .content-wrapper") || document.querySelector(".content-wrapper");
+  }
+  function shown2(element) {
+    return element.getClientRects().length > 0;
+  }
+  function playerEntries(root4, { within = null } = {}) {
+    const seen = /* @__PURE__ */ new Map();
+    if (!root4) return [];
+    for (const link of root4.querySelectorAll('a[href*="profiles.php?XID="]')) {
+      if (link.closest(".nfh-rs-detail, .nfh-cw, .nfh-rs-slot") || !shown2(link)) continue;
+      if (within && !link.closest(within)) continue;
+      const id = playerIdFromHref(link.getAttribute("href"));
+      if (!id) continue;
+      const named = link.textContent.trim() !== "";
+      const current = seen.get(id);
+      if (!current || !current.named && named) seen.set(id, { id, link, named });
+    }
+    return [...seen.values()].map(({ id, link }) => {
+      const host = link.closest(".honorWrap, [class*='honorWrap']") || link;
+      const row2 = link.closest("li, tr, [class*='rowWrapper___'], [class*='row___']") || host.parentElement;
+      return { id, link, host, row: row2 };
+    });
+  }
+  function badgeHtml2(data) {
+    const parts = badgeParts(data);
+    const tier = (value) => value.tier ? ` nfh-rs--${value.tier}` : "";
+    const subs = [...parts.subs].sort((a, b) => Number(!!b.highlight) - Number(!!a.highlight));
+    return `<b class="nfh-rs-c${tier(parts.composite)}">${escapeHtml(parts.composite.text)}</b>` + subs.map((sub) => `<span class="nfh-rs-sub${sub.highlight ? " nfh-rs-sub--ks" : ""}${tier(sub)}">${escapeHtml(sub.short)}${escapeHtml(sub.text)}</span>`).join("");
+  }
+  function slotContent(state10) {
+    if (state10.kind === "score") {
+      return {
+        html: `<button type="button" class="nfh-rs-badge" data-rs-action="toggle">${badgeHtml2(state10.data)}</button>`,
+        title: badgeTitle(state10.data)
+      };
+    }
+    if (state10.kind === "busy") return { html: `<span class="nfh-rs-note">${escapeHtml(state10.text || "\u2026")}</span>`, title: "Scoring\u2026" };
+    if (state10.kind === "action") {
+      return { html: `<button type="button" class="nfh-rs-action" data-rs-action="${escapeHtml(state10.action)}">${escapeHtml(state10.label)}</button>`, title: state10.title || "" };
+    }
+    return { html: `<span class="nfh-rs-note">${escapeHtml(state10.text)}</span>`, title: state10.title || "" };
+  }
+  function upsertSlot(entry, state10, onAction3, { compact = false } = {}) {
+    let slot = entry.host.nextElementSibling;
+    entry.row?.querySelectorAll(`.nfh-rs-slot[data-player="${entry.id}"]`).forEach((old) => old !== slot && old.remove());
+    if (!slot || !slot.classList.contains("nfh-rs-slot") || Number(slot.dataset.player) !== entry.id) {
+      slot = document.createElement("span");
+      slot.className = `nfh-rs-slot${compact ? " nfh-rs-slot--compact" : ""}${entry.line ? " nfh-rs-slot--line" : ""}`;
+      slot.dataset.player = String(entry.id);
+      slot.addEventListener("click", (event) => {
+        const button3 = event.target.closest("[data-rs-action]");
+        if (!button3) return;
+        event.preventDefault();
+        event.stopPropagation();
+        onAction3(Number(slot.dataset.player), button3.dataset.rsAction);
+      });
+      entry.host.insertAdjacentElement("afterend", slot);
+    }
+    if (!state10) {
+      slot.remove();
+      return;
+    }
+    const { html, title } = slotContent(state10);
+    if (slot.dataset.rendered !== html) {
+      slot.innerHTML = html;
+      slot.dataset.rendered = html;
+    }
+    if (slot.title !== title) slot.title = title;
+  }
+  function setDetail(entry, data, onClose) {
+    const container = entry.row?.tagName === "TR" ? entry.host.closest("td") || entry.row : entry.row;
+    if (!container) return;
+    let panel = container.querySelector(`:scope > .nfh-rs-detail[data-player="${entry.id}"]`);
+    if (!data) {
+      panel?.remove();
+      return;
+    }
+    if (!panel) {
+      panel = document.createElement("div");
+      panel.className = "nfh-cw nfh-rs-detail";
+      panel.dataset.player = String(entry.id);
+      panel.addEventListener("click", (event) => {
+        if (event.target.closest('[data-rs-action="close"]')) {
+          event.preventDefault();
+          event.stopPropagation();
+          onClose(entry.id);
+        }
+      });
+      container.appendChild(panel);
+    }
+    if (panel.dataset.rendered === JSON.stringify(data)) return;
+    panel.dataset.rendered = JSON.stringify(data);
+    const body = document.createElement("div");
+    body.className = "nfh-rs-detail-body";
+    renderRecruitingScore(body, data);
+    const scored = data.scored_at ? ` \xB7 scored ${escapeHtml(data.scored_at.slice(0, 10))}` : "";
+    panel.innerHTML = `<button type="button" class="nfh-cw-btn nfh-rs-close" data-rs-action="close" aria-label="Close">\u2715</button>
+    <div class="nfh-cw-muted nfh-rs-detail-note">\u25B2 raised the score \xB7 \u25BC lowered it${scored}</div>`;
+    panel.appendChild(body);
+  }
+  function clearAll2(root4 = document) {
+    root4.querySelectorAll(".nfh-rs-slot, .nfh-rs-detail").forEach((element) => element.remove());
+  }
+
+  // src/features/recruiting-scores/applications.js
+  var state5 = {
+    allowed: null,
+    // permission check result, once known
+    scores: /* @__PURE__ */ new Map(),
+    // player id -> the site's answer for them
+    asked: /* @__PURE__ */ new Set(),
+    busy: /* @__PURE__ */ new Set(),
+    open: /* @__PURE__ */ new Set(),
+    notes: /* @__PURE__ */ new Map(),
+    // player id -> error text
+    loadError: null
+  };
+  var observer4 = null;
+  var observed2 = null;
+  var timer2 = null;
+  var ROOT2 = "#faction-applications-root";
+  var PERSON = '[class*="person___"]';
+  function root2() {
+    return document.querySelector(ROOT2);
+  }
+  function onPage() {
+    return IsPage(PageType.FactionControlApplications) && location.search.includes("step=your");
+  }
+  async function fetchScores(ids) {
+    ids.forEach((id) => state5.asked.add(id));
+    try {
+      const answer = await api("/candidate-score/applicants", { method: "POST", data: { player_ids: ids } });
+      for (const applicant of answer.applicants || []) state5.scores.set(applicant.player_id, applicant);
+      state5.loadError = null;
+    } catch (error) {
+      LogInfo("[recruiting-scores] applicants", error);
+      ids.forEach((id) => state5.asked.delete(id));
+      if (error instanceof ApiError && error.status === 403) state5.allowed = false;
+      else state5.loadError = "Couldn't load recruiting scores from nuke.family.";
+    }
+    schedule2(0);
+  }
+  function slotState(id) {
+    if (state5.busy.has(id)) return { kind: "busy", text: "Scoring\u2026" };
+    if (state5.notes.has(id)) return { kind: "note", text: "Score unavailable", title: state5.notes.get(id) };
+    const applicant = state5.scores.get(id);
+    if (!applicant) {
+      return state5.loadError ? { kind: "action", action: "retry", label: "Retry scores", title: state5.loadError } : state5.asked.has(id) ? { kind: "busy" } : null;
+    }
+    if (applicant.state === "scored") return { kind: "score", data: applicant };
+    if (applicant.state === "unscored") {
+      return { kind: "action", action: "score-application", label: "Score", title: "This application wasn't scored when it came in. Score it now (the check is logged)." };
+    }
+    return {
+      kind: "action",
+      action: "check",
+      label: "Check score",
+      title: "nuke.family hasn't picked up this application yet. Check the player's public profile score instead (the check is logged)."
+    };
+  }
+  async function onAction(id, action) {
+    if (action === "toggle") {
+      state5.open.has(id) ? state5.open.delete(id) : state5.open.add(id);
+      schedule2(0);
+      return;
+    }
+    if (action === "retry") {
+      state5.loadError = null;
+      schedule2(0);
+      return;
+    }
+    if (state5.busy.has(id)) return;
+    state5.busy.add(id);
+    state5.notes.delete(id);
+    schedule2(0);
+    try {
+      const applicant = state5.scores.get(id);
+      const data = action === "score-application" && applicant?.application_id ? await scoreApplication(applicant.application_id) : await getRecruitingScoreForPlayer(id);
+      state5.scores.set(id, { ...applicant, ...data, player_id: id, state: "scored" });
+      state5.open.add(id);
+    } catch (error) {
+      state5.notes.set(id, error.message || "Scoring failed.");
+    } finally {
+      state5.busy.delete(id);
+      schedule2(0);
+    }
+  }
+  async function scoreApplication(applicationId) {
+    try {
+      return await api(`/candidate-score/applications/${applicationId}`);
+    } catch (error) {
+      if (error instanceof ApiError && error.body?.error) throw new Error(error.body.error);
+      throw new Error("Couldn't score this application.");
+    }
+  }
+  function redraw2() {
+    if (!onPage()) return;
+    const element = root2();
+    if (!element || state5.allowed !== true) return;
+    observe2(element);
+    const narrow = window.matchMedia("(max-width: 784px)").matches;
+    const entries = playerEntries(element, { within: PERSON }).map((entry) => {
+      const tableRow = narrow ? entry.link.closest('[class*="tableRow___"]') : null;
+      return tableRow ? { ...entry, host: tableRow, line: true } : entry;
+    });
+    const missing = entries.map((entry) => entry.id).filter((id) => !state5.scores.has(id) && !state5.asked.has(id));
+    if (missing.length && !state5.loadError) fetchScores(missing.slice(0, 100));
+    for (const entry of entries) {
+      upsertSlot(entry, slotState(entry.id), onAction);
+      const applicant = state5.scores.get(entry.id);
+      setDetail(entry, state5.open.has(entry.id) && applicant?.state === "scored" ? applicant : null, (id) => {
+        state5.open.delete(id);
+        schedule2(0);
+      });
+    }
+  }
+  function schedule2(delay = 250) {
+    clearTimeout(timer2);
+    timer2 = setTimeout(redraw2, delay);
+  }
+  function observe2(element) {
+    const target = element.parentElement || element;
+    if (observed2 === target) return;
+    observer4?.disconnect();
+    observed2 = target;
+    observer4 = new MutationObserver((records) => {
+      const ours = records.every(
+        (record) => [...record.addedNodes, ...record.removedNodes].every((node) => node.nodeType !== 1 || node.closest?.(".nfh-rs-slot, .nfh-rs-detail") || /(^|\s)nfh-rs/.test(node.className || ""))
+      );
+      if (!ours) schedule2();
+    });
+    observer4.observe(target, { childList: true, subtree: true });
+  }
+  var applications_default = {
+    name: "Recruiting scores: applications",
+    pages: [PageType.FactionControlApplications, PageType.Faction],
+    async init() {
+      if (!onPage()) {
+        observer4?.disconnect();
+        observed2 = null;
+        return;
+      }
+      if (state5.allowed === null) {
+        const permissions = await getOwnPermissions();
+        state5.allowed = permissions.includes(RECRUITING_PERMISSION);
+      }
+      if (!state5.allowed) {
+        clearAll2();
+        return;
+      }
+      let tries = 12;
+      const attach = () => {
+        redraw2();
+        if (--tries > 0 && onPage()) setTimeout(attach, 500);
+      };
+      attach();
+    }
+  };
+
+  // src/features/recruiting-scores/bulk.js
+  var POLL_MS2 = 2e3;
+  var MAX_PLAYERS = 100;
+  var state6 = {
+    allowed: null,
+    results: /* @__PURE__ */ new Map(),
+    // player id -> result (kept while the page is open, across its own list changes)
+    pending: /* @__PURE__ */ new Set(),
+    // asked for, not answered yet
+    lookup: null,
+    // { id, status, total, done }
+    cursor: 0,
+    starting: false,
+    error: null,
+    open: /* @__PURE__ */ new Set()
+  };
+  var pollTimer2 = null;
+  var redrawTimer2 = null;
+  var observer5 = null;
+  var observed3 = null;
+  var kind = () => bulkPageKind(location.href);
+  function listRoot() {
+    const selector = PAGE_LISTS[kind()]?.list;
+    return selector ? document.querySelector(selector) : contentRoot();
+  }
+  var entriesOnPage = () => playerEntries(listRoot());
+  function barHtml2(entries) {
+    const ids = entries.map((entry) => entry.id);
+    const todo = unscoredIds(ids, state6.results).filter((id) => !state6.pending.has(id));
+    const running = state6.lookup && !isFinished(state6.lookup.status);
+    const scoredHere = ids.filter((id) => state6.results.get(id)?.state === "scored").length;
+    let label;
+    if (!scoredHere && !state6.pending.size) label = `Score this page (${Math.min(todo.length, MAX_PLAYERS)})`;
+    else label = `Score ${Math.min(todo.length, MAX_PLAYERS)} more`;
+    const button3 = todo.length && !running ? `<button type="button" class="nfh-cw-btn nfh-cw-btn--primary" data-rs-bar="score"${state6.starting ? " disabled" : ""}>${escapeHtml(label)}</button>` : "";
+    const status = state6.error ? `<span class="nfh-cw-error">${escapeHtml(state6.error)}</span>` : `<span class="nfh-cw-muted">${escapeHtml(state6.lookup ? progressText(state6.lookup, state6.results) : `${ids.length} players on this page. Click a badge for its reasons.`)}</span>`;
+    return `<span class="nfh-cw-heading"><strong>Recruiting scores</strong></span>${button3}<span class="nfh-rs-bar-status">${status}</span>`;
+  }
+  function renderBar4(container, entries) {
+    let bar2 = document.getElementById("nfh-rs-bar");
+    if (!entries.length && !state6.lookup) {
+      bar2?.remove();
+      return;
+    }
+    if (!bar2) {
+      bar2 = document.createElement("div");
+      bar2.id = "nfh-rs-bar";
+      bar2.className = "nfh-cw nfh-rs-bar";
+      bar2.addEventListener("click", (event) => {
+        if (event.target.closest('[data-rs-bar="score"]')) {
+          event.preventDefault();
+          start();
+        }
+      });
+    }
+    const before = PAGE_LISTS[kind()]?.bar ? document.querySelector(PAGE_LISTS[kind()].bar) : null;
+    const title = container.querySelector(":scope > .content-title");
+    if (before) {
+      if (before.previousElementSibling !== bar2) before.insertAdjacentElement("beforebegin", bar2);
+    } else if (title) {
+      if (title.nextElementSibling !== bar2) title.insertAdjacentElement("afterend", bar2);
+    } else if (container.firstElementChild !== bar2) {
+      container.prepend(bar2);
+    }
+    const html = `<div class="nfh-cw-bar">${barHtml2(entries)}</div>`;
+    if (bar2.innerHTML !== html) bar2.innerHTML = html;
+  }
+  async function start() {
+    if (state6.starting || state6.lookup && !isFinished(state6.lookup.status)) return;
+    const ids = unscoredIds(
+      entriesOnPage().map((entry) => entry.id),
+      state6.results
+    ).slice(0, MAX_PLAYERS);
+    if (!ids.length) return;
+    state6.starting = true;
+    state6.error = null;
+    schedule3(0);
+    try {
+      const answer = await api("/candidate-score/bulk", { method: "POST", data: { player_ids: ids, page: kind() } });
+      ids.forEach((id) => {
+        state6.results.delete(id);
+        state6.pending.add(id);
+      });
+      track(answer, 0);
+    } catch (error) {
+      LogInfo("[recruiting-scores] bulk", error);
+      state6.error = errorText(error);
+    } finally {
+      state6.starting = false;
+      schedule3(0);
+    }
+  }
+  function errorText(error) {
+    if (error instanceof ApiError) {
+      if (error.status === 403) return "You don't have permission to use recruiting scores.";
+      if (error.status === 429 || error.status === 422) return error.body?.error || error.body?.message || "nuke.family turned that down.";
+      if (error.body?.error) return error.body.error;
+    }
+    return "Couldn't reach nuke.family. Try again in a moment.";
+  }
+  function track(answer, cursor) {
+    state6.lookup = { id: answer.id, status: answer.status, total: answer.total, done: answer.done };
+    state6.cursor = applyProgress(state6.results, answer, cursor);
+    for (const result of answer.results || []) state6.pending.delete(result.player_id);
+    if (isFinished(answer.status)) {
+      state6.pending.clear();
+      return;
+    }
+    clearTimeout(pollTimer2);
+    pollTimer2 = setTimeout(poll2, POLL_MS2);
+  }
+  async function poll2() {
+    pollTimer2 = null;
+    const lookup = state6.lookup;
+    if (!lookup || isFinished(lookup.status) || !kind()) return;
+    if (document.visibilityState !== "visible") return;
+    try {
+      const answer = await api(`/candidate-score/bulk/${lookup.id}?after=${state6.cursor}`);
+      if (state6.lookup?.id !== lookup.id) return;
+      track(answer, state6.cursor);
+      state6.error = null;
+    } catch (error) {
+      LogInfo("[recruiting-scores] poll", error);
+      if (error instanceof ApiError && error.status === 404) {
+        state6.lookup = null;
+        state6.pending.clear();
+      } else {
+        state6.error = "Lost touch with nuke.family; still trying.";
+        pollTimer2 = setTimeout(poll2, POLL_MS2 * 3);
+      }
+    }
+    schedule3(0);
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && !pollTimer2 && state6.lookup && !isFinished(state6.lookup.status) && kind()) poll2();
+  });
+  function slotState2(id) {
+    const result = state6.results.get(id);
+    if (result?.state === "scored") return { kind: "score", data: result };
+    if (result?.state === "failed") return { kind: "note", text: "?", title: result.error || "Couldn't be scored." };
+    if (state6.pending.has(id)) return { kind: "busy" };
+    return null;
+  }
+  function onAction2(id, action) {
+    if (action !== "toggle") return;
+    state6.open.has(id) ? state6.open.delete(id) : state6.open.add(id);
+    schedule3(0);
+  }
+  function redraw3() {
+    const container = contentRoot();
+    if (!kind() || !container || state6.allowed !== true) return;
+    observe3(container);
+    const entries = entriesOnPage();
+    renderBar4(container, entries);
+    for (const entry of entries) {
+      upsertSlot(entry, slotState2(entry.id), onAction2, { compact: true });
+      const result = state6.results.get(entry.id);
+      setDetail(entry, state6.open.has(entry.id) && result?.state === "scored" ? result : null, (id) => {
+        state6.open.delete(id);
+        schedule3(0);
+      });
+    }
+  }
+  function schedule3(delay = 250) {
+    clearTimeout(redrawTimer2);
+    redrawTimer2 = setTimeout(redraw3, delay);
+  }
+  function observe3(container) {
+    if (observed3 === container) return;
+    observer5?.disconnect();
+    observed3 = container;
+    observer5 = new MutationObserver((records) => {
+      const ours = records.every(
+        (record) => [...record.addedNodes, ...record.removedNodes].every(
+          (node) => node.nodeType !== 1 || node.closest?.(".nfh-rs-slot, .nfh-rs-detail, #nfh-rs-bar") || /(^|\s)nfh-rs/.test(node.className || "") || node.id === "nfh-rs-bar"
+        )
+      );
+      if (!ours) schedule3();
+    });
+    observer5.observe(container, { childList: true, subtree: true });
+  }
+  var bulk_default = {
+    name: "Recruiting scores: score this page",
+    pages: [PageType.Search, PageType.Faction, PageType.Abroad],
+    async init() {
+      if (!kind()) {
+        observer5?.disconnect();
+        observed3 = null;
+        document.getElementById("nfh-rs-bar")?.remove();
+        return;
+      }
+      if (state6.allowed === null) {
+        const permissions = await getOwnPermissions();
+        state6.allowed = permissions.includes(RECRUITING_PERMISSION);
+      }
+      if (!state6.allowed) {
+        clearAll2();
+        return;
+      }
+      let tries = 12;
+      const attach = () => {
+        redraw3();
+        if (--tries > 0 && kind()) setTimeout(attach, 500);
       };
       attach();
     }
@@ -8732,16 +9602,16 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
 
   // src/features/stocks/index.js
-  var ROOT2 = "#stockmarketroot";
+  var ROOT3 = "#stockmarketroot";
   var BAR_ID3 = "nfh-stock-bar";
   var CACHE_KEY2 = "nfhStockSignals";
   var DENIED_KEY2 = "nfhStockSignalsDenied";
   var CACHE_MS2 = 2 * 60 * 1e3;
   var DENIED_MS2 = 12 * 60 * 60 * 1e3;
-  var state5 = { data: null, loading: null };
-  var observer4 = null;
+  var state7 = { data: null, loading: null };
+  var observer6 = null;
   var observedRoot3 = null;
-  var timer2 = null;
+  var timer3 = null;
   function readJson4(key) {
     try {
       return JSON.parse(localStorage.getItem(key) || "null");
@@ -8756,17 +9626,17 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     }
   }
   async function load5() {
-    if (state5.data) return state5.data;
-    if (state5.loading) return state5.loading;
+    if (state7.data) return state7.data;
+    if (state7.loading) return state7.loading;
     const denied = readJson4(DENIED_KEY2);
     if (denied && Date.now() - denied < DENIED_MS2) return null;
     const cached = readJson4(CACHE_KEY2);
     if (cached && Date.now() - cached.at < CACHE_MS2) {
-      state5.data = cached.data;
-      return state5.data;
+      state7.data = cached.data;
+      return state7.data;
     }
-    state5.loading = api("/stocks/signals").then((data) => {
-      state5.data = data;
+    state7.loading = api("/stocks/signals").then((data) => {
+      state7.data = data;
       writeJson2(CACHE_KEY2, { at: Date.now(), data });
       return data;
     }).catch((error) => {
@@ -8774,20 +9644,20 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       LogInfo("[stocks]", error);
       return null;
     }).finally(() => {
-      state5.loading = null;
-      schedule2(0);
+      state7.loading = null;
+      schedule4(0);
     });
-    return state5.loading;
+    return state7.loading;
   }
-  var both = () => (state5.data?.portfolios || []).length > 1;
-  var hasAnything = () => (state5.data?.portfolios || []).length > 0 || (state5.data?.lots || []).length > 0;
-  function renderBar4(root3) {
+  var both = () => (state7.data?.portfolios || []).length > 1;
+  var hasAnything = () => (state7.data?.portfolios || []).length > 0 || (state7.data?.lots || []).length > 0;
+  function renderBar5(root4) {
     let bar2 = document.getElementById(BAR_ID3);
     if (!hasAnything()) {
       bar2?.remove();
       return;
     }
-    const market = root3.querySelector('[class*="stockMarket___"]');
+    const market = root4.querySelector('[class*="stockMarket___"]');
     if (!market) return;
     if (!bar2) {
       bar2 = document.createElement("div");
@@ -8795,18 +9665,18 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       bar2.className = "nfh-cw nfh-st-bar";
       market.parentElement.insertBefore(bar2, market);
     }
-    const lines = (state5.data.portfolios || []).map(
+    const lines = (state7.data.portfolios || []).map(
       (portfolio) => `<div><strong>${escapeHtml(BUCKET_LABELS[portfolio.bucket] || portfolio.bucket)}:</strong> ${escapeHtml(portfolio.summary)}</div>`
     );
     if (!lines.length) lines.push(`<div class="nfh-cw-muted">Signals are off: your blocks are labelled, but nothing says buy or sell.</div>`);
     const html = `<div class="nfh-st-lines">${lines.join("")}</div>
-    <a class="nfh-cw-btn" href="${escapeHtml(state5.data.tracker_url)}" target="_blank" rel="noopener">Stock tracker \u2197</a>`;
+    <a class="nfh-cw-btn" href="${escapeHtml(state7.data.tracker_url)}" target="_blank" rel="noopener">Stock tracker \u2197</a>`;
     if (bar2.innerHTML !== html) bar2.innerHTML = html;
   }
-  function tagRows(root3) {
-    for (const row2 of root3.querySelectorAll('ul[id][class*="stock___"]')) {
+  function tagRows(root4) {
+    for (const row2 of root4.querySelectorAll('ul[id][class*="stock___"]')) {
       const stockId = Number(row2.id);
-      const tags = rowTags(signalsFor(state5.data, stockId));
+      const tags = rowTags(signalsFor(state7.data, stockId));
       const host = row2.querySelector('[class*="nameContainer___"]') || row2.querySelector('[class*="stockName___"]');
       if (!host) continue;
       let element = host.querySelector(".nfh-st-tags");
@@ -8823,14 +9693,14 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       if (element.innerHTML !== html) element.innerHTML = html;
     }
   }
-  function decoratePanel(root3) {
-    const panel = root3.querySelector("#panel-ownedTab");
+  function decoratePanel(root4) {
+    const panel = root4.querySelector("#panel-ownedTab");
     if (!panel) return;
     const stockRow = panel.previousElementSibling?.matches('ul[id][class*="stock___"]') ? panel.previousElementSibling : panel.closest("[id]")?.previousElementSibling;
     const stockId = Number(stockRow?.id || panel.parentElement?.querySelector('ul[id][class*="stock___"]')?.id);
     if (!stockId) return;
-    const signals = signalsFor(state5.data, stockId);
-    const lots = (state5.data.lots || []).filter((lot) => lot.stock_id === stockId);
+    const signals = signalsFor(state7.data, stockId);
+    const lots = (state7.data.lots || []).filter((lot) => lot.stock_id === stockId);
     const lines = [];
     for (const signal of signals) {
       const who = both() || signal.bucket === "faction" ? `${BUCKET_LABELS[signal.bucket]}: ` : "";
@@ -8879,28 +9749,28 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       if (tag.textContent !== label.text) tag.textContent = label.text;
     });
   }
-  function redraw2() {
-    const root3 = document.querySelector(ROOT2);
-    if (!root3 || !state5.data) return;
-    renderBar4(root3);
-    tagRows(root3);
-    decoratePanel(root3);
+  function redraw4() {
+    const root4 = document.querySelector(ROOT3);
+    if (!root4 || !state7.data) return;
+    renderBar5(root4);
+    tagRows(root4);
+    decoratePanel(root4);
   }
-  function schedule2(delay = 200) {
-    clearTimeout(timer2);
-    timer2 = setTimeout(redraw2, delay);
+  function schedule4(delay = 200) {
+    clearTimeout(timer3);
+    timer3 = setTimeout(redraw4, delay);
   }
-  function watch3(root3) {
-    if (observedRoot3 === root3) return;
-    observer4?.disconnect();
-    observedRoot3 = root3;
-    observer4 = new MutationObserver((records) => {
+  function watch3(root4) {
+    if (observedRoot3 === root4) return;
+    observer6?.disconnect();
+    observedRoot3 = root4;
+    observer6 = new MutationObserver((records) => {
       const ours = records.every(
         (record) => [...record.addedNodes, ...record.removedNodes].every((node) => node.nodeType !== 1 || /(^|\s)nfh-/.test(node.className || "") || node.id === BAR_ID3)
       );
-      if (!ours) schedule2();
+      if (!ours) schedule4();
     });
-    observer4.observe(root3, { childList: true, subtree: true });
+    observer6.observe(root4, { childList: true, subtree: true });
   }
   var stocks_default = {
     name: "Stock signals",
@@ -8909,10 +9779,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       if (!/[?&]sid=stocks\b/.test(location.search)) return;
       let tries = 20;
       const attach = () => {
-        const root3 = document.querySelector(ROOT2);
-        if (root3 && root3.querySelector('[class*="stockMarket___"]')) {
-          watch3(root3);
-          load5().then(() => schedule2(0));
+        const root4 = document.querySelector(ROOT3);
+        if (root4 && root4.querySelector('[class*="stockMarket___"]')) {
+          watch3(root4);
+          load5().then(() => schedule4(0));
           return;
         }
         if (--tries > 0) setTimeout(attach, 400);
@@ -9011,9 +9881,9 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   var Source = { Bsp: "bsp", FfScouter: "ffscouter" };
   var SOURCES = [Source.Bsp, Source.FfScouter];
-  function pickEstimate(onPage, held, preferred) {
+  function pickEstimate(onPage2, held, preferred) {
     const order = [preferred, ...SOURCES.filter((source) => source !== preferred)];
-    for (const [values, fromPage] of [[onPage, true], [held, false]]) {
+    for (const [values, fromPage] of [[onPage2, true], [held, false]]) {
       for (const source of order) {
         if (values && values[source] > 0) return { total: values[source], source, fromPage };
       }
@@ -9175,7 +10045,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var UPLOAD_RETRY_MS = 5 * 60 * 1e3;
   var UPLOAD_MAX = 300;
   var STALE_MS = 60 * 1e3;
-  var state6 = {
+  var state8 = {
     target: null,
     // whose war is open: "" for your own faction's, else a faction id
     war: void 0,
@@ -9206,7 +10076,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var pending3 = { bsp: /* @__PURE__ */ new Map(), ffscouter: /* @__PURE__ */ new Map() };
   var ticker2 = null;
   var uploadTimer2 = null;
-  var barHtml2 = "";
+  var barHtml3 = "";
   function viewedWar() {
     if (!window.location.hash.startsWith("#/war/rank")) return null;
     const params = new URLSearchParams(window.location.search);
@@ -9215,20 +10085,20 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     return id && /^\d+$/.test(id) ? id : null;
   }
   function watch4(target) {
-    if (state6.target === target) return;
-    state6.target = target;
-    state6.war = void 0;
-    state6.members = {};
+    if (state8.target === target) return;
+    state8.target = target;
+    state8.war = void 0;
+    state8.members = {};
     for (const source of SOURCES) {
-      state6.held[source] = {};
-      state6.fresh[source] = /* @__PURE__ */ new Set();
+      state8.held[source] = {};
+      state8.fresh[source] = /* @__PURE__ */ new Set();
       pending3[source].clear();
     }
-    state6.statsAt = 0;
-    state6.uploadAfter = 0;
-    state6.fetchedAt = 0;
-    state6.nextPollAt = 0;
-    state6.error = false;
+    state8.statsAt = 0;
+    state8.uploadAfter = 0;
+    state8.fetchedAt = 0;
+    state8.nextPollAt = 0;
+    state8.error = false;
     memos.clear();
   }
   function setAttr(element, name, value) {
@@ -9278,18 +10148,18 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const cell = cellOf(row2, "points");
     return cell && Number(cell.textContent.replace(/,/g, "")) || 0;
   }
-  function noteForUpload(id, onPage) {
-    if (state6.statsAt === 0 || Date.now() < state6.uploadAfter) return;
+  function noteForUpload(id, onPage2) {
+    if (state8.statsAt === 0 || Date.now() < state8.uploadAfter) return;
     for (const source of SOURCES) {
-      if (!onPage[source] || state6.fresh[source].has(id) || pending3[source].has(id)) continue;
-      pending3[source].set(id, onPage[source]);
+      if (!onPage2[source] || state8.fresh[source].has(id) || pending3[source].has(id)) continue;
+      pending3[source].set(id, onPage2[source]);
       clearTimeout(uploadTimer2);
       uploadTimer2 = setTimeout(upload2, UPLOAD_DELAY_MS2);
     }
   }
   async function upload2() {
     uploadTimer2 = null;
-    const target = state6.target;
+    const target = state8.target;
     for (const source of SOURCES) {
       const batch = [...pending3[source].entries()].slice(0, UPLOAD_MAX);
       if (batch.length === 0) continue;
@@ -9303,11 +10173,11 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
             estimates: batch.map(([id, total]) => ({ id: Number(id), total }))
           }
         });
-        if (state6.target !== target) return;
-        for (const [id] of batch) state6.fresh[source].add(id);
+        if (state8.target !== target) return;
+        for (const [id] of batch) state8.fresh[source].add(id);
         LogInfo(`War board sent ${batch.length} ${source} estimates`);
       } catch (error) {
-        state6.uploadAfter = Date.now() + UPLOAD_RETRY_MS;
+        state8.uploadAfter = Date.now() + UPLOAD_RETRY_MS;
         console.error("[NFH] Could not send stat estimates to nuke.family:", error);
       }
     }
@@ -9322,7 +10192,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const memberCell = cellOf(row2, "member");
     if (memberCell) setAttr(memberCell, STATS_ATTR, null);
   }
-  function clearAll2() {
+  function clearAll3() {
     for (const element of document.querySelectorAll(`[${STATUS_ATTR}], [${ROW_ATTR}], [${STATS_ATTR}]`)) {
       element.removeAttribute(STATUS_ATTR);
       element.removeAttribute(TONE_ATTR);
@@ -9332,12 +10202,12 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     written = /* @__PURE__ */ new WeakMap();
   }
   function hasData() {
-    return !!state6.war && Date.now() - state6.fetchedAt < STALE_MS;
+    return !!state8.war && Date.now() - state8.fetchedAt < STALE_MS;
   }
   function decorate2(lists) {
     const prefs4 = getPrefs2();
     const live = hasData();
-    const now = Date.now() + state6.clockOffset;
+    const now = Date.now() + state8.clockOffset;
     const compare = live ? comparatorFor(prefs4.sort, prefs4.then) : null;
     let anyStats = false;
     let heldShown = false;
@@ -9352,14 +10222,14 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
         }
         const statusCell = cellOf(row2, "status");
         const pageKind = pageKindOf(statusCell);
-        const entry = classify(state6.members[id], pageKind, now, memos.get(id));
+        const entry = classify(state8.members[id], pageKind, now, memos.get(id));
         memos.set(id, entry.memo);
-        const onPage = pageEstimatesOf(row2);
-        const held = { bsp: state6.held.bsp[id], ffscouter: state6.held.ffscouter[id] };
-        const estimate = pickEstimate(onPage, held, prefs4.source);
-        noteForUpload(id, onPage);
+        const onPage2 = pageEstimatesOf(row2);
+        const held = { bsp: state8.held.bsp[id], ffscouter: state8.held.ffscouter[id] };
+        const estimate = pickEstimate(onPage2, held, prefs4.source);
+        noteForUpload(id, onPage2);
         for (const source of SOURCES) {
-          if (onPage[source] || held[source]) sources.add(source);
+          if (onPage2[source] || held[source]) sources.add(source);
         }
         entry.stats = estimate.total;
         entry.score = scoreOf(row2);
@@ -9380,9 +10250,9 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       }
       if (compare && !list.closest(FF_BUSY_SELECTOR)) reorder(list, entries, compare);
     }
-    state6.anyStats = anyStats;
-    state6.heldShown = heldShown;
-    state6.sources = sources;
+    state8.anyStats = anyStats;
+    state8.heldShown = heldShown;
+    state8.sources = sources;
   }
   function reorder(list, entries, compare) {
     const sorted = [...entries].sort(compare);
@@ -9392,17 +10262,17 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     list.insertBefore(fragment, list.firstChild);
   }
   function statusText() {
-    if (state6.war === null) {
-      return state6.target ? "nuke.family found no ranked war on for this faction." : "nuke.family has no ranked war on for your faction yet.";
+    if (state8.war === null) {
+      return state8.target ? "nuke.family found no ranked war on for this faction." : "nuke.family has no ranked war on for your faction yet.";
     }
-    if (state6.error && !hasData()) return "Could not reach nuke.family. Trying again shortly.";
+    if (state8.error && !hasData()) return "Could not reach nuke.family. Trying again shortly.";
     if (!hasData()) return "Loading statuses\u2026";
-    const age = Math.round((Date.now() - state6.fetchedAt) / 1e3);
+    const age = Math.round((Date.now() - state8.fetchedAt) / 1e3);
     return age < 15 ? "Live" : `Updated ${age}s ago`;
   }
   function thenSelect(prefs4) {
     const options = [
-      ...state6.anyStats ? [[Then.StatsAsc, "lowest stats"], [Then.StatsDesc, "highest stats"]] : [],
+      ...state8.anyStats ? [[Then.StatsAsc, "lowest stats"], [Then.StatsDesc, "highest stats"]] : [],
       [Then.ScoreDesc, "highest score"],
       [Then.ScoreAsc, "lowest score"],
       [Then.Recent, "latest out of hospital"]
@@ -9410,10 +10280,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const chosen = options.some(([value]) => value === prefs4.then) ? prefs4.then : "";
     return '<label title="How members with the same status are ordered">then <select data-pref="then">' + (chosen === "" ? `<option value="" selected>Torn's order</option>` : "") + options.map(([value, label]) => `<option value="${value}"${value === chosen ? " selected" : ""}>${label}</option>`).join("") + "</select></label>";
   }
-  function renderBar5() {
+  function renderBar6() {
     const prefs4 = getPrefs2();
     const chip = (mode, label, title) => `<button type="button" class="nfh-cw-chip${prefs4.sort === mode ? " is-armed" : ""}" data-sort="${mode}" title="${title}">${label}</button>`;
-    return '<div class="nfh-cw-bar"><strong>War board</strong>' + (state6.war ? '<span class="nfh-cw-muted">Sort</span>' + chip(SortMode.Status, "Hospital", "Who can be hit now, then who leaves hospital next") + (state6.anyStats ? chip(SortMode.StatsAsc, "Stats \u25B2", "Lowest battle stat estimate first") + chip(SortMode.StatsDesc, "Stats \u25BC", "Highest battle stat estimate first") : "") + chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them (or BSP / FF Scouter, if you sort with theirs)") + (prefs4.sort === SortMode.Status ? thenSelect(prefs4) : "") + (state6.sources.size > 1 ? `<label title="Whose estimate to use when both are known">Estimates <select data-pref="source"><option value="${Source.Bsp}"${prefs4.source === Source.Bsp ? " selected" : ""}>BSP</option><option value="${Source.FfScouter}"${prefs4.source === Source.FfScouter ? " selected" : ""}>FF Scouter</option></select></label>` : "") + (state6.heldShown || state6.anyStats && !prefs4.showStats ? `<label title="Show the estimates other members' BSP or FF Scouter passed on to nuke.family, where yours shows none"><input type="checkbox" data-pref="showStats"${prefs4.showStats ? " checked" : ""}> Show stats</label>` : "") : "") + `<span class="nfh-cw-status nfh-cw-muted">${statusText()}</span></div>`;
+    return '<div class="nfh-cw-bar"><strong>War board</strong>' + (state8.war ? '<span class="nfh-cw-muted">Sort</span>' + chip(SortMode.Status, "Hospital", "Who can be hit now, then who leaves hospital next") + (state8.anyStats ? chip(SortMode.StatsAsc, "Stats \u25B2", "Lowest battle stat estimate first") + chip(SortMode.StatsDesc, "Stats \u25BC", "Highest battle stat estimate first") : "") + chip(SortMode.Off, "Torn's order", "Leave the lists as Torn sorts them (or BSP / FF Scouter, if you sort with theirs)") + (prefs4.sort === SortMode.Status ? thenSelect(prefs4) : "") + (state8.sources.size > 1 ? `<label title="Whose estimate to use when both are known">Estimates <select data-pref="source"><option value="${Source.Bsp}"${prefs4.source === Source.Bsp ? " selected" : ""}>BSP</option><option value="${Source.FfScouter}"${prefs4.source === Source.FfScouter ? " selected" : ""}>FF Scouter</option></select></label>` : "") + (state8.heldShown || state8.anyStats && !prefs4.showStats ? `<label title="Show the estimates other members' BSP or FF Scouter passed on to nuke.family, where yours shows none"><input type="checkbox" data-pref="showStats"${prefs4.showStats ? " checked" : ""}> Show stats</label>` : "") : "") + `<span class="nfh-cw-status nfh-cw-muted">${statusText()}</span></div>`;
   }
   function ensureBar() {
     let bar2 = document.getElementById(BAR_ID4);
@@ -9426,11 +10296,11 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       bar2.addEventListener("click", onClick4);
       bar2.addEventListener("change", onChange2);
       anchor.insertAdjacentElement("beforebegin", bar2);
-      barHtml2 = "";
+      barHtml3 = "";
     }
-    const html = renderBar5();
-    if (html !== barHtml2) {
-      barHtml2 = html;
+    const html = renderBar6();
+    if (html !== barHtml3) {
+      barHtml3 = html;
       bar2.innerHTML = html;
     }
   }
@@ -9461,40 +10331,40 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       ensureBar();
     }
   }
-  async function poll2() {
-    const wantStats = Date.now() - state6.statsAt > STATS_REFRESH_MS;
-    const target = state6.target;
+  async function poll3() {
+    const wantStats = Date.now() - state8.statsAt > STATS_REFRESH_MS;
+    const target = state8.target;
     const query = [target ? `faction_id=${target}` : "", wantStats ? "stats=1" : ""].filter(Boolean).join("&");
-    state6.loading = true;
+    state8.loading = true;
     try {
       const response = await api("/war/board" + (query ? `?${query}` : ""));
-      if (state6.target !== target) return;
+      if (state8.target !== target) return;
       const data = response.data || {};
-      state6.error = false;
+      state8.error = false;
       if (!data.war) {
-        state6.war = null;
-        state6.nextPollAt = Date.now() + (data.recheck_seconds || 600) * 1e3;
+        state8.war = null;
+        state8.nextPollAt = Date.now() + (data.recheck_seconds || 600) * 1e3;
         return;
       }
-      state6.war = data.war;
-      state6.members = data.members || {};
-      state6.fetchedAt = Date.now();
-      state6.clockOffset = data.server_time * 1e3 - Date.now();
-      state6.nextPollAt = Date.now() + (data.poll_seconds * 1e3 || DEFAULT_POLL_MS);
+      state8.war = data.war;
+      state8.members = data.members || {};
+      state8.fetchedAt = Date.now();
+      state8.clockOffset = data.server_time * 1e3 - Date.now();
+      state8.nextPollAt = Date.now() + (data.poll_seconds * 1e3 || DEFAULT_POLL_MS);
       if (data.estimates) {
         for (const source of SOURCES) {
-          state6.held[source] = data.estimates[source] || {};
-          state6.fresh[source] = new Set(((data.estimates_fresh || {})[source] || []).map(String));
+          state8.held[source] = data.estimates[source] || {};
+          state8.fresh[source] = new Set(((data.estimates_fresh || {})[source] || []).map(String));
         }
-        state6.statsAt = Date.now();
+        state8.statsAt = Date.now();
       }
     } catch (error) {
-      if (state6.target !== target) return;
-      state6.error = true;
-      state6.nextPollAt = Date.now() + ERROR_RETRY_MS;
+      if (state8.target !== target) return;
+      state8.error = true;
+      state8.nextPollAt = Date.now() + ERROR_RETRY_MS;
       console.error("[NFH] Could not load the war board from nuke.family:", error);
     } finally {
-      state6.loading = false;
+      state8.loading = false;
       refresh();
     }
   }
@@ -9510,8 +10380,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     if (lists.length === 0) return;
     decorate2(lists);
     ensureBar();
-    if (!state6.loading && Date.now() >= state6.nextPollAt) {
-      poll2();
+    if (!state8.loading && Date.now() >= state8.nextPollAt) {
+      poll3();
     }
   }
   function stop2() {
@@ -9519,7 +10389,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     ticker2 = null;
     const bar2 = document.getElementById(BAR_ID4);
     if (bar2) bar2.remove();
-    clearAll2();
+    clearAll3();
     memos.clear();
     clearTimeout(uploadTimer2);
     uploadTimer2 = null;
@@ -9541,96 +10411,6 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     pages: [PageType.Faction],
     init: init6
   };
-
-  // src/features/recruiting.js
-  async function getRecruitingScoreForPlayer(playerId) {
-    try {
-      return await api("/candidate-score/" + playerId);
-    } catch (error) {
-      if (error instanceof SyntaxError) {
-        throw new Error("Bad response from server.");
-      }
-      if (error.name === "ApiError") {
-        if (error.status === 403) {
-          throw new Error("You don't have permission to use recruiting scores.");
-        }
-        if (error.body && error.body.error) {
-          throw new Error(error.body.error);
-        }
-        throw new Error("Failed to fetch recruiting score.");
-      }
-      throw new Error("Network error fetching recruiting score.");
-    }
-  }
-  function recruitingScoreColor(score) {
-    if (score === null || score === void 0 || isNaN(score)) return "#999";
-    if (score >= 67) return "#3a3";
-    if (score >= 34) return "#c90";
-    return "#d33";
-  }
-  function renderRecruitingScore(container, data) {
-    const subs = [
-      ["Activity", data.activity, "activity"],
-      ["Kick Safety", data.kick_safety, "kick_safety"],
-      ["Retention", data.retention, "retention"],
-      ["Combat", data.combat, "combat"]
-    ];
-    const explanation = data.explanation || {};
-    function driverLine(items, marker, color) {
-      if (!items || !items.length) return "";
-      const parts = items.slice(0, 3).map(function(d) {
-        const tip = d.value === null || d.value === void 0 ? d.label : `${d.label} = ${d.value}`;
-        return `<span title="${escapeHtml(tip)}">${escapeHtml(d.label)}</span>`;
-      });
-      return `<div style="color:${color};margin-top:1px;">${marker} ${parts.join(" \xB7 ")}</div>`;
-    }
-    let html = `<div style="margin-top:8px;font-weight:bold;">Recruiting Score: <span style="color:${recruitingScoreColor(data.composite)};">${escapeHtml(data.composite)}</span>/100</div>`;
-    if (data.feature_set === "public") {
-      html += `<div style="font-size:11px;opacity:0.7;">Public model (battle stats not available)</div>`;
-    }
-    html += `<ul class="nfh-section-list" style="margin-top:6px;">`;
-    subs.forEach(function(entry) {
-      const name = entry[0];
-      const val = entry[1];
-      const drivers = explanation[entry[2]] || {};
-      const lines = driverLine(drivers.up, "\u25B2", "#3a3") + driverLine(drivers.down, "\u25BC", "#d33");
-      html += `<li><span class="nfh-list-key">${name}:</span><span class="nfh-list-value"><strong style="color:${recruitingScoreColor(val)};">${escapeHtml(val)}</strong>` + (lines ? `<div style="font-size:11px;line-height:1.5;margin-top:3px;">${lines}</div>` : "") + `</span></li>`;
-    });
-    html += `</ul>`;
-    container.innerHTML = html;
-  }
-  async function maybeAddRecruitingButton(container, playerId) {
-    const permissions = await getOwnPermissions();
-    if (!permissions.includes(RECRUITING_PERMISSION)) return;
-    if (container.querySelector(".nfh-recruiting-wrap")) return;
-    const wrap = document.createElement("div");
-    wrap.classList.add("nfh-recruiting-wrap");
-    wrap.style.marginTop = "8px";
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.classList.add("nfh-recruiting-btn");
-    btn.innerText = "Check Recruiting Score";
-    btn.style.cssText = "cursor:pointer;width:100%;padding:5px 8px;border-radius:5px;border:1px solid var(--nfh-border, #444);background:var(--nfh-bg, #2b2b2b);color:inherit;";
-    const result = document.createElement("div");
-    result.classList.add("nfh-recruiting-result");
-    btn.addEventListener("click", async function() {
-      btn.disabled = true;
-      btn.innerText = "Checking\u2026";
-      try {
-        const data = await getRecruitingScoreForPlayer(playerId);
-        wrap.removeChild(btn);
-        renderRecruitingScore(result, data);
-        LogInfo(`Recruiting score for player ${playerId}: ${data.composite}`);
-      } catch (error) {
-        btn.disabled = false;
-        btn.innerText = "Check Recruiting Score";
-        result.innerHTML = `<div style="color:#d33;margin-top:6px;font-size:12px;">${escapeHtml(error.message)}</div>`;
-      }
-    });
-    wrap.appendChild(btn);
-    wrap.appendChild(result);
-    container.appendChild(wrap);
-  }
 
   // src/features/reputation.js
   var REPUTATION_CACHE_PREFIX = "nfh_reputation_";
@@ -10029,8 +10809,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   function retalsToAnnounce(retals, announced, nowSeconds, minSeconds) {
     return visibleRetals(retals, nowSeconds).filter((retal) => {
-      const state8 = retalState(retal, nowSeconds);
-      return (state8 === "free" || state8 === "mine") && retal.expires_at - nowSeconds >= minSeconds && !announced.has(noticeKey(retal));
+      const state10 = retalState(retal, nowSeconds);
+      return (state10 === "free" || state10 === "mine") && retal.expires_at - nowSeconds >= minSeconds && !announced.has(noticeKey(retal));
     });
   }
 
@@ -10183,13 +10963,13 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     try {
       if (!audioContext2) audioContext2 = new (window.AudioContext || window.webkitAudioContext)();
       if (audioContext2.state === "suspended") audioContext2.resume();
-      const start3 = audioContext2.currentTime;
+      const start4 = audioContext2.currentTime;
       [660, 880].forEach((hz, index) => {
         const oscillator = audioContext2.createOscillator();
         const gain = audioContext2.createGain();
         oscillator.type = "sine";
         oscillator.frequency.value = hz;
-        const at = start3 + index * 0.16;
+        const at = start4 + index * 0.16;
         gain.gain.setValueAtTime(volume, at);
         gain.gain.exponentialRampToValueAtTime(1e-3, at + 0.15);
         oscillator.connect(gain);
@@ -10319,8 +11099,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       return null;
     }
   }
-  function applyTags(root3) {
-    for (const wrapper of root3.querySelectorAll("[data-nfh-tag]")) {
+  function applyTags(root4) {
+    for (const wrapper of root4.querySelectorAll("[data-nfh-tag]")) {
       const id = Number(wrapper.dataset.nfhTag);
       const tags = copied.get(id);
       if (tags && tags.bsp) {
@@ -10368,30 +11148,30 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const more = list.length > 1 ? ` +${list.length - 1}` : "";
     return `<span class="nfh-rt-muted">hit ${first}${more}</span>`;
   }
-  function buttons(retal, state8, ui) {
+  function buttons(retal, state10, ui) {
     const busy2 = ui.busy === retal.enemy_id ? " disabled" : "";
     const id = escapeHtml(retal.enemy_id);
-    const claim = state8 === "mine" ? `<button type="button" class="nfh-cw-btn" data-action="unclaim" data-enemy="${id}"${busy2}>Unclaim</button>` : state8 === "free" ? `<button type="button" class="nfh-cw-btn" data-action="claim" data-enemy="${id}"${busy2}>Claim</button>` : "";
+    const claim = state10 === "mine" ? `<button type="button" class="nfh-cw-btn" data-action="unclaim" data-enemy="${id}"${busy2}>Unclaim</button>` : state10 === "free" ? `<button type="button" class="nfh-cw-btn" data-action="claim" data-enemy="${id}"${busy2}>Claim</button>` : "";
     const attack2 = `<a class="nfh-cw-btn nfh-cw-btn--primary nfh-rt-attack" href="${attackUrl(retal.enemy_id)}" data-action="attack" data-enemy="${id}">Attack</a>`;
     return `<span class="nfh-rt-actions">${claim}${attack2}</span>`;
   }
   function row(retal, now, ui) {
-    const state8 = retalState(retal, now);
+    const state10 = retalState(retal, now);
     const id = escapeHtml(retal.enemy_id);
-    if (state8 === "done") {
+    if (state10 === "done") {
       const by = retal.done_by && retal.done_by.name ? ` by ${escapeHtml(retal.done_by.name)}` : "";
       return `<li class="nfh-rt-row is-done" data-enemy="${id}"><span class="nfh-rt-main">${enemyName(retal)} <span class="nfh-rt-muted">retal done${by}</span></span></li>`;
     }
     const left = retal.expires_at - now;
-    const hold = state8 === "mine" ? `<span class="nfh-rt-held is-mine">Claimed by you</span>` : state8 === "taken" ? `<span class="nfh-rt-held">Claimed by ${escapeHtml(retal.claimed_by.name || "someone")}</span>` : "";
+    const hold = state10 === "mine" ? `<span class="nfh-rt-held is-mine">Claimed by you</span>` : state10 === "taken" ? `<span class="nfh-rt-held">Claimed by ${escapeHtml(retal.claimed_by.name || "someone")}</span>` : "";
     const warning = ui.warn && ui.warn.enemyId === retal.enemy_id ? `<div class="nfh-rt-warn" role="alert">${escapeHtml(ui.warn.name || "Someone")} has claimed this retal.
           <a class="nfh-cw-btn" href="${attackUrl(retal.enemy_id)}" data-action="attack-anyway" data-enemy="${id}">Attack anyway</a>
           <button type="button" class="nfh-cw-btn" data-action="dismiss" data-enemy="${id}">Cancel</button></div>` : "";
-    return `<li class="nfh-rt-row is-${state8}${left <= 60 ? " is-ending" : ""}" data-enemy="${id}">
+    return `<li class="nfh-rt-row is-${state10}${left <= 60 ? " is-ending" : ""}" data-enemy="${id}">
     <span class="nfh-rt-main">${enemyName(retal)} ${victims(retal)}</span>
     <span class="nfh-rt-left" title="Time left to retaliate">${formatLeft(left)}</span>
     ${hold}
-    ${buttons(retal, state8, ui)}
+    ${buttons(retal, state10, ui)}
     ${warning}
   </li>`;
   }
@@ -10404,10 +11184,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   </div>`;
   }
   function renderList(retals, now, ui = {}) {
-    const shown2 = visibleRetals(retals, now);
+    const shown3 = visibleRetals(retals, now);
     const error = ui.error ? `<div class="nfh-rt-error">${escapeHtml(ui.error)}</div>` : "";
-    if (!shown2.length) return error;
-    return `<ul class="nfh-rt-list">${shown2.map((retal) => row(retal, now, ui)).join("")}</ul>${error}`;
+    if (!shown3.length) return error;
+    return `<ul class="nfh-rt-list">${shown3.map((retal) => row(retal, now, ui)).join("")}</ul>${error}`;
   }
   var MIN_CHOICES = [0, 15, 30, 60, 90, 120, MAX_MIN_SECONDS];
   function check(pref, on, label, title = "", disabled = false) {
@@ -10438,7 +11218,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var POLL_OPEN_MS = 5 * 1e3;
   var POLL_CLOSED_MS = 10 * 1e3;
   var ERROR_MS = 6e3;
-  var state7 = {
+  var state9 = {
     retals: [],
     offset: 0,
     // server clock minus ours, in seconds
@@ -10453,42 +11233,42 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   var sending = false;
   var queued = false;
   var latestFeed = null;
-  var root2 = null;
+  var root3 = null;
   var regions2 = null;
   var rendered = {};
   var ticker3 = null;
-  var serverNow = () => Math.floor(Date.now() / 1e3) + state7.offset;
+  var serverNow = () => Math.floor(Date.now() / 1e3) + state9.offset;
   function take(answer) {
     if (!answer || !Array.isArray(answer.retals)) return;
-    state7.retals = answer.retals;
-    if (answer.server_now) state7.offset = answer.server_now - Math.floor(Date.now() / 1e3);
-    state7.lastAnswerAt = Date.now();
-    forgetTags(state7.retals);
-    if (getPrefs3().show) announce(state7.retals, serverNow(), attack);
+    state9.retals = answer.retals;
+    if (answer.server_now) state9.offset = answer.server_now - Math.floor(Date.now() / 1e3);
+    state9.lastAnswerAt = Date.now();
+    forgetTags(state9.retals);
+    if (getPrefs3().show) announce(state9.retals, serverNow(), attack);
     render6();
   }
   function isRefusal(error) {
     return error instanceof ApiError && (error.status === 403 || error.status === 404 && !(error.body && error.body.retals));
   }
   function showError(text) {
-    state7.ui.error = text;
-    state7.errorUntil = Date.now() + ERROR_MS;
+    state9.ui.error = text;
+    state9.errorUntil = Date.now() + ERROR_MS;
     render6();
   }
   function unmount() {
-    if (root2) root2.remove();
-    root2 = null;
+    if (root3) root3.remove();
+    root3 = null;
     regions2 = null;
     rendered = {};
   }
   function stop3() {
-    state7.refused = true;
+    state9.refused = true;
     if (ticker3) clearInterval(ticker3);
     ticker3 = null;
     unmount();
   }
   function onFeed(feed, source, keys) {
-    if (!isOwnFactionMainTab() || state7.refused) return;
+    if (!isOwnFactionMainTab() || state9.refused) return;
     if (!sourcesSeen.has(source)) {
       sourcesSeen.add(source);
       LogInfo(`[retals] first chain feed from ${source}`, { answer_keys: keys, sample: feed.recentAttacks[0] });
@@ -10498,7 +11278,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       sourcesSeen.add("stealth");
       LogInfo("[retals] a stealthed attack as Torn gives it", stealthed, feed.users[stealthed.attackerID] || null);
     }
-    start();
+    start2();
     if (!getPrefs3().show) return;
     latestFeed = feed;
     flush();
@@ -10541,13 +11321,13 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     return true;
   }
   function render6() {
-    if (!root2) return;
-    if (state7.ui.error && Date.now() > state7.errorUntil) state7.ui.error = null;
+    if (!root3) return;
+    if (state9.ui.error && Date.now() > state9.errorUntil) state9.ui.error = null;
     const prefs4 = getPrefs3();
     const now = serverNow();
-    setRegion2("head", renderHead(state7.retals, now, prefs4, state7.ui));
-    setRegion2("settings", state7.ui.settingsOpen ? renderSettings2(prefs4, desktopPermission()) : "");
-    if (setRegion2("list", prefs4.show ? renderList(state7.retals, now, state7.ui) : "")) applyTags(regions2.list);
+    setRegion2("head", renderHead(state9.retals, now, prefs4, state9.ui));
+    setRegion2("settings", state9.ui.settingsOpen ? renderSettings2(prefs4, desktopPermission()) : "");
+    if (setRegion2("list", prefs4.show ? renderList(state9.retals, now, state9.ui) : "")) applyTags(regions2.list);
   }
   function mount3() {
     const anchor = document.querySelector(ANCHOR_SELECTOR3);
@@ -10555,58 +11335,58 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       unmount();
       return false;
     }
-    if (!root2 || !root2.isConnected || root2.previousElementSibling !== anchor) {
+    if (!root3 || !root3.isConnected || root3.previousElementSibling !== anchor) {
       unmount();
-      root2 = document.createElement("div");
-      root2.id = ROOT_ID2;
-      root2.className = "nfh-cw nfh-rt";
+      root3 = document.createElement("div");
+      root3.id = ROOT_ID2;
+      root3.className = "nfh-cw nfh-rt";
       regions2 = {};
       for (const name of ["head", "settings", "list"]) {
         regions2[name] = document.createElement("div");
         regions2[name].dataset.region = name;
-        root2.appendChild(regions2[name]);
+        root3.appendChild(regions2[name]);
       }
-      root2.addEventListener("click", onClick5);
-      root2.addEventListener("change", onChange3);
-      root2.addEventListener("input", onChange3);
-      anchor.insertAdjacentElement("afterend", root2);
+      root3.addEventListener("click", onClick5);
+      root3.addEventListener("change", onChange3);
+      root3.addEventListener("input", onChange3);
+      anchor.insertAdjacentElement("afterend", root3);
     }
     render6();
     return true;
   }
-  function start() {
-    if (state7.refused || !getApiToken() || !isOwnFactionMainTab()) return;
+  function start2() {
+    if (state9.refused || !getApiToken() || !isOwnFactionMainTab()) return;
     mount3();
     if (!ticker3) ticker3 = setInterval(tick3, 1e3);
   }
   function tick3() {
-    if (state7.refused || !isOwnFactionMainTab()) {
+    if (state9.refused || !isOwnFactionMainTab()) {
       clearInterval(ticker3);
       ticker3 = null;
       unmount();
       return;
     }
     const open = mount3();
-    if (open) captureTags(state7.retals);
+    if (open) captureTags(state9.retals);
     const every = open ? POLL_OPEN_MS : POLL_CLOSED_MS;
-    if (getPrefs3().show && !document.hidden && !state7.polling && Date.now() - state7.lastAnswerAt >= every) poll3();
+    if (getPrefs3().show && !document.hidden && !state9.polling && Date.now() - state9.lastAnswerAt >= every) poll4();
   }
-  async function poll3() {
-    state7.polling = true;
+  async function poll4() {
+    state9.polling = true;
     try {
       take(await fetchRetals());
     } catch (error) {
       if (isRefusal(error)) stop3();
-      state7.lastAnswerAt = Date.now();
+      state9.lastAnswerAt = Date.now();
     } finally {
-      state7.polling = false;
+      state9.polling = false;
     }
   }
   function find(enemyId) {
-    return state7.retals.find((retal) => retal.enemy_id === enemyId);
+    return state9.retals.find((retal) => retal.enemy_id === enemyId);
   }
   async function changeClaim(enemyId, change) {
-    state7.ui.busy = enemyId;
+    state9.ui.busy = enemyId;
     render6();
     try {
       take(await change(enemyId));
@@ -10618,7 +11398,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       if (isRefusal(error)) stop3();
       return { ok: false, failed: true };
     } finally {
-      state7.ui.busy = null;
+      state9.ui.busy = null;
       render6();
     }
   }
@@ -10644,7 +11424,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const now = serverNow();
     const current = retal ? retalState(retal, now) : "free";
     if (current === "taken") {
-      state7.ui.warn = { enemyId, name: retal.claimed_by.name };
+      state9.ui.warn = { enemyId, name: retal.claimed_by.name };
       render6();
       return;
     }
@@ -10657,7 +11437,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     const result = await changeClaim(enemyId, claimRetal);
     if (result.takenBy) {
       if (tab) tab.close();
-      state7.ui.warn = { enemyId, name: result.takenBy.name };
+      state9.ui.warn = { enemyId, name: result.takenBy.name };
       render6();
       return;
     }
@@ -10666,7 +11446,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   function onClick5(event) {
     const target = event.target.closest("[data-action]");
-    if (!target || !root2.contains(target)) return;
+    if (!target || !root3.contains(target)) return;
     const enemyId = Number(target.dataset.enemy);
     const action = target.dataset.action;
     if (target.tagName === "A" && (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey)) return;
@@ -10674,7 +11454,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     if (action === "claim") {
       changeClaim(enemyId, claimRetal).then((result) => {
         if (result.takenBy) {
-          state7.ui.warn = { enemyId, name: result.takenBy.name };
+          state9.ui.warn = { enemyId, name: result.takenBy.name };
           render6();
         } else if (result.failed) showError("Could not reach nuke.family to claim it.");
       });
@@ -10685,14 +11465,14 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     } else if (action === "attack") {
       attack(enemyId);
     } else if (action === "attack-anyway") {
-      state7.ui.warn = null;
+      state9.ui.warn = null;
       render6();
       openAttack(enemyId);
     } else if (action === "dismiss") {
-      state7.ui.warn = null;
+      state9.ui.warn = null;
       render6();
     } else if (action === "settings") {
-      state7.ui.settingsOpen = !state7.ui.settingsOpen;
+      state9.ui.settingsOpen = !state9.ui.settingsOpen;
       render6();
     } else if (action === "test-sound") {
       chime(getPrefs3().volume);
@@ -10700,7 +11480,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   }
   async function onChange3(event) {
     const input = event.target.closest("[data-pref]");
-    if (!input || !root2 || !root2.contains(input)) return;
+    if (!input || !root3 || !root3.contains(input)) return;
     const pref = input.dataset.pref;
     if (event.type === "input" && pref !== "volume") return;
     if (input.type === "checkbox") {
@@ -10716,16 +11496,16 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     } else {
       setPrefs3({ [pref]: Number(input.value) });
     }
-    if (pref === "show" && input.checked) state7.lastAnswerAt = 0;
+    if (pref === "show" && input.checked) state9.lastAnswerAt = 0;
     if (pref !== "volume") render6();
   }
   var retals_default = {
     name: "retals",
     pages: [PageType.Faction],
     init() {
-      if (!isOwnFactionMainTab() || state7.refused) return;
+      if (!isOwnFactionMainTab() || state9.refused) return;
       startCapture(onFeed);
-      start();
+      start2();
     }
   };
 
@@ -11291,7 +12071,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
   function initTokenCapture() {
     waitForElm("#token").then((elm) => {
       let token = elm.innerText.trim();
-      const observer5 = new MutationObserver(() => {
+      const observer7 = new MutationObserver(() => {
         const newToken = elm.innerText.trim();
         if (!newToken || newToken === token) return;
         token = newToken;
@@ -11306,7 +12086,7 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
           alert("Nuke Family API token saved. You can now close this tab.");
         }
       });
-      observer5.observe(elm, {
+      observer7.observe(elm, {
         childList: true,
         subtree: true,
         characterData: true
@@ -11329,6 +12109,8 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
     mail_templates_default,
     oc_items_default,
     kick_risk_default,
+    applications_default,
+    bulk_default,
     stocks_default
   ];
   function dispatchFeatures() {
@@ -11348,10 +12130,10 @@ a.ui-tabs-anchor.nfh-oci-tab-hint {
       else initTokenCapture();
       return;
     }
-    if (hasNativeStorage()) initStorage().then(start2);
-    else start2();
+    if (hasNativeStorage()) initStorage().then(start3);
+    else start3();
   }
-  function start2() {
+  function start3() {
     addStyle(styles_default);
     LogInfo("Nuke Family Helper Script Loaded");
     checkForUpdates();

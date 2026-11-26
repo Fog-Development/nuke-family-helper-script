@@ -5,7 +5,7 @@ import { PageType } from "../../core/pages.js";
 import { setInputValue } from "../../core/torn-editor.js";
 import { activeSubTab, CRIMES_ROOT_SELECTOR } from "../organized-crimes/page.js";
 import { cachedBoard, refreshBoard } from "../organized-crimes/remote.js";
-import { changeText, formatStat, kickReason, riskTier } from "./logic.js";
+import { awayTier, changeText, daysSince, deltaText, formatStat, kickReason, lastOnlineText, reasonsText, riskTier } from "./logic.js";
 
 // Kick risk on your faction's Controls → Members list, for whoever sees the
 // faction monitor's Kick Risk column (nuke.family decides: `/faction-monitor/
@@ -139,6 +139,38 @@ function decorateRow(row) {
     badge.setAttribute("aria-label", title);
   }
 
+  // Away for days: a chip whatever the kick risk, opening the same panel.
+  const days = member ? daysSince(member.last_action_at) : null;
+  const away = awayTier(days);
+  let chip = row.element.querySelector(".nfh-kr-away");
+  if (!away || !host) {
+    chip?.remove();
+  } else {
+    if (!chip) {
+      chip = document.createElement("button");
+      chip.type = "button";
+      chip.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        state.open.has(row.id) ? state.open.delete(row.id) : state.open.add(row.id);
+        schedule(0);
+      });
+    }
+    // Right after the kick risk badge when there is one, else at the end of the name cell.
+    if (badge?.isConnected && badge.parentElement === host) {
+      if (badge.nextElementSibling !== chip) badge.after(chip);
+    } else if (chip.parentElement !== host) {
+      host.appendChild(chip);
+    }
+    const className = `nfh-kr-away nfh-kr-away--${away}`;
+    const text = `${days}d off`;
+    const title = `Last online ${lastOnlineText(days)}. Click for details.`;
+    if (chip.className !== className) chip.className = className;
+    if (chip.textContent !== text) chip.textContent = text;
+    if (chip.title !== title) chip.title = title;
+    chip.setAttribute("aria-label", title);
+  }
+
   // The detail panel, at the end of the row (after Torn's own parts of it).
   let detail = row.element.querySelector(":scope > .nfh-kr-detail");
   if (member && state.open.has(row.id)) {
@@ -170,13 +202,40 @@ function statHtml(stat, change) {
   )}</strong>${extra}${stat.below_target ? target : ""}</span>`;
 }
 
+// Leave risk (with its change since last week's run), last online, and the
+// model's top reasons for each risk.
+function riskHtml(member) {
+  const days = daysSince(member.last_action_at);
+  const parts = [];
+  if (member.departure_risk !== null && member.departure_risk !== undefined) {
+    const delta = deltaText(member.risk_delta);
+    parts.push(
+      `<span class="nfh-kr-stat"><span class="nfh-cw-muted">Leave risk</span> <strong>${escapeHtml(Math.round(member.departure_risk))}%</strong>${
+        delta ? ` <span class="nfh-cw-muted" title="Change in the member's overall risk since the run before">${escapeHtml(delta)}</span>` : ""
+      }</span>`,
+    );
+  }
+  if (member.last_action_at !== undefined) {
+    const at = member.last_action_at ? ` title="${escapeHtml(member.last_action_at.replace("T", " ").replace(/:\d\dZ$/, " TCT"))}"` : "";
+    parts.push(
+      `<span class="nfh-kr-stat${awayTier(days) ? " nfh-kr-stat--below" : ""}"${at}><span class="nfh-cw-muted">Last online</span> <strong>${escapeHtml(lastOnlineText(days))}</strong></span>`,
+    );
+  }
+  const why = (label, reasons) =>
+    reasons && reasons.length ? `<div class="nfh-kr-why"><span class="nfh-cw-muted">${label}:</span> ${escapeHtml(reasonsText(reasons))}</div>` : "";
+  const line = parts.length ? `<div class="nfh-kr-stats">${parts.join("")}</div>` : "";
+  return line + why("Kick risk raised by", member.kick_reasons) + why("Leave risk raised by", member.departure_reasons);
+}
+
 function detailHtml(member) {
   const stats = member.stats.map((stat) => statHtml(stat, stat.key === "avg_daily_energy_spend_7" ? member.energy_change_pct : undefined)).join("");
   const missed = member.missed.length ? `<div class="nfh-kr-missed"><span class="nfh-cw-muted">Below target:</span> ${member.missed.map((stat) => statHtml(stat)).join("")}</div>` : "";
   const monitor = state.data?.monitor_url ? `<a href="${escapeHtml(state.data.monitor_url)}" target="_blank" rel="noopener">Full monitor ↗</a>` : "";
-  return `<div class="nfh-kr-detail-head"><strong>Kick risk ${Math.round(member.kick_risk)}%</strong>
-      ${member.kick_risk_note ? `<span class="nfh-cw-muted">${escapeHtml(member.kick_risk_note)}</span>` : ""}
+  const kick = member.kick_risk === null || member.kick_risk === undefined ? "No kick risk score" : `Kick risk ${Math.round(member.kick_risk)}%`;
+  return `<div class="nfh-kr-detail-head"><strong>${kick}</strong>
+      ${member.kick_risk_note && member.departure_risk === undefined ? `<span class="nfh-cw-muted">${escapeHtml(member.kick_risk_note)}</span>` : ""}
       <span class="nfh-kr-detail-links">${monitor} <button type="button" class="nfh-cw-btn" data-kr="close" aria-label="Close">✕</button></span></div>
+    ${riskHtml(member)}
     <div class="nfh-kr-stats">${stats}</div>${missed}`;
 }
 

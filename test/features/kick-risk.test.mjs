@@ -157,6 +157,52 @@ describe("kick risk on the Members list", () => {
     }
   });
 
+  for (const theme of THEMES) {
+    it(`adds leave risk, the model's reasons and days since last online (${theme})`, async () => {
+      const ids = memberIds("controls-members", 0);
+      const daysAgo = (days) => new Date(Date.now() - days * 86_400_000 - 3_600_000).toISOString().replace(/\.\d+Z$/, "Z");
+      const [high, away, quiet] = [ids[3], ids[1], ids[0]];
+      const overrides = {
+        [high]: {
+          departure_risk: 52.5,
+          risk_delta: 12.5,
+          kick_reasons: [
+            { label: "Time Online / day (7d)", value: 12.5 },
+            { label: "Xanax Taken / day (30d)", value: 0.2 },
+          ],
+          departure_reasons: [{ label: "Attacks Made Trend (recent vs baseline)", value: -0.6 }],
+          last_action_at: daysAgo(10),
+        },
+        [away]: { departure_risk: 20, last_action_at: daysAgo(4) },
+        [quiet]: { kick_risk: null, last_action_at: daysAgo(0) },
+      };
+      const { page, errors, close } = await openTornPage(browser, { page: "controls-members", theme, api: site(ids, overrides) });
+      try {
+        await page.waitForSelector(".nfh-kr-away--gone");
+        const gone = page.locator(`${BADGE}[data-player="${high}"] + .nfh-kr-away`);
+        assert.equal(await gone.innerText(), "10d off");
+        assert.match(await gone.getAttribute("title"), /Last online 10 days ago/);
+        assert.equal(await page.locator(".nfh-kr-away--away").first().innerText(), "4d off");
+        assert.equal(await page.locator(".nfh-kr-away").count(), 2, "only members away three days or more");
+        const { ratio } = await measureContrast(page, ".nfh-kr-away--gone");
+        assert.ok(ratio >= 4.5, `away chip contrast ${ratio.toFixed(2)} in ${theme}`);
+
+        await gone.click();
+        const detail = page.locator(".nfh-kr-detail");
+        await detail.waitFor();
+        const text = await detail.innerText();
+        assert.match(text, /Leave risk 53%\s*↑ 12\.5 since last week/);
+        assert.match(text, /Last online 10 days ago/);
+        assert.match(text, /Kick risk raised by: Time Online \/ day \(7d\) 13 · Xanax Taken \/ day \(30d\) 0\.2/);
+        assert.match(text, /Leave risk raised by: Attacks Made Trend \(recent vs baseline\) -0\.6/);
+        assert.deepEqual(errors, []);
+        await screenshot(detail.locator(".."), `kick-risk-leave-${theme}`);
+      } finally {
+        await close();
+      }
+    });
+  }
+
   it("asks nothing more of a member without access for half a day", async () => {
     const { page, apiCalls, close } = await openTornPage(browser, {
       page: "controls-members",

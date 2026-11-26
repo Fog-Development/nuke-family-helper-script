@@ -261,6 +261,42 @@ two would keep undoing each other.
 - [ ] After a force refresh, a shitlist change made on nuke.family shows up on
       a profile page without waiting for the normal cache interval.
 
+### Members (kick risk)
+
+- [ ] A member who hasn't been online for 3+ days has a "Nd off" chip next to
+      their kick risk badge (amber from 7 days). Clicking it opens the panel.
+- [ ] The panel shows "Leave risk N%" (with "↑/↓ N since last week" when
+      there was a run before), "Last online …" (hover for the time in TCT) and
+      the model's reasons: "Kick risk raised by: …", "Leave risk raised by: …".
+
+## Recruiting scores (needs `recruiting.predict`, Helper and up)
+
+- [ ] Controls → Applications: each applicant gets a badge "72 KS84 A71 R45
+      C20" (composite, then kick safety highlighted, then the other
+      sub-scores) in one `POST /candidate-score/applicants`. Clicking it opens
+      the reasons (▲/▼ per sub-score); ✕ closes it.
+- [ ] An application nuke.family hasn't scored shows "Score"; one it hasn't
+      picked up yet (just applied) shows "Check score". Each click logs one
+      check (Admin → Recruiting checks) and turns into a badge.
+- [ ] The Hall of Fame (`page.php?sid=hof`, a player list), the player search
+      results, another faction's profile and people abroad show a "Recruiting
+      scores" bar above the list with "Score this page (N)". **Nothing is
+      requested before you press it.** Badges (composite and kick safety) then
+      appear a few at a time; the bar counts "Scoring N of M…" and ends
+      "Scored M players". Recruit Citizens has no bar.
+- [ ] Turn to the next page of the list: the bar offers "Score N more"; players
+      already scored keep their badge.
+- [ ] Switch to another tab while it scores: polling stops (no
+      `/candidate-score/bulk/…` requests) and picks up again when you come back.
+- [ ] Hall of Fame faction lists (Faction rank/respect/chains) should show no
+      bar (they list no players); note it if one appears.
+- [ ] Another faction's profile: only the member table gets badges (not the
+      leaders or links in its description).
+- [ ] Bulk lookups never show in Admin → Recruiting checks (they're kept apart
+      so the weekly snapshots don't sample them).
+- [ ] TornPDA / phone width: badges show only the composite and kick safety;
+      on Applications the badge is a line under each applicant's row.
+
 ## General
 
 - [ ] No errors in the browser console on profiles, hospital, and faction

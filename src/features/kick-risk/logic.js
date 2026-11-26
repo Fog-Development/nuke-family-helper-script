@@ -58,3 +58,47 @@ export function formatStat(stat) {
   const value = number(stat.value);
   return value === null ? stat.shown || "—" : value;
 }
+
+// ---- leave risk, its reasons, and last online -----------------------------------
+
+export function daysSince(iso, now = Date.now()) {
+  if (!iso) return null;
+  const at = Date.parse(iso);
+  if (Number.isNaN(at)) return null;
+  return Math.max(0, Math.floor((now - at) / 86_400_000));
+}
+
+export function lastOnlineText(days) {
+  if (days === null || days === undefined) return "unknown";
+  if (days === 0) return "today";
+  if (days === 1) return "1 day ago";
+  return `${days} days ago`;
+}
+
+// Members away this long get a chip on the row whatever their kick risk.
+export const AWAY_DAYS = 3;
+export const GONE_DAYS = 7;
+
+export function awayTier(days) {
+  if (days === null || days === undefined || days < AWAY_DAYS) return null;
+  return days >= GONE_DAYS ? "gone" : "away";
+}
+
+// "Time Online / day (7d) 12.5 · Xanax Taken / day (30d) 0.2"
+export function reasonsText(reasons) {
+  return (reasons || [])
+    .filter((reason) => reason && reason.label)
+    .map((reason) => {
+      const value = number(reason.value);
+      return value === null ? reason.label : `${reason.label} ${value}`;
+    })
+    .join(" · ");
+}
+
+// "↑ 12.5 since last week" / "↓ 3 since last week" / "" (new this week)
+export function deltaText(delta) {
+  if (delta === null || delta === undefined || !Number.isFinite(Number(delta))) return "";
+  const n = Math.round(Number(delta) * 10) / 10;
+  if (n === 0) return "no change since last week";
+  return `${n > 0 ? "↑" : "↓"} ${Math.abs(n)} since last week`;
+}

@@ -40,7 +40,7 @@ export const PageType = {
 const mapPageTypeAddress = {
   [PageType.Profile]: "https://www.torn.com/profiles.php",
   [PageType.RecruitCitizens]: "https://www.torn.com/bringafriend.php",
-  [PageType.HallOfFame]: "https://www.torn.com/halloffame.php",
+  [PageType.HallOfFame]: "https://www.torn.com/page.php?sid=hof",
   [PageType.Faction]: "https://www.torn.com/factions.php",
   [PageType.Company]: "https://www.torn.com/joblist.php",
   [PageType.Competition]: "https://www.torn.com/competition.php",
